@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard MJ — L'Éclipse</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #08080d;
+    --parchment: #f0e8d8;
+    --parchment-dark: #d4c8a8;
+    --BLU: #1C3A5A;
+    --GLD: #B8922A;
+    --VIO: #674EA7;
+    --GRN: #5E804F;
+    --SUB: #555566;
+    --blood: #8B1A1A;
+    --panel: rgba(15,15,22,0.9);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--ink);
+    color: var(--parchment);
+    font-family: 'Crimson Text', serif;
+    min-height: 100vh;
+    font-size:15px;
+  }
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.008) 3px, rgba(255,255,255,0.008) 4px);
+    pointer-events:none; z-index:0;
+  }
+
+  /* NAV */
+  nav {
+    position:sticky; top:0; z-index:200;
+    background: rgba(8,8,13,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(184,146,42,0.2);
+    padding: 0.6rem 1.25rem;
+    display:flex; align-items:center; gap:1rem;
+    flex-wrap:wrap;
+  }
+  nav a { color:var(--SUB); text-decoration:none; font-size:0.82rem; font-style:italic; transition:color 0.2s; }
+  nav a:hover { color:var(--GLD); }
+  .nav-title { font-family:'Cinzel',serif; font-size:0.8rem; color:var(--GLD); letter-spacing:0.15em; text-transform:uppercase; margin-left:auto; }
+  .nav-sep { color:var(--SUB); opacity:0.4; }
+
+  /* TABS */
+  .tabs {
+    display:flex; gap:0; border-bottom: 1px solid rgba(255,255,255,0.07);
+    background: rgba(8,8,13,0.7);
+    position:sticky; top:43px; z-index:100;
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .tabs::-webkit-scrollbar { display:none; }
+  .tab {
+    font-family:'Cinzel',serif; font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase;
+    padding:0.7rem 1.25rem; cursor:pointer; border:none; background:transparent;
+    color:var(--SUB); border-bottom: 2px solid transparent; transition:all 0.2s;
+    white-space:nowrap; flex-shrink:0;
+  }
+  .tab:hover { color:var(--parchment-dark); }
+  .tab.active { color:var(--GLD); border-bottom-color:var(--GLD); background: rgba(184,146,42,0.04); }
+
+  .panel { display:none; padding:1.25rem; position:relative; z-index:1; }
+  .panel.active { display:block; }
+
+  /* GRID LAYOUTS */
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
+  @media(max-width:700px){ .grid2,.grid3 { grid-template-columns:1fr; } }
+  @media(min-width:701px) and (max-width:900px){ .grid3 { grid-template-columns:1fr 1fr; } }
+
+  /* CARD */
+  .card {
+    background:var(--panel);
+    border:1px solid rgba(255,255,255,0.07);
+    border-radius:2px; padding:1rem;
+  }
+  .card.gold { border-color:rgba(184,146,42,0.25); }
+  .card.vio { border-color:rgba(103,78,167,0.25); }
+  .card.red { border-color:rgba(139,26,26,0.3); }
+  .card.green { border-color:rgba(94,128,79,0.3); }
+  .section-label {
+    font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.2em;
+    text-transform:uppercase; color:var(--SUB); margin-bottom:0.75rem;
+    display:flex; align-items:center; gap:0.5rem;
+  }
+  .section-label.gld { color:var(--GLD); }
+  .section-label.vio { color:var(--VIO); }
+  .section-label.red { color:#c0392b; }
+  .section-label.grn { color:var(--GRN); }
+  .section-label::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.05); }
+
+  /* ═══ JETS DE DÉS ═══ */
+  .dice-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(80px,1fr)); gap:0.6rem; }
+  .die-btn {
+    background: rgba(28,58,90,0.2);
+    border: 1px solid rgba(28,58,90,0.4);
+    color: var(--parchment);
+    font-family:'Cinzel',serif; font-size:0.85rem;
+    padding:0.6rem 0.4rem; border-radius:2px; cursor:pointer;
+    transition:all 0.15s; text-align:center;
+  }
+  .die-btn:hover { background:rgba(28,58,90,0.4); border-color:rgba(184,146,42,0.4); color:var(--GLD); transform:translateY(-1px); }
+  .die-btn:active { transform:none; }
+
+  .dice-result-area {
+    background: rgba(10,10,15,0.8);
+    border: 1px solid rgba(184,146,42,0.15);
+    border-radius:2px; padding:1rem; margin-top:1rem;
+    min-height:80px; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:0.4rem;
+  }
+  .dice-main-result { font-family:'Cinzel',serif; font-size:3rem; color:var(--GLD); line-height:1; }
+  .dice-label { font-size:0.8rem; color:var(--SUB); font-style:italic; }
+  .dice-detail { font-size:0.85rem; color:var(--parchment-dark); }
+  .dice-history { margin-top:0.75rem; }
+  .dice-hist-item { font-size:0.8rem; color:var(--SUB); padding:0.2rem 0; display:flex; gap:0.5rem; }
+  .dice-hist-val { color:var(--parchment-dark); font-family:'Cinzel',serif; min-width:30px; }
+
+  /* Modificateur */
+  .mod-row { display:flex; align-items:center; gap:0.5rem; margin-top:0.75rem; flex-wrap:wrap; }
+  .mod-label { font-size:0.8rem; color:var(--SUB); font-style:italic; }
+  .mod-btn {
+    background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
+    color:var(--parchment-dark); font-family:'Cinzel',serif; font-size:0.75rem;
+    padding:0.3rem 0.6rem; border-radius:2px; cursor:pointer; transition:all 0.15s;
+  }
+  .mod-btn:hover { background:rgba(255,255,255,0.1); }
+  .mod-val { font-family:'Cinzel',serif; font-size:1.1rem; color:var(--GLD); min-width:40px; text-align:center; }
+
+  /* Test WFRP */
+  .test-area { margin-top:1rem; }
+  .test-input-row { display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; margin-bottom:0.5rem; }
+  input[type=number], input[type=text] {
+    background:rgba(10,10,15,0.7); border:1px solid rgba(255,255,255,0.1);
+    color:var(--parchment); font-family:'Crimson Text',serif; font-size:1rem;
+    padding:0.4rem 0.6rem; border-radius:2px; width:80px;
+  }
+  input[type=text] { width:180px; }
+  input:focus { outline:none; border-color:rgba(184,146,42,0.4); }
+  .btn-primary {
+    background:rgba(184,146,42,0.2); border:1px solid rgba(184,146,42,0.4);
+    color:var(--GLD); font-family:'Cinzel',serif; font-size:0.75rem;
+    letter-spacing:0.1em; text-transform:uppercase;
+    padding:0.45rem 0.9rem; border-radius:2px; cursor:pointer; transition:all 0.15s;
+  }
+  .btn-primary:hover { background:rgba(184,146,42,0.35); }
+  .test-result {
+    padding:0.75rem; background:rgba(10,10,15,0.6);
+    border:1px solid rgba(255,255,255,0.06); border-radius:2px;
+    font-size:0.9rem; display:none;
+  }
+  .test-result.visible { display:block; animation:fadeIn 0.25s ease; }
+  .test-success { color:var(--GRN); font-family:'Cinzel',serif; font-size:1rem; }
+  .test-fail { color:#c0392b; font-family:'Cinzel',serif; font-size:1rem; }
+  .test-degrees { color:var(--parchment-dark); font-size:0.85rem; margin-top:0.2rem; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:none} }
+
+  /* ═══ INITIATIVE ═══ */
+  .init-add-row { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; align-items:center; }
+  .init-add-row input[type=text] { width:140px; }
+  .init-add-row input[type=number] { width:70px; }
+  .btn-danger {
+    background:rgba(139,26,26,0.2); border:1px solid rgba(139,26,26,0.4);
+    color:#e08080; font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.08em;
+    text-transform:uppercase; padding:0.35rem 0.7rem; border-radius:2px; cursor:pointer; transition:all 0.15s;
+  }
+  .btn-danger:hover { background:rgba(139,26,26,0.4); }
+  .btn-success {
+    background:rgba(94,128,79,0.2); border:1px solid rgba(94,128,79,0.4);
+    color:var(--GRN); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.08em;
+    text-transform:uppercase; padding:0.35rem 0.7rem; border-radius:2px; cursor:pointer; transition:all 0.15s;
+  }
+  .btn-success:hover { background:rgba(94,128,79,0.35); }
+  .btn-neutral {
+    background:rgba(85,85,102,0.2); border:1px solid rgba(85,85,102,0.3);
+    color:var(--SUB); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.08em;
+    text-transform:uppercase; padding:0.35rem 0.7rem; border-radius:2px; cursor:pointer; transition:all 0.15s;
+  }
+  .btn-neutral:hover { color:var(--parchment-dark); }
+
+  .init-list { list-style:none; }
+  .init-item {
+    display:flex; align-items:center; gap:0.6rem;
+    padding:0.6rem 0.75rem; border-radius:2px; margin-bottom:0.4rem;
+    border:1px solid rgba(255,255,255,0.06); background:rgba(10,10,15,0.5);
+    transition:all 0.2s; flex-wrap:wrap;
+  }
+  .init-item.current {
+    border-color:rgba(184,146,42,0.5);
+    background:rgba(184,146,42,0.06);
+    box-shadow:0 0 12px rgba(184,146,42,0.1);
+  }
+  .init-item.dead { opacity:0.35; }
+  .init-score {
+    font-family:'Cinzel',serif; font-size:1.1rem; color:var(--GLD);
+    min-width:32px; text-align:center;
+  }
+  .init-name { flex:1; font-size:0.95rem; color:var(--parchment); }
+  .init-type { font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); }
+  .init-wounds { display:flex; align-items:center; gap:0.3rem; }
+  .init-wounds-val { font-family:'Cinzel',serif; font-size:0.9rem; min-width:50px; }
+  .init-w-btn { background:none; border:none; color:var(--SUB); cursor:pointer; font-size:0.9rem; padding:0 0.2rem; transition:color 0.15s; }
+  .init-w-btn:hover { color:var(--parchment); }
+  .init-conditions { display:flex; gap:0.3rem; flex-wrap:wrap; }
+  .cond-tag {
+    font-size:0.65rem; padding:0.1rem 0.35rem; border-radius:2px;
+    font-family:'Cinzel',serif; cursor:pointer; transition:all 0.15s;
+  }
+  .cond-tag.stun { background:rgba(184,146,42,0.2); color:var(--GLD); border:1px solid rgba(184,146,42,0.3); }
+  .cond-tag.prone { background:rgba(139,26,26,0.2); color:#e08080; border:1px solid rgba(139,26,26,0.3); }
+  .cond-tag.bld { background:rgba(103,78,167,0.2); color:#a08ed4; border:1px solid rgba(103,78,167,0.3); }
+  .current-turn-indicator {
+    font-family:'Cinzel',serif; font-size:0.7rem; color:var(--GLD);
+    letter-spacing:0.15em; text-transform:uppercase;
+    padding:0.25rem 0.6rem; border:1px solid rgba(184,146,42,0.3);
+    border-radius:2px; background:rgba(184,146,42,0.08);
+  }
+
+  /* ═══ PNJ CAMPAGNE ═══ */
+  .pnj-search { display:flex; gap:0.5rem; margin-bottom:1rem; }
+  .pnj-search input[type=text] { flex:1; width:auto; }
+  .pnj-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:0.6rem; }
+  .pnj-card {
+    background:rgba(10,10,15,0.7); border:1px solid rgba(255,255,255,0.07);
+    border-radius:2px; padding:0.85rem; cursor:pointer; transition:all 0.2s;
+  }
+  .pnj-card:hover { border-color:rgba(184,146,42,0.3); background:rgba(28,58,90,0.12); }
+  .pnj-card-name { font-family:'Cinzel',serif; font-size:0.95rem; color:var(--parchment); margin-bottom:0.15rem; }
+  .pnj-card-role { font-size:0.8rem; color:var(--GLD); opacity:0.8; margin-bottom:0.3rem; }
+  .pnj-card-desc { font-size:0.8rem; color:var(--parchment-dark); font-style:italic; line-height:1.4; display:none; }
+  .pnj-card.open .pnj-card-desc { display:block; }
+  .pnj-card-faction { font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.4rem; }
+  .pnj-accent { width:100%; height:2px; border-radius:2px; margin-bottom:0.6rem; }
+
+  /* ═══ NOTES MJ ═══ */
+  textarea.mj-notes {
+    width:100%; background:rgba(10,10,15,0.6); border:1px solid rgba(255,255,255,0.08);
+    color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.95rem;
+    padding:0.75rem; resize:vertical; border-radius:2px; line-height:1.6;
+    min-height:200px;
+  }
+  textarea.mj-notes:focus { outline:none; border-color:rgba(184,146,42,0.3); }
+  textarea.mj-notes::placeholder { color:var(--SUB); font-style:italic; }
+
+  /* Tour actuel */
+  .round-display {
+    font-family:'Cinzel',serif; font-size:1.8rem; color:var(--GLD); line-height:1;
+  }
+  .round-row { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">← Accueil</a>
+  <span class="nav-sep">·</span>
+  <a href="sareth.html">Sareth</a>
+  <span class="nav-sep">·</span>
+  <a href="den.html">Den</a>
+  <span class="nav-sep">·</span>
+  <a href="azart.html">Azart</a>
+  <div class="nav-title">⚔ Dashboard MJ</div>
+</nav>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('jets')">🎲 Jets</button>
+  <button class="tab" onclick="showTab('initiative')">⚔ Initiative</button>
+  <button class="tab" onclick="showTab('pnj')">👤 PNJ</button>
+  <button class="tab" onclick="showTab('pj')">🧙 PJ rapide</button>
+  <button class="tab" onclick="showTab('notes')">📜 Notes</button>
+</div>
+
+<!-- ═══════════════════════════
+     TAB : JETS DE DÉS
+═══════════════════════════ -->
+<div id="panel-jets" class="panel active">
+  <div class="grid2">
+    <div>
+      <div class="card gold">
+        <div class="section-label gld">Dés rapides</div>
+        <div class="dice-grid">
+          <button class="die-btn" onclick="rollDie(4)">d4</button>
+          <button class="die-btn" onclick="rollDie(6)">d6</button>
+          <button class="die-btn" onclick="rollDie(8)">d8</button>
+          <button class="die-btn" onclick="rollDie(10)">d10</button>
+          <button class="die-btn" onclick="rollDie(12)">d12</button>
+          <button class="die-btn" onclick="rollDie(20)">d20</button>
+          <button class="die-btn" onclick="rollDie(100)">d100</button>
+          <button class="die-btn" onclick="rollMulti(2,6)">2d6</button>
+          <button class="die-btn" onclick="rollMulti(3,6)">3d6</button>
+          <button class="die-btn" onclick="rollMulti(1,6,3)">d6+3</button>
+        </div>
+
+        <div class="mod-row" style="margin-top:1rem;">
+          <span class="mod-label">Modificateur :</span>
+          <button class="mod-btn" onclick="changeMod(-10)">−10</button>
+          <button class="mod-btn" onclick="changeMod(-5)">−5</button>
+          <span class="mod-val" id="mod-val">0</span>
+          <button class="mod-btn" onclick="changeMod(+5)">+5</button>
+          <button class="mod-btn" onclick="changeMod(+10)">+10</button>
+          <button class="mod-btn" onclick="resetMod()" style="color:var(--SUB)">RAZ</button>
+        </div>
+
+        <div class="dice-result-area" id="dice-result">
+          <div class="dice-label">Cliquer sur un dé pour lancer</div>
+        </div>
+
+        <div class="dice-history" id="dice-history"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="section-label gld">Test de compétence WFRP</div>
+        <div class="section-label" style="font-size:0.78rem; font-style:italic; color:var(--parchment-dark); margin-bottom:0.75rem; border:none; letter-spacing:0;">
+          Entrer la caractéristique cible (après mods) → jet d100
+        </div>
+        <div class="test-input-row">
+          <input type="text" id="test-name" placeholder="Compétence..." style="width:150px;">
+          <input type="number" id="test-target" min="1" max="150" value="50" placeholder="Cible">
+          <button class="btn-primary" onclick="doTest()">Jet</button>
+        </div>
+        <div id="test-result" class="test-result"></div>
+
+        <div style="margin-top:1.5rem;">
+          <div class="section-label" style="font-style:italic; color:var(--parchment-dark); letter-spacing:0; border:none; font-size:0.78rem;">Modificateurs rapides</div>
+          <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+            <button class="mod-btn" onclick="applyTestMod(+20)" style="color:var(--GRN)">+20</button>
+            <button class="mod-btn" onclick="applyTestMod(+10)" style="color:var(--GRN)">+10</button>
+            <button class="mod-btn" onclick="applyTestMod(+5)" style="color:var(--GRN)">+5</button>
+            <button class="mod-btn" onclick="applyTestMod(-5)" style="color:#e08080">−5</button>
+            <button class="mod-btn" onclick="applyTestMod(-10)" style="color:#e08080">−10</button>
+            <button class="mod-btn" onclick="applyTestMod(-20)" style="color:#e08080">−20</button>
+            <button class="mod-btn" onclick="applyTestMod(-30)" style="color:#c0392b">−30</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:1rem;">
+        <div class="section-label gld">Dégâts rapides</div>
+        <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+          <input type="number" id="dmg-dice" min="1" max="10" value="1" style="width:50px;">
+          <span style="color:var(--SUB);">d</span>
+          <input type="number" id="dmg-size" min="2" max="20" value="10" style="width:60px;">
+          <span style="color:var(--SUB);">+</span>
+          <input type="number" id="dmg-bonus" min="0" max="20" value="0" style="width:55px; ">
+          <button class="btn-primary" onclick="rollDamage()">Dégâts</button>
+        </div>
+        <div id="damage-result" style="margin-top:0.6rem; font-family:'Cinzel',serif; font-size:1.4rem; color:#e05050; display:none;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════
+     TAB : INITIATIVE
+═══════════════════════════ -->
+<div id="panel-initiative" class="panel">
+  <div class="grid2">
+    <div>
+      <div class="card gold">
+        <div class="section-label gld">Ajouter un combattant</div>
+        <div class="init-add-row">
+          <input type="text" id="init-name" placeholder="Nom...">
+          <input type="number" id="init-score" placeholder="Ini" min="0" max="99" value="40">
+          <input type="number" id="init-wounds-max" placeholder="Bles." min="1" max="50" value="12">
+          <select id="init-type" style="background:rgba(10,10,15,0.7);border:1px solid rgba(255,255,255,0.1);color:var(--parchment);font-family:'Crimson Text',serif;font-size:0.9rem;padding:0.4rem 0.5rem;border-radius:2px;">
+            <option value="pj">PJ</option>
+            <option value="pnj">PNJ</option>
+            <option value="ennemi">Ennemi</option>
+          </select>
+          <button class="btn-primary" onclick="addCombatant()">+ Ajouter</button>
+        </div>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.75rem;">
+          <button class="btn-primary" onclick="addPreset('Sareth')">+ Sareth</button>
+          <button class="btn-primary" onclick="addPreset('Den')">+ Den</button>
+          <button class="btn-primary" onclick="addPreset('Azart')">+ Azart</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:1rem;">
+        <div class="section-label red">Contrôle du combat</div>
+        <div class="round-row" style="margin-bottom:1rem;">
+          <span style="color:var(--SUB); font-size:0.85rem; font-style:italic;">Round</span>
+          <span class="round-display" id="round-num">1</span>
+          <button class="btn-neutral" onclick="changeRound(-1)">−</button>
+          <button class="btn-neutral" onclick="changeRound(1)">+</button>
+        </div>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <button class="btn-primary" onclick="nextTurn()">→ Tour suivant</button>
+          <button class="btn-success" onclick="sortInitiative()">Trier par Ini</button>
+          <button class="btn-danger" onclick="clearCombat()">Vider</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="section-label red">Ordre d'initiative</div>
+        <ul class="init-list" id="init-list">
+          <li style="color:var(--SUB); font-style:italic; font-size:0.85rem; padding:0.5rem 0;">Aucun combattant.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════
+     TAB : PNJ
+═══════════════════════════ -->
+<div id="panel-pnj" class="panel">
+  <div class="pnj-search">
+    <input type="text" id="pnj-search" placeholder="Filtrer..." onkeyup="filterPnj()" style="flex:1; width:auto;">
+    <button class="btn-primary" onclick="filterPnj()">Filtrer</button>
+  </div>
+  <div class="pnj-list" id="pnj-list"></div>
+</div>
+
+<!-- ═══════════════════════════
+     TAB : PJ RAPIDE
+═══════════════════════════ -->
+<div id="panel-pj" class="panel">
+  <div class="grid3">
+    <div class="card vio">
+      <div style="font-family:'Cinzel',serif;font-size:1.1rem;color:var(--parchment);margin-bottom:0.25rem;">Sareth</div>
+      <div style="font-size:0.8rem;color:var(--VIO);font-style:italic;margin-bottom:0.75rem;">Sorcière Grise · Cassandra</div>
+      <div class="section-label vio" style="margin-bottom:0.5rem;">Blessures</div>
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
+        <button class="init-w-btn" onclick="pjWound('sareth',-1)" style="font-size:1.2rem;color:#e08080;">−</button>
+        <span id="pj-sareth-w" style="font-family:'Cinzel',serif;font-size:1.4rem;color:var(--parchment);">12</span>
+        <span style="color:var(--SUB);">/12</span>
+        <button class="init-w-btn" onclick="pjWound('sareth',1)" style="font-size:1.2rem;color:var(--GRN);">+</button>
+      </div>
+      <div class="section-label vio" style="margin-bottom:0.5rem;">Traces d'Ombre</div>
+      <div style="display:flex;align-items:center;gap:0.5rem;">
+        <button class="init-w-btn" onclick="pjTrace(-1)" style="font-size:1.2rem;">−</button>
+        <span id="pj-traces" style="font-family:'Cinzel',serif;font-size:1.4rem;color:var(--VIO);">1</span>
+        <span style="color:var(--SUB);">/10</span>
+        <button class="init-w-btn" onclick="pjTrace(1)" style="font-size:1.2rem;color:var(--VIO);">+</button>
+      </div>
+      <div id="pj-traces-palier" style="font-size:0.78rem;color:var(--SUB);font-style:italic;margin-top:0.4rem;"></div>
+    </div>
+    <div class="card green">
+      <div style="font-family:'Cinzel',serif;font-size:1.1rem;color:var(--parchment);margin-bottom:0.25rem;">Den'l Endri</div>
+      <div style="font-size:0.8rem;color:var(--GRN);font-style:italic;margin-bottom:0.75rem;">Archère · Séverine</div>
+      <div class="section-label grn" style="margin-bottom:0.5rem;">Blessures</div>
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
+        <button class="init-w-btn" onclick="pjWound('den',-1)" style="font-size:1.2rem;color:#e08080;">−</button>
+        <span id="pj-den-w" style="font-family:'Cinzel',serif;font-size:1.4rem;color:var(--parchment);">13</span>
+        <span style="color:var(--SUB);">/13</span>
+        <button class="init-w-btn" onclick="pjWound('den',1)" style="font-size:1.2rem;color:var(--GRN);">+</button>
+      </div>
+      <div class="section-label grn" style="margin-bottom:0.5rem;">Munitions</div>
+      <div style="display:flex;align-items:center;gap:0.5rem;">
+        <button class="init-w-btn" onclick="pjAmmo(-1)" style="font-size:1.2rem;">−</button>
+        <span id="pj-ammo" style="font-family:'Cinzel',serif;font-size:1.4rem;color:var(--GRN);">24</span>
+        <button class="init-w-btn" onclick="pjAmmo(1)" style="font-size:1.2rem;color:var(--GRN);">+</button>
+      </div>
+    </div>
+    <div class="card gold">
+      <div style="font-family:'Cinzel',serif;font-size:1.1rem;color:var(--parchment);margin-bottom:0.25rem;">Azart</div>
+      <div style="font-size:0.8rem;color:var(--GLD);font-style:italic;margin-bottom:0.75rem;">Voleur · Quentin</div>
+      <div class="section-label gld" style="margin-bottom:0.5rem;">Blessures</div>
+      <div style="display:flex;align-items:center;gap:0.5rem;">
+        <button class="init-w-btn" onclick="pjWound('azart',-1)" style="font-size:1.2rem;color:#e08080;">−</button>
+        <span id="pj-azart-w" style="font-family:'Cinzel',serif;font-size:1.4rem;color:var(--parchment);">11</span>
+        <span style="color:var(--SUB);">/11</span>
+        <button class="init-w-btn" onclick="pjWound('azart',1)" style="font-size:1.2rem;color:var(--GRN);">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════
+     TAB : NOTES
+═══════════════════════════ -->
+<div id="panel-notes" class="panel">
+  <div class="grid2">
+    <div>
+      <div class="card">
+        <div class="section-label gld">Notes de session</div>
+        <textarea class="mj-notes" id="notes-session" placeholder="Ce qui se passe, décisions, conséquences..."></textarea>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="section-label">Indices révélés aux PJ</div>
+        <textarea class="mj-notes" id="notes-indices" placeholder="Indices donnés, faux indices, ce qu'ils savent..." style="min-height:140px;"></textarea>
+      </div>
+      <div class="card" style="margin-top:1rem;">
+        <div class="section-label red">Traces — à ne pas oublier</div>
+        <textarea class="mj-notes" id="notes-traces" placeholder="Conséquences à introduire en session suivante..." style="min-height:100px;"></textarea>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:1rem;display:flex;gap:0.75rem;align-items:center;">
+    <button class="btn-primary" onclick="saveAllNotes()">Sauvegarder tout</button>
+    <span id="notes-saved" style="font-size:0.8rem;color:var(--GRN);opacity:0;transition:opacity 0.5s;">✓ Sauvegardé</span>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// TABS
+// ══════════════════════════════════════
+function showTab(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ══════════════════════════════════════
+// DICE
+// ══════════════════════════════════════
+let diceMod = 0;
+let diceHistory = [];
+
+function changeMod(d) { diceMod = Math.max(-50, Math.min(50, diceMod+d)); document.getElementById('mod-val').textContent = (diceMod>=0?'+':'')+diceMod; }
+function resetMod() { diceMod=0; document.getElementById('mod-val').textContent='0'; }
+
+function rollDie(faces) {
+  const raw = Math.floor(Math.random()*faces)+1;
+  const result = raw + diceMod;
+  showDiceResult(`d${faces}`, raw, result, diceMod);
+}
+function rollMulti(n, faces, bonus=0) {
+  const rolls = Array.from({length:n}, () => Math.floor(Math.random()*faces)+1);
+  const raw = rolls.reduce((a,b)=>a+b,0) + bonus;
+  const result = raw + diceMod;
+  const label = `${n}d${faces}${bonus?'+'+bonus:''}`;
+  showDiceResult(label, raw, result, diceMod, rolls.join(', '));
+}
+function showDiceResult(label, raw, result, mod, detail='') {
+  const c = document.getElementById('dice-result');
+  const modStr = mod !== 0 ? ` (${mod>=0?'+':''}${mod})` : '';
+  c.innerHTML = `
+    <div class="dice-label">${label}${modStr}</div>
+    <div class="dice-main-result">${result}</div>
+    ${detail ? `<div class="dice-detail">[${detail}] + mod ${mod}</div>` : ''}
+  `;
+  diceHistory.unshift({ label, result, mod });
+  if(diceHistory.length > 6) diceHistory.pop();
+  const hist = document.getElementById('dice-history');
+  hist.innerHTML = diceHistory.slice(1).map(h =>
+    `<div class="dice-hist-item"><span class="dice-hist-val">${h.result}</span><span>${h.label}</span></div>`
+  ).join('');
+}
+
+// Test WFRP
+let testTargetVal = 50;
+function applyTestMod(d) {
+  testTargetVal = Math.max(1, Math.min(150, testTargetVal+d));
+  document.getElementById('test-target').value = testTargetVal;
+}
+function doTest() {
+  const name = document.getElementById('test-name').value || 'Test';
+  const target = parseInt(document.getElementById('test-target').value)||50;
+  testTargetVal = target;
+  const roll = Math.floor(Math.random()*100)+1;
+  const success = roll <= target;
+  const degrees = success
+    ? Math.floor((target - roll)/10)
+    : Math.floor((roll - target)/10);
+  const c = document.getElementById('test-result');
+  c.className = 'test-result visible';
+  c.innerHTML = `
+    <div class="${success?'test-success':'test-fail'}">${success?'✓ Réussite':'✗ Échec'}</div>
+    <div class="test-degrees">Jet : ${roll} / Cible : ${target} · ${degrees+1} Degré${degrees>0?'s':''} de ${success?'réussite':'échec'}</div>
+    <div style="font-size:0.78rem;color:var(--SUB);margin-top:0.2rem;font-style:italic;">${name}</div>
+  `;
+}
+
+// Dégâts
+function rollDamage() {
+  const n = parseInt(document.getElementById('dmg-dice').value)||1;
+  const d = parseInt(document.getElementById('dmg-size').value)||10;
+  const b = parseInt(document.getElementById('dmg-bonus').value)||0;
+  const rolls = Array.from({length:n}, ()=>Math.floor(Math.random()*d)+1);
+  const total = rolls.reduce((a,x)=>a+x,0)+b;
+  const c = document.getElementById('damage-result');
+  c.style.display='block';
+  c.textContent = `${total} dégâts  [${rolls.join('+')}${b?'+'+b:''}]`;
+}
+
+// ══════════════════════════════════════
+// INITIATIVE
+// ══════════════════════════════════════
+let combatants = [];
+let currentTurn = 0;
+let round = 1;
+
+const PRESETS = {
+  Sareth: { name:'Sareth', ini:42, wounds:12, maxW:12, type:'pj' },
+  Den: { name:"Den'l Endri", ini:58, wounds:13, maxW:13, type:'pj' },
+  Azart: { name:'Azart', ini:48, wounds:11, maxW:11, type:'pj' },
+};
+
+function addPreset(name) {
+  const p = PRESETS[name];
+  if(!combatants.find(c=>c.name===p.name)) {
+    combatants.push({...p, id:Date.now(), conditions:[]});
+    renderInitiative();
+  }
+}
+
+function addCombatant() {
+  const name = document.getElementById('init-name').value.trim();
+  const ini = parseInt(document.getElementById('init-score').value)||10;
+  const maxW = parseInt(document.getElementById('init-wounds-max').value)||12;
+  const type = document.getElementById('init-type').value;
+  if(!name) return;
+  combatants.push({ name, ini, wounds:maxW, maxW, type, id:Date.now(), conditions:[] });
+  document.getElementById('init-name').value='';
+  renderInitiative();
+}
+
+function sortInitiative() {
+  combatants.sort((a,b)=>b.ini-a.ini);
+  currentTurn=0; renderInitiative();
+}
+
+function nextTurn() {
+  if(!combatants.length) return;
+  currentTurn = (currentTurn+1) % combatants.length;
+  if(currentTurn===0) round++;
+  document.getElementById('round-num').textContent = round;
+  renderInitiative();
+}
+
+function changeRound(d) { round=Math.max(1,round+d); document.getElementById('round-num').textContent=round; }
+function clearCombat() { if(confirm('Vider le combat ?')){ combatants=[];currentTurn=0;round=1;document.getElementById('round-num').textContent=1;renderInitiative(); } }
+
+function changeWounds(id, d) {
+  const c = combatants.find(x=>x.id===id);
+  if(!c) return;
+  c.wounds = Math.max(0, Math.min(c.maxW, c.wounds+d));
+  renderInitiative();
+}
+
+function removeCombatant(id) {
+  combatants = combatants.filter(c=>c.id!==id);
+  if(currentTurn>=combatants.length) currentTurn=0;
+  renderInitiative();
+}
+
+function toggleCondition(id, cond) {
+  const c = combatants.find(x=>x.id===id);
+  if(!c) return;
+  if(c.conditions.includes(cond)) c.conditions=c.conditions.filter(x=>x!==cond);
+  else c.conditions.push(cond);
+  renderInitiative();
+}
+
+function renderInitiative() {
+  const list = document.getElementById('init-list');
+  if(!combatants.length) {
+    list.innerHTML='<li style="color:var(--SUB);font-style:italic;font-size:0.85rem;padding:0.5rem 0;">Aucun combattant.</li>';
+    return;
+  }
+  list.innerHTML = combatants.map((c,i) => {
+    const isCurrent = i===currentTurn;
+    const typeColor = c.type==='pj'?'var(--GRN)':c.type==='pnj'?'var(--GLD)':'#e08080';
+    const wPct = c.wounds/c.maxW;
+    const wColor = wPct>0.5?'var(--parchment)':wPct>0.25?'#e8a040':'#e05050';
+    return `
+    <li class="init-item${isCurrent?' current':''}${c.wounds===0?' dead':''}">
+      ${isCurrent?`<span class="current-turn-indicator">Tour</span>`:''}
+      <span class="init-score">${c.ini}</span>
+      <span class="init-name">${c.name}<br><span class="init-type" style="color:${typeColor}">${c.type.toUpperCase()}</span></span>
+      <span class="init-wounds">
+        <button class="init-w-btn" onclick="changeWounds(${c.id},-1)" style="color:#e08080">−</button>
+        <span class="init-wounds-val" style="color:${wColor}">${c.wounds}<span style="color:var(--SUB);font-size:0.75rem;">/${c.maxW}</span></span>
+        <button class="init-w-btn" onclick="changeWounds(${c.id},1)" style="color:var(--GRN)">+</button>
+      </span>
+      <span class="init-conditions">
+        <span class="cond-tag stun${c.conditions.includes('étourdi')?' '':' '}" onclick="toggleCondition(${c.id},'étourdi')" title="Étourdi" style="${c.conditions.includes('étourdi')?'':'opacity:0.3'}">ETD</span>
+        <span class="cond-tag prone${c.conditions.includes('à terre')?' '':' '}" onclick="toggleCondition(${c.id},'à terre')" title="À terre" style="${c.conditions.includes('à terre')?'':'opacity:0.3'}">TER</span>
+        <span class="cond-tag bld${c.conditions.includes('saignant')?' '':' '}" onclick="toggleCondition(${c.id},'saignant')" title="Saignant" style="${c.conditions.includes('saignant')?'':'opacity:0.3'}">SGN</span>
+      </span>
+      <button class="init-w-btn" onclick="removeCombatant(${c.id})" title="Retirer" style="color:rgba(139,26,26,0.5);font-size:0.85rem;">✕</button>
+    </li>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// PNJ DATA
+// ══════════════════════════════════════
+const PNJ_DATA = [
+  { name:"Anselm Darlasov", role:"Fondateur des Pâles", faction:"Les Pâles", color:"#8B1A1A",
+    desc:"Alias Anselm Bonardt. Apothicaire de génie. Petit, sec, regard fiévreux, lunettes épaisses, mains tachées. Sang-froid absolu. Convaincu que la fin justifie tous les moyens. Crée des morts-vivants par la science, pas la magie. Loue Manoir Tremmler 8 Co/mois." },
+  { name:"Varro Kalt", role:"Sujet d'expérimentation avancée", faction:"Les Pâles", color:"#8B1A1A",
+    desc:"Résultat du processus de Darlasov. Insensible à la douleur, implacable, immunisé à la peur et à la psychologie. Dégâts réduits aux armes normales. Instable si Darlasov est absent. Mains renforcées par le processus chimique." },
+  { name:"Varden le Suintant", role:"Chef des Viandards", faction:"Viandards", color:"#5a3a1a",
+    desc:"Grand, massif, transpiration permanente. Intelligence limitée, instinct de survie excellent. Chef de fait — personne d'autre ne voulait du poste. Peur justifiée de Varro Kalt (l'a vu à l'œuvre). Peut donner Gregor sous pression réelle." },
+  { name:"Borke la Hache", role:"Lieutenant Viandards — tunnels", faction:"Viandards", color:"#5a3a1a",
+    desc:"Hache de boucher lourde (Percutant). Tablier de cuir épais. Sang-froid au combat, brutalité assumée. Métier boucherie utilisable pour cibler les articulations (+15)." },
+  { name:"Svarta", role:"Lieutenant Viandards — surface", faction:"Viandards", color:"#5a3a1a",
+    desc:"Deux épées courtes. Armure de cuir souple (silencieuse). Discrète, calculatrice — ne s'engage jamais sans avantage. Discrétion +15, Perception +15. Carnet de surveillance chiffré." },
+  { name:"Gregor", role:"Interface Darlasov / Viandards", faction:"Les Pâles", color:"#1C3A5A",
+    desc:"Insaisissable. Accent neutre, apparence délibérément neutre. Faux papiers, stylet dissimulé, encre sympathique. Baratin +20, Déguisement +15. Rien sur lui ne permet de remonter à quoi que ce soit." },
+  { name:"Comte Aldric Tremmler", role:"Vampire métamorphe", faction:"Indépendant", color:"#4a1a5a",
+    desc:"Forme animale : corbeau borgne (œil gauche manquant). Propriétaire du manoir. Observe, attend. Ne prend jamais position directement. Subtil — jamais un guide narratif évident." },
+  { name:"Dritch Krisca", role:"Maire de Dokhern — L'Homme Pendu", faction:"Dokhern", color:"#2a4a1a",
+    desc:"Identité délibérément ambiguë pour les joueurs. Peut être une marionnette, un complice passif, ou une victime. Le MJ décide en session." },
+  { name:"Armand Waltberg", role:"Commanditaire", faction:"Empire", color:"#1C3A5A",
+    desc:"Figure d'autorité principale. Manipulation d'Azart par la validation ciblée — il a compris son besoin de reconnaissance. Ses intentions réelles restent floues." },
+  { name:"Olta Meck", role:"Transporteur terrestre", faction:"Civil", color:"#4a4a2a",
+    desc:"Contrepartie terrestre de Kurt le Collier (qui gère les routes internes de la cité). Meck gère les routes entre villes. Peut être une ressource logistique neutre." },
+];
+
+function filterPnj() {
+  const q = document.getElementById('pnj-search').value.toLowerCase();
+  renderPnj(PNJ_DATA.filter(p => !q || p.name.toLowerCase().includes(q) || p.faction.toLowerCase().includes(q) || p.role.toLowerCase().includes(q)));
+}
+
+function renderPnj(data) {
+  const list = document.getElementById('pnj-list');
+  list.innerHTML = data.map(p => `
+    <div class="pnj-card" onclick="this.classList.toggle('open')">
+      <div class="pnj-accent" style="background:${p.color};"></div>
+      <div class="pnj-card-faction">${p.faction}</div>
+      <div class="pnj-card-name">${p.name}</div>
+      <div class="pnj-card-role">${p.role}</div>
+      <div class="pnj-card-desc">${p.desc}</div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════
+// PJ RAPIDE
+// ══════════════════════════════════════
+let pjState = { sareth:12, den:13, azart:11, ammo:24, traces:1 };
+
+const PALIERS_SHORT = [
+  [1,2,"Échos"],[3,4,"Porosité"],[5,6,"Partage"],[7,8,"Substitution"],[9,10,"Dette cosmique"]
+];
+
+function pjWound(who, d) {
+  const max={sareth:12,den:13,azart:11};
+  pjState[who]=Math.max(0,Math.min(max[who],(pjState[who]||max[who])+d));
+  document.getElementById('pj-'+who+'-w').textContent=pjState[who];
+  savePjState();
+}
+function pjAmmo(d) {
+  pjState.ammo=Math.max(0,(pjState.ammo||24)+d);
+  document.getElementById('pj-ammo').textContent=pjState.ammo;
+  savePjState();
+}
+function pjTrace(d) {
+  pjState.traces=Math.max(1,Math.min(10,(pjState.traces||1)+d));
+  document.getElementById('pj-traces').textContent=pjState.traces;
+  const p=PALIERS_SHORT.find(x=>pjState.traces>=x[0]&&pjState.traces<=x[1]);
+  document.getElementById('pj-traces-palier').textContent=p?p[2]:'—';
+  savePjState();
+}
+function savePjState(){ localStorage.setItem('mj_pj_state',JSON.stringify(pjState)); }
+function loadPjState(){
+  const s=localStorage.getItem('mj_pj_state');
+  if(s) try{Object.assign(pjState,JSON.parse(s));}catch(e){}
+  document.getElementById('pj-sareth-w').textContent=pjState.sareth;
+  document.getElementById('pj-den-w').textContent=pjState.den;
+  document.getElementById('pj-azart-w').textContent=pjState.azart;
+  document.getElementById('pj-ammo').textContent=pjState.ammo;
+  document.getElementById('pj-traces').textContent=pjState.traces;
+  const p=PALIERS_SHORT.find(x=>pjState.traces>=x[0]&&pjState.traces<=x[1]);
+  document.getElementById('pj-traces-palier').textContent=p?p[2]:'—';
+}
+
+// ══════════════════════════════════════
+// NOTES
+// ══════════════════════════════════════
+function saveAllNotes(){
+  localStorage.setItem('mj_notes_session', document.getElementById('notes-session').value);
+  localStorage.setItem('mj_notes_indices', document.getElementById('notes-indices').value);
+  localStorage.setItem('mj_notes_traces', document.getElementById('notes-traces').value);
+  const c=document.getElementById('notes-saved');
+  c.style.opacity='1'; setTimeout(()=>c.style.opacity='0',2000);
+}
+function loadNotes(){
+  const ns=localStorage.getItem('mj_notes_session');
+  const ni=localStorage.getItem('mj_notes_indices');
+  const nt=localStorage.getItem('mj_notes_traces');
+  if(ns) document.getElementById('notes-session').value=ns;
+  if(ni) document.getElementById('notes-indices').value=ni;
+  if(nt) document.getElementById('notes-traces').value=nt;
+}
+
+// auto-save notes on blur
+['notes-session','notes-indices','notes-traces'].forEach(id=>{
+  document.getElementById(id).addEventListener('blur', saveAllNotes);
+});
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+renderPnj(PNJ_DATA);
+loadPjState();
+loadNotes();
+renderInitiative();
+</script>
+</body>
+</html>

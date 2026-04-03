@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azart — L'Éclipse</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#0a0a0f; --parchment:#f0e8d8; --parchment-dark:#d4c8a8; --GLD:#B8922A; --VIO:#674EA7; --GRN:#5E804F; --SUB:#555566; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--ink); color:var(--parchment); font-family:'Crimson Text',serif; min-height:100vh; }
+  body::before { content:''; position:fixed; inset:0; background:radial-gradient(ellipse at 70% 0%, rgba(184,146,42,0.08) 0%, transparent 50%); pointer-events:none; z-index:0; }
+  nav { position:sticky; top:0; z-index:100; background:rgba(10,10,15,0.92); backdrop-filter:blur(8px); border-bottom:1px solid rgba(184,146,42,0.25); padding:0.75rem 1.5rem; display:flex; align-items:center; gap:1rem; }
+  nav a { color:var(--SUB); text-decoration:none; font-size:0.85rem; font-style:italic; transition:color 0.2s; }
+  nav a:hover { color:var(--GLD); }
+  .nav-current { color:var(--GLD) !important; font-style:normal; }
+  .nav-sep { color:var(--SUB); opacity:0.4; }
+  .layout { position:relative; z-index:1; max-width:960px; margin:0 auto; padding:1.5rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media(max-width:700px){ .layout { grid-template-columns:1fr; } }
+  .perso-header { grid-column:1/-1; display:flex; align-items:flex-end; gap:1.5rem; padding-bottom:1.25rem; border-bottom:1px solid rgba(184,146,42,0.25); flex-wrap:wrap; }
+  .perso-avatar { width:60px; height:60px; border-radius:2px; background:linear-gradient(135deg,rgba(184,146,42,0.2),rgba(85,85,102,0.3)); border:1px solid rgba(184,146,42,0.4); display:flex; align-items:center; justify-content:center; font-size:1.8rem; }
+  .perso-info h1 { font-family:'Cinzel',serif; font-size:1.8rem; font-weight:700; line-height:1; }
+  .perso-info .sub { font-style:italic; color:var(--GLD); font-size:0.95rem; margin-top:0.2rem; }
+  .perso-info .player { color:var(--SUB); font-size:0.8rem; margin-top:0.15rem; }
+  .card { background:rgba(10,10,15,0.7); border:1px solid rgba(255,255,255,0.07); border-radius:2px; padding:1.25rem; }
+  .card.gold { border-color:rgba(184,146,42,0.2); }
+  .card-title { font-family:'Cinzel',serif; font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--SUB); margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+  .card-title::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.06); }
+  .card-title.gld { color:var(--GLD); }
+  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem; }
+  .stat-box { background:rgba(184,146,42,0.06); border:1px solid rgba(184,146,42,0.12); border-radius:2px; padding:0.5rem 0.4rem; text-align:center; }
+  .stat-label { font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); display:block; margin-bottom:0.2rem; }
+  .stat-val { font-family:'Cinzel',serif; font-size:1.3rem; font-weight:600; line-height:1; }
+  .stat-bonus { font-size:0.7rem; color:var(--GLD); opacity:0.7; }
+  .wounds-row { display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; }
+  .wounds-display { font-family:'Cinzel',serif; font-size:2rem; line-height:1; }
+  .wounds-max { font-size:1rem; color:var(--SUB); }
+  .btn-wound { background:rgba(139,26,26,0.3); border:1px solid rgba(139,26,26,0.5); color:#e88; width:36px; height:36px; border-radius:2px; font-size:1.2rem; cursor:pointer; }
+  .btn-heal { background:rgba(94,128,79,0.2); border:1px solid rgba(94,128,79,0.4); color:var(--GRN); width:36px; height:36px; border-radius:2px; font-size:1.2rem; cursor:pointer; }
+  .skill-list { list-style:none; }
+  .skill-list li { display:flex; justify-content:space-between; align-items:center; padding:0.35rem 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.9rem; }
+  .skill-list li:last-child { border-bottom:none; }
+  .skill-name { color:var(--parchment-dark); }
+  .skill-val { font-family:'Cinzel',serif; color:var(--GLD); font-size:0.95rem; font-weight:600; }
+  .equip-item { display:flex; justify-content:space-between; align-items:center; padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.88rem; gap:0.5rem; }
+  .equip-item:last-child { border-bottom:none; }
+  .equip-name { color:var(--parchment-dark); flex:1; }
+  .equip-detail { font-size:0.75rem; color:var(--SUB); font-style:italic; }
+  .notes-area { width:100%; background:rgba(10,10,15,0.5); border:1px solid rgba(255,255,255,0.08); border-radius:2px; color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.9rem; padding:0.75rem; resize:vertical; min-height:80px; line-height:1.5; }
+  .notes-area:focus { outline:none; border-color:rgba(184,146,42,0.4); }
+  .money-row { display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-top:0.5rem; }
+  .money-item { display:flex; flex-direction:column; align-items:center; gap:0.15rem; }
+  .money-val { font-family:'Cinzel',serif; font-size:1.3rem; color:var(--GLD); }
+  .money-label { font-size:0.65rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--SUB); }
+  .money-btn { background:none; border:none; color:var(--SUB); cursor:pointer; font-size:0.85rem; transition:color 0.15s; }
+  .money-btn:hover { color:var(--GLD); }
+  .fortune-row { display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; margin-top:0.75rem; }
+  .fortune-pip { width:28px; height:28px; border-radius:50%; border:1.5px solid var(--GLD); cursor:pointer; transition:all 0.15s; background:transparent; }
+  .fortune-pip.used { background:var(--GLD); box-shadow:0 0 6px rgba(184,146,42,0.4); }
+  .btn-save { background:rgba(184,146,42,0.15); border:1px solid rgba(184,146,42,0.4); color:var(--GLD); font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.4rem 0.8rem; border-radius:2px; cursor:pointer; margin-top:0.5rem; }
+  .save-confirm { font-size:0.8rem; color:var(--GRN); margin-left:0.75rem; opacity:0; transition:opacity 0.5s; }
+  .trophee-item { display:flex; align-items:center; gap:0.5rem; padding:0.35rem 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.88rem; }
+  .trophee-name { color:var(--parchment-dark); flex:1; font-style:italic; }
+  .trophee-del { background:none; border:none; color:rgba(139,26,26,0.5); cursor:pointer; font-size:0.75rem; }
+  .trophee-del:hover { color:#e08080; }
+  .add-row { display:flex; gap:0.5rem; margin-top:0.5rem; }
+  .add-row input { background:rgba(10,10,15,0.6); border:1px solid rgba(255,255,255,0.08); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.9rem; padding:0.35rem 0.5rem; border-radius:2px; flex:1; }
+  .add-row input:focus { outline:none; border-color:rgba(184,146,42,0.3); }
+  .add-btn { background:rgba(184,146,42,0.15); border:1px solid rgba(184,146,42,0.3); color:var(--GLD); font-family:'Cinzel',serif; font-size:0.72rem; padding:0.35rem 0.6rem; border-radius:2px; cursor:pointer; white-space:nowrap; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html">← Accueil</a>
+  <span class="nav-sep">·</span>
+  <span class="nav-current">Azart</span>
+</nav>
+<div class="layout">
+  <div class="perso-header">
+    <div class="perso-avatar">🗝️</div>
+    <div class="perso-info">
+      <h1>Azart</h1>
+      <div class="sub">Voleur · Humain · 18 ans</div>
+      <div class="player">Quentin · Rues de Nuln</div>
+    </div>
+  </div>
+
+  <div class="card gold">
+    <div class="card-title gld">Caractéristiques</div>
+    <div class="stats-grid">
+      <div class="stat-box"><span class="stat-label">CC</span><span class="stat-val">38</span><span class="stat-bonus">B:3</span></div>
+      <div class="stat-box"><span class="stat-label">CT</span><span class="stat-val">34</span><span class="stat-bonus">B:3</span></div>
+      <div class="stat-box"><span class="stat-label">F</span><span class="stat-val">32</span><span class="stat-bonus">B:3</span></div>
+      <div class="stat-box"><span class="stat-label">End</span><span class="stat-val">34</span><span class="stat-bonus">B:3</span></div>
+      <div class="stat-box"><span class="stat-label">Ini</span><span class="stat-val">48</span><span class="stat-bonus">B:4</span></div>
+      <div class="stat-box"><span class="stat-label">Agi</span><span class="stat-val">52</span><span class="stat-bonus">B:5</span></div>
+      <div class="stat-box"><span class="stat-label">Dex</span><span class="stat-val">58</span><span class="stat-bonus">B:5</span></div>
+      <div class="stat-box"><span class="stat-label">Int</span><span class="stat-val">44</span><span class="stat-bonus">B:4</span></div>
+      <div class="stat-box"><span class="stat-label">FM</span><span class="stat-val">32</span><span class="stat-bonus">B:3</span></div>
+      <div class="stat-box"><span class="stat-label">Soc</span><span class="stat-val">48</span><span class="stat-bonus">B:4</span></div>
+      <div class="stat-box"><span class="stat-label">Armure</span><span class="stat-val">1</span><span class="stat-bonus">Cuir</span></div>
+      <div class="stat-box"><span class="stat-label">Fuite</span><span class="stat-val">+20</span><span class="stat-bonus">Trait</span></div>
+    </div>
+  </div>
+
+  <div class="card gold">
+    <div class="card-title" style="color:#c0392b;">État & Ressources</div>
+    <div class="wounds-row">
+      <span style="font-style:italic;color:var(--SUB);font-size:0.85rem;">Blessures</span>
+      <button class="btn-wound" onclick="changeWound(-1)">−</button>
+      <div><span class="wounds-display" id="wounds-cur">11</span><span class="wounds-max"> / 11</span></div>
+      <button class="btn-heal" onclick="changeWound(1)">+</button>
+    </div>
+    <div class="fortune-row">
+      <span style="font-size:0.8rem;color:var(--SUB);font-style:italic;margin-right:0.25rem;">Fortune</span>
+      <div id="fortune-pips"></div>
+    </div>
+    <div style="margin-top:1rem;">
+      <div class="card-title gld" style="margin-bottom:0.4rem;">Argent</div>
+      <div class="money-row">
+        <div class="money-item">
+          <div class="money-val" id="money-or">0</div>
+          <div class="money-label">Or</div>
+          <div style="display:flex;gap:0.3rem;"><button class="money-btn" onclick="chMoney('or',-1)">−</button><button class="money-btn" onclick="chMoney('or',1)">+</button></div>
+        </div>
+        <div class="money-item">
+          <div class="money-val" id="money-argent">0</div>
+          <div class="money-label">Argent</div>
+          <div style="display:flex;gap:0.3rem;"><button class="money-btn" onclick="chMoney('argent',-1)">−</button><button class="money-btn" onclick="chMoney('argent',1)">+</button></div>
+        </div>
+        <div class="money-item">
+          <div class="money-val" id="money-cuivre">0</div>
+          <div class="money-label">Cuivre</div>
+          <div style="display:flex;gap:0.3rem;"><button class="money-btn" onclick="chMoney('cuivre',-1)">−</button><button class="money-btn" onclick="chMoney('cuivre',1)">+</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title gld">Compétences principales</div>
+    <ul class="skill-list">
+      <li><span class="skill-name">Discrétion</span><span class="skill-val">72</span></li>
+      <li><span class="skill-name">Crochetage</span><span class="skill-val">68</span></li>
+      <li><span class="skill-name">Psychologie</span><span class="skill-val">54</span></li>
+      <li><span class="skill-name">Baratin</span><span class="skill-val">58</span></li>
+      <li><span class="skill-name">Charme</span><span class="skill-val">58</span></li>
+      <li><span class="skill-name">Esquive</span><span class="skill-val">62</span></li>
+      <li><span class="skill-name">Fouille</span><span class="skill-val">54</span></li>
+      <li><span class="skill-name">Escalade</span><span class="skill-val">62</span></li>
+      <li><span class="skill-name">Perception</span><span class="skill-val">54</span></li>
+      <li><span class="skill-name">Mêlée (armes légères)</span><span class="skill-val">48</span></li>
+      <li><span class="skill-name">Connaissance (rues)</span><span class="skill-val">54</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title gld">Équipement</div>
+    <div class="equip-item"><span class="equip-name">Dague principale</span><span class="equip-detail">CC+10 / Rapide</span></div>
+    <div class="equip-item"><span class="equip-name">Dague de jet ×3</span><span class="equip-detail">CT / Portée courte</span></div>
+    <div class="equip-item"><span class="equip-name">Armure de cuir légère</span><span class="equip-detail">Armure 1 / Discrétion 0</span></div>
+    <div class="equip-item"><span class="equip-name">Crochet à serrures</span><span class="equip-detail">+10 Crochetage</span></div>
+    <div class="equip-item"><span class="equip-name">Corde à nœuds (10m)</span><span class="equip-detail">—</span></div>
+    <div class="equip-item"><span class="equip-name">Graisse de serrure</span><span class="equip-detail">×2 doses</span></div>
+    <div class="equip-item"><span class="equip-name">Miroir de poche</span><span class="equip-detail">Observations détournées</span></div>
+    <div class="equip-item"><span class="equip-name">Vêtements neutres (×2 tenues)</span><span class="equip-detail">Déguisement basique</span></div>
+    <div style="margin-top:0.75rem;">
+      <div class="card-title gld" style="margin-bottom:0.4rem;color:var(--GRN);">Loot session</div>
+      <textarea class="notes-area" id="loot-notes" rows="2" placeholder="Objets trouvés, volés..."></textarea>
+    </div>
+  </div>
+
+  <!-- TROPHÉES / OBJETS VUS -->
+  <div class="card gold">
+    <div class="card-title gld">Trophées — Objets vus & reconnus</div>
+    <div style="font-size:0.8rem;color:var(--SUB);font-style:italic;margin-bottom:0.75rem;line-height:1.4;">
+      Azart garde les objets qui ont été vus. Ce qui compte n'est pas la valeur — c'est le témoin.
+    </div>
+    <div id="trophee-list"></div>
+    <div class="add-row">
+      <input type="text" id="trophee-input" placeholder="Nom de l'objet ou du souvenir...">
+      <button class="add-btn" onclick="addTrophee()">+ Ajouter</button>
+    </div>
+  </div>
+
+  <div class="card" style="grid-column:1/-1;">
+    <div class="card-title">Notes de session</div>
+    <textarea class="notes-area" id="session-notes" rows="4" placeholder="Plans, contacts, rancunes, opportunities..."></textarea>
+    <button class="btn-save" onclick="saveAll()">Sauvegarder</button>
+    <span class="save-confirm" id="save-confirm">✓ Sauvegardé</span>
+  </div>
+</div>
+
+<script>
+let state = { wounds:11, fortune:3, money:{or:0,argent:0,cuivre:0}, trophees:[], notes:'', loot:'' };
+function load() {
+  const s=localStorage.getItem('azart_state');
+  if(s) try{Object.assign(state,JSON.parse(s));}catch(e){}
+  document.getElementById('wounds-cur').textContent=state.wounds;
+  ['or','argent','cuivre'].forEach(k=>document.getElementById('money-'+k).textContent=state.money[k]||0);
+  document.getElementById('session-notes').value=state.notes||'';
+  document.getElementById('loot-notes').value=state.loot||'';
+  renderFortune(); renderTrophees();
+}
+function save() { localStorage.setItem('azart_state',JSON.stringify(state)); }
+function changeWound(d) {
+  state.wounds=Math.max(0,Math.min(11,state.wounds+d));
+  const el=document.getElementById('wounds-cur');
+  el.textContent=state.wounds;
+  const p=state.wounds/11;
+  el.style.color=p>0.5?'var(--parchment)':p>0.25?'#e8a040':'#e05050';
+  save();
+}
+function chMoney(k,d) {
+  state.money[k]=Math.max(0,(state.money[k]||0)+d);
+  document.getElementById('money-'+k).textContent=state.money[k];
+  save();
+}
+function renderFortune() {
+  const c=document.getElementById('fortune-pips'); c.innerHTML='';
+  for(let i=0;i<3;i++){
+    const p=document.createElement('div');
+    p.className='fortune-pip'+(i<state.fortune?'':' used');
+    p.onclick=()=>{ state.fortune=(i<state.fortune)?i:i+1; save(); renderFortune(); };
+    c.appendChild(p);
+  }
+}
+function addTrophee() {
+  const v=document.getElementById('trophee-input').value.trim();
+  if(!v) return;
+  state.trophees.push(v);
+  document.getElementById('trophee-input').value='';
+  save(); renderTrophees();
+}
+function removeTrophee(i) {
+  state.trophees.splice(i,1); save(); renderTrophees();
+}
+function renderTrophees() {
+  const c=document.getElementById('trophee-list');
+  if(!state.trophees.length){ c.innerHTML='<div style="font-size:0.8rem;color:var(--SUB);font-style:italic;padding:0.25rem 0;">Aucun trophée pour l\'instant.</div>'; return; }
+  c.innerHTML=state.trophees.map((t,i)=>`
+    <div class="trophee-item">
+      <span class="trophee-name">⬡ ${t}</span>
+      <button class="trophee-del" onclick="removeTrophee(${i})">✕</button>
+    </div>
+  `).join('');
+}
+function saveAll() {
+  state.notes=document.getElementById('session-notes').value;
+  state.loot=document.getElementById('loot-notes').value;
+  save();
+  const c=document.getElementById('save-confirm');
+  c.style.opacity='1'; setTimeout(()=>c.style.opacity='0',2000);
+}
+['session-notes','loot-notes'].forEach(id=>{ document.getElementById(id).addEventListener('blur',saveAll); });
+load();
+</script>
+</body>
+</html>
