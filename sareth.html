@@ -535,44 +535,45 @@ const SORTS = [
 ];
 
 // ══════════ AFFINITÉ ══════════
+// Déclenchement : sur incantation critique ou événement narratif pertinent — tirer 1d20
 const AFFINITE = [
   null,
-  { palier:"I · Échos",        name:"Écart de monde",       desc:"L'ombre reproduit les gestes avec un demi-seconde de retard. Test de Calme pour témoins sensibles.", trace:false },
-  { palier:"I · Échos",        name:"Regard fourbe",         desc:"Son ombre regarde ailleurs. Indice ambigu (MJ) ou +5 à un test de Perception. Test de Calme pour témoins.", trace:false },
-  { palier:"I · Échos",        name:"Zone du Néant",         desc:"Lumière vacillante autour de Sareth (10m) pendant 2–3 secondes. Flammes repoussées. Purement atmosphérique.", trace:false },
-  { palier:"I · Échos",        name:"Reflet absent",         desc:"Aucune ombre dans les surfaces réfléchissantes pendant 1d6 minutes. PNJ superstitieux troublés. Risque inquisitorial si observé.", trace:false },
-  { palier:"I · Échos",        name:"Faune en doute",        desc:"Chevaux, chiens, rats refusent de s'approcher jusqu'à la prochaine scène. –10 aux tests impliquant des animaux.", trace:false },
-  { palier:"II · Interférences",name:"Murmure du Néant",     desc:"Ses lèvres bougent alors qu'elle se tait. Témoins : Test de Peur 1. Sareth : test FM ou –10 au prochain jet social.", trace:false },
-  { palier:"II · Interférences",name:"Voix double",          desc:"Un timbre grave double sa voix pendant une réplique. +10 Intimidation, –10 Charme pour la scène entière.", trace:false },
-  { palier:"II · Interférences",name:"Protection instinctive",desc:"Un voile d'encre absorbe un impact. Ignore 1 Blessure ou +1 Armure contre une attaque. Réactionnel, automatique.", trace:false },
-  { palier:"II · Interférences",name:"Assistance grise",     desc:"L'ombre esquive avant que Sareth réagisse. Relance un test d'Esquive raté. Une seule fois par scène.", trace:false },
-  { palier:"II · Interférences",name:"Main sombre",          desc:"Forme noire agrippe un ennemi au contact. –10 à tous ses jets pendant 1 round, +10 aux jets de Sareth contre cet ennemi ce round.", trace:false },
-  { palier:"III · Présence",   name:"Silence forcé",         desc:"Sons étouffés dans un rayon de 5m pendant 1d3 rounds. +20 Discrétion et Incantation. Les ennemis ne peuvent pas crier.", trace:false },
-  { palier:"III · Présence",   name:"Saignement d'Ombre",   desc:"Toute blessure de Sareth suinte une substance noire, froide. Test de Peur 1 pour tout témoin qui la voit blessée. Dure jusqu'au prochain repos.", trace:false },
-  { palier:"III · Présence",   name:"Souvenir volé",        desc:"L'ombre projette un souvenir qui n'est pas celui de Sareth. Indice narratif (vrai ou faux — elle ne sait pas). Test de Calme pour Sareth.", trace:false },
-  { palier:"III · Présence",   name:"Empreinte persistante",desc:"L'ombre de Sareth reste après son départ, imitant ses derniers gestes pendant 1d6 heures. Quiconque passe peut voir qu'elle a été là.", trace:false },
-  { palier:"III · Présence",   name:"Reflet erroné",        desc:"Dans toutes les surfaces réfléchissantes de la scène, Sareth apparaît autrement — posture différente, expression opposée. Test de Calme (Peur 1 si critique). Dure toute la scène.", trace:false },
-  { palier:"IV · Rupture",     name:"Appel du vide",        desc:"Ulgu tire Sareth vers le silence. Elle entend quelque chose — un mot, une vérité. Le MJ lui murmure un indice réel. Test FM ou –10 à tous jets pendant 1d3 rounds.", trace:false },
-  { palier:"IV · Rupture",     name:"Substitution partielle",desc:"Pendant 1 round, c'est l'ombre qui agit à la place de Sareth. Réussite automatique à un jet de son choix. +1 Trace d'Ombre. Test de Calme.", trace:true },
-  { palier:"IV · Rupture",     name:"Transcendance grise",  desc:"+10 à tous ses jets pendant 1d6 rounds — elle agit dans un état second, précis et froid. +1 Trace d'Ombre. Le MJ note ce que l'ombre a dit.", trace:true },
-  { palier:"IV · Rupture",     name:"L'Ombre souveraine",   desc:"L'ombre agit seule, sans Sareth, pendant 1d3 rounds (déplacement, interaction, diversion). Sareth ne contrôle pas ses actes. Conséquence narrative MJ. Peur 1 témoins. +1 Trace.", trace:true },
-  { palier:"IV · Rupture",     name:"L'Ombre projetée",     desc:"L'ombre se détache et se projette là où Ulgu juge nécessaire. Sareth voit et entend à travers elle. Durée : jusqu'à accomplissement (MJ). Peur 2 témoins. Test Calme : réussite = infos claires / échec = fragments confus. +1 Trace.", trace:true },
+  { palier:"I · Échos",          name:"Écart de monde",        desc:"L'ombre reproduit les gestes avec un demi-seconde de retard. Test de Calme pour témoins sensibles.", trace:false },
+  { palier:"I · Échos",          name:"Regard fourbe",          desc:"Son ombre regarde ailleurs, comme distraite. Indice ambigu à la discrétion du MJ, ou +5 à un test de Perception de Sareth. Test de Calme pour témoins.", trace:false },
+  { palier:"I · Échos",          name:"Zone du Néant",          desc:"Lumière vacillante dans un rayon de 10m pendant 2–3 secondes. Flammes repoussées, bougies éteintes. Purement atmosphérique.", trace:false },
+  { palier:"I · Échos",          name:"Reflet absent",          desc:"Aucune ombre dans les surfaces réfléchissantes pendant 1d6 minutes. PNJ superstitieux troublés. Risque inquisitorial si observé.", trace:false },
+  { palier:"I · Échos",          name:"Faune en doute",         desc:"Chevaux, chiens, rats refusent de l'approcher jusqu'à la prochaine scène. –10 aux tests impliquant des animaux.", trace:false },
+  { palier:"II · Interférences", name:"Murmure du Néant",      desc:"Ses lèvres bougent alors qu'elle se tait. Témoins : Test de Peur 1. Sareth : test FM ou –10 au prochain jet social (la dissonance la déstabilise aussi).", trace:false },
+  { palier:"II · Interférences", name:"Voix double",           desc:"Un timbre grave double sa voix pendant une réplique. +10 Intimidation, –10 Charme pour la scène entière.", trace:false },
+  { palier:"II · Interférences", name:"Protection instinctive",desc:"Un voile d'encre absorbe un impact. Ignore 1 Blessure ou +1 Armure contre une attaque. Réactionnel, déclenché automatiquement.", trace:false },
+  { palier:"II · Interférences", name:"Assistance grise",      desc:"L'ombre esquive avant que Sareth réagisse. Relance un test d'Esquive raté. Une seule fois par scène.", trace:false },
+  { palier:"II · Interférences", name:"Main sombre",           desc:"Forme noire agrippe brièvement un ennemi au contact. –10 à tous ses jets pendant 1 round, +10 aux jets de Sareth contre cet ennemi ce round.", trace:false },
+  { palier:"III · Présence",     name:"Silence forcé",         desc:"Sons étouffés dans un rayon de 5m pendant 1d3 rounds. +20 Discrétion et Incantation dans ce périmètre. Les ennemis ne peuvent pas crier pour appeler de l'aide.", trace:false },
+  { palier:"III · Présence",     name:"Saignement d'Ombre",    desc:"Toute blessure de Sareth suinte une substance noire, froide. Aucun effet sur elle. Test de Peur 1 pour tout témoin qui la voit blessée cette scène. Dure jusqu'au prochain repos.", trace:false },
+  { palier:"III · Présence",     name:"Souvenir volé",         desc:"L'ombre projette un souvenir — qui n'est pas celui de Sareth. Indice narratif à la discrétion du MJ (vrai ou faux, elle ne sait pas). Test de Calme pour Sareth.", trace:false },
+  { palier:"III · Présence",     name:"Empreinte persistante", desc:"L'ombre de Sareth reste après son départ, imitant ses derniers gestes pendant 1d6 heures. Quiconque passe peut voir qu'elle a été là, et deviner ce qu'elle faisait.", trace:false },
+  { palier:"III · Présence",     name:"Reflet erroné",         desc:"Dans toutes les surfaces réfléchissantes de la scène, Sareth apparaît autrement — posture différente, expression opposée, parfois un autre visage. Test de Calme pour tout témoin, Peur 1 si critique. Dure toute la scène.", trace:false },
+  { palier:"IV · Rupture",       name:"Substitution partielle",desc:"Pendant 1 round, c'est l'ombre qui agit à la place de Sareth. Réussite automatique à un jet de son choix. En contrepartie : Sareth reçoit 1 Trace d'Ombre. Test de Calme.", trace:true },
+  { palier:"IV · Rupture",       name:"Transcendance grise",   desc:"L'ombre prononce un mot que seule Sareth entend. +10 à tous ses jets pendant 1d6 rounds — elle agit dans un état second, précis et froid. En contrepartie : 1 Trace d'Ombre. Le MJ note ce que l'ombre a dit.", trace:true },
+  { palier:"IV · Rupture",       name:"L'Ombre souveraine",    desc:"L'ombre agit seule, sans Sareth, pendant 1d3 rounds. Elle peut se déplacer, interagir, créer une diversion ou révéler quelque chose. Sareth ne contrôle pas ce qu'elle fait. Conséquence narrative MJ. 1 Trace d'Ombre. Peur 1 pour tous les témoins.", trace:true },
+  { palier:"IV · Rupture",       name:"L'Ombre projetée",      desc:"L'ombre de Sareth se détache entièrement et se projette là où Ulgu le juge nécessaire — pas où Sareth le voudrait. Elle voit et entend à travers elle. Durée : jusqu'à ce que le MJ décide qu'elle a accompli quelque chose. Peur 2 témoins. 1 Trace d'Ombre. Test de Calme : réussite = infos claires / échec = fragments confus.", trace:true },
+  { palier:"IV · Rupture",       name:"Doppelgänger",          desc:"Dans un dense amas de volutes d'une fumée épaisse, un son lourd et assourdissant, l'ombre de Sareth prend forme et volume dans la réalité. Elle peut se déplacer, interagir, se jeter sur une créature… puis s'évapore. Le corps de Sareth est nimbé de fines particules d'ombre — filaments, cheveux ou tentacules. Ses yeux, nez, bouche évacuent une épaisse encre noire. Elle peut tenter de retenir son ombre sur FM. Terreur 1 pour tous les témoins. 1–2 Traces d'Ombre selon le contexte.", trace:true },
 ];
 
 const PALIERS = [
-  { range:[1,2],  name:"1–2 · Échos",         desc:"Rêves chargés. Ombre parfois en avance sur ses gestes. PNJ sensibles à la magie mal à l'aise en sa présence. Aucun effet mécanique." },
-  { range:[3,4],  name:"3–4 · Porosité",       desc:"+10 Intimidation (non contrôlé, situationnel). –10 Empathie et Charme dans les interactions longues. Animaux réagissent. Morts-vivants à faible intel hésitent face à elle." },
-  { range:[5,6],  name:"5–6 · Partage",        desc:"L'ombre agit de sa propre initiative (narratif). Souvenirs flous de certaines périodes. Visions de sa mère — éclairs brefs, parfois spectraux. +5 aux jets de Magie Ulgu." },
-  { range:[7,8],  name:"7–8 · Substitution",   desc:"Une fois par session : Ulgu peut agir à travers Sareth (réussite automatique). Refus possible via test FM (0). –10 aux tests de Calme liés à l'ombre." },
-  { range:[9,10], name:"9–10 · Dette cosmique", desc:"Ulgu réclame. Le MJ propose un choix narratif majeur : Sceller l'Ombre / Accepter le lien / Ne rien décider. Voir règles complètes." },
+  { range:[1,2],  name:"1–2 · Échos",          desc:"L'ombre commence à se souvenir. Parfois légèrement en avance sur ses gestes. Rêves fréquents et chargés. Les PNJ sensibles à la magie ressentent un léger malaise en sa présence. Aucun effet mécanique — pure atmosphère." },
+  { range:[3,4],  name:"3–4 · Porosité",        desc:"La frontière s'amincit. +10 Intimidation (situationnel, non contrôlé). –10 Empathie et Charme dans les interactions longues ou intimes. Les animaux réagissent. Les morts-vivants à faible intelligence hésitent une seconde avant d'agir contre elle." },
+  { range:[5,6],  name:"5–6 · Partage",         desc:"L'Ombre a des opinions. Elle commence à agir de sa propre initiative — jamais contre Sareth, mais pas nécessairement selon ses souhaits. Souvenirs de certaines périodes devenus flous. Visions de sa mère — éclairs brefs, parfois spectraux. Le MJ peut déclencher une micro-action de l'ombre une fois par session (narratif pur). +5 aux jets de Magie Ulgu." },
+  { range:[7,8],  name:"7–8 · Substitution",    desc:"L'Ombre peut prendre la main. Une fois par session, lors d'un moment crucial, Ulgu peut agir à travers Sareth (réussite automatique). Le MJ choisit le moment. Sareth peut refuser via test FM (0) — échec : l'ombre agit quand même. Contrepartie narrative obligatoire. –10 aux tests de Calme liés à l'ombre." },
+  { range:[9,10], name:"9–10 · Dette cosmique",  desc:"Ulgu réclame. Le MJ propose un choix narratif majeur — pas d'urgence, pas de combat : une décision sur la nature de ce lien. Trois voies : Sceller l'Ombre (Traces max 8, risque inquisitorial), Accepter le lien (Traces min 5, palier 7–8 permanent, Morr observe), Ne rien décider (effets 7–8 hors contrôle, +1 difficulté Calme par jet d'Affinité jusqu'à prochaine méditation)." },
 ];
 
 const MED_TABLE = [
-  { range:[1,2],  label:"80 ou moins (+ BFM)" },
-  { range:[3,4],  label:"60 ou moins (+ BFM)" },
-  { range:[5,6],  label:"40 ou moins (+ BFM)" },
-  { range:[7,8],  label:"20 ou moins (+ BFM)" },
-  { range:[9,10], label:"05 ou moins (+ BFM)" },
+  { range:[1,2],  label:"80 ou moins — avec BFM : 86 ou moins" },
+  { range:[3,4],  label:"60 ou moins — avec BFM : 66 ou moins" },
+  { range:[5,6],  label:"40 ou moins — avec BFM : 46 ou moins" },
+  { range:[7,8],  label:"20 ou moins — avec BFM : 26 ou moins" },
+  { range:[9,10], label:"05 ou moins — avec BFM : 11 ou moins" },
 ];
 
 // ══════════ STATE ══════════
