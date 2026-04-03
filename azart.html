@@ -6,67 +6,152 @@
 <title>Azart — L'Éclipse</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-  :root { --ink:#0a0a0f; --parchment:#f0e8d8; --parchment-dark:#d4c8a8; --GLD:#B8922A; --VIO:#674EA7; --GRN:#5E804F; --SUB:#555566; }
+  :root {
+    --ink:#0a0a0f; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
+    --GLD:#B8922A; --VIO:#674EA7; --GRN:#5E804F; --SUB:#555566;
+    --BLU:#1C3A5A; --red:#8b1a1a;
+  }
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:var(--ink); color:var(--parchment); font-family:'Crimson Text',serif; min-height:100vh; }
-  body::before { content:''; position:fixed; inset:0; background:radial-gradient(ellipse at 70% 0%, rgba(184,146,42,0.08) 0%, transparent 50%); pointer-events:none; z-index:0; }
-  nav { position:sticky; top:0; z-index:100; background:rgba(10,10,15,0.92); backdrop-filter:blur(8px); border-bottom:1px solid rgba(184,146,42,0.25); padding:0.75rem 1.5rem; display:flex; align-items:center; gap:1rem; }
-  nav a { color:var(--SUB); text-decoration:none; font-size:0.85rem; font-style:italic; transition:color 0.2s; }
+  body::before { content:''; position:fixed; inset:0; background:radial-gradient(ellipse at 70% 0%, rgba(184,146,42,0.07) 0%, transparent 55%); pointer-events:none; z-index:0; }
+
+  nav { position:sticky; top:0; z-index:100; background:rgba(10,10,15,0.93); backdrop-filter:blur(8px); border-bottom:1px solid rgba(184,146,42,0.2); padding:0.6rem 1.5rem; display:flex; align-items:center; gap:1rem; }
+  nav a { color:var(--SUB); text-decoration:none; font-size:0.82rem; font-style:italic; transition:color 0.2s; }
   nav a:hover { color:var(--GLD); }
-  .nav-current { color:var(--GLD) !important; font-style:normal; }
-  .nav-sep { color:var(--SUB); opacity:0.4; }
-  .layout { position:relative; z-index:1; max-width:960px; margin:0 auto; padding:1.5rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-  @media(max-width:700px){ .layout { grid-template-columns:1fr; } }
-  .perso-header { grid-column:1/-1; display:flex; align-items:flex-end; gap:1.5rem; padding-bottom:1.25rem; border-bottom:1px solid rgba(184,146,42,0.25); flex-wrap:wrap; }
-  .perso-avatar { width:60px; height:60px; border-radius:2px; background:linear-gradient(135deg,rgba(184,146,42,0.2),rgba(85,85,102,0.3)); border:1px solid rgba(184,146,42,0.4); display:flex; align-items:center; justify-content:center; font-size:1.8rem; }
-  .perso-info h1 { font-family:'Cinzel',serif; font-size:1.8rem; font-weight:700; line-height:1; }
+  .nav-current { color:var(--GLD) !important; font-style:normal; font-family:'Cinzel',serif; font-size:0.82rem; }
+  .nav-sep { color:var(--SUB); opacity:0.3; }
+
+  .layout { position:relative; z-index:1; max-width:980px; margin:0 auto; padding:1.5rem 1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media(max-width:680px){ .layout { grid-template-columns:1fr; } }
+
+  /* HEADER */
+  .perso-header { grid-column:1/-1; display:flex; align-items:flex-end; gap:1.5rem; padding-bottom:1.25rem; border-bottom:1px solid rgba(184,146,42,0.2); flex-wrap:wrap; }
+  .perso-avatar { width:58px; height:58px; border-radius:2px; background:linear-gradient(135deg,rgba(184,146,42,0.15),rgba(85,85,102,0.25)); border:1px solid rgba(184,146,42,0.35); display:flex; align-items:center; justify-content:center; font-size:1.7rem; flex-shrink:0; }
+  .perso-info h1 { font-family:'Cinzel',serif; font-size:2rem; font-weight:700; line-height:1; letter-spacing:0.05em; }
   .perso-info .sub { font-style:italic; color:var(--GLD); font-size:0.95rem; margin-top:0.2rem; }
-  .perso-info .player { color:var(--SUB); font-size:0.8rem; margin-top:0.15rem; }
-  .card { background:rgba(10,10,15,0.7); border:1px solid rgba(255,255,255,0.07); border-radius:2px; padding:1.25rem; }
-  .card.gold { border-color:rgba(184,146,42,0.2); }
-  .card-title { font-family:'Cinzel',serif; font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--SUB); margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
-  .card-title::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.06); }
+  .perso-info .player { color:var(--SUB); font-size:0.78rem; margin-top:0.15rem; letter-spacing:0.05em; }
+  .perso-meta { margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:0.3rem; font-size:0.8rem; color:var(--SUB); font-style:italic; }
+  .perso-meta span { color:var(--parchment-dark); font-style:normal; }
+
+  /* CARDS */
+  .card { background:rgba(10,10,15,0.65); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:1.1rem; }
+  .card.gold { border-color:rgba(184,146,42,0.18); }
+  .card-title { font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.9rem; display:flex; align-items:center; gap:0.5rem; }
+  .card-title::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.05); }
   .card-title.gld { color:var(--GLD); }
-  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0.5rem; }
-  .stat-box { background:rgba(184,146,42,0.06); border:1px solid rgba(184,146,42,0.12); border-radius:2px; padding:0.5rem 0.4rem; text-align:center; }
-  .stat-label { font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); display:block; margin-bottom:0.2rem; }
-  .stat-val { font-family:'Cinzel',serif; font-size:1.3rem; font-weight:600; line-height:1; }
-  .stat-bonus { font-size:0.7rem; color:var(--GLD); opacity:0.7; }
-  .wounds-row { display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; }
-  .wounds-display { font-family:'Cinzel',serif; font-size:2rem; line-height:1; }
-  .wounds-max { font-size:1rem; color:var(--SUB); }
-  .btn-wound { background:rgba(139,26,26,0.3); border:1px solid rgba(139,26,26,0.5); color:#e88; width:36px; height:36px; border-radius:2px; font-size:1.2rem; cursor:pointer; }
-  .btn-heal { background:rgba(94,128,79,0.2); border:1px solid rgba(94,128,79,0.4); color:var(--GRN); width:36px; height:36px; border-radius:2px; font-size:1.2rem; cursor:pointer; }
+  .card-title.vio { color:var(--VIO); }
+  .card-title.grn { color:var(--GRN); }
+
+  /* STATS */
+  .stats-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:0.45rem; }
+  @media(max-width:400px){ .stats-grid { grid-template-columns:repeat(3,1fr); } }
+  .stat-box { background:rgba(184,146,42,0.05); border:1px solid rgba(184,146,42,0.1); border-radius:2px; padding:0.45rem 0.3rem; text-align:center; }
+  .stat-label { font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); display:block; margin-bottom:0.15rem; }
+  .stat-val { font-family:'Cinzel',serif; font-size:1.25rem; font-weight:600; line-height:1; display:block; }
+  .stat-bonus { font-size:0.62rem; color:var(--GLD); opacity:0.6; display:block; margin-top:0.1rem; }
+  .stat-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.35rem; font-size:0.75rem; margin-top:0.6rem; }
+  .stat-inline { display:flex; justify-content:space-between; align-items:center; padding:0.25rem 0.4rem; background:rgba(184,146,42,0.04); border-radius:2px; }
+  .stat-inline-label { color:var(--SUB); font-style:italic; }
+  .stat-inline-val { font-family:'Cinzel',serif; color:var(--GLD); font-weight:600; font-size:0.85rem; }
+
+  /* BLESSURES / RESSOURCES */
+  .res-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.75rem; }
+  .res-box { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:0.6rem; text-align:center; }
+  .res-label { font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.3rem; display:block; }
+  .res-val { font-family:'Cinzel',serif; font-size:1.5rem; line-height:1; display:block; }
+  .res-sub { font-size:0.7rem; color:var(--SUB); margin-top:0.1rem; display:block; }
+
+  .wounds-ctrl { display:flex; align-items:center; gap:0.5rem; justify-content:center; margin-top:0.5rem; }
+  .btn-small { width:30px; height:30px; border-radius:2px; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; font-weight:bold; }
+  .btn-wound { background:rgba(139,26,26,0.2); border:1px solid rgba(139,26,26,0.4); color:#e08080; }
+  .btn-wound:hover { background:rgba(139,26,26,0.35); }
+  .btn-heal { background:rgba(94,128,79,0.15); border:1px solid rgba(94,128,79,0.35); color:var(--GRN); }
+  .btn-heal:hover { background:rgba(94,128,79,0.3); }
+
+  .fortune-row { display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap; }
+  .fortune-pip { width:24px; height:24px; border-radius:50%; border:1.5px solid rgba(184,146,42,0.5); cursor:pointer; transition:all 0.15s; background:transparent; }
+  .fortune-pip.active { background:var(--GLD); box-shadow:0 0 5px rgba(184,146,42,0.4); border-color:var(--GLD); }
+
+  /* COMPÉTENCES */
   .skill-list { list-style:none; }
-  .skill-list li { display:flex; justify-content:space-between; align-items:center; padding:0.35rem 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.9rem; }
+  .skill-list li { display:flex; justify-content:space-between; align-items:center; padding:0.3rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.87rem; }
   .skill-list li:last-child { border-bottom:none; }
   .skill-name { color:var(--parchment-dark); }
-  .skill-val { font-family:'Cinzel',serif; color:var(--GLD); font-size:0.95rem; font-weight:600; }
-  .equip-item { display:flex; justify-content:space-between; align-items:center; padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.88rem; gap:0.5rem; }
-  .equip-item:last-child { border-bottom:none; }
-  .equip-name { color:var(--parchment-dark); flex:1; }
-  .equip-detail { font-size:0.75rem; color:var(--SUB); font-style:italic; }
-  .notes-area { width:100%; background:rgba(10,10,15,0.5); border:1px solid rgba(255,255,255,0.08); border-radius:2px; color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.9rem; padding:0.75rem; resize:vertical; min-height:80px; line-height:1.5; }
-  .notes-area:focus { outline:none; border-color:rgba(184,146,42,0.4); }
-  .money-row { display:flex; gap:1rem; flex-wrap:wrap; align-items:center; margin-top:0.5rem; }
-  .money-item { display:flex; flex-direction:column; align-items:center; gap:0.15rem; }
-  .money-val { font-family:'Cinzel',serif; font-size:1.3rem; color:var(--GLD); }
-  .money-label { font-size:0.65rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--SUB); }
-  .money-btn { background:none; border:none; color:var(--SUB); cursor:pointer; font-size:0.85rem; transition:color 0.15s; }
-  .money-btn:hover { color:var(--GLD); }
-  .fortune-row { display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; margin-top:0.75rem; }
-  .fortune-pip { width:28px; height:28px; border-radius:50%; border:1.5px solid var(--GLD); cursor:pointer; transition:all 0.15s; background:transparent; }
-  .fortune-pip.used { background:var(--GLD); box-shadow:0 0 6px rgba(184,146,42,0.4); }
-  .btn-save { background:rgba(184,146,42,0.15); border:1px solid rgba(184,146,42,0.4); color:var(--GLD); font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.4rem 0.8rem; border-radius:2px; cursor:pointer; margin-top:0.5rem; }
-  .save-confirm { font-size:0.8rem; color:var(--GRN); margin-left:0.75rem; opacity:0; transition:opacity 0.5s; }
-  .trophee-item { display:flex; align-items:center; gap:0.5rem; padding:0.35rem 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.88rem; }
+  .skill-val { font-family:'Cinzel',serif; color:var(--GLD); font-size:0.9rem; font-weight:600; min-width:28px; text-align:right; }
+  .skill-adv { font-size:0.68rem; color:var(--VIO); margin-left:0.4rem; opacity:0.8; }
+
+  /* TALENTS */
+  .talent-list { list-style:none; }
+  .talent-list li { padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.87rem; }
+  .talent-list li:last-child { border-bottom:none; }
+  .talent-name { color:var(--GLD); font-weight:600; }
+  .talent-desc { color:var(--SUB); font-size:0.8rem; font-style:italic; display:block; margin-top:0.1rem; }
+
+  /* ARMURE */
+  .armor-table { width:100%; border-collapse:collapse; font-size:0.82rem; margin-bottom:0.75rem; }
+  .armor-table th { text-align:left; color:var(--SUB); font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.2rem 0.4rem 0.4rem; font-weight:400; border-bottom:1px solid rgba(255,255,255,0.05); }
+  .armor-table td { padding:0.3rem 0.4rem; border-bottom:1px solid rgba(255,255,255,0.03); color:var(--parchment-dark); }
+  .armor-table td:last-child { color:var(--SUB); font-style:italic; font-size:0.75rem; }
+  .armor-pa { font-family:'Cinzel',serif; color:var(--GLD); font-weight:600; }
+
+  /* ARMES */
+  .weapon-item { padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .weapon-item:last-child { border-bottom:none; }
+  .weapon-name { color:var(--parchment); font-size:0.9rem; font-weight:600; }
+  .weapon-stats { display:flex; gap:0.75rem; margin-top:0.2rem; flex-wrap:wrap; }
+  .weapon-stat { font-size:0.72rem; }
+  .weapon-stat-label { color:var(--SUB); }
+  .weapon-stat-val { color:var(--GLD); font-family:'Cinzel',serif; }
+
+  /* INVENTAIRE */
+  .inv-item { display:flex; justify-content:space-between; align-items:center; padding:0.3rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.85rem; gap:0.5rem; }
+  .inv-item:last-child { border-bottom:none; }
+  .inv-name { color:var(--parchment-dark); flex:1; }
+  .inv-detail { font-size:0.72rem; color:var(--SUB); font-style:italic; white-space:nowrap; }
+
+  /* MONNAIE */
+  .money-row { display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap; margin-top:0.25rem; }
+  .money-item { display:flex; flex-direction:column; align-items:center; gap:0.1rem; }
+  .money-val { font-family:'Cinzel',serif; font-size:1.4rem; color:var(--GLD); cursor:default; }
+  .money-label { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); }
+  .money-btns { display:flex; gap:0.2rem; margin-top:0.2rem; }
+  .money-btn { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); color:var(--SUB); cursor:pointer; font-size:0.7rem; width:20px; height:20px; border-radius:1px; transition:all 0.15s; display:flex; align-items:center; justify-content:center; }
+  .money-btn:hover { color:var(--GLD); border-color:rgba(184,146,42,0.3); }
+
+  /* XP */
+  .xp-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; text-align:center; }
+  .xp-box { background:rgba(103,78,167,0.08); border:1px solid rgba(103,78,167,0.15); border-radius:2px; padding:0.5rem; }
+  .xp-label { font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--VIO); display:block; margin-bottom:0.2rem; opacity:0.8; }
+  .xp-val { font-family:'Cinzel',serif; font-size:1.2rem; }
+
+  /* NOTES */
+  .notes-area { width:100%; background:rgba(10,10,15,0.5); border:1px solid rgba(255,255,255,0.07); border-radius:2px; color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.65rem; resize:vertical; min-height:70px; line-height:1.5; }
+  .notes-area:focus { outline:none; border-color:rgba(184,146,42,0.35); }
+
+  .btn-save { background:rgba(184,146,42,0.12); border:1px solid rgba(184,146,42,0.35); color:var(--GLD); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.35rem 0.75rem; border-radius:2px; cursor:pointer; margin-top:0.5rem; transition:background 0.15s; }
+  .btn-save:hover { background:rgba(184,146,42,0.22); }
+  .save-confirm { font-size:0.78rem; color:var(--GRN); margin-left:0.75rem; opacity:0; transition:opacity 0.5s; }
+
+  /* TRAITS / AMBITIONS */
+  .trait-block { font-size:0.86rem; line-height:1.55; color:var(--parchment-dark); margin-bottom:0.5rem; }
+  .trait-block strong { color:var(--parchment); display:block; margin-bottom:0.2rem; font-style:normal; }
+  .ambition-label { font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--VIO); margin-bottom:0.2rem; display:block; opacity:0.9; }
+
+  /* TROPHÉES */
+  .trophee-item { display:flex; align-items:center; gap:0.5rem; padding:0.3rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.86rem; }
   .trophee-name { color:var(--parchment-dark); flex:1; font-style:italic; }
-  .trophee-del { background:none; border:none; color:rgba(139,26,26,0.5); cursor:pointer; font-size:0.75rem; }
+  .trophee-del { background:none; border:none; color:rgba(139,26,26,0.4); cursor:pointer; font-size:0.7rem; transition:color 0.15s; }
   .trophee-del:hover { color:#e08080; }
-  .add-row { display:flex; gap:0.5rem; margin-top:0.5rem; }
-  .add-row input { background:rgba(10,10,15,0.6); border:1px solid rgba(255,255,255,0.08); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.9rem; padding:0.35rem 0.5rem; border-radius:2px; flex:1; }
+  .add-row { display:flex; gap:0.4rem; margin-top:0.5rem; }
+  .add-row input { background:rgba(10,10,15,0.6); border:1px solid rgba(255,255,255,0.07); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.86rem; padding:0.3rem 0.5rem; border-radius:2px; flex:1; }
   .add-row input:focus { outline:none; border-color:rgba(184,146,42,0.3); }
-  .add-btn { background:rgba(184,146,42,0.15); border:1px solid rgba(184,146,42,0.3); color:var(--GLD); font-family:'Cinzel',serif; font-size:0.72rem; padding:0.35rem 0.6rem; border-radius:2px; cursor:pointer; white-space:nowrap; }
+  .add-btn { background:rgba(184,146,42,0.12); border:1px solid rgba(184,146,42,0.28); color:var(--GLD); font-family:'Cinzel',serif; font-size:0.68rem; padding:0.3rem 0.55rem; border-radius:2px; cursor:pointer; white-space:nowrap; letter-spacing:0.08em; }
+
+  .divider { grid-column:1/-1; height:1px; background:rgba(184,146,42,0.1); margin:0.25rem 0; }
+
+  .full { grid-column:1/-1; }
+
+  .italic-note { font-style:italic; color:var(--SUB); font-size:0.8rem; line-height:1.45; margin-bottom:0.6rem; }
 </style>
 </head>
 <body>
@@ -75,184 +160,444 @@
   <span class="nav-sep">·</span>
   <span class="nav-current">Azart</span>
 </nav>
+
 <div class="layout">
+
+  <!-- HEADER -->
   <div class="perso-header">
     <div class="perso-avatar">🗝️</div>
     <div class="perso-info">
       <h1>Azart</h1>
-      <div class="sub">Voleur · Humain · 18 ans</div>
-      <div class="player">Quentin · Rues de Nuln</div>
+      <div class="sub">Voleur · Roublard · Échelon 2</div>
+      <div class="player">Quentin · Humain · 18 ans · Bronze 3</div>
+    </div>
+    <div class="perso-meta">
+      <div>Taille <span>1m70</span> · Poids <span>65 kg</span></div>
+      <div>Mi-longs droite, rasés gauche</div>
+      <div>Châtains, yeux verts, presque imberbe</div>
     </div>
   </div>
 
-  <div class="card gold">
+  <!-- CARACTÉRISTIQUES -->
+  <div class="card gold full">
     <div class="card-title gld">Caractéristiques</div>
     <div class="stats-grid">
-      <div class="stat-box"><span class="stat-label">CC</span><span class="stat-val">38</span><span class="stat-bonus">B:3</span></div>
-      <div class="stat-box"><span class="stat-label">CT</span><span class="stat-val">34</span><span class="stat-bonus">B:3</span></div>
-      <div class="stat-box"><span class="stat-label">F</span><span class="stat-val">32</span><span class="stat-bonus">B:3</span></div>
-      <div class="stat-box"><span class="stat-label">End</span><span class="stat-val">34</span><span class="stat-bonus">B:3</span></div>
-      <div class="stat-box"><span class="stat-label">Ini</span><span class="stat-val">48</span><span class="stat-bonus">B:4</span></div>
-      <div class="stat-box"><span class="stat-label">Agi</span><span class="stat-val">52</span><span class="stat-bonus">B:5</span></div>
-      <div class="stat-box"><span class="stat-label">Dex</span><span class="stat-val">58</span><span class="stat-bonus">B:5</span></div>
-      <div class="stat-box"><span class="stat-label">Int</span><span class="stat-val">44</span><span class="stat-bonus">B:4</span></div>
-      <div class="stat-box"><span class="stat-label">FM</span><span class="stat-val">32</span><span class="stat-bonus">B:3</span></div>
-      <div class="stat-box"><span class="stat-label">Soc</span><span class="stat-val">48</span><span class="stat-bonus">B:4</span></div>
-      <div class="stat-box"><span class="stat-label">Armure</span><span class="stat-val">1</span><span class="stat-bonus">Cuir</span></div>
-      <div class="stat-box"><span class="stat-label">Fuite</span><span class="stat-val">+20</span><span class="stat-bonus">Trait</span></div>
+      <div class="stat-box">
+        <span class="stat-label">CC</span>
+        <span class="stat-val">40</span>
+        <span class="stat-bonus">B:4</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">CT</span>
+        <span class="stat-val">30</span>
+        <span class="stat-bonus">B:3</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">F</span>
+        <span class="stat-val" style="color:#c0502a;">32 ★</span>
+        <span class="stat-bonus">B:3</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">End</span>
+        <span class="stat-val" style="color:#c0502a;">30 ★</span>
+        <span class="stat-bonus">B:3</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Ini</span>
+        <span class="stat-val">33</span>
+        <span class="stat-bonus">B:3</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Ag</span>
+        <span class="stat-val">45</span>
+        <span class="stat-bonus">B:4</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Dex</span>
+        <span class="stat-val">44</span>
+        <span class="stat-bonus">B:4</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Int</span>
+        <span class="stat-val">32</span>
+        <span class="stat-bonus">B:3</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">FM</span>
+        <span class="stat-val" style="color:#c0502a;">31 ★</span>
+        <span class="stat-bonus">B:3</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Soc</span>
+        <span class="stat-val">38</span>
+        <span class="stat-bonus">B:3</span>
+      </div>
     </div>
+    <div style="font-size:0.7rem;color:var(--SUB);margin-top:0.5rem;font-style:italic;">★ Caractéristique avec bonus racial (×1)</div>
   </div>
 
+  <!-- ÉTAT & RESSOURCES -->
   <div class="card gold">
     <div class="card-title" style="color:#c0392b;">État & Ressources</div>
-    <div class="wounds-row">
-      <span style="font-style:italic;color:var(--SUB);font-size:0.85rem;">Blessures</span>
-      <button class="btn-wound" onclick="changeWound(-1)">−</button>
-      <div><span class="wounds-display" id="wounds-cur">11</span><span class="wounds-max"> / 11</span></div>
-      <button class="btn-heal" onclick="changeWound(1)">+</button>
+    <div class="res-grid">
+      <div class="res-box">
+        <span class="res-label">Blessures</span>
+        <span class="res-val" id="wounds-cur">12</span>
+        <span class="res-sub">/ 12 max</span>
+        <div class="wounds-ctrl">
+          <button class="btn-small btn-wound" onclick="changeWound(-1)">−</button>
+          <button class="btn-small btn-heal" onclick="changeWound(1)">+</button>
+        </div>
+      </div>
+      <div class="res-box">
+        <span class="res-label">Mouvement</span>
+        <span class="res-val">4</span>
+        <span class="res-sub">cases / tour</span>
+      </div>
     </div>
-    <div class="fortune-row">
-      <span style="font-size:0.8rem;color:var(--SUB);font-style:italic;margin-right:0.25rem;">Fortune</span>
-      <div id="fortune-pips"></div>
+    <div style="margin-bottom:0.6rem;">
+      <div class="card-title" style="color:var(--GLD);margin-bottom:0.4rem;font-size:0.62rem;">Destin & Chance</div>
+      <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Destin</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--GLD);" id="destin-val">4</span>
+          <div style="display:flex;gap:0.3rem;" id="destin-pips"></div>
+        </div>
+        <div style="color:var(--SUB);font-size:1rem;">→</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Chance</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--parchment);" id="chance-val">4</span>
+          <div style="display:flex;gap:0.3rem;" id="chance-pips"></div>
+        </div>
+      </div>
     </div>
-    <div style="margin-top:1rem;">
-      <div class="card-title gld" style="margin-bottom:0.4rem;">Argent</div>
+    <div>
+      <div class="card-title" style="color:var(--VIO);margin-bottom:0.4rem;font-size:0.62rem;">Résilience & Détermination</div>
+      <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Résilience</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--VIO);">2</span>
+        </div>
+        <div style="color:var(--SUB);font-size:1rem;">→</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Détermination</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--parchment);" id="determ-val">2</span>
+          <div style="display:flex;gap:0.3rem;" id="determ-pips"></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:0.75rem;">
+      <div class="card-title" style="margin-bottom:0.4rem;font-size:0.62rem;">Monnaie</div>
       <div class="money-row">
         <div class="money-item">
-          <div class="money-val" id="money-or">0</div>
-          <div class="money-label">Or</div>
-          <div style="display:flex;gap:0.3rem;"><button class="money-btn" onclick="chMoney('or',-1)">−</button><button class="money-btn" onclick="chMoney('or',1)">+</button></div>
+          <span class="money-val" id="money-or">10</span>
+          <span class="money-label">CO</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('or',-1)">−</button>
+            <button class="money-btn" onclick="chMoney('or',1)">+</button>
+          </div>
         </div>
         <div class="money-item">
-          <div class="money-val" id="money-argent">0</div>
-          <div class="money-label">Argent</div>
-          <div style="display:flex;gap:0.3rem;"><button class="money-btn" onclick="chMoney('argent',-1)">−</button><button class="money-btn" onclick="chMoney('argent',1)">+</button></div>
+          <span class="money-val" id="money-argent">3</span>
+          <span class="money-label">PA</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('argent',-1)">−</button>
+            <button class="money-btn" onclick="chMoney('argent',1)">+</button>
+          </div>
         </div>
         <div class="money-item">
-          <div class="money-val" id="money-cuivre">0</div>
-          <div class="money-label">Cuivre</div>
-          <div style="display:flex;gap:0.3rem;"><button class="money-btn" onclick="chMoney('cuivre',-1)">−</button><button class="money-btn" onclick="chMoney('cuivre',1)">+</button></div>
+          <span class="money-val" id="money-cuivre">0</span>
+          <span class="money-label">SC</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('cuivre',-1)">−</button>
+            <button class="money-btn" onclick="chMoney('cuivre',1)">+</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- XP & AMBITIONS -->
   <div class="card">
-    <div class="card-title gld">Compétences principales</div>
+    <div class="card-title vio">Expérience & Ambitions</div>
+    <div class="xp-row" style="margin-bottom:0.9rem;">
+      <div class="xp-box">
+        <span class="xp-label">Actuelle</span>
+        <span class="xp-val" id="xp-cur">100</span>
+      </div>
+      <div class="xp-box">
+        <span class="xp-label">Dépensée</span>
+        <span class="xp-val" id="xp-dep">0</span>
+      </div>
+      <div class="xp-box">
+        <span class="xp-label">Totale</span>
+        <span class="xp-val">0</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:1.5rem;margin-bottom:0.75rem;flex-wrap:wrap;">
+      <div style="flex:1;min-width:140px;">
+        <span class="ambition-label">Corrruption / Stress / Mutations</span>
+        <div style="display:flex;gap:1rem;">
+          <div style="text-align:center;"><span style="font-family:'Cinzel',serif;font-size:1.1rem;">0</span><br><span style="font-size:0.65rem;color:var(--SUB);">Corruption</span></div>
+          <div style="text-align:center;"><span style="font-family:'Cinzel',serif;font-size:1.1rem;">0</span><br><span style="font-size:0.65rem;color:var(--SUB);">Stress</span></div>
+          <div style="text-align:center;"><span style="font-family:'Cinzel',serif;font-size:1.1rem;">0</span><br><span style="font-size:0.65rem;color:var(--SUB);">Mutations</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:0.6rem;">
+      <span class="ambition-label">Ambition courte</span>
+      <div class="trait-block">Ne dépendre de personne matériellement. Être indispensable au groupe.</div>
+    </div>
+    <div style="margin-bottom:0.6rem;">
+      <span class="ambition-label">Ambition longue</span>
+      <div class="trait-block">Être « reconnu » officiellement par quelqu'un qui compte.</div>
+    </div>
+    <div>
+      <span class="ambition-label">Motivation</span>
+      <div class="trait-block">Obtenir confiance, complicité et félicitations gratuites.</div>
+    </div>
+  </div>
+
+  <!-- COMPÉTENCES DE BASE (sélection pertinente) -->
+  <div class="card">
+    <div class="card-title gld">Compétences de base</div>
     <ul class="skill-list">
-      <li><span class="skill-name">Discrétion</span><span class="skill-val">72</span></li>
-      <li><span class="skill-name">Crochetage</span><span class="skill-val">68</span></li>
-      <li><span class="skill-name">Psychologie</span><span class="skill-val">54</span></li>
-      <li><span class="skill-name">Baratin</span><span class="skill-val">58</span></li>
-      <li><span class="skill-name">Charme</span><span class="skill-val">58</span></li>
-      <li><span class="skill-name">Esquive</span><span class="skill-val">62</span></li>
-      <li><span class="skill-name">Fouille</span><span class="skill-val">54</span></li>
-      <li><span class="skill-name">Escalade</span><span class="skill-val">62</span></li>
-      <li><span class="skill-name">Perception</span><span class="skill-val">54</span></li>
-      <li><span class="skill-name">Mêlée (armes légères)</span><span class="skill-val">48</span></li>
-      <li><span class="skill-name">Connaissance (rues)</span><span class="skill-val">54</span></li>
+      <li><span class="skill-name">Athlétisme</span><span class="skill-val">50</span></li>
+      <li><span class="skill-name">Calme</span><span class="skill-val">39</span></li>
+      <li><span class="skill-name">Charme</span><span class="skill-val">43</span></li>
+      <li><span class="skill-name">Conduite</span><span class="skill-val">45</span></li>
+      <li><span class="skill-name">Corps à Corps (Base)</span><span class="skill-val">43</span></li>
+      <li><span class="skill-name">Discrétion</span><span class="skill-val">45</span></li>
+      <li><span class="skill-name">Escalade</span><span class="skill-val">37</span></li>
+      <li><span class="skill-name">Esquive</span><span class="skill-val">50</span></li>
+      <li><span class="skill-name">Intuition</span><span class="skill-val">38</span></li>
+      <li><span class="skill-name">Manipulation</span><span class="skill-val">38</span></li>
+      <li><span class="skill-name">Monter</span><span class="skill-val">45</span></li>
+      <li><span class="skill-name">Perception</span><span class="skill-val">38</span></li>
+      <li><span class="skill-name">Ragot</span><span class="skill-val">43</span></li>
+      <li><span class="skill-name">Résistance</span><span class="skill-val">35</span></li>
     </ul>
   </div>
 
+  <!-- COMPÉTENCES AVANCÉES -->
   <div class="card">
-    <div class="card-title gld">Équipement</div>
-    <div class="equip-item"><span class="equip-name">Dague principale</span><span class="equip-detail">CC+10 / Rapide</span></div>
-    <div class="equip-item"><span class="equip-name">Dague de jet ×3</span><span class="equip-detail">CT / Portée courte</span></div>
-    <div class="equip-item"><span class="equip-name">Armure de cuir légère</span><span class="equip-detail">Armure 1 / Discrétion 0</span></div>
-    <div class="equip-item"><span class="equip-name">Crochet à serrures</span><span class="equip-detail">+10 Crochetage</span></div>
-    <div class="equip-item"><span class="equip-name">Corde à nœuds (10m)</span><span class="equip-detail">—</span></div>
-    <div class="equip-item"><span class="equip-name">Graisse de serrure</span><span class="equip-detail">×2 doses</span></div>
-    <div class="equip-item"><span class="equip-name">Miroir de poche</span><span class="equip-detail">Observations détournées</span></div>
-    <div class="equip-item"><span class="equip-name">Vêtements neutres (×2 tenues)</span><span class="equip-detail">Déguisement basique</span></div>
-    <div style="margin-top:0.75rem;">
-      <div class="card-title gld" style="margin-bottom:0.4rem;color:var(--GRN);">Loot session</div>
-      <textarea class="notes-area" id="loot-notes" rows="2" placeholder="Objets trouvés, volés..."></textarea>
+    <div class="card-title vio">Compétences avancées</div>
+    <ul class="skill-list">
+      <li><span class="skill-name">Évaluation <span style="color:var(--SUB);font-size:0.72rem;">(Int)</span></span><span class="skill-val">37</span></li>
+      <li><span class="skill-name">Savoir (Reikland) <span style="color:var(--SUB);font-size:0.72rem;">(Int)</span></span><span class="skill-val">32</span></li>
+      <li><span class="skill-name">Discrétion (Urbaine) <span style="color:var(--SUB);font-size:0.72rem;">(Ag)</span></span><span class="skill-val">51</span></li>
+      <li><span class="skill-name">Crochetage <span style="color:#c0502a;font-size:0.72rem;">⚠ en cours</span></span><span class="skill-val" style="color:#c0502a;">34</span></li>
+      <li><span class="skill-name">Escamotage <span style="color:#c0502a;font-size:0.72rem;">⚠ en cours</span></span><span class="skill-val" style="color:#c0502a;">34</span></li>
+    </ul>
+  </div>
+
+  <!-- TALENTS -->
+  <div class="card">
+    <div class="card-title gld">Talents & Capacités</div>
+    <ul class="talent-list">
+      <li>
+        <span class="talent-name">Chat de gouttière</span>
+        <span class="talent-desc">Possible inversion des dés en Discrétion Urbaine.</span>
+      </li>
+      <li>
+        <span class="talent-name">Criminel</span>
+        <span class="talent-desc">Statut de carrière pour revenus et impact social.</span>
+      </li>
+      <li>
+        <span class="talent-name">Frappe assommante</span>
+        <span class="talent-desc">Pas de pénalité à localiser la tête avec arme assommante et improvisée.</span>
+      </li>
+      <li>
+        <span class="talent-name">Fuite</span>
+        <span class="talent-desc">+1 M en fuite.</span>
+      </li>
+    </ul>
+    <div style="margin-top:0.75rem;padding-top:0.6rem;border-top:1px solid rgba(255,255,255,0.05);">
+      <div class="card-title" style="color:var(--SUB);margin-bottom:0.5rem;font-size:0.62rem;">Traits raciaux</div>
+      <ul style="list-style:none;font-size:0.83rem;line-height:1.7;color:var(--parchment-dark);">
+        <li>· <strong style="color:var(--parchment);">Affable</strong> : +5 Soc</li>
+        <li>· <strong style="color:var(--parchment);">Doigts de fée</strong> : +5 Dex</li>
+        <li>· <strong style="color:var(--parchment);">Tireur de Précision</strong> : +5 CT</li>
+        <li>· <strong style="color:var(--parchment);">Réflexes foudroyants</strong> : +5 Ag</li>
+        <li>· <strong style="color:var(--parchment);">Imitation</strong> : Test I/j, imite accents et façon de parler</li>
+      </ul>
     </div>
   </div>
 
-  <!-- TROPHÉES / OBJETS VUS -->
+  <!-- ARMURE -->
+  <div class="card">
+    <div class="card-title gld">Armure</div>
+    <table class="armor-table">
+      <thead>
+        <tr><th>Localisation</th><th>PA</th><th>Loc.</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Tête</td><td class="armor-pa">0</td><td>01-09</td></tr>
+        <tr><td>Bras droit</td><td class="armor-pa">1</td><td>10-24</td></tr>
+        <tr><td>Bras gauche</td><td class="armor-pa">1</td><td>25-44</td></tr>
+        <tr><td>Corps</td><td class="armor-pa">2</td><td>45-79</td></tr>
+        <tr><td>Jambe dr.</td><td class="armor-pa">0</td><td>80-89</td></tr>
+        <tr><td>Jambe gau.</td><td class="armor-pa">0</td><td>90-00</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-bottom:0.3rem;">
+      <div class="inv-item"><span class="inv-name">Manchons de cuir</span><span class="inv-detail">PA 1 · −1 Ag · Résistante, Lourde</span></div>
+      <div class="inv-item"><span class="inv-name">Plastron de cuir bouilli</span><span class="inv-detail">PA 2 · −1 Ag · Points faibles</span></div>
+    </div>
+
+    <div class="card-title gld" style="margin-top:0.75rem;margin-bottom:0.5rem;">Armes</div>
+    <div class="weapon-item">
+      <div class="weapon-name">Épée de Maître Artisan</div>
+      <div class="weapon-stats">
+        <span class="weapon-stat"><span class="weapon-stat-label">All. </span><span class="weapon-stat-val">Moyenne</span></span>
+        <span class="weapon-stat"><span class="weapon-stat-label">Dég. </span><span class="weapon-stat-val">BF+4</span></span>
+        <span class="weapon-stat"><span class="weapon-stat-label">Attr. </span><span class="weapon-stat-val">+2 CC, Solide, Fiable</span></span>
+      </div>
+    </div>
+    <div class="weapon-item">
+      <div class="weapon-name">Dague (chef d'œuvre)</div>
+      <div class="weapon-stats">
+        <span class="weapon-stat"><span class="weapon-stat-label">All. </span><span class="weapon-stat-val">Très courte</span></span>
+        <span class="weapon-stat"><span class="weapon-stat-label">Dég. </span><span class="weapon-stat-val">BF+2</span></span>
+        <span class="weapon-stat"><span class="weapon-stat-label">Attr. </span><span class="weapon-stat-val">+1 Dégât, Solide, Fiable</span></span>
+      </div>
+    </div>
+    <div class="weapon-item">
+      <div class="weapon-name">Couteaux de lancer (chef d'œuvre)</div>
+      <div class="weapon-stats">
+        <span class="weapon-stat"><span class="weapon-stat-label">All. </span><span class="weapon-stat-val">BFx2</span></span>
+        <span class="weapon-stat"><span class="weapon-stat-label">Dég. </span><span class="weapon-stat-val">BF+2</span></span>
+        <span class="weapon-stat"><span class="weapon-stat-label">Attr. </span><span class="weapon-stat-val">+5 CT, +10 CT Surprise, Solide, Fiable</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVENTAIRE -->
+  <div class="card">
+    <div class="card-title grn">Inventaire</div>
+    <div class="inv-item"><span class="inv-name">Sac à dos</span><span class="inv-detail">Porté</span></div>
+    <div class="inv-item"><span class="inv-name">Pied de biche</span><span class="inv-detail">Sac à dos</span></div>
+    <div class="inv-item"><span class="inv-name">Outils de voleur</span><span class="inv-detail">Sac à dos</span></div>
+    <div class="inv-item"><span class="inv-name">Corde 10m</span><span class="inv-detail">Sac à dos</span></div>
+    <div class="inv-item"><span class="inv-name">Cape très imperméable (chef d'œuvre)</span><span class="inv-detail">Sur soi ou sac à dos</span></div>
+    <div class="inv-item"><span class="inv-name">Poison Paralysant Instantané (2 doses)</span><span class="inv-detail">Sac à dos</span></div>
+    <div class="inv-item"><span class="inv-name">Poison Léthargique en 2 rounds, 4D10 min (6 doses)</span><span class="inv-detail">Sac à dos</span></div>
+    <div class="inv-item"><span class="inv-name">Montre à gousset / Baromètre en argent</span><span class="inv-detail">Sac à dos</span></div>
+    <div class="inv-item"><span class="inv-name">Bague en argent</span><span class="inv-detail">Portée</span></div>
+    <div class="inv-item"><span class="inv-name">Médaillon avec photo d'un jeune noble</span><span class="inv-detail">Sac à dos</span></div>
+  </div>
+
+  <!-- TROPHÉES -->
   <div class="card gold">
     <div class="card-title gld">Trophées — Objets vus & reconnus</div>
-    <div style="font-size:0.8rem;color:var(--SUB);font-style:italic;margin-bottom:0.75rem;line-height:1.4;">
-      Azart garde les objets qui ont été vus. Ce qui compte n'est pas la valeur — c'est le témoin.
-    </div>
+    <div class="italic-note">Azart garde les objets qui ont été vus. Ce qui compte n'est pas la valeur — c'est le témoin.</div>
     <div id="trophee-list"></div>
     <div class="add-row">
-      <input type="text" id="trophee-input" placeholder="Nom de l'objet ou du souvenir...">
+      <input type="text" id="trophee-input" placeholder="Objet ou souvenir...">
       <button class="add-btn" onclick="addTrophee()">+ Ajouter</button>
     </div>
   </div>
 
-  <div class="card" style="grid-column:1/-1;">
+  <!-- NOTES SESSION -->
+  <div class="card full">
     <div class="card-title">Notes de session</div>
-    <textarea class="notes-area" id="session-notes" rows="4" placeholder="Plans, contacts, rancunes, opportunities..."></textarea>
+    <div style="font-size:0.82rem;color:var(--SUB);font-style:italic;margin-bottom:0.5rem;line-height:1.5;">
+      Projet arbalète à lames (artisan Nain, Nuln) · Remise −5% Apothicaire Sofya · Mission Armand réussie
+    </div>
+    <textarea class="notes-area" id="session-notes" rows="4" placeholder="Plans, contacts, rancunes, opportunités..."></textarea>
     <button class="btn-save" onclick="saveAll()">Sauvegarder</button>
     <span class="save-confirm" id="save-confirm">✓ Sauvegardé</span>
   </div>
+
 </div>
 
 <script>
-let state = { wounds:11, fortune:3, money:{or:0,argent:0,cuivre:0}, trophees:[], notes:'', loot:'' };
+let state = {
+  wounds: 12,
+  chance: 4,
+  determ: 2,
+  money: { or: 10, argent: 3, cuivre: 0 },
+  trophees: [],
+  notes: ''
+};
+
 function load() {
-  const s=localStorage.getItem('azart_state');
-  if(s) try{Object.assign(state,JSON.parse(s));}catch(e){}
-  document.getElementById('wounds-cur').textContent=state.wounds;
-  ['or','argent','cuivre'].forEach(k=>document.getElementById('money-'+k).textContent=state.money[k]||0);
-  document.getElementById('session-notes').value=state.notes||'';
-  document.getElementById('loot-notes').value=state.loot||'';
-  renderFortune(); renderTrophees();
+  const s = localStorage.getItem('azart_v2');
+  if (s) try { Object.assign(state, JSON.parse(s)); } catch(e) {}
+  document.getElementById('wounds-cur').textContent = state.wounds;
+  updateWoundColor();
+  ['or','argent','cuivre'].forEach(k => document.getElementById('money-'+k).textContent = state.money[k] || 0);
+  document.getElementById('session-notes').value = state.notes || '';
+  renderChance(); renderDeterm(); renderTrophees();
 }
-function save() { localStorage.setItem('azart_state',JSON.stringify(state)); }
+
+function save() { localStorage.setItem('azart_v2', JSON.stringify(state)); }
+
 function changeWound(d) {
-  state.wounds=Math.max(0,Math.min(11,state.wounds+d));
-  const el=document.getElementById('wounds-cur');
-  el.textContent=state.wounds;
-  const p=state.wounds/11;
-  el.style.color=p>0.5?'var(--parchment)':p>0.25?'#e8a040':'#e05050';
+  state.wounds = Math.max(0, Math.min(12, state.wounds + d));
+  document.getElementById('wounds-cur').textContent = state.wounds;
+  updateWoundColor(); save();
+}
+function updateWoundColor() {
+  const el = document.getElementById('wounds-cur');
+  const p = state.wounds / 12;
+  el.style.color = p > 0.6 ? 'var(--parchment)' : p > 0.3 ? '#e8a040' : '#e05050';
+}
+
+function chMoney(k, d) {
+  state.money[k] = Math.max(0, (state.money[k] || 0) + d);
+  document.getElementById('money-' + k).textContent = state.money[k];
   save();
 }
-function chMoney(k,d) {
-  state.money[k]=Math.max(0,(state.money[k]||0)+d);
-  document.getElementById('money-'+k).textContent=state.money[k];
-  save();
-}
-function renderFortune() {
-  const c=document.getElementById('fortune-pips'); c.innerHTML='';
-  for(let i=0;i<3;i++){
-    const p=document.createElement('div');
-    p.className='fortune-pip'+(i<state.fortune?'':' used');
-    p.onclick=()=>{ state.fortune=(i<state.fortune)?i:i+1; save(); renderFortune(); };
+
+function makePips(containerId, current, max, onClickFn) {
+  const c = document.getElementById(containerId); c.innerHTML = '';
+  for (let i = 0; i < max; i++) {
+    const p = document.createElement('div');
+    p.className = 'fortune-pip' + (i < current ? ' active' : '');
+    p.onclick = () => onClickFn(i < current ? i : i + 1);
     c.appendChild(p);
   }
 }
+
+function renderChance() {
+  makePips('chance-pips', state.chance, 4, v => { state.chance = v; save(); renderChance(); });
+}
+function renderDeterm() {
+  makePips('determ-pips', state.determ, 2, v => { state.determ = v; save(); renderDeterm(); });
+}
+
 function addTrophee() {
-  const v=document.getElementById('trophee-input').value.trim();
-  if(!v) return;
+  const v = document.getElementById('trophee-input').value.trim();
+  if (!v) return;
   state.trophees.push(v);
-  document.getElementById('trophee-input').value='';
+  document.getElementById('trophee-input').value = '';
   save(); renderTrophees();
 }
 function removeTrophee(i) {
-  state.trophees.splice(i,1); save(); renderTrophees();
+  state.trophees.splice(i, 1); save(); renderTrophees();
 }
 function renderTrophees() {
-  const c=document.getElementById('trophee-list');
-  if(!state.trophees.length){ c.innerHTML='<div style="font-size:0.8rem;color:var(--SUB);font-style:italic;padding:0.25rem 0;">Aucun trophée pour l\'instant.</div>'; return; }
-  c.innerHTML=state.trophees.map((t,i)=>`
+  const c = document.getElementById('trophee-list');
+  if (!state.trophees.length) {
+    c.innerHTML = '<div style="font-size:0.8rem;color:var(--SUB);font-style:italic;padding:0.2rem 0;">Aucun trophée pour l\'instant.</div>';
+    return;
+  }
+  c.innerHTML = state.trophees.map((t, i) => `
     <div class="trophee-item">
       <span class="trophee-name">⬡ ${t}</span>
       <button class="trophee-del" onclick="removeTrophee(${i})">✕</button>
     </div>
   `).join('');
 }
+
 function saveAll() {
-  state.notes=document.getElementById('session-notes').value;
-  state.loot=document.getElementById('loot-notes').value;
+  state.notes = document.getElementById('session-notes').value;
   save();
-  const c=document.getElementById('save-confirm');
-  c.style.opacity='1'; setTimeout(()=>c.style.opacity='0',2000);
+  const c = document.getElementById('save-confirm');
+  c.style.opacity = '1'; setTimeout(() => c.style.opacity = '0', 2000);
 }
-['session-notes','loot-notes'].forEach(id=>{ document.getElementById(id).addEventListener('blur',saveAll); });
+document.getElementById('session-notes').addEventListener('blur', saveAll);
 load();
 </script>
 </body>
