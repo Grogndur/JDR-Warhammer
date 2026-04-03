@@ -138,11 +138,11 @@ nav a:hover { color:var(--GLD); }
 
 /* FORMULAIRE AJOUT */
 .add-form { display:flex; flex-direction:column; gap:0.5rem; }
-.form-row { display:flex; gap:0.4rem; }
-.f-input { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09); border-radius:2px; color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.35rem 0.5rem; flex:1; transition:border-color 0.15s; }
+.form-row { display:flex; gap:0.4rem; flex-wrap:wrap; }
+.f-input { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09); border-radius:2px; color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.35rem 0.5rem; flex:1; min-width:0; transition:border-color 0.15s; }
 .f-input:focus { outline:none; border-color:rgba(184,146,42,0.4); }
 .f-input::placeholder { color:var(--SUB); font-style:italic; }
-.f-input.short { width:56px; flex:none; text-align:center; }
+.f-input.short { width:42px; flex:none; text-align:center; min-width:0; }
 .f-label { font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.15rem; display:block; }
 .f-group { display:flex; flex-direction:column; flex:1; }
 .add-btn { background:rgba(139,26,26,0.2); border:1px solid rgba(139,26,26,0.4); color:#e08080; font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.45rem; border-radius:2px; cursor:pointer; transition:all 0.15s; width:100%; margin-top:0.25rem; }
