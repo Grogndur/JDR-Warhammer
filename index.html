@@ -17,279 +17,58 @@
     --GRN: #5E804F;
     --SUB: #555566;
     --blood: #8B1A1A;
-    --shadow: rgba(0,0,0,0.6);
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--ink);
-    color: var(--parchment);
-    font-family: 'Crimson Text', serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Texture de fond */
+  body { background: var(--ink); color: var(--parchment); font-family: 'Crimson Text', serif; min-height: 100vh; overflow-x: hidden; }
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background: 
+    background:
       radial-gradient(ellipse at 20% 50%, rgba(28,58,90,0.15) 0%, transparent 60%),
       radial-gradient(ellipse at 80% 20%, rgba(103,78,167,0.08) 0%, transparent 50%),
-      repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(255,255,255,0.01) 2px,
-        rgba(255,255,255,0.01) 4px
-      );
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.01) 2px, rgba(255,255,255,0.01) 4px);
     pointer-events: none;
     z-index: 0;
   }
+  .container { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
 
-  .container {
-    position: relative;
-    z-index: 1;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem;
-  }
+  header { text-align: center; padding: 3rem 0 2rem; position: relative; }
+  header::after { content: ''; display: block; width: 60%; height: 1px; background: linear-gradient(to right, transparent, var(--GLD), transparent); margin: 1.5rem auto 0; }
+  .campaign-subtitle { font-family: 'Crimson Text', serif; font-style: italic; color: var(--GLD); font-size: 0.95rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  h1 { font-family: 'Cinzel', serif; font-size: clamp(2rem, 6vw, 3.5rem); font-weight: 700; color: var(--parchment); letter-spacing: 0.05em; text-shadow: 0 0 40px rgba(184,146,42,0.3), 0 2px 4px rgba(0,0,0,0.8); line-height: 1.1; }
+  .arc-label { font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--SUB); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 0.75rem; }
 
-  /* Header */
-  header {
-    text-align: center;
-    padding: 3rem 0 2rem;
-    position: relative;
-  }
+  .eclipse-symbol { width: 80px; height: 80px; margin: 0 auto 1.5rem; }
+  .eclipse-symbol svg { width: 100%; height: 100%; filter: drop-shadow(0 0 12px rgba(184,146,42,0.4)); }
 
-  header::after {
-    content: '';
-    display: block;
-    width: 60%;
-    height: 1px;
-    background: linear-gradient(to right, transparent, var(--GLD), transparent);
-    margin: 1.5rem auto 0;
-  }
-
-  .campaign-subtitle {
-    font-family: 'Crimson Text', serif;
-    font-style: italic;
-    color: var(--GLD);
-    font-size: 0.95rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
-  }
-
-  h1 {
-    font-family: 'Cinzel', serif;
-    font-size: clamp(2rem, 6vw, 3.5rem);
-    font-weight: 700;
-    color: var(--parchment);
-    letter-spacing: 0.05em;
-    text-shadow: 0 0 40px rgba(184,146,42,0.3), 0 2px 4px rgba(0,0,0,0.8);
-    line-height: 1.1;
-  }
-
-  .arc-label {
-    font-family: 'Cinzel', serif;
-    font-size: 0.8rem;
-    color: var(--SUB);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    margin-top: 0.75rem;
-  }
-
-  /* Symbole central */
-  .eclipse-symbol {
-    width: 80px;
-    height: 80px;
-    margin: 0 auto 1.5rem;
-    position: relative;
-  }
-
-  .eclipse-symbol svg {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 0 12px rgba(184,146,42,0.4));
-  }
-
-  /* Nav principale */
-  .nav-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1rem;
-    margin: 2.5rem 0;
-  }
-
-  .nav-card {
-    display: block;
-    text-decoration: none;
-    background: rgba(28,58,90,0.12);
-    border: 1px solid rgba(184,146,42,0.2);
-    border-radius: 2px;
-    padding: 1.5rem;
-    transition: all 0.25s ease;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-  }
-
-  .nav-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(184,146,42,0.04) 0%, transparent 60%);
-    opacity: 0;
-    transition: opacity 0.25s;
-  }
-
-  .nav-card:hover {
-    border-color: rgba(184,146,42,0.5);
-    background: rgba(28,58,90,0.2);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(184,146,42,0.1);
-  }
-
+  .nav-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin: 2.5rem 0; }
+  .nav-card { display: block; text-decoration: none; background: rgba(28,58,90,0.12); border: 1px solid rgba(184,146,42,0.2); border-radius: 2px; padding: 1.5rem; transition: all 0.25s ease; position: relative; overflow: hidden; cursor: pointer; }
+  .nav-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(184,146,42,0.04) 0%, transparent 60%); opacity: 0; transition: opacity 0.25s; }
+  .nav-card:hover { border-color: rgba(184,146,42,0.5); background: rgba(28,58,90,0.2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(184,146,42,0.1); }
   .nav-card:hover::before { opacity: 1; }
-
-  .card-icon {
-    font-size: 1.6rem;
-    margin-bottom: 0.75rem;
-    display: block;
-  }
-
-  .card-title {
-    font-family: 'Cinzel', serif;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--GLD);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 0.4rem;
-  }
-
-  .card-desc {
-    font-size: 0.9rem;
-    color: var(--parchment-dark);
-    line-height: 1.5;
-    font-style: italic;
-  }
-
-  .card-tag {
-    display: inline-block;
-    margin-top: 0.75rem;
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    padding: 0.2rem 0.6rem;
-    border-radius: 2px;
-    font-family: 'Cinzel', serif;
-  }
-
+  .card-icon { font-size: 1.6rem; margin-bottom: 0.75rem; display: block; }
+  .card-title { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 600; color: var(--GLD); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .card-desc { font-size: 0.9rem; color: var(--parchment-dark); line-height: 1.5; font-style: italic; }
+  .card-tag { display: inline-block; margin-top: 0.75rem; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 2px; font-family: 'Cinzel', serif; }
   .tag-mj { background: rgba(103,78,167,0.2); color: var(--VIO); border: 1px solid rgba(103,78,167,0.3); }
-  .tag-pj { background: rgba(94,128,79,0.2); color: var(--GRN); border: 1px solid rgba(94,128,79,0.3); }
   .tag-shared { background: rgba(184,146,42,0.15); color: var(--GLD); border: 1px solid rgba(184,146,42,0.3); }
 
-  /* Section persos */
-  .section-title {
-    font-family: 'Cinzel', serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--SUB);
-    margin: 2rem 0 1rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  .section-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: rgba(255,255,255,0.08);
-  }
+  .section-title { font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--SUB); margin: 2rem 0 1rem; display: flex; align-items: center; gap: 1rem; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
 
-  .perso-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
-  }
+  .perso-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+  @media (max-width: 600px) { .perso-grid { grid-template-columns: 1fr; } .nav-grid { grid-template-columns: 1fr; } }
 
-  @media (max-width: 600px) {
-    .perso-grid { grid-template-columns: 1fr; }
-    .nav-grid { grid-template-columns: 1fr; }
-  }
+  .perso-card { display: block; text-decoration: none; background: rgba(10,10,15,0.6); border: 1px solid rgba(255,255,255,0.07); border-radius: 2px; padding: 1.25rem; transition: all 0.2s; position: relative; }
+  .perso-card:hover { border-color: rgba(184,146,42,0.3); background: rgba(28,58,90,0.15); transform: translateY(-1px); }
+  .perso-name { font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 600; color: var(--parchment); margin-bottom: 0.2rem; }
+  .perso-player { font-size: 0.75rem; color: var(--SUB); font-style: italic; margin-bottom: 0.5rem; }
+  .perso-class { font-size: 0.8rem; color: var(--GLD); opacity: 0.8; }
+  .perso-accent { position: absolute; top: 0; left: 0; width: 3px; height: 100%; border-radius: 2px 0 0 2px; }
 
-  .perso-card {
-    display: block;
-    text-decoration: none;
-    background: rgba(10,10,15,0.6);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 2px;
-    padding: 1.25rem;
-    transition: all 0.2s;
-    position: relative;
-  }
-
-  .perso-card:hover {
-    border-color: rgba(184,146,42,0.3);
-    background: rgba(28,58,90,0.15);
-    transform: translateY(-1px);
-  }
-
-  .perso-name {
-    font-family: 'Cinzel', serif;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--parchment);
-    margin-bottom: 0.2rem;
-  }
-
-  .perso-player {
-    font-size: 0.75rem;
-    color: var(--SUB);
-    font-style: italic;
-    margin-bottom: 0.5rem;
-  }
-
-  .perso-class {
-    font-size: 0.8rem;
-    color: var(--GLD);
-    opacity: 0.8;
-  }
-
-  .perso-accent {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 3px;
-    height: 100%;
-    border-radius: 2px 0 0 2px;
-  }
-
-  /* Footer */
-  footer {
-    text-align: center;
-    padding: 2rem 0;
-    color: var(--SUB);
-    font-size: 0.8rem;
-    font-style: italic;
-    border-top: 1px solid rgba(255,255,255,0.05);
-    margin-top: 2rem;
-  }
-
-  /* Ornement */
-  .ornament {
-    text-align: center;
-    color: var(--GLD);
-    opacity: 0.4;
-    font-size: 1.2rem;
-    letter-spacing: 0.5em;
-    margin: 0.5rem 0;
-  }
+  footer { text-align: center; padding: 2rem 0; color: var(--SUB); font-size: 0.8rem; font-style: italic; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 2rem; }
+  .ornament { text-align: center; color: var(--GLD); opacity: 0.4; font-size: 1.2rem; letter-spacing: 0.5em; margin: 0.5rem 0; }
 </style>
 </head>
 <body>
@@ -327,11 +106,11 @@
       <div class="card-desc">Initiative, PNJ, jets de dés, gestion de session en temps réel</div>
       <span class="card-tag tag-mj">MJ uniquement</span>
     </a>
-    <a class="nav-card" href="sareth.html">
-      <span class="card-icon">🌑</span>
-      <div class="card-title">Fiche Sareth</div>
-      <div class="card-desc">Stats, sorts, Traces d'Ombre, jet d'Affinité intégré</div>
-      <span class="card-tag tag-pj">Cassandra</span>
+    <a class="nav-card" href="galerie.html">
+      <span class="card-icon">🖼️</span>
+      <div class="card-title">Galerie</div>
+      <div class="card-desc">PJ, PNJ, créatures, environnements — à afficher en session</div>
+      <span class="card-tag tag-shared">Partagé</span>
     </a>
   </div>
 
@@ -348,7 +127,7 @@
       <div class="perso-accent" style="background: var(--GRN);"></div>
       <div class="perso-name">Den'l Endri</div>
       <div class="perso-player">Séverine</div>
-      <div class="perso-class">Archère · Elfe</div>
+      <div class="perso-class">Chasseuse · Elfe Sylvain</div>
     </a>
     <a class="perso-card" href="azart.html">
       <div class="perso-accent" style="background: var(--GLD);"></div>

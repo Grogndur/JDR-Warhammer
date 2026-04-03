@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galerie — L'Éclipse</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:#0a0a0f; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
+    --GLD:#B8922A; --VIO:#674EA7; --GRN:#5E804F; --SUB:#555566; --BLU:#1C3A5A;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--ink); color:var(--parchment); font-family:'Crimson Text',serif; min-height:100vh; }
+  body::before { content:''; position:fixed; inset:0; background:radial-gradient(ellipse at 50% 0%, rgba(28,58,90,0.12) 0%, transparent 60%); pointer-events:none; z-index:0; }
+
+  nav { position:sticky; top:0; z-index:100; background:rgba(10,10,15,0.93); backdrop-filter:blur(8px); border-bottom:1px solid rgba(184,146,42,0.2); padding:0.6rem 1.5rem; display:flex; align-items:center; gap:1rem; }
+  nav a { color:var(--SUB); text-decoration:none; font-size:0.82rem; font-style:italic; transition:color 0.2s; }
+  nav a:hover { color:var(--GLD); }
+  .nav-current { color:var(--GLD) !important; font-style:normal; font-family:'Cinzel',serif; font-size:0.82rem; }
+  .nav-sep { color:var(--SUB); opacity:0.3; }
+
+  .layout { position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:1.5rem 1rem 3rem; }
+
+  /* TABS CATÉGORIES */
+  .tabs { display:flex; gap:0.5rem; margin-bottom:1.75rem; flex-wrap:wrap; }
+  .tab {
+    font-family:'Cinzel',serif; font-size:0.72rem; letter-spacing:0.15em; text-transform:uppercase;
+    padding:0.45rem 1.1rem; border-radius:2px; cursor:pointer; transition:all 0.2s;
+    border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.03); color:var(--SUB);
+  }
+  .tab:hover { border-color:rgba(184,146,42,0.3); color:var(--parchment-dark); }
+  .tab.active { background:rgba(184,146,42,0.12); border-color:rgba(184,146,42,0.45); color:var(--GLD); }
+  .tab[data-cat="PJ"].active { background:rgba(103,78,167,0.12); border-color:rgba(103,78,167,0.4); color:var(--VIO); }
+  .tab[data-cat="PNJ"].active { background:rgba(28,58,90,0.2); border-color:rgba(28,58,90,0.6); color:#6a9fd8; }
+  .tab[data-cat="CREATURES"].active { background:rgba(139,26,26,0.15); border-color:rgba(139,26,26,0.4); color:#c07070; }
+  .tab[data-cat="ENVIRONNEMENTS"].active { background:rgba(94,128,79,0.12); border-color:rgba(94,128,79,0.4); color:var(--GRN); }
+
+  /* GRILLE */
+  .gallery-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));
+    gap:0.75rem;
+  }
+  @media(max-width:500px){ .gallery-grid { grid-template-columns:repeat(2,1fr); } }
+
+  .img-card {
+    position:relative; border-radius:2px; overflow:hidden; cursor:pointer;
+    border:1px solid rgba(255,255,255,0.06);
+    background:rgba(255,255,255,0.03);
+    aspect-ratio:3/4;
+    transition:all 0.2s;
+  }
+  .img-card:hover { border-color:rgba(184,146,42,0.4); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.5); }
+  .img-card img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.3s; }
+  .img-card:hover img { transform:scale(1.03); }
+  .img-label {
+    position:absolute; bottom:0; left:0; right:0;
+    background:linear-gradient(transparent, rgba(0,0,0,0.85));
+    padding:1rem 0.6rem 0.5rem;
+    font-size:0.82rem; color:var(--parchment-dark);
+    font-style:italic;
+    opacity:0; transition:opacity 0.2s;
+  }
+  .img-card:hover .img-label { opacity:1; }
+
+  /* PLACEHOLDER vide */
+  .empty-state {
+    grid-column:1/-1; text-align:center;
+    padding:3rem 1rem; color:var(--SUB); font-style:italic; font-size:0.95rem;
+    border:1px dashed rgba(255,255,255,0.07); border-radius:2px;
+    line-height:1.8;
+  }
+  .empty-state code {
+    display:inline-block; margin-top:0.75rem;
+    background:rgba(255,255,255,0.05); padding:0.3rem 0.6rem; border-radius:2px;
+    font-family:monospace; font-size:0.82rem; color:var(--GLD); font-style:normal;
+  }
+
+  /* LIGHTBOX */
+  .lightbox {
+    display:none; position:fixed; inset:0; z-index:1000;
+    background:rgba(0,0,0,0.92); backdrop-filter:blur(4px);
+    align-items:center; justify-content:center; padding:1rem;
+  }
+  .lightbox.open { display:flex; }
+  .lightbox-inner { position:relative; max-width:90vw; max-height:90vh; }
+  .lightbox-inner img { max-width:90vw; max-height:85vh; object-fit:contain; border-radius:2px; display:block; box-shadow:0 0 60px rgba(0,0,0,0.8); }
+  .lightbox-caption {
+    text-align:center; margin-top:0.75rem;
+    font-style:italic; color:var(--parchment-dark); font-size:0.9rem;
+  }
+  .lightbox-close {
+    position:fixed; top:1rem; right:1.25rem;
+    font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.15em;
+    color:var(--SUB); cursor:pointer; transition:color 0.2s;
+    background:none; border:none;
+    text-transform:uppercase;
+  }
+  .lightbox-close:hover { color:var(--GLD); }
+  .lightbox-nav {
+    position:fixed; top:50%; transform:translateY(-50%);
+    background:rgba(10,10,15,0.7); border:1px solid rgba(255,255,255,0.1);
+    color:var(--parchment-dark); font-size:1.5rem; cursor:pointer;
+    width:44px; height:44px; border-radius:2px; display:flex; align-items:center; justify-content:center;
+    transition:all 0.15s;
+  }
+  .lightbox-nav:hover { border-color:rgba(184,146,42,0.4); color:var(--GLD); }
+  .lb-prev { left:0.75rem; }
+  .lb-next { right:0.75rem; }
+
+  /* CAT BADGE */
+  .cat-badge {
+    position:absolute; top:0.4rem; right:0.4rem;
+    font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase;
+    padding:0.15rem 0.4rem; border-radius:2px;
+  }
+  .badge-PJ { background:rgba(103,78,167,0.7); color:#d0b8ff; }
+  .badge-PNJ { background:rgba(28,58,90,0.8); color:#8bbcee; }
+  .badge-CREATURES { background:rgba(139,26,26,0.7); color:#f0a0a0; }
+  .badge-ENVIRONNEMENTS { background:rgba(94,128,79,0.7); color:#b8e0a0; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html">← Accueil</a>
+  <span class="nav-sep">·</span>
+  <span class="nav-current">Galerie</span>
+</nav>
+
+<div class="layout">
+  <div class="tabs">
+    <div class="tab active" data-cat="ALL" onclick="filterCat('ALL')">Tout</div>
+    <div class="tab" data-cat="PJ" onclick="filterCat('PJ')">PJ</div>
+    <div class="tab" data-cat="PNJ" onclick="filterCat('PNJ')">PNJ</div>
+    <div class="tab" data-cat="CREATURES" onclick="filterCat('CREATURES')">Créatures</div>
+    <div class="tab" data-cat="ENVIRONNEMENTS" onclick="filterCat('ENVIRONNEMENTS')">Environnements</div>
+  </div>
+
+  <div class="gallery-grid" id="gallery"></div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightboxBtn()">✕ Fermer</button>
+  <button class="lightbox-nav lb-prev" onclick="navLightbox(-1); event.stopPropagation();">‹</button>
+  <div class="lightbox-inner">
+    <img id="lb-img" src="" alt="">
+    <div class="lightbox-caption" id="lb-caption"></div>
+  </div>
+  <button class="lightbox-nav lb-next" onclick="navLightbox(1); event.stopPropagation();">›</button>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// IMAGES — ajoute tes images ici
+// Format : { src: "img/PJ/nomfichier.jpg", label: "Nom affiché", cat: "PJ" }
+// Catégories disponibles : PJ | PNJ | CREATURES | ENVIRONNEMENTS
+// ─────────────────────────────────────────────
+const IMAGES = [
+  // Exemples — remplace par tes vraies images :
+  // { src: "img/PJ/azart.jpg",           label: "Azart",              cat: "PJ" },
+  // { src: "img/PJ/sareth.jpg",          label: "Sareth",             cat: "PJ" },
+  // { src: "img/PJ/denl.jpg",            label: "Den'l Endri",        cat: "PJ" },
+  // { src: "img/PNJ/armand.jpg",         label: "Armand",             cat: "PNJ" },
+  // { src: "img/CREATURES/ghoul.jpg",    label: "Goule",              cat: "CREATURES" },
+  // { src: "img/ENVIRONNEMENTS/manoir.jpg", label: "Manoir Tremmler", cat: "ENVIRONNEMENTS" },
+];
+
+let currentCat = 'ALL';
+let currentIndex = 0;
+let filteredImages = [];
+
+function getFiltered() {
+  return currentCat === 'ALL' ? IMAGES : IMAGES.filter(i => i.cat === currentCat);
+}
+
+function render() {
+  filteredImages = getFiltered();
+  const grid = document.getElementById('gallery');
+  grid.innerHTML = '';
+
+  if (!IMAGES.length) {
+    grid.innerHTML = `<div class="empty-state">
+      Aucune image pour l'instant.<br>
+      Ajoute tes images dans le dossier <code>img/</code> puis référence-les dans le tableau <code>IMAGES</code> de ce fichier.
+    </div>`;
+    return;
+  }
+
+  if (!filteredImages.length) {
+    grid.innerHTML = `<div class="empty-state">Aucune image dans cette catégorie.</div>`;
+    return;
+  }
+
+  filteredImages.forEach((img, i) => {
+    const card = document.createElement('div');
+    card.className = 'img-card';
+    card.innerHTML = `
+      <img src="${img.src}" alt="${img.label}" loading="lazy" onerror="this.parentElement.style.opacity='0.3'">
+      <div class="cat-badge badge-${img.cat}">${img.cat}</div>
+      ${img.label ? `<div class="img-label">${img.label}</div>` : ''}
+    `;
+    card.onclick = () => openLightbox(i);
+    grid.appendChild(card);
+  });
+}
+
+function filterCat(cat) {
+  currentCat = cat;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.cat === cat));
+  render();
+}
+
+function openLightbox(index) {
+  filteredImages = getFiltered();
+  currentIndex = index;
+  updateLightbox();
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function updateLightbox() {
+  const img = filteredImages[currentIndex];
+  document.getElementById('lb-img').src = img.src;
+  document.getElementById('lb-img').alt = img.label || '';
+  document.getElementById('lb-caption').textContent = img.label || '';
+}
+
+function navLightbox(dir) {
+  currentIndex = (currentIndex + dir + filteredImages.length) % filteredImages.length;
+  updateLightbox();
+}
+
+function closeLightbox(e) {
+  if (e.target === document.getElementById('lightbox')) closeLightboxBtn();
+}
+function closeLightboxBtn() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  if (e.key === 'ArrowRight') navLightbox(1);
+  if (e.key === 'ArrowLeft') navLightbox(-1);
+  if (e.key === 'Escape') closeLightboxBtn();
+});
+
+render();
+</script>
+</body>
+</html>
