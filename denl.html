@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Den'l Endri — L'Éclipse</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:#0a0a0f; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
+    --GLD:#B8922A; --VIO:#674EA7; --GRN:#5E804F; --SUB:#555566;
+    --BLU:#1C3A5A; --red:#8b1a1a;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--ink); color:var(--parchment); font-family:'Crimson Text',serif; min-height:100vh; }
+  body::before { content:''; position:fixed; inset:0; background:radial-gradient(ellipse at 30% 0%, rgba(94,128,79,0.07) 0%, transparent 55%); pointer-events:none; z-index:0; }
+
+  nav { position:sticky; top:0; z-index:100; background:rgba(10,10,15,0.93); backdrop-filter:blur(8px); border-bottom:1px solid rgba(94,128,79,0.2); padding:0.6rem 1.5rem; display:flex; align-items:center; gap:1rem; }
+  nav a { color:var(--SUB); text-decoration:none; font-size:0.82rem; font-style:italic; transition:color 0.2s; }
+  nav a:hover { color:var(--GLD); }
+  .nav-current { color:var(--GRN) !important; font-style:normal; font-family:'Cinzel',serif; font-size:0.82rem; }
+  .nav-sep { color:var(--SUB); opacity:0.3; }
+
+  .layout { position:relative; z-index:1; max-width:980px; margin:0 auto; padding:1.5rem 1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media(max-width:680px){ .layout { grid-template-columns:1fr; } }
+
+  .perso-header { grid-column:1/-1; display:flex; align-items:flex-end; gap:1.5rem; padding-bottom:1.25rem; border-bottom:1px solid rgba(94,128,79,0.2); flex-wrap:wrap; }
+  .perso-avatar { width:58px; height:58px; border-radius:2px; background:linear-gradient(135deg,rgba(94,128,79,0.15),rgba(53,53,66,0.25)); border:1px solid rgba(94,128,79,0.35); display:flex; align-items:center; justify-content:center; font-size:1.7rem; flex-shrink:0; }
+  .perso-info h1 { font-family:'Cinzel',serif; font-size:2rem; font-weight:700; line-height:1; letter-spacing:0.05em; }
+  .perso-info .sub { font-style:italic; color:var(--GRN); font-size:0.95rem; margin-top:0.2rem; }
+  .perso-info .player { color:var(--SUB); font-size:0.78rem; margin-top:0.15rem; letter-spacing:0.05em; }
+  .perso-meta { margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:0.3rem; font-size:0.8rem; color:var(--SUB); font-style:italic; }
+  .perso-meta span { color:var(--parchment-dark); font-style:normal; }
+
+  .card { background:rgba(10,10,15,0.65); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:1.1rem; }
+  .card.grn { border-color:rgba(94,128,79,0.18); }
+  .card-title { font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.9rem; display:flex; align-items:center; gap:0.5rem; }
+  .card-title::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.05); }
+  .card-title.gld { color:var(--GLD); }
+  .card-title.vio { color:var(--VIO); }
+  .card-title.grn { color:var(--GRN); }
+
+  .stats-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:0.45rem; }
+  @media(max-width:400px){ .stats-grid { grid-template-columns:repeat(3,1fr); } }
+  .stat-box { background:rgba(94,128,79,0.05); border:1px solid rgba(94,128,79,0.12); border-radius:2px; padding:0.45rem 0.3rem; text-align:center; }
+  .stat-label { font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); display:block; margin-bottom:0.15rem; }
+  .stat-val { font-family:'Cinzel',serif; font-size:1.25rem; font-weight:600; line-height:1; display:block; }
+  .stat-bonus { font-size:0.62rem; color:var(--GRN); opacity:0.7; display:block; margin-top:0.1rem; }
+
+  .res-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.75rem; }
+  .res-box { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:0.6rem; text-align:center; }
+  .res-label { font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.3rem; display:block; }
+  .res-val { font-family:'Cinzel',serif; font-size:1.5rem; line-height:1; display:block; }
+  .res-sub { font-size:0.7rem; color:var(--SUB); margin-top:0.1rem; display:block; }
+
+  .wounds-ctrl { display:flex; align-items:center; gap:0.5rem; justify-content:center; margin-top:0.5rem; }
+  .btn-small { width:30px; height:30px; border-radius:2px; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; font-weight:bold; }
+  .btn-wound { background:rgba(139,26,26,0.2); border:1px solid rgba(139,26,26,0.4); color:#e08080; }
+  .btn-wound:hover { background:rgba(139,26,26,0.35); }
+  .btn-heal { background:rgba(94,128,79,0.15); border:1px solid rgba(94,128,79,0.35); color:var(--GRN); }
+  .btn-heal:hover { background:rgba(94,128,79,0.3); }
+
+  .fortune-pip { width:24px; height:24px; border-radius:50%; border:1.5px solid rgba(184,146,42,0.5); cursor:pointer; transition:all 0.15s; background:transparent; }
+  .fortune-pip.active { background:var(--GLD); box-shadow:0 0 5px rgba(184,146,42,0.4); border-color:var(--GLD); }
+
+  .skill-list { list-style:none; }
+  .skill-list li { display:flex; justify-content:space-between; align-items:center; padding:0.3rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.87rem; }
+  .skill-list li:last-child { border-bottom:none; }
+  .skill-name { color:var(--parchment-dark); }
+  .skill-val { font-family:'Cinzel',serif; color:var(--GLD); font-size:0.9rem; font-weight:600; min-width:28px; text-align:right; }
+
+  .talent-list { list-style:none; }
+  .talent-list li { padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.87rem; }
+  .talent-list li:last-child { border-bottom:none; }
+  .talent-name { color:var(--GLD); font-weight:600; }
+  .talent-desc { color:var(--SUB); font-size:0.8rem; font-style:italic; display:block; margin-top:0.1rem; }
+
+  .armor-table { width:100%; border-collapse:collapse; font-size:0.82rem; margin-bottom:0.75rem; }
+  .armor-table th { text-align:left; color:var(--SUB); font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.2rem 0.4rem 0.4rem; font-weight:400; border-bottom:1px solid rgba(255,255,255,0.05); }
+  .armor-table td { padding:0.3rem 0.4rem; border-bottom:1px solid rgba(255,255,255,0.03); color:var(--parchment-dark); }
+  .armor-pa { font-family:'Cinzel',serif; color:var(--GLD); font-weight:600; }
+
+  .weapon-item { padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .weapon-item:last-child { border-bottom:none; }
+  .weapon-name { color:var(--parchment); font-size:0.9rem; font-weight:600; }
+  .weapon-stats { display:flex; gap:0.75rem; margin-top:0.2rem; flex-wrap:wrap; }
+  .weapon-stat { font-size:0.72rem; }
+  .weapon-stat-label { color:var(--SUB); }
+  .weapon-stat-val { color:var(--GLD); font-family:'Cinzel',serif; }
+
+  .inv-item { display:flex; justify-content:space-between; align-items:center; padding:0.3rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.85rem; gap:0.5rem; }
+  .inv-item:last-child { border-bottom:none; }
+  .inv-name { color:var(--parchment-dark); flex:1; }
+  .inv-detail { font-size:0.72rem; color:var(--SUB); font-style:italic; white-space:nowrap; }
+
+  .money-row { display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap; margin-top:0.25rem; }
+  .money-item { display:flex; flex-direction:column; align-items:center; gap:0.1rem; }
+  .money-val { font-family:'Cinzel',serif; font-size:1.4rem; color:var(--GLD); }
+  .money-label { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); }
+  .money-btns { display:flex; gap:0.2rem; margin-top:0.2rem; }
+  .money-btn { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); color:var(--SUB); cursor:pointer; font-size:0.7rem; width:20px; height:20px; border-radius:1px; transition:all 0.15s; display:flex; align-items:center; justify-content:center; }
+  .money-btn:hover { color:var(--GLD); border-color:rgba(184,146,42,0.3); }
+
+  .xp-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; text-align:center; }
+  .xp-box { background:rgba(103,78,167,0.08); border:1px solid rgba(103,78,167,0.15); border-radius:2px; padding:0.5rem; }
+  .xp-label { font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--VIO); display:block; margin-bottom:0.2rem; opacity:0.8; }
+  .xp-val { font-family:'Cinzel',serif; font-size:1.2rem; }
+
+  .notes-area { width:100%; background:rgba(10,10,15,0.5); border:1px solid rgba(255,255,255,0.07); border-radius:2px; color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.65rem; resize:vertical; min-height:70px; line-height:1.5; }
+  .notes-area:focus { outline:none; border-color:rgba(94,128,79,0.35); }
+
+  .btn-save { background:rgba(94,128,79,0.12); border:1px solid rgba(94,128,79,0.35); color:var(--GRN); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.35rem 0.75rem; border-radius:2px; cursor:pointer; margin-top:0.5rem; transition:background 0.15s; }
+  .btn-save:hover { background:rgba(94,128,79,0.22); }
+  .save-confirm { font-size:0.78rem; color:var(--GRN); margin-left:0.75rem; opacity:0; transition:opacity 0.5s; }
+
+  .trait-block { font-size:0.86rem; line-height:1.55; color:var(--parchment-dark); margin-bottom:0.5rem; }
+  .ambition-label { font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--VIO); margin-bottom:0.2rem; display:block; opacity:0.9; }
+
+  .full { grid-column:1/-1; }
+  .italic-note { font-style:italic; color:var(--SUB); font-size:0.8rem; line-height:1.45; margin-bottom:0.6rem; }
+
+  .trait-line { font-size:0.85rem; line-height:1.6; color:var(--parchment-dark); padding:0.15rem 0; }
+  .trait-line.plus { color:var(--GRN); }
+  .trait-line.minus { color:#c07060; }
+  .trait-line strong { font-style:normal; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html">← Accueil</a>
+  <span class="nav-sep">·</span>
+  <span class="nav-current">Den'l Endri</span>
+</nav>
+
+<div class="layout">
+
+  <!-- HEADER -->
+  <div class="perso-header">
+    <div class="perso-avatar">🏹</div>
+    <div class="perso-info">
+      <h1>Den'l Endri</h1>
+      <div class="sub">Chasseuse · Gladiatrice · Guerrier Échelon 1 Pugiliste</div>
+      <div class="player">Séverine · Elfe Sylvain · 124 ans · Bronze 4</div>
+    </div>
+    <div class="perso-meta">
+      <div>Taille <span>1m86</span> · Poids <span>71 kg</span></div>
+      <div>Longs blonds, yeux verts perçants</div>
+    </div>
+  </div>
+
+  <!-- CARACTÉRISTIQUES -->
+  <div class="card grn full">
+    <div class="card-title grn">Caractéristiques</div>
+    <div class="stats-grid">
+      <div class="stat-box">
+        <span class="stat-label">CC</span>
+        <span class="stat-val">55</span>
+        <span class="stat-bonus">B:5</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">CT</span>
+        <span class="stat-val">40</span>
+        <span class="stat-bonus">B:4</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">F</span>
+        <span class="stat-val" style="color:#c0502a;">40 ★</span>
+        <span class="stat-bonus">B:4</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">End</span>
+        <span class="stat-val" style="color:#c0502a;">42 ★</span>
+        <span class="stat-bonus">B:4</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Ini</span>
+        <span class="stat-val">53</span>
+        <span class="stat-bonus">B:5</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Ag</span>
+        <span class="stat-val">40</span>
+        <span class="stat-bonus">B:4</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Dex</span>
+        <span class="stat-val">34</span>
+        <span class="stat-bonus">B:3</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Int</span>
+        <span class="stat-val">47</span>
+        <span class="stat-bonus">B:4</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">FM</span>
+        <span class="stat-val" style="color:#c0502a;">35 ★</span>
+        <span class="stat-bonus">B:3</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Soc</span>
+        <span class="stat-val">29</span>
+        <span class="stat-bonus">B:2</span>
+      </div>
+    </div>
+    <div style="font-size:0.7rem;color:var(--SUB);margin-top:0.5rem;font-style:italic;">★ Caractéristique avec bonus racial (×1)</div>
+  </div>
+
+  <!-- ÉTAT & RESSOURCES -->
+  <div class="card grn">
+    <div class="card-title" style="color:#c0392b;">État & Ressources</div>
+    <div class="res-grid">
+      <div class="res-box">
+        <span class="res-label">Blessures</span>
+        <span class="res-val" id="wounds-cur">19</span>
+        <span class="res-sub">/ 19 max</span>
+        <div class="wounds-ctrl">
+          <button class="btn-small btn-wound" onclick="changeWound(-1)">−</button>
+          <button class="btn-small btn-heal" onclick="changeWound(1)">+</button>
+        </div>
+      </div>
+      <div class="res-box">
+        <span class="res-label">Mouvement</span>
+        <span class="res-val">5</span>
+        <span class="res-sub">cases / tour</span>
+      </div>
+    </div>
+    <div style="margin-bottom:0.6rem;">
+      <div class="card-title" style="color:var(--GLD);margin-bottom:0.4rem;font-size:0.62rem;">Destin & Chance</div>
+      <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Destin</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--GLD);">1</span>
+          <div style="display:flex;gap:0.3rem;" id="chance-pips"></div>
+        </div>
+        <div style="color:var(--SUB);font-size:1rem;">→</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Chance</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--parchment);" id="chance-val">1</span>
+          <div style="display:flex;gap:0.3rem;" id="chance-track"></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:0.75rem;">
+      <div class="card-title" style="color:var(--VIO);margin-bottom:0.4rem;font-size:0.62rem;">Résilience & Détermination</div>
+      <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Résilience</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--VIO);">2</span>
+        </div>
+        <div style="color:var(--SUB);font-size:1rem;">→</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Détermination</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--parchment);" id="determ-val">2</span>
+          <div style="display:flex;gap:0.3rem;" id="determ-pips"></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card-title" style="margin-bottom:0.4rem;font-size:0.62rem;">Monnaie</div>
+      <div class="money-row">
+        <div class="money-item">
+          <span class="money-val" id="money-or">0</span>
+          <span class="money-label">CO</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('or',-1)">−</button>
+            <button class="money-btn" onclick="chMoney('or',1)">+</button>
+          </div>
+        </div>
+        <div class="money-item">
+          <span class="money-val" id="money-argent">0</span>
+          <span class="money-label">PA</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('argent',-1)">−</button>
+            <button class="money-btn" onclick="chMoney('argent',1)">+</button>
+          </div>
+        </div>
+        <div class="money-item">
+          <span class="money-val" id="money-cuivre">0</span>
+          <span class="money-label">SC</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('cuivre',-1)">−</button>
+            <button class="money-btn" onclick="chMoney('cuivre',1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- XP & AMBITIONS -->
+  <div class="card">
+    <div class="card-title vio">Expérience & Ambitions</div>
+    <div class="xp-row" style="margin-bottom:0.9rem;">
+      <div class="xp-box">
+        <span class="xp-label">Actuelle</span>
+        <span class="xp-val">0</span>
+      </div>
+      <div class="xp-box">
+        <span class="xp-label">Dépensée</span>
+        <span class="xp-val">100</span>
+      </div>
+      <div class="xp-box">
+        <span class="xp-label">Totale</span>
+        <span class="xp-val">0</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:1.5rem;margin-bottom:0.75rem;flex-wrap:wrap;">
+      <div>
+        <span class="ambition-label">Corruption / Stress / Mutations</span>
+        <div style="display:flex;gap:1rem;">
+          <div style="text-align:center;"><span style="font-family:'Cinzel',serif;font-size:1.1rem;">0</span><br><span style="font-size:0.65rem;color:var(--SUB);">Corruption</span></div>
+          <div style="text-align:center;"><span style="font-family:'Cinzel',serif;font-size:1.1rem;">0</span><br><span style="font-size:0.65rem;color:var(--SUB);">Stress</span></div>
+          <div style="text-align:center;"><span style="font-family:'Cinzel',serif;font-size:1.1rem;">0</span><br><span style="font-size:0.65rem;color:var(--SUB);">Mutations</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:0.6rem;">
+      <span class="ambition-label">Ambition courte</span>
+      <div class="trait-block">Se sentir utile à sa façon et sans avoir à se justifier.</div>
+    </div>
+    <div style="margin-bottom:0.6rem;">
+      <span class="ambition-label">Ambition longue</span>
+      <div class="trait-block">Assumer une voie elfique dure, mais morale, qui tranche quand personne n'ose.</div>
+    </div>
+    <div>
+      <span class="ambition-label">Motivation</span>
+      <div class="trait-block">Protéger Sareth. Respecter ses convictions.</div>
+    </div>
+  </div>
+
+  <!-- COMPÉTENCES DE BASE -->
+  <div class="card">
+    <div class="card-title gld">Compétences de base</div>
+    <ul class="skill-list">
+      <li><span class="skill-name">Athlétisme</span><span class="skill-val">40</span></li>
+      <li><span class="skill-name">Corps à Corps (Base)</span><span class="skill-val">58</span></li>
+      <li><span class="skill-name">Discrétion</span><span class="skill-val">40</span></li>
+      <li><span class="skill-name">Escalade</span><span class="skill-val">45</span></li>
+      <li><span class="skill-name">Esquive</span><span class="skill-val">40</span></li>
+      <li><span class="skill-name">Intimidation</span><span class="skill-val">40</span></li>
+      <li><span class="skill-name">Intuition</span><span class="skill-val">53</span></li>
+      <li><span class="skill-name">Jeu</span><span class="skill-val">47</span></li>
+      <li><span class="skill-name">Navigation</span><span class="skill-val">53</span></li>
+      <li><span class="skill-name">Perception</span><span class="skill-val">63</span></li>
+      <li><span class="skill-name">Résistance</span><span class="skill-val">47</span></li>
+      <li><span class="skill-name">Résistance à l'alcool</span><span class="skill-val">42</span></li>
+      <li><span class="skill-name">Survie en extérieur</span><span class="skill-val">55</span></li>
+    </ul>
+  </div>
+
+  <!-- COMPÉTENCES AVANCÉES -->
+  <div class="card">
+    <div class="card-title vio">Compétences avancées</div>
+    <ul class="skill-list">
+      <li><span class="skill-name">Discrétion (Rurale) <span style="color:var(--SUB);font-size:0.72rem;">(Ag)</span></span><span class="skill-val">45</span></li>
+      <li><span class="skill-name">Pistage <span style="color:var(--SUB);font-size:0.72rem;">(I)</span></span><span class="skill-val">56</span></li>
+      <li><span class="skill-name">Projectiles (Arc) <span style="color:var(--SUB);font-size:0.72rem;">(CT)</span></span><span class="skill-val">45</span></li>
+      <li><span class="skill-name">Emprise sur les animaux <span style="color:var(--SUB);font-size:0.72rem;">(FM)</span></span><span class="skill-val">40</span></li>
+      <li><span class="skill-name">Piégeage <span style="color:var(--SUB);font-size:0.72rem;">(Dex)</span></span><span class="skill-val">39</span></li>
+      <li><span class="skill-name">Corps à corps (Arme à 2 mains) <span style="color:var(--SUB);font-size:0.72rem;">(CC)</span></span><span class="skill-val">55</span></li>
+      <li><span class="skill-name">Savoir (Bêtes) <span style="color:var(--SUB);font-size:0.72rem;">(Int)</span></span><span class="skill-val">52</span></li>
+    </ul>
+  </div>
+
+  <!-- TALENTS -->
+  <div class="card">
+    <div class="card-title gld">Talents & Capacités</div>
+    <ul class="talent-list">
+      <li>
+        <span class="talent-name">Dur à Cuire</span>
+        <span class="talent-desc">Gain d'autant de Points de B. que votre BE, continu et exponentiel.</span>
+      </li>
+      <li>
+        <span class="talent-name">Bonne marcheuse (Forêt)</span>
+        <span class="talent-desc">Ignore les pénalités de ce milieu.</span>
+      </li>
+      <li>
+        <span class="talent-name">Trappeuse</span>
+        <span class="talent-desc">+10 détection et utilisation des pièges.</span>
+      </li>
+    </ul>
+    <div style="margin-top:0.75rem;padding-top:0.6rem;border-top:1px solid rgba(255,255,255,0.05);">
+      <div class="card-title" style="color:var(--SUB);margin-bottom:0.5rem;font-size:0.62rem;">Traits raciaux & capacités spéciales</div>
+      <ul style="list-style:none;font-size:0.83rem;line-height:1.8;color:var(--parchment-dark);">
+        <li>· <strong style="color:var(--parchment);">Très Résistant</strong> : +5 E.</li>
+        <li>· <strong style="color:var(--parchment);">Sens aiguisé (vue)</strong> : Tests de Perception pour détails normalement imperceptibles.</li>
+        <li>· <strong style="color:var(--parchment);">Vision nocturne</strong> : voir dans la pénombre à 20m, étend la distance d'illumination de 20m par niveau.</li>
+        <li>· <strong style="color:var(--parchment);">Seconde vue</strong> : perçoit subtilement les vents de magie et leurs traces.</li>
+        <li>· <strong style="color:var(--parchment);">Nomade</strong> : en contexte Rural, ne peut être détectée que si on est spécifiquement à l'affût. Pas de Test de Perception passif.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ARMURE & ARMES -->
+  <div class="card">
+    <div class="card-title gld">Armure</div>
+    <table class="armor-table">
+      <thead>
+        <tr><th>Localisation</th><th>PA</th><th>Loc.</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Tête</td><td class="armor-pa">0</td><td>01-09</td></tr>
+        <tr><td>Bras droit</td><td class="armor-pa">1</td><td>10-24</td></tr>
+        <tr><td>Bras gauche</td><td class="armor-pa">1</td><td>25-44</td></tr>
+        <tr><td>Corps</td><td class="armor-pa">1</td><td>45-79</td></tr>
+        <tr><td>Jambe dr.</td><td class="armor-pa">0</td><td>80-89</td></tr>
+        <tr><td>Jambe gau.</td><td class="armor-pa">0</td><td>90-00</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-bottom:0.5rem;">
+      <div class="inv-item"><span class="inv-name">Veste de suir</span><span class="inv-detail">PA 1 · −1 Ag · Résistante, Lourde</span></div>
+      <div class="inv-item"><span class="inv-name">Cotte de mailles</span><span class="inv-detail">PA 0 · −1 Ag · Résistante, Lourde</span></div>
+    </div>
+
+    <div class="card-title gld" style="margin-top:0.75rem;margin-bottom:0.5rem;">Armes</div>
+    <div class="weapon-item">
+      <div class="weapon-name">Épées jumelles Elfiques</div>
+      <div class="weapon-stats">
+        <span class="weapon-stat"><span class="weapon-stat-label">All. </span><span class="weapon-stat-val">Moyenne</span></span>
+        <span class="weapon-stat"><span class="weapon-stat-label">Dég. </span><span class="weapon-stat-val">BF+4</span></span>
+        <span class="weapon-stat"><span class="weapon-stat-label">Attr. </span><span class="weapon-stat-val">Tranchantes</span></span>
+      </div>
+    </div>
+    <div class="weapon-item">
+      <div class="weapon-name">Dague</div>
+      <div class="weapon-stats">
+        <span class="weapon-stat"><span class="weapon-stat-label">All. </span><span class="weapon-stat-val">Très courte</span></span>
+        <span class="weapon-stat"><span class="weapon-stat-label">Dég. </span><span class="weapon-stat-val">BF+2</span></span>
+      </div>
+    </div>
+    <div class="weapon-item">
+      <div class="weapon-name">Arc</div>
+      <div class="weapon-stats">
+        <span class="weapon-stat"><span class="weapon-stat-label">Portée </span><span class="weapon-stat-val">50m</span></span>
+        <span class="weapon-stat"><span class="weapon-stat-label">Dég. </span><span class="weapon-stat-val">BF+3</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVENTAIRE -->
+  <div class="card">
+    <div class="card-title grn">Inventaire</div>
+    <div class="inv-item"><span class="inv-name">Besace</span><span class="inv-detail">Portée en bandoulière</span></div>
+    <div class="inv-item"><span class="inv-name">Cape épaisse</span><span class="inv-detail">Sur soi ou besace</span></div>
+    <div class="inv-item"><span class="inv-name">Bottes</span><span class="inv-detail">Sur soi</span></div>
+    <div class="inv-item"><span class="inv-name">Assortiment de pièges à animaux</span><span class="inv-detail">Besace</span></div>
+    <div class="inv-item"><span class="inv-name">Vêtements courants (forestier)</span><span class="inv-detail">Sur soi ou besace</span></div>
+  </div>
+
+  <!-- ATOUTS & DÉFAUTS -->
+  <div class="card">
+    <div class="card-title grn">Atouts & Défauts</div>
+    <div class="trait-line plus">+ Excellente survivante, connaissance impressionnante de la nature.</div>
+    <div class="trait-line plus">+ Instinct et sens quasi surnaturels.</div>
+    <div class="trait-line plus">+ Combattante très complète, compagne d'aventure parfaite.</div>
+    <div class="trait-line plus">+ Surprenamment brutale pour une elfe.</div>
+    <div class="trait-line plus" style="margin-bottom:0.5rem;">+ Loyale, fraternelle, vive, alerte et intègre.</div>
+    <div class="trait-line minus">− Caractère parfois bourru, naïve et socialement maladroite sans le vouloir.</div>
+    <div class="trait-line minus">− Ne perçoit pas toujours certains aspects sociaux subtils. Sareth veille sur cet aspect.</div>
+    <div class="trait-line minus">− Fonceuse, ça n'a pas toujours du bon.</div>
+  </div>
+
+  <!-- NOTES SESSION -->
+  <div class="card full">
+    <div class="card-title">Notes de session</div>
+    <div style="font-size:0.82rem;color:var(--SUB);font-style:italic;margin-bottom:0.5rem;line-height:1.5;">
+      Objectif : trouver et acheter une bonne arme à deux mains, de préférence une épée · Garder un œil sur le jeunot
+    </div>
+    <textarea class="notes-area" id="session-notes" rows="4" placeholder="Plans, contacts, observations..."></textarea>
+    <button class="btn-save" onclick="saveAll()">Sauvegarder</button>
+    <span class="save-confirm" id="save-confirm">✓ Sauvegardé</span>
+  </div>
+
+</div>
+
+<script>
+let state = {
+  wounds: 19,
+  chance: 1,
+  determ: 2,
+  money: { or: 0, argent: 0, cuivre: 0 },
+  notes: ''
+};
+
+function load() {
+  const s = localStorage.getItem('denl_v1');
+  if (s) try { Object.assign(state, JSON.parse(s)); } catch(e) {}
+  document.getElementById('wounds-cur').textContent = state.wounds;
+  updateWoundColor();
+  ['or','argent','cuivre'].forEach(k => document.getElementById('money-'+k).textContent = state.money[k] || 0);
+  document.getElementById('session-notes').value = state.notes || '';
+  renderChance(); renderDeterm();
+}
+
+function save() { localStorage.setItem('denl_v1', JSON.stringify(state)); }
+
+function changeWound(d) {
+  state.wounds = Math.max(0, Math.min(19, state.wounds + d));
+  document.getElementById('wounds-cur').textContent = state.wounds;
+  updateWoundColor(); save();
+}
+function updateWoundColor() {
+  const el = document.getElementById('wounds-cur');
+  const p = state.wounds / 19;
+  el.style.color = p > 0.6 ? 'var(--parchment)' : p > 0.3 ? '#e8a040' : '#e05050';
+}
+
+function chMoney(k, d) {
+  state.money[k] = Math.max(0, (state.money[k] || 0) + d);
+  document.getElementById('money-' + k).textContent = state.money[k];
+  save();
+}
+
+function makePips(containerId, current, max, onClickFn) {
+  const c = document.getElementById(containerId); c.innerHTML = '';
+  for (let i = 0; i < max; i++) {
+    const p = document.createElement('div');
+    p.className = 'fortune-pip' + (i < current ? ' active' : '');
+    p.onclick = () => onClickFn(i < current ? i : i + 1);
+    c.appendChild(p);
+  }
+}
+
+function renderChance() {
+  makePips('chance-track', state.chance, 1, v => { state.chance = v; save(); renderChance(); });
+}
+function renderDeterm() {
+  makePips('determ-pips', state.determ, 2, v => { state.determ = v; save(); renderDeterm(); });
+}
+
+function saveAll() {
+  state.notes = document.getElementById('session-notes').value;
+  save();
+  const c = document.getElementById('save-confirm');
+  c.style.opacity = '1'; setTimeout(() => c.style.opacity = '0', 2000);
+}
+document.getElementById('session-notes').addEventListener('blur', saveAll);
+load();
+</script>
+</body>
+</html>
