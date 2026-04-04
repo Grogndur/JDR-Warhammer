@@ -69,20 +69,6 @@
 
   footer { text-align: center; padding: 2rem 0; color: var(--SUB); font-size: 0.8rem; font-style: italic; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 2rem; }
   .ornament { text-align: center; color: var(--GLD); opacity: 0.4; font-size: 1.2rem; letter-spacing: 0.5em; margin: 0.5rem 0; }
-
-  /* MODALE MOT DE PASSE */
-  .pwd-overlay { display:none; position:fixed; inset:0; z-index:500; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px); align-items:center; justify-content:center; }
-  .pwd-overlay.open { display:flex; }
-  .pwd-box { background:#0d0d14; border:1px solid rgba(184,146,42,0.3); border-radius:2px; padding:2rem; width:320px; max-width:90vw; text-align:center; }
-  .pwd-title { font-family:'Cinzel',serif; font-size:0.85rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--GLD); margin-bottom:0.4rem; }
-  .pwd-sub { font-size:0.82rem; color:var(--SUB); font-style:italic; margin-bottom:1.25rem; }
-  .pwd-input { width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:2px; color:var(--parchment); font-family:'Crimson Text',serif; font-size:1rem; padding:0.55rem 0.75rem; text-align:center; letter-spacing:0.05em; margin-bottom:0.75rem; }
-  .pwd-input:focus { outline:none; border-color:rgba(184,146,42,0.4); }
-  .pwd-btn { width:100%; font-family:'Cinzel',serif; font-size:0.72rem; letter-spacing:0.15em; text-transform:uppercase; padding:0.55rem; border-radius:2px; cursor:pointer; background:rgba(184,146,42,0.15); border:1px solid rgba(184,146,42,0.4); color:var(--GLD); transition:background 0.15s; }
-  .pwd-btn:hover { background:rgba(184,146,42,0.28); }
-  .pwd-error { font-size:0.8rem; color:#c07070; margin-top:0.5rem; min-height:1.1rem; font-style:italic; }
-  .pwd-cancel { font-size:0.75rem; color:var(--SUB); cursor:pointer; margin-top:0.75rem; display:inline-block; }
-  .pwd-cancel:hover { color:var(--parchment-dark); }
 </style>
 </head>
 <body>
@@ -108,16 +94,16 @@
   <div class="section-title">Navigation principale</div>
 
   <div class="nav-grid">
-    <a class="nav-card" href="#" onclick="openScenario(event)">
+    <a class="nav-card" href="scenario.html">
       <span class="card-icon">📖</span>
       <div class="card-title">Script de campagne</div>
       <div class="card-desc">Acte 1 & 2 complets — navigation par scène, recherche intégrée</div>
       <span class="card-tag tag-mj">MJ uniquement</span>
     </a>
-    <a class="nav-card" href="tracker.html">
+    <a class="nav-card" href="dashboard.html">
       <span class="card-icon">⚔️</span>
-      <div class="card-title">Tracker Combat</div>
-      <div class="card-desc">Initiative, blessures, états — gestion de combat en temps réel</div>
+      <div class="card-title">Tableau de bord MJ</div>
+      <div class="card-desc">Initiative, PNJ, jets de dés, gestion de session en temps réel</div>
       <span class="card-tag tag-mj">MJ uniquement</span>
     </a>
     <a class="nav-card" href="galerie.html">
@@ -156,56 +142,6 @@
   </footer>
 </div>
 
-<!-- MODALE MOT DE PASSE -->
-<div class="pwd-overlay" id="pwd-overlay">
-  <div class="pwd-box">
-    <div class="pwd-title">Accès restreint</div>
-    <div class="pwd-sub">Script de campagne — MJ uniquement</div>
-    <input class="pwd-input" type="password" id="pwd-input" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')checkPwd()">
-    <button class="pwd-btn" onclick="checkPwd()">Entrer</button>
-    <div class="pwd-error" id="pwd-error"></div>
-    <span class="pwd-cancel" onclick="closePwd()">Annuler</span>
-  </div>
-</div>
 
-<script>
-const HASH = '7c4d1c7b3e2f6a1d9e8b5c2f4a3d7e1b9c6f2a8d4e7b3c1f5a9d2e6b8c4f3a1d';
-
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-function openScenario(e) {
-  e.preventDefault();
-  document.getElementById('pwd-overlay').classList.add('open');
-  setTimeout(() => document.getElementById('pwd-input').focus(), 100);
-}
-
-function closePwd() {
-  document.getElementById('pwd-overlay').classList.remove('open');
-  document.getElementById('pwd-input').value = '';
-  document.getElementById('pwd-error').textContent = '';
-}
-
-async function checkPwd() {
-  const val = document.getElementById('pwd-input').value;
-  const hash = await sha256(val);
-  // Hash de "abimedenoirceur"
-  const correct = await sha256('abimedenoirceur');
-  if (hash === correct) {
-    closePwd();
-    window.location.href = 'scenario.html';
-  } else {
-    document.getElementById('pwd-error').textContent = 'Mot de passe incorrect.';
-    document.getElementById('pwd-input').value = '';
-    document.getElementById('pwd-input').focus();
-  }
-}
-
-document.getElementById('pwd-overlay').addEventListener('click', function(e) {
-  if (e.target === this) closePwd();
-});
-</script>
 </body>
 </html>

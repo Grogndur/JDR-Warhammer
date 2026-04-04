@@ -115,6 +115,17 @@ strong{color:var(--parchment);font-weight:600;}
 .sidebar-open .main{pointer-events:none;}
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-thumb{background:rgba(184,146,42,0.2);border-radius:3px;}
+
+.pwd-overlay { display:flex; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.95); align-items:center; justify-content:center; }
+.pwd-overlay.unlocked { display:none; }
+.pwd-box { background:#0d0d14; border:1px solid rgba(184,146,42,0.3); border-radius:2px; padding:2rem; width:320px; max-width:90vw; text-align:center; }
+.pwd-title { font-family:'Cinzel',serif; font-size:0.85rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--GLD); margin-bottom:0.4rem; }
+.pwd-sub { font-size:0.82rem; color:var(--SUB); font-style:italic; margin-bottom:1.25rem; }
+.pwd-input { width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:2px; color:var(--parchment); font-family:'Crimson Text',serif; font-size:1rem; padding:0.55rem 0.75rem; text-align:center; letter-spacing:0.05em; margin-bottom:0.75rem; }
+.pwd-input:focus { outline:none; border-color:rgba(184,146,42,0.4); }
+.pwd-btn { width:100%; font-family:'Cinzel',serif; font-size:0.72rem; letter-spacing:0.15em; text-transform:uppercase; padding:0.55rem; border-radius:2px; cursor:pointer; background:rgba(184,146,42,0.15); border:1px solid rgba(184,146,42,0.4); color:var(--GLD); }
+.pwd-error { font-size:0.8rem; color:#c07070; margin-top:0.5rem; min-height:1.1rem; font-style:italic; }
+.pwd-home { font-size:0.75rem; color:var(--SUB); margin-top:0.75rem; display:inline-block; text-decoration:none; }
 </style>
 
 <style>
@@ -150,6 +161,18 @@ strong{color:var(--parchment);font-weight:600;}
 
 </head>
 <body>
+
+
+<div class="pwd-overlay" id="pwd-overlay">
+  <div class="pwd-box">
+    <div class="pwd-title">L'Éclipse — Scénario</div>
+    <div class="pwd-sub">Accès réservé au MJ</div>
+    <input class="pwd-input" type="password" id="pwd-input" placeholder="Mot de passe" autofocus>
+    <button class="pwd-btn" id="pwd-btn">Entrer</button>
+    <div class="pwd-error" id="pwd-error"></div>
+    <a class="pwd-home" href="index.html">← Retour à l'accueil</a>
+  </div>
+</div>
 
 <div class="topbar">
   <button class="btn-menu" onclick="toggleSidebar()">&#9776; Menu</button>
@@ -1901,6 +1924,42 @@ function doSearch(q) {
 document.addEventListener('click',e=>{
   if(!e.target.closest('.topbar-right')) document.getElementById('search-results').classList.remove('visible');
 });
+
+// Protection mot de passe intégrée
+(function() {
+  var KEY = 'eclipse_scenario_unlocked';
+  var overlay = document.getElementById('pwd-overlay');
+  var input = document.getElementById('pwd-input');
+  var btn = document.getElementById('pwd-btn');
+  var err = document.getElementById('pwd-error');
+
+  // Déjà déverrouillé dans cette session ?
+  if (sessionStorage.getItem(KEY) === '1') {
+    overlay.classList.add('unlocked');
+    return;
+  }
+
+  async function check() {
+    var val = input.value;
+    var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(val));
+    var hash = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    var correct = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('abimedenoirceur'));
+    var correctHash = Array.from(new Uint8Array(correct)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    if (hash === correctHash) {
+      sessionStorage.setItem(KEY, '1');
+      overlay.classList.add('unlocked');
+      input.focus && input.blur();
+    } else {
+      err.textContent = 'Mot de passe incorrect.';
+      input.value = '';
+      input.focus();
+    }
+  }
+
+  btn.addEventListener('click', check);
+  input.addEventListener('keydown', function(e) { if (e.key === 'Enter') check(); });
+})();
+
 </script>
 </body>
 </html>
