@@ -42,9 +42,9 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 @media(max-width:750px){.sidebar{transform:translateX(-100%);} .sidebar.open{transform:translateX(0);}}
 .sidebar-inner{padding:0.5rem 0 2rem;}
 .toc-section{margin-bottom:0.15rem;}
-.toc-part{width:100%;background:none;border:none;text-align:left;font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--GLD);padding:0.65rem 1rem 0.4rem;border-left:3px solid;cursor:pointer;transition:all 0.15s;display:block;touch-action:manipulation;-webkit-tap-highlight-color:rgba(184,146,42,0.2);user-select:none;pointer-events:auto;position:relative;z-index:260;}
+.toc-part{width:100%;background:none;border:none;text-align:left;text-decoration:none;display:block;font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--GLD);padding:0.65rem 1rem 0.4rem;border-left:3px solid;cursor:pointer;transition:all 0.15s;display:block;touch-action:manipulation;-webkit-tap-highlight-color:rgba(184,146,42,0.2);user-select:none;pointer-events:auto;position:relative;z-index:260;}
 .toc-part:hover{background:rgba(184,146,42,0.05);}
-.toc-scene{width:100%;background:none;border:none;text-align:left;font-size:0.78rem;color:var(--SUB);padding:0.5rem 1rem 0.5rem 1.5rem;cursor:pointer;transition:all 0.15s;border-left:2px solid transparent;display:block;line-height:1.35;touch-action:manipulation;-webkit-tap-highlight-color:rgba(184,146,42,0.2);user-select:none;min-height:44px;pointer-events:auto;position:relative;z-index:260;}
+.toc-scene{width:100%;background:none;border:none;text-align:left;text-decoration:none;display:block;font-size:0.78rem;color:var(--SUB);padding:0.5rem 1rem 0.5rem 1.5rem;cursor:pointer;transition:all 0.15s;border-left:2px solid transparent;display:block;line-height:1.35;touch-action:manipulation;-webkit-tap-highlight-color:rgba(184,146,42,0.2);user-select:none;min-height:44px;pointer-events:auto;position:relative;z-index:260;}
 .toc-scene:hover{color:var(--parchment-dark);background:rgba(255,255,255,0.025);}
 .toc-scene.active{color:var(--parchment);background:rgba(184,146,42,0.06);border-left-color:var(--GLD);}
 
@@ -167,53 +167,53 @@ strong{color:var(--parchment);font-weight:600;}
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-inner">
       <div class="toc-section" style="padding:0.75rem 1rem 0.25rem;">
-        <button class="toc-part" onclick="showWelcome()" style="border-left-color:rgba(255,255,255,0.15);color:var(--SUB);font-size:0.65rem;">Accueil</button>
+        <a href="javascript:void(0)" class="toc-part" onclick="showWelcome()" style="border-left-color:rgba(255,255,255,0.15);color:var(--SUB);font-size:0.65rem;">Accueil</a>
       </div>
 <div class="toc-section">
-<button class="toc-part" onclick="showSection(\'s0\')" style="border-left-color:#B8922A">Introduction &amp; Contexte</button>
-<button class="toc-scene" onclick="showScene(\'s0\',\'s0_sc0\')" id="toc-s0_sc0">CONTEXTE GÉNÉRAL</button>
+<a href="javascript:void(0)" class="toc-part" onclick="showSection(\'s0\')" style="border-left-color:#B8922A">Introduction &amp; Contexte</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s0\',\'s0_sc0\')" id="toc-s0_sc0">CONTEXTE GÉNÉRAL</a>
 </div>
 <div class="toc-section">
-<button class="toc-part" onclick="showSection(\'s1\')" style="border-left-color:#674EA7">Les Personnages Joueurs</button>
-<button class="toc-scene" onclick="showScene(\'s1\',\'s1_sc0\')" id="toc-s1_sc0">DEN&#x27;L ENDRI  ·  SÉVERINE</button>
-<button class="toc-scene" onclick="showScene(\'s1\',\'s1_sc1\')" id="toc-s1_sc1">SARETH  ·  CASSANDRA</button>
-<button class="toc-scene" onclick="showScene(\'s1\',\'s1_sc2\')" id="toc-s1_sc2">AZART  ·  QUENTIN</button>
-<button class="toc-scene" onclick="showScene(\'s1\',\'s1_sc3\')" id="toc-s1_sc3">LE DUO  ·  DEN SARETH</button>
+<a href="javascript:void(0)" class="toc-part" onclick="showSection(\'s1\')" style="border-left-color:#674EA7">Les Personnages Joueurs</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s1\',\'s1_sc0\')" id="toc-s1_sc0">DEN&#x27;L ENDRI  ·  SÉVERINE</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s1\',\'s1_sc1\')" id="toc-s1_sc1">SARETH  ·  CASSANDRA</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s1\',\'s1_sc2\')" id="toc-s1_sc2">AZART  ·  QUENTIN</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s1\',\'s1_sc3\')" id="toc-s1_sc3">LE DUO  ·  DEN SARETH</a>
 </div>
 <div class="toc-section">
-<button class="toc-part" onclick="showSection(\'s2\')" style="border-left-color:#1C3A5A">Acte 1 : Armand</button>
-<button class="toc-scene" onclick="showScene(\'s2\',\'s2_sc0\')" id="toc-s2_sc0">SYSTÈME DE VOYAGE</button>
-<button class="toc-scene" onclick="showScene(\'s2\',\'s2_sc1\')" id="toc-s2_sc1">LES CINQ SEMAINES</button>
-<button class="toc-scene" onclick="showScene(\'s2\',\'s2_sc2\')" id="toc-s2_sc2">VOYAGE SWARTZHAFEN → DOKHERN</button>
-<button class="toc-scene" onclick="showScene(\'s2\',\'s2_sc3\')" id="toc-s2_sc3">TRAJET VERS LE MANOIR</button>
-<button class="toc-scene" onclick="showScene(\'s2\',\'s2_sc4\')" id="toc-s2_sc4">SYSTÈME DE VOYAGE</button>
+<a href="javascript:void(0)" class="toc-part" onclick="showSection(\'s2\')" style="border-left-color:#1C3A5A">Acte 1 : Armand</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s2\',\'s2_sc0\')" id="toc-s2_sc0">SYSTÈME DE VOYAGE</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s2\',\'s2_sc1\')" id="toc-s2_sc1">LES CINQ SEMAINES</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s2\',\'s2_sc2\')" id="toc-s2_sc2">VOYAGE SWARTZHAFEN → DOKHERN</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s2\',\'s2_sc3\')" id="toc-s2_sc3">TRAJET VERS LE MANOIR</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s2\',\'s2_sc4\')" id="toc-s2_sc4">SYSTÈME DE VOYAGE</a>
 </div>
 <div class="toc-section">
-<button class="toc-part" onclick="showSection(\'s3\')" style="border-left-color:#5E804F">Acte 2 : Tentacules</button>
+<a href="javascript:void(0)" class="toc-part" onclick="showSection(\'s3\')" style="border-left-color:#5E804F">Acte 2 : Tentacules</a>
 </div>
 <div class="toc-section">
-<button class="toc-part" onclick="showSection(\'s4\')" style="border-left-color:#B8922A">A — LA TOILE</button>
-<button class="toc-scene" onclick="showScene(\'s4\',\'s4_sc0\')" id="toc-s4_sc0">GOUVERNEMENT</button>
-<button class="toc-scene" onclick="showScene(\'s4\',\'s4_sc1\')" id="toc-s4_sc1">NOBLESSE</button>
-<button class="toc-scene" onclick="showScene(\'s4\',\'s4_sc2\')" id="toc-s4_sc2">MILICE</button>
-<button class="toc-scene" onclick="showScene(\'s4\',\'s4_sc3\')" id="toc-s4_sc3">CULTES</button>
-<button class="toc-scene" onclick="showScene(\'s4\',\'s4_sc4\')" id="toc-s4_sc4">MAGIE</button>
-<button class="toc-scene" onclick="showScene(\'s4\',\'s4_sc5\')" id="toc-s4_sc5">TRANSPORTS</button>
-<button class="toc-scene" onclick="showScene(\'s4\',\'s4_sc6\')" id="toc-s4_sc6">MILIEU POPULAIRE</button>
-<button class="toc-scene" onclick="showScene(\'s4\',\'s4_sc7\')" id="toc-s4_sc7">LES PÂLES — L&#x27;ORGANISATION</button>
-<button class="toc-scene" onclick="showScene(\'s4\',\'s4_sc8\')" id="toc-s4_sc8">VARRO KALT</button>
-<button class="toc-scene" onclick="showScene(\'s4\',\'s4_sc9\')" id="toc-s4_sc9">LE COMTE TREMMLER</button>
-<button class="toc-scene" onclick="showScene(\'s4\',\'s4_sc10\')" id="toc-s4_sc10">LA NOBLESSE VAMPIRIQUE DE SYLVANIE — ARC 2 ESQUISSÉ</button>
+<a href="javascript:void(0)" class="toc-part" onclick="showSection(\'s4\')" style="border-left-color:#B8922A">A — LA TOILE</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s4\',\'s4_sc0\')" id="toc-s4_sc0">GOUVERNEMENT</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s4\',\'s4_sc1\')" id="toc-s4_sc1">NOBLESSE</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s4\',\'s4_sc2\')" id="toc-s4_sc2">MILICE</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s4\',\'s4_sc3\')" id="toc-s4_sc3">CULTES</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s4\',\'s4_sc4\')" id="toc-s4_sc4">MAGIE</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s4\',\'s4_sc5\')" id="toc-s4_sc5">TRANSPORTS</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s4\',\'s4_sc6\')" id="toc-s4_sc6">MILIEU POPULAIRE</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s4\',\'s4_sc7\')" id="toc-s4_sc7">LES PÂLES — L&#x27;ORGANISATION</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s4\',\'s4_sc8\')" id="toc-s4_sc8">VARRO KALT</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s4\',\'s4_sc9\')" id="toc-s4_sc9">LE COMTE TREMMLER</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s4\',\'s4_sc10\')" id="toc-s4_sc10">LA NOBLESSE VAMPIRIQUE DE SYLVANIE — ARC 2 ESQUISSÉ</a>
 </div>
 <div class="toc-section">
-<button class="toc-part" onclick="showSection(\'s5\')" style="border-left-color:#B8922A">B — LES SCÈNES</button>
-<button class="toc-scene" onclick="showScene(\'s5\',\'s5_sc0\')" id="toc-s5_sc0">TABLEAU RÉCAPITULATIF — PNJ, LIEUX &amp; INDICES</button>
-<button class="toc-scene" onclick="showScene(\'s5\',\'s5_sc1\')" id="toc-s5_sc1">1 — MISE EN PLACE</button>
-<button class="toc-scene" onclick="showScene(\'s5\',\'s5_sc2\')" id="toc-s5_sc2">2 — FILS D&#x27;ENTRÉE</button>
-<button class="toc-scene" onclick="showScene(\'s5\',\'s5_sc3\')" id="toc-s5_sc3">3 — APPROFONDISSEMENT</button>
-<button class="toc-scene" onclick="showScene(\'s5\',\'s5_sc4\')" id="toc-s5_sc4">RENCONTRES — LA NOBLESSE &amp; LA TOILE</button>
-<button class="toc-scene" onclick="showScene(\'s5\',\'s5_sc5\')" id="toc-s5_sc5">SCÈNES COMPLÉMENTAIRES — AUTRES STRATES</button>
-<button class="toc-scene" onclick="showScene(\'s5\',\'s5_sc6\')" id="toc-s5_sc6">4 — RÉSOLUTION</button>
+<a href="javascript:void(0)" class="toc-part" onclick="showSection(\'s5\')" style="border-left-color:#B8922A">B — LES SCÈNES</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s5\',\'s5_sc0\')" id="toc-s5_sc0">TABLEAU RÉCAPITULATIF — PNJ, LIEUX &amp; INDICES</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s5\',\'s5_sc1\')" id="toc-s5_sc1">1 — MISE EN PLACE</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s5\',\'s5_sc2\')" id="toc-s5_sc2">2 — FILS D&#x27;ENTRÉE</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s5\',\'s5_sc3\')" id="toc-s5_sc3">3 — APPROFONDISSEMENT</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s5\',\'s5_sc4\')" id="toc-s5_sc4">RENCONTRES — LA NOBLESSE &amp; LA TOILE</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s5\',\'s5_sc5\')" id="toc-s5_sc5">SCÈNES COMPLÉMENTAIRES — AUTRES STRATES</a>
+<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\'s5\',\'s5_sc6\')" id="toc-s5_sc6">4 — RÉSOLUTION</a>
 </div>
     </div>
   </nav>
