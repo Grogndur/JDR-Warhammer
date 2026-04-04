@@ -144,6 +144,18 @@
   .jet-effet-name { font-family:'Cinzel',serif; font-size:0.95rem; color:var(--parchment); font-weight:600; margin-bottom:0.35rem; }
   .jet-effet-desc { font-size:0.85rem; color:var(--parchment-dark); line-height:1.5; font-style:italic; }
   .jet-trace-warning { margin-top:0.5rem; font-family:'Cinzel',serif; font-size:0.75rem; color:#c07070; padding:0.3rem 0.5rem; background:rgba(139,26,26,0.15); border:1px solid rgba(139,26,26,0.3); border-radius:2px; }
+/* SORTS */
+  .sort-item { border:1px solid rgba(103,78,167,0.15); border-radius:2px; margin-bottom:0.4rem; overflow:hidden; cursor:pointer; transition:border-color 0.2s; }
+  .sort-item:hover { border-color:rgba(103,78,167,0.35); }
+  .sort-header { display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0.7rem; background:rgba(103,78,167,0.07); }
+  .sort-name { font-family:'Cinzel',serif; font-size:0.85rem; color:var(--parchment); font-weight:600; }
+  .sort-meta { display:flex; gap:0.5rem; align-items:center; }
+  .sort-ni { font-family:'Cinzel',serif; font-size:0.78rem; color:var(--VIO2); }
+  .sort-portee { font-size:0.72rem; color:var(--SUB); }
+  .sort-body { display:none; padding:0.5rem 0.7rem; font-size:0.83rem; color:var(--parchment-dark); line-height:1.5; border-top:1px solid rgba(103,78,167,0.1); }
+  .sort-item.open .sort-body { display:block; }
+
+  
 </style>
 </head>
 <body>
@@ -379,24 +391,134 @@
       <p>Elle est très proche de Den, sur laquelle elle veille sincèrement. Sa magie est puissante et incroyablement utile pour tout groupe qui nécessite un soutien discret et décisif.</p>
     </div>
   </div>
-  
 
+  <!-- TRACES D'OMBRE -->
+  <div class="traces-card">
+    <div class="card-title vio" style="position:relative;">Traces d'Ombre · Ulgu</div>
+
+    <div class="traces-pips" id="traces-pips"></div>
+
+    <div class="palier-box">
+      <div class="palier-name" id="palier-name">—</div>
+      <div class="palier-desc" id="palier-desc">—</div>
+    </div>
+
+    <div class="meditation-box">
+      Méditation — seuil actuel : <span id="meditation-text">—</span>
+    </div>
+
+    <button class="jet-btn" onclick="jetAffinite()">⬡ Jet d'Affinité d'Ombre (1d20)</button>
+
+    <div class="jet-result" id="jet-result"></div>
+  </div>
 
   <!-- SORTS -->
-  <div class="card acc full">
-    <div class="card-title acc">Sorts — Tradition Ulgu (Ombre) · Langue : Magick</div>
+  <div class="card vio full">
+    <div class="card-title vio">Sorts — Tradition Ulgu (Ombre) · Langue : Magick</div>
     <div id="sorts-list"></div>
   </div>
 
-  <!-- TRACES D'OMBRE -->
-  <div class="traces-card full">
-    <div class="card-title" style="color:#9b7fd4;position:relative;">Traces d'Ombre · Ulgu</div>
-    <div class="traces-pips" id="traces-pips"></div>
-    <div class="palier-box"><div class="palier-name" id="palier-name">—</div><div class="palier-desc" id="palier-desc">—</div></div>
-    <div class="meditation-box">Méditation — seuil actuel : <span id="meditation-text" style="color:#9b7fd4;font-weight:600;">—</span></div>
-    <button class="jet-btn" onclick="jetAffinite()">⬡ Jet d'Affinité d'Ombre (1d20)</button>
-    <div class="jet-result" id="jet-result"></div>
+  <!-- COMPÉTENCES DE BASE -->
+  <div class="card">
+    <div class="card-title gld">Compétences de base (sélection)</div>
+    <ul class="skill-list">
+      <li><span class="skill-name">Calme</span><span class="skill-val">65</span></li>
+      <li><span class="skill-name">Charme</span><span class="skill-val">41</span></li>
+      <li><span class="skill-name">Corps à Corps (Base)</span><span class="skill-val">36</span></li>
+      <li><span class="skill-name">Dressage</span><span class="skill-val">60</span></li>
+      <li><span class="skill-name">Esquive</span><span class="skill-val">34</span></li>
+      <li><span class="skill-name">Intuition</span><span class="skill-val">37</span></li>
+      <li><span class="skill-name">Jeu</span><span class="skill-val">58</span></li>
+      <li><span class="skill-name">Manipulation</span><span class="skill-val">41</span></li>
+      <li><span class="skill-name">Marchandage</span><span class="skill-val">46</span></li>
+      <li><span class="skill-name">Perception</span><span class="skill-val">37</span></li>
+      <li><span class="skill-name">Survie en extérieur</span><span class="skill-val">58</span></li>
+    </ul>
   </div>
+
+  <!-- COMPÉTENCES AVANCÉES -->
+  <div class="card">
+    <div class="card-title vio">Compétences avancées</div>
+    <ul class="skill-list">
+      <li><span class="skill-name">Langue (Eltharin) <span style="color:var(--SUB);font-size:0.72rem;">(Int)</span></span><span class="skill-val">61</span></li>
+      <li><span class="skill-name">Savoir (Reikland) <span style="color:var(--SUB);font-size:0.72rem;">(Int)</span></span><span class="skill-val">61</span></li>
+      <li><span class="skill-name">Évaluation <span style="color:var(--SUB);font-size:0.72rem;">(Int)</span></span><span class="skill-val">63</span></li>
+      <li><span class="skill-name">Corps à corps (arme d'hast) <span style="color:var(--SUB);font-size:0.72rem;">(CC)</span></span><span class="skill-val">32</span></li>
+      <li><span class="skill-name">Focalisation Ombre (Ulgu) <span style="color:var(--SUB);font-size:0.72rem;">(Int)</span></span><span class="skill-val">58</span></li>
+      <li><span class="skill-name">Langue (Magick) <span style="color:var(--SUB);font-size:0.72rem;">(Int)</span></span><span class="skill-val">58</span></li>
+      <li><span class="skill-name">Savoir (Magie) <span style="color:var(--SUB);font-size:0.72rem;">(Int)</span></span><span class="skill-val">58</span></li>
+    </ul>
+  </div>
+
+  <!-- TALENTS -->
+  <div class="card">
+    <div class="card-title vio">Talents & Capacités</div>
+    <ul class="talent-list">
+      <li><span class="talent-name">Lire / Écrire</span><span class="talent-desc">Sait lire et écrire, toute langue parlée.</span></li>
+      <li><span class="talent-name">Affable</span><span class="talent-desc">+5 Soc.</span></li>
+      <li><span class="talent-name">Harmonisation aethyrique</span><span class="talent-desc">Pas d'Incantation Imparfaite si double à un Test de Focalisation réussi.</span></li>
+      <li><span class="talent-name">Magie mineure</span><span class="talent-desc">Maîtrise de la Magie Mineure (BFM = nombre de sorts connus).</span></li>
+      <li><span class="talent-name">Magie des Arcanes "Gris / Ombre"</span><span class="talent-desc">Maîtrise de la Magie des Arcanes "Gris / Ombre".</span></li>
+    </ul>
+    <div style="margin-top:0.75rem;padding-top:0.6rem;border-top:1px solid rgba(255,255,255,0.05);">
+      <div class="card-title" style="color:var(--SUB);margin-bottom:0.5rem;font-size:0.62rem;">Traits raciaux</div>
+      <ul style="list-style:none;font-size:0.83rem;line-height:1.8;color:var(--parchment-dark);">
+        <li>· <strong style="color:var(--parchment);">Perspicace</strong> : +5 Int</li>
+        <li>· <strong style="color:var(--parchment);">Noblesse</strong> : toujours considéré d'un plus haut Statut. Doit être vêtu de façon appropriée.</li>
+        <li>· <strong style="color:var(--parchment);">Vision nocturne</strong> : 20m</li>
+        <li>· <strong style="color:var(--parchment);">Imperturbable</strong> : +5 FM</li>
+        <li>· <strong style="color:var(--parchment);">Attirante</strong> : possible utilisation des unités en tant que DR en Test de Charme / Influence.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ARMURE & ARMES -->
+  <div class="card">
+    <div class="card-title gld">Armure</div>
+    <table class="armor-table">
+      <thead><tr><th>Localisation</th><th>PA</th><th>Loc.</th></tr></thead>
+      <tbody>
+        <tr><td>Tête</td><td class="armor-pa">0</td><td>01-09</td></tr>
+        <tr><td>Bras droit</td><td class="armor-pa">0</td><td>10-24</td></tr>
+        <tr><td>Bras gauche</td><td class="armor-pa">0</td><td>25-44</td></tr>
+        <tr><td>Corps</td><td class="armor-pa">0</td><td>45-79</td></tr>
+        <tr><td>Jambe dr.</td><td class="armor-pa">0</td><td>80-89</td></tr>
+        <tr><td>Jambe gau.</td><td class="armor-pa">0</td><td>90-00</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-bottom:0.5rem;">
+      <div class="inv-item"><span class="inv-name">Cotte de mailles (×2)</span><span class="inv-detail">PA 0 · −1 Ag · Résistante, Lourde</span></div>
+    </div>
+    <div class="card-title gld" style="margin-top:0.75rem;margin-bottom:0.5rem;">Armes</div>
+    <div class="weapon-item">
+      <div class="weapon-name">Bâton de combat</div>
+      <div class="weapon-stats">
+        <span class="weapon-stat"><span class="weapon-stat-label">All. </span><span class="weapon-stat-val">Longue</span></span>
+        <span class="weapon-stat"><span class="weapon-stat-label">Dég. </span><span class="weapon-stat-val">BF+4</span></span>
+        <span class="weapon-stat"><span class="weapon-stat-label">Attr. </span><span class="weapon-stat-val">Assommante, Défensive</span></span>
+      </div>
+    </div>
+    <div class="weapon-item">
+      <div class="weapon-name">Dague</div>
+      <div class="weapon-stats">
+        <span class="weapon-stat"><span class="weapon-stat-label">All. </span><span class="weapon-stat-val">Très courte</span></span>
+        <span class="weapon-stat"><span class="weapon-stat-label">Dég. </span><span class="weapon-stat-val">BF+2</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVENTAIRE -->
+  <div class="card">
+    <div class="card-title grn">Inventaire</div>
+    <div class="inv-item"><span class="inv-name">Besace</span><span class="inv-detail">Portée en bandoulière</span></div>
+    <div class="inv-item"><span class="inv-name">Bourse</span><span class="inv-detail">Ceinture</span></div>
+    <div class="inv-item"><span class="inv-name">Toges (type Sorcière Grise / Ombre)</span><span class="inv-detail">Sur soi ou Besace</span></div>
+    <div class="inv-item"><span class="inv-name">Vêtements courants (type Lettrée)</span><span class="inv-detail">Sur soi ou Besace</span></div>
+    <div class="inv-item"><span class="inv-name">Vêtements nobles</span><span class="inv-detail">Sur soi ou Besace</span></div>
+    <div class="inv-item"><span class="inv-name">Licence Magique du Domaine Gris / Ombre</span><span class="inv-detail">Grande poche intérieure de toge</span></div>
+    <div class="inv-item"><span class="inv-name">Grimoire</span><span class="inv-detail">Besace</span></div>
+  </div>
+
   <!-- 12. NOTES DE SESSION -->
   
   <div class="card full">
@@ -520,49 +642,100 @@ const MED_TABLE = [
 
 state.traces = state.traces || 1;
 
+// ══════════ SORTS ══════════
+const SORTS = [
+  { name:"Sommeil",           ni:0, portee:"Contact",  desc:"Cible s'endort (se réveille en tombant). État Inconscient." },
+  { name:"Drain",             ni:0, portee:"Contact",  desc:"Proj. Mag +0 Dégât NoPA, regain 1B." },
+  { name:"Pas léger",         ni:0, portee:"Soi",      desc:"FM min, n'impacte plus rien par le rapport au sol. −30 Pistage." },
+  { name:"Explosion",         ni:4, portee:"FM m",     desc:"AOE BFM m, Proj. Mag +3 Dégâts." },
+  { name:"Ombres étrangleuses",ni:6, portee:"BFM m",   desc:"BFM Rounds, +1 Exténué, Suffocation, Muet." },
+];
+
+// ══════════ AFFINITÉ ══════════
+// Déclenchement : sur incantation critique ou événement narratif pertinent — tirer 1d20
+const AFFINITE = [
+  null,
+  { palier:"I · Échos",          name:"Écart de monde",        desc:"L'ombre reproduit les gestes avec un demi-seconde de retard. Test de Calme pour témoins sensibles.", trace:false },
+  { palier:"I · Échos",          name:"Regard fourbe",          desc:"Son ombre regarde ailleurs, comme distraite. Indice ambigu à la discrétion du MJ, ou +5 à un test de Perception de Sareth. Test de Calme pour témoins.", trace:false },
+  { palier:"I · Échos",          name:"Zone du Néant",          desc:"Lumière vacillante dans un rayon de 10m pendant 2–3 secondes. Flammes repoussées, bougies éteintes. Purement atmosphérique.", trace:false },
+  { palier:"I · Échos",          name:"Reflet absent",          desc:"Aucune ombre dans les surfaces réfléchissantes pendant 1d6 minutes. PNJ superstitieux troublés. Risque inquisitorial si observé.", trace:false },
+  { palier:"I · Échos",          name:"Faune en doute",         desc:"Chevaux, chiens, rats refusent de l'approcher jusqu'à la prochaine scène. –10 aux tests impliquant des animaux.", trace:false },
+  { palier:"II · Interférences", name:"Murmure du Néant",      desc:"Ses lèvres bougent alors qu'elle se tait. Témoins : Test de Peur 1. Sareth : test FM ou –10 au prochain jet social (la dissonance la déstabilise aussi).", trace:false },
+  { palier:"II · Interférences", name:"Voix double",           desc:"Un timbre grave double sa voix pendant une réplique. +10 Intimidation, –10 Charme pour la scène entière.", trace:false },
+  { palier:"II · Interférences", name:"Protection instinctive",desc:"Un voile d'encre absorbe un impact. Ignore 1 Blessure ou +1 Armure contre une attaque. Réactionnel, déclenché automatiquement.", trace:false },
+  { palier:"II · Interférences", name:"Assistance grise",      desc:"L'ombre esquive avant que Sareth réagisse. Relance un test d'Esquive raté. Une seule fois par scène.", trace:false },
+  { palier:"II · Interférences", name:"Main sombre",           desc:"Forme noire agrippe brièvement un ennemi au contact. –10 à tous ses jets pendant 1 round, +10 aux jets de Sareth contre cet ennemi ce round.", trace:false },
+  { palier:"III · Présence",     name:"Silence forcé",         desc:"Sons étouffés dans un rayon de 5m pendant 1d3 rounds. +20 Discrétion et Incantation dans ce périmètre. Les ennemis ne peuvent pas crier pour appeler de l'aide.", trace:false },
+  { palier:"III · Présence",     name:"Saignement d'Ombre",    desc:"Toute blessure de Sareth suinte une substance noire, froide. Aucun effet sur elle. Test de Peur 1 pour tout témoin qui la voit blessée cette scène. Dure jusqu'au prochain repos.", trace:false },
+  { palier:"III · Présence",     name:"Souvenir volé",         desc:"L'ombre projette un souvenir — qui n'est pas celui de Sareth. Indice narratif à la discrétion du MJ (vrai ou faux, elle ne sait pas). Test de Calme pour Sareth.", trace:false },
+  { palier:"III · Présence",     name:"Empreinte persistante", desc:"L'ombre de Sareth reste après son départ, imitant ses derniers gestes pendant 1d6 heures. Quiconque passe peut voir qu'elle a été là, et deviner ce qu'elle faisait.", trace:false },
+  { palier:"III · Présence",     name:"Reflet erroné",         desc:"Dans toutes les surfaces réfléchissantes de la scène, Sareth apparaît autrement — posture différente, expression opposée, parfois un autre visage. Test de Calme pour tout témoin, Peur 1 si critique. Dure toute la scène.", trace:false },
+  { palier:"IV · Rupture",       name:"Substitution partielle",desc:"Pendant 1 round, c'est l'ombre qui agit à la place de Sareth. Réussite automatique à un jet de son choix. En contrepartie : Sareth reçoit 1 Trace d'Ombre. Test de Calme.", trace:true },
+  { palier:"IV · Rupture",       name:"Transcendance grise",   desc:"L'ombre prononce un mot que seule Sareth entend. +10 à tous ses jets pendant 1d6 rounds — elle agit dans un état second, précis et froid. En contrepartie : 1 Trace d'Ombre. Le MJ note ce que l'ombre a dit.", trace:true },
+  { palier:"IV · Rupture",       name:"L'Ombre souveraine",    desc:"L'ombre agit seule, sans Sareth, pendant 1d3 rounds. Elle peut se déplacer, interagir, créer une diversion ou révéler quelque chose. Sareth ne contrôle pas ce qu'elle fait. Conséquence narrative MJ. 1 Trace d'Ombre. Peur 1 pour tous les témoins.", trace:true },
+  { palier:"IV · Rupture",       name:"L'Ombre projetée",      desc:"L'ombre de Sareth se détache entièrement et se projette là où Ulgu le juge nécessaire — pas où Sareth le voudrait. Elle voit et entend à travers elle. Durée : jusqu'à ce que le MJ décide qu'elle a accompli quelque chose. Peur 2 témoins. 1 Trace d'Ombre. Test de Calme : réussite = infos claires / échec = fragments confus.", trace:true },
+  { palier:"IV · Rupture",       name:"Doppelgänger",          desc:"Dans un dense amas de volutes d'une fumée épaisse, un son lourd et assourdissant, l'ombre de Sareth prend forme et volume dans la réalité. Elle peut se déplacer, interagir, se jeter sur une créature… puis s'évapore. Le corps de Sareth est nimbé de fines particules d'ombre — filaments, cheveux ou tentacules. Ses yeux, nez, bouche évacuent une épaisse encre noire. Elle peut tenter de retenir son ombre sur FM. Terreur 1 pour tous les témoins. 1–2 Traces d'Ombre selon le contexte.", trace:true },
+];
+
+const PALIERS = [
+  { range:[1,2],  name:"1–2 · Échos",          desc:"L'ombre commence à se souvenir. Parfois légèrement en avance sur ses gestes. Rêves fréquents et chargés. Les PNJ sensibles à la magie ressentent un léger malaise en sa présence. Aucun effet mécanique — pure atmosphère." },
+  { range:[3,4],  name:"3–4 · Porosité",        desc:"La frontière s'amincit. +10 Intimidation (situationnel, non contrôlé). –10 Empathie et Charme dans les interactions longues ou intimes. Les animaux réagissent. Les morts-vivants à faible intelligence hésitent une seconde avant d'agir contre elle." },
+  { range:[5,6],  name:"5–6 · Partage",         desc:"L'Ombre a des opinions. Elle commence à agir de sa propre initiative — jamais contre Sareth, mais pas nécessairement selon ses souhaits. Souvenirs de certaines périodes devenus flous. Visions de sa mère — éclairs brefs, parfois spectraux. Le MJ peut déclencher une micro-action de l'ombre une fois par session (narratif pur). +5 aux jets de Magie Ulgu." },
+  { range:[7,8],  name:"7–8 · Substitution",    desc:"L'Ombre peut prendre la main. Une fois par session, lors d'un moment crucial, Ulgu peut agir à travers Sareth (réussite automatique). Le MJ choisit le moment. Sareth peut refuser via test FM (0) — échec : l'ombre agit quand même. Contrepartie narrative obligatoire. –10 aux tests de Calme liés à l'ombre." },
+  { range:[9,10], name:"9–10 · Dette cosmique",  desc:"Ulgu réclame. Le MJ propose un choix narratif majeur — pas d'urgence, pas de combat : une décision sur la nature de ce lien. Trois voies : Sceller l'Ombre (Traces max 8, risque inquisitorial), Accepter le lien (Traces min 5, palier 7–8 permanent, Morr observe), Ne rien décider (effets 7–8 hors contrôle, +1 difficulté Calme par jet d'Affinité jusqu'à prochaine méditation)." },
+];
+
+const MED_TABLE = [
+  { range:[1,2],  label:"80 ou moins — avec BFM : 86 ou moins" },
+  { range:[3,4],  label:"60 ou moins — avec BFM : 66 ou moins" },
+  { range:[5,6],  label:"40 ou moins — avec BFM : 46 ou moins" },
+  { range:[7,8],  label:"20 ou moins — avec BFM : 26 ou moins" },
+  { range:[9,10], label:"05 ou moins — avec BFM : 11 ou moins" },
+];
+
+
 function renderSorts() {
-  const c = document.getElementById('sorts-list'); c.innerHTML='';
+  const c = document.getElementById('sorts-list'); c.innerHTML = '';
   SORTS.forEach(s => {
     const div = document.createElement('div');
-    div.className='sort-item';
-    div.innerHTML=`<div class="sort-header"><span class="sort-name">${s.name}</span><div class="sort-meta"><span class="sort-ni">NI ${s.ni}</span><span class="sort-portee">${s.portee}</span></div></div><div class="sort-body">${s.desc}</div>`;
-    div.onclick=()=>div.classList.toggle('open');
+    div.className = 'sort-item';
+    div.innerHTML = `
+      <div class="sort-header">
+        <span class="sort-name">${s.name}</span>
+        <div class="sort-meta">
+          <span class="sort-ni">NI ${s.ni}</span>
+          <span class="sort-portee">${s.portee}</span>
+        </div>
+      </div>
+      <div class="sort-body">${s.desc}</div>
+    `;
+    div.onclick = () => div.classList.toggle('open');
     c.appendChild(div);
   });
 }
 
-function renderTraces() {
-  const c = document.getElementById('traces-pips'); c.innerHTML='';
-  for (let i=1;i<=10;i++) {
-    const pip=document.createElement('div');
-    let cls='trace-pip';
-    if (i<=state.traces) cls+=' on';
-    if (i===1) cls+=' permanent';
-    if (i>=9) cls+=' danger';
-    pip.className=cls; pip.textContent=i;
-    if (i>1) pip.onclick=()=>{ state.traces=(i<=state.traces)?i-1:i; save(); renderTraces(); };
-    c.appendChild(pip);
+function jetAffinite() {
+  const roll = Math.floor(Math.random()*20)+1;
+  const effet = AFFINITE[roll];
+  const c = document.getElementById('jet-result');
+  c.className = 'jet-result visible';
+  c.innerHTML = `
+    <div class="jet-palier">${effet.palier}</div>
+    <div class="jet-number">${roll}</div>
+    <div class="jet-effet-name">${effet.name}</div>
+    <div class="jet-effet-desc">${effet.desc}</div>
+    ${effet.trace ? `<div class="jet-trace-warning">⬡ +1 Trace d'Ombre</div>` : ''}
+  `;
+  if (effet.trace && state.traces < 10) {
+    setTimeout(() => {
+      if (confirm(`Résultat ${roll} — ${effet.name}\n\nAjouter 1 Trace d'Ombre ? (${state.traces} → ${state.traces+1})`)) {
+        state.traces = Math.min(10, state.traces+1);
+        save(); renderTraces();
+      }
+    }, 300);
   }
-  const palier=PALIERS.find(p=>state.traces>=p.range[0]&&state.traces<=p.range[1]);
-  if (palier) { document.getElementById('palier-name').textContent=palier.name; document.getElementById('palier-desc').textContent=palier.desc; }
-  const med=MED_TABLE.find(p=>state.traces>=p.range[0]&&state.traces<=p.range[1]);
-  if (med) document.getElementById('meditation-text').textContent=med.label;
 }
 
-function jetAffinite() {
-  const roll=Math.floor(Math.random()*20)+1;
-  const effet=AFFINITE[roll];
-  const c=document.getElementById('jet-result');
-  c.className='jet-result visible';
-  c.innerHTML=`<div class="jet-palier">${effet.palier}</div><div class="jet-number">${roll}</div><div class="jet-effet-name">${effet.name}</div><div class="jet-effet-desc">${effet.desc}</div>${effet.trace?'<div class="jet-trace-warning">⬡ +1 Trace d'Ombre</div>':''}`;
-  if (effet.trace&&state.traces<10) {
-    setTimeout(()=>{
-      if (confirm('Résultat '+roll+' — '+effet.name+'\n\nAjouter 1 Trace d'Ombre ? ('+state.traces+' → '+(state.traces+1)+')')) {
-        state.traces=Math.min(10,state.traces+1); save(); renderTraces();
-      }
-    },300);
-  }
-}
 
 renderSorts();
 renderTraces();
