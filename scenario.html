@@ -21,23 +21,24 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .topbar-home:hover{color:var(--GLD);}
 .topbar-title{font-family:'Cinzel',serif;font-size:0.82rem;color:var(--GLD);letter-spacing:0.15em;text-transform:uppercase;white-space:nowrap;}
 .topbar-right{margin-left:auto;display:flex;align-items:center;gap:0.75rem;position:relative;}
-.search-input{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--parchment);font-family:'Crimson Text',serif;font-size:0.9rem;padding:0.3rem 0.7rem;border-radius:2px;width:180px;transition:all 0.2s;}
+.search-input{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--parchment);font-family:'Crimson Text',serif;font-size:0.9rem;padding:0.3rem 0.7rem;border-radius:2px;width:180px;transition:all 0.2s;max-width:calc(100vw - 180px);}
 .search-input:focus{outline:none;border-color:rgba(184,146,42,0.4);width:220px;}
 .search-input::placeholder{color:var(--SUB);font-style:italic;}
-.search-results{position:absolute;top:calc(100% + 6px);right:0;width:340px;max-height:340px;overflow-y:auto;background:rgba(9,9,14,0.99);border:1px solid rgba(184,146,42,0.25);border-radius:2px;z-index:500;display:none;box-shadow:0 8px 24px rgba(0,0,0,0.6);}
+.search-results{position:fixed;top:48px;left:0;right:0;width:100%;max-height:60vh;overflow-y:auto;-webkit-overflow-scrolling:touch;background:rgba(9,9,14,0.99);border-bottom:1px solid rgba(184,146,42,0.25);z-index:500;display:none;box-shadow:0 8px 24px rgba(0,0,0,0.6);}@media(min-width:751px){.search-results{position:absolute;top:calc(100% + 6px);left:auto;right:0;width:340px;max-height:340px;}}
 .search-results.visible{display:block;}
 .sr-item{padding:0.65rem 0.85rem;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.15s;}
 .sr-item:hover{background:rgba(184,146,42,0.08);}
 .sr-section{font-size:0.68rem;color:var(--SUB);letter-spacing:0.1em;text-transform:uppercase;}
 .sr-title{font-size:0.88rem;color:var(--parchment);margin-top:0.1rem;font-family:'Cinzel',serif;font-size:0.8rem;}
-.btn-menu{display:none;background:none;border:none;color:var(--parchment);font-size:1.3rem;cursor:pointer;padding:0.2rem 0.4rem;}
-@media(max-width:750px){.btn-menu{display:block;}}
+.btn-menu{display:none;background:rgba(184,146,42,0.15);border:1px solid rgba(184,146,42,0.35);color:var(--GLD);font-size:1.1rem;cursor:pointer;padding:0.3rem 0.7rem;border-radius:2px;line-height:1;letter-spacing:0.05em;transition:background 0.15s;font-family:"Cinzel",serif;}
+.btn-menu:hover{background:rgba(184,146,42,0.28);}
+@media(max-width:750px){.btn-menu{display:flex;align-items:center;gap:0.4rem;}}
 
 /* LAYOUT */
 .layout{display:flex;margin-top:48px;min-height:calc(100vh - 48px);position:relative;z-index:1;}
 
 /* SIDEBAR */
-.sidebar{width:var(--sidebar-w);flex-shrink:0;position:fixed;top:48px;bottom:0;left:0;background:rgba(9,9,14,0.99);border-right:1px solid rgba(255,255,255,0.06);overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(184,146,42,0.25) transparent;z-index:200;transition:transform 0.3s ease;}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;position:fixed;top:48px;bottom:0;left:0;background:rgba(9,9,14,0.99);border-right:1px solid rgba(255,255,255,0.06);overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:rgba(184,146,42,0.25) transparent;z-index:200;transition:transform 0.3s ease;-webkit-overflow-scrolling:touch;}
 @media(max-width:750px){.sidebar{transform:translateX(-100%);} .sidebar.open{transform:translateX(0);}}
 .sidebar-inner{padding:0.5rem 0 2rem;}
 .toc-section{margin-bottom:0.15rem;}
@@ -52,7 +53,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 @media(max-width:750px){.main{margin-left:0;padding:1.25rem 1rem 3rem;}}
 
 /* OVERLAY */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:150;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:190;touch-action:none;}
 @media(max-width:750px){.overlay.visible{display:block;}}
 
 /* ACCUEIL */
@@ -150,7 +151,7 @@ strong{color:var(--parchment);font-weight:600;}
 <body>
 
 <div class="topbar">
-  <button class="btn-menu" onclick="toggleSidebar()">&#9776;</button>
+  <button class="btn-menu" onclick="toggleSidebar()">&#9776; Menu</button>
   <a class="topbar-home" href="index.html">&#8592; Accueil</a>
   <span class="topbar-title">L&#8217;Éclipse &middot; Scénario</span>
   <div class="topbar-right">
@@ -1849,7 +1850,7 @@ function showWelcome() {
   document.getElementById('welcome').style.display='block';
   document.querySelectorAll('.section-panel').forEach(p=>p.style.display='none');
   document.querySelectorAll('.toc-scene').forEach(b=>b.classList.remove('active'));
-  closeSidebar(); window.scrollTo(0,0);
+  closeSidebar(); setTimeout(()=>window.scrollTo({top:0,behavior:"instant"}),50);
 }
 
 function showSection(sid) {
@@ -1860,7 +1861,7 @@ function showSection(sid) {
     const panels=sec.querySelectorAll('.scene-panel');
     panels.forEach((p,i)=>p.style.display=i===0?'block':'none');
   }
-  closeSidebar(); window.scrollTo(0,0);
+  closeSidebar(); setTimeout(()=>window.scrollTo({top:0,behavior:"instant"}),50);
 }
 
 function showScene(sid,scid) {
@@ -1869,7 +1870,7 @@ function showScene(sid,scid) {
   const sec=document.getElementById(sid);
   if(sec) sec.querySelectorAll('.scene-panel').forEach(p=>p.style.display=p.id===scid?'block':'none');
   document.querySelectorAll('.toc-scene').forEach(b=>b.classList.toggle('active',b.id==='toc-'+scid));
-  closeSidebar(); window.scrollTo(0,0);
+  closeSidebar(); setTimeout(()=>window.scrollTo({top:0,behavior:"instant"}),50);
 }
 
 function toggleSidebar() {
