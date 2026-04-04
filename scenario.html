@@ -166,53 +166,53 @@ strong{color:var(--parchment);font-weight:600;}
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-inner">
       <div class="toc-section" style="padding:0.75rem 1rem 0.25rem;">
-        <button class="toc-part" onclick="showWelcome()" style="border-left-color:rgba(255,255,255,0.15);color:var(--SUB);font-size:0.65rem;">Accueil</button>
+        <button class="toc-part" data-action="welcome" style="border-left-color:rgba(255,255,255,0.15);color:var(--SUB);font-size:0.65rem;">Accueil</button>
       </div>
 <div class="toc-section">
-<button class="toc-part" onclick="showSection('s0')" style="border-left-color:#B8922A">Introduction &amp; Contexte</button>
-<button class="toc-scene" onclick="showScene('s0','s0_sc0')" id="toc-s0_sc0">CONTEXTE GÉNÉRAL</button>
+<button class="toc-part" data-action="section" data-sid="s0" style="border-left-color:#B8922A">Introduction &amp; Contexte</button>
+<button class="toc-scene" data-action="scene" data-sid="s0" data-scid="s0_sc0" id="toc-s0_sc0">CONTEXTE GÉNÉRAL</button>
 </div>
 <div class="toc-section">
-<button class="toc-part" onclick="showSection('s1')" style="border-left-color:#674EA7">Les Personnages Joueurs</button>
-<button class="toc-scene" onclick="showScene('s1','s1_sc0')" id="toc-s1_sc0">DEN&#x27;L ENDRI  ·  SÉVERINE</button>
-<button class="toc-scene" onclick="showScene('s1','s1_sc1')" id="toc-s1_sc1">SARETH  ·  CASSANDRA</button>
-<button class="toc-scene" onclick="showScene('s1','s1_sc2')" id="toc-s1_sc2">AZART  ·  QUENTIN</button>
-<button class="toc-scene" onclick="showScene('s1','s1_sc3')" id="toc-s1_sc3">LE DUO  ·  DEN SARETH</button>
+<button class="toc-part" data-action="section" data-sid="s1" style="border-left-color:#674EA7">Les Personnages Joueurs</button>
+<button class="toc-scene" data-action="scene" data-sid="s1" data-scid="s1_sc0" id="toc-s1_sc0">DEN&#x27;L ENDRI  ·  SÉVERINE</button>
+<button class="toc-scene" data-action="scene" data-sid="s1" data-scid="s1_sc1" id="toc-s1_sc1">SARETH  ·  CASSANDRA</button>
+<button class="toc-scene" data-action="scene" data-sid="s1" data-scid="s1_sc2" id="toc-s1_sc2">AZART  ·  QUENTIN</button>
+<button class="toc-scene" data-action="scene" data-sid="s1" data-scid="s1_sc3" id="toc-s1_sc3">LE DUO  ·  DEN SARETH</button>
 </div>
 <div class="toc-section">
-<button class="toc-part" onclick="showSection('s2')" style="border-left-color:#1C3A5A">Acte 1 : Armand</button>
-<button class="toc-scene" onclick="showScene('s2','s2_sc0')" id="toc-s2_sc0">SYSTÈME DE VOYAGE</button>
-<button class="toc-scene" onclick="showScene('s2','s2_sc1')" id="toc-s2_sc1">LES CINQ SEMAINES</button>
-<button class="toc-scene" onclick="showScene('s2','s2_sc2')" id="toc-s2_sc2">VOYAGE SWARTZHAFEN → DOKHERN</button>
-<button class="toc-scene" onclick="showScene('s2','s2_sc3')" id="toc-s2_sc3">TRAJET VERS LE MANOIR</button>
-<button class="toc-scene" onclick="showScene('s2','s2_sc4')" id="toc-s2_sc4">SYSTÈME DE VOYAGE</button>
+<button class="toc-part" data-action="section" data-sid="s2" style="border-left-color:#1C3A5A">Acte 1 : Armand</button>
+<button class="toc-scene" data-action="scene" data-sid="s2" data-scid="s2_sc0" id="toc-s2_sc0">SYSTÈME DE VOYAGE</button>
+<button class="toc-scene" data-action="scene" data-sid="s2" data-scid="s2_sc1" id="toc-s2_sc1">LES CINQ SEMAINES</button>
+<button class="toc-scene" data-action="scene" data-sid="s2" data-scid="s2_sc2" id="toc-s2_sc2">VOYAGE SWARTZHAFEN → DOKHERN</button>
+<button class="toc-scene" data-action="scene" data-sid="s2" data-scid="s2_sc3" id="toc-s2_sc3">TRAJET VERS LE MANOIR</button>
+<button class="toc-scene" data-action="scene" data-sid="s2" data-scid="s2_sc4" id="toc-s2_sc4">SYSTÈME DE VOYAGE</button>
 </div>
 <div class="toc-section">
-<button class="toc-part" onclick="showSection('s3')" style="border-left-color:#5E804F">Acte 2 : Tentacules</button>
+<button class="toc-part" data-action="section" data-sid="s3" style="border-left-color:#5E804F">Acte 2 : Tentacules</button>
 </div>
 <div class="toc-section">
-<button class="toc-part" onclick="showSection('s4')" style="border-left-color:#B8922A">A — LA TOILE</button>
-<button class="toc-scene" onclick="showScene('s4','s4_sc0')" id="toc-s4_sc0">GOUVERNEMENT</button>
-<button class="toc-scene" onclick="showScene('s4','s4_sc1')" id="toc-s4_sc1">NOBLESSE</button>
-<button class="toc-scene" onclick="showScene('s4','s4_sc2')" id="toc-s4_sc2">MILICE</button>
-<button class="toc-scene" onclick="showScene('s4','s4_sc3')" id="toc-s4_sc3">CULTES</button>
-<button class="toc-scene" onclick="showScene('s4','s4_sc4')" id="toc-s4_sc4">MAGIE</button>
-<button class="toc-scene" onclick="showScene('s4','s4_sc5')" id="toc-s4_sc5">TRANSPORTS</button>
-<button class="toc-scene" onclick="showScene('s4','s4_sc6')" id="toc-s4_sc6">MILIEU POPULAIRE</button>
-<button class="toc-scene" onclick="showScene('s4','s4_sc7')" id="toc-s4_sc7">LES PÂLES — L&#x27;ORGANISATION</button>
-<button class="toc-scene" onclick="showScene('s4','s4_sc8')" id="toc-s4_sc8">VARRO KALT</button>
-<button class="toc-scene" onclick="showScene('s4','s4_sc9')" id="toc-s4_sc9">LE COMTE TREMMLER</button>
-<button class="toc-scene" onclick="showScene('s4','s4_sc10')" id="toc-s4_sc10">LA NOBLESSE VAMPIRIQUE DE SYLVANIE — ARC 2 ESQUISSÉ</button>
+<button class="toc-part" data-action="section" data-sid="s4" style="border-left-color:#B8922A">A — LA TOILE</button>
+<button class="toc-scene" data-action="scene" data-sid="s4" data-scid="s4_sc0" id="toc-s4_sc0">GOUVERNEMENT</button>
+<button class="toc-scene" data-action="scene" data-sid="s4" data-scid="s4_sc1" id="toc-s4_sc1">NOBLESSE</button>
+<button class="toc-scene" data-action="scene" data-sid="s4" data-scid="s4_sc2" id="toc-s4_sc2">MILICE</button>
+<button class="toc-scene" data-action="scene" data-sid="s4" data-scid="s4_sc3" id="toc-s4_sc3">CULTES</button>
+<button class="toc-scene" data-action="scene" data-sid="s4" data-scid="s4_sc4" id="toc-s4_sc4">MAGIE</button>
+<button class="toc-scene" data-action="scene" data-sid="s4" data-scid="s4_sc5" id="toc-s4_sc5">TRANSPORTS</button>
+<button class="toc-scene" data-action="scene" data-sid="s4" data-scid="s4_sc6" id="toc-s4_sc6">MILIEU POPULAIRE</button>
+<button class="toc-scene" data-action="scene" data-sid="s4" data-scid="s4_sc7" id="toc-s4_sc7">LES PÂLES — L&#x27;ORGANISATION</button>
+<button class="toc-scene" data-action="scene" data-sid="s4" data-scid="s4_sc8" id="toc-s4_sc8">VARRO KALT</button>
+<button class="toc-scene" data-action="scene" data-sid="s4" data-scid="s4_sc9" id="toc-s4_sc9">LE COMTE TREMMLER</button>
+<button class="toc-scene" data-action="scene" data-sid="s4" data-scid="s4_sc10" id="toc-s4_sc10">LA NOBLESSE VAMPIRIQUE DE SYLVANIE — ARC 2 ESQUISSÉ</button>
 </div>
 <div class="toc-section">
-<button class="toc-part" onclick="showSection('s5')" style="border-left-color:#B8922A">B — LES SCÈNES</button>
-<button class="toc-scene" onclick="showScene('s5','s5_sc0')" id="toc-s5_sc0">TABLEAU RÉCAPITULATIF — PNJ, LIEUX &amp; INDICES</button>
-<button class="toc-scene" onclick="showScene('s5','s5_sc1')" id="toc-s5_sc1">1 — MISE EN PLACE</button>
-<button class="toc-scene" onclick="showScene('s5','s5_sc2')" id="toc-s5_sc2">2 — FILS D&#x27;ENTRÉE</button>
-<button class="toc-scene" onclick="showScene('s5','s5_sc3')" id="toc-s5_sc3">3 — APPROFONDISSEMENT</button>
-<button class="toc-scene" onclick="showScene('s5','s5_sc4')" id="toc-s5_sc4">RENCONTRES — LA NOBLESSE &amp; LA TOILE</button>
-<button class="toc-scene" onclick="showScene('s5','s5_sc5')" id="toc-s5_sc5">SCÈNES COMPLÉMENTAIRES — AUTRES STRATES</button>
-<button class="toc-scene" onclick="showScene('s5','s5_sc6')" id="toc-s5_sc6">4 — RÉSOLUTION</button>
+<button class="toc-part" data-action="section" data-sid="s5" style="border-left-color:#B8922A">B — LES SCÈNES</button>
+<button class="toc-scene" data-action="scene" data-sid="s5" data-scid="s5_sc0" id="toc-s5_sc0">TABLEAU RÉCAPITULATIF — PNJ, LIEUX &amp; INDICES</button>
+<button class="toc-scene" data-action="scene" data-sid="s5" data-scid="s5_sc1" id="toc-s5_sc1">1 — MISE EN PLACE</button>
+<button class="toc-scene" data-action="scene" data-sid="s5" data-scid="s5_sc2" id="toc-s5_sc2">2 — FILS D&#x27;ENTRÉE</button>
+<button class="toc-scene" data-action="scene" data-sid="s5" data-scid="s5_sc3" id="toc-s5_sc3">3 — APPROFONDISSEMENT</button>
+<button class="toc-scene" data-action="scene" data-sid="s5" data-scid="s5_sc4" id="toc-s5_sc4">RENCONTRES — LA NOBLESSE &amp; LA TOILE</button>
+<button class="toc-scene" data-action="scene" data-sid="s5" data-scid="s5_sc5" id="toc-s5_sc5">SCÈNES COMPLÉMENTAIRES — AUTRES STRATES</button>
+<button class="toc-scene" data-action="scene" data-sid="s5" data-scid="s5_sc6" id="toc-s5_sc6">4 — RÉSOLUTION</button>
 </div>
     </div>
   </nav>
@@ -232,7 +232,7 @@ strong{color:var(--parchment);font-weight:600;}
 <p class="ambiance"><em>À lire avant de commencer — cadre général de la campagne</em></p>
 </div>
 <div class="scene-panel" id="s0_sc0" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">CONTEXTE GÉNÉRAL</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s0','s0_intro')">&#8592; Préc.</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">CONTEXTE GÉNÉRAL</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s0" data-scid="s0_intro">&#8592; Préc.</button></div></div>
 <div class="section-head"><strong>CADRE GÉOGRAPHIQUE et TEMPOREL</strong></div>
 <p>1er mardi d&#x27;Avril, An 2511 du Calendrier Impérial. Karl Franz règne à Altdorf depuis plus de vingt ans. Aimé, fédérateur, réformateur, il incarne pour beaucoup ce qu&#x27;un Empereur peut être dans les temps ordinaires. </p>
 <p>L&#x27;Empire vit une paix relative, fragile comme toutes les paix de ce monde. L&#x27;histoire prend place dans le Comté du Wissenland, au sud du territoire impérial, autour de l&#x27;immense cité de Nuln, capitale industrielle de l&#x27;Empire et siège des célèbres Fonderies Impériales.</p>
@@ -260,7 +260,7 @@ strong{color:var(--parchment);font-weight:600;}
 </table>
 </div>
 <div class="scene-panel" id="s1_sc0" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">DEN&#x27;L ENDRI  ·  SÉVERINE</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s1','s1_intro')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s1','s1_sc1')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">DEN&#x27;L ENDRI  ·  SÉVERINE</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s1" data-scid="s1_intro">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s1" data-scid="s1_sc1">Suiv. &#8594;</button></div></div>
 <p class="ambiance"><em>Elfe Sylvaine  ·  Ex-guide forestière  ·  Archère émérite  ·  Combat </em><em>souple et brutal</em></p>
 <div class="section-head"><strong><em>Affiliation :</em></strong><strong><em><span class="mod mod-neu">  </span></em></strong><em>Ex 6ème compagnie, armée régulière du Wissenland, C</em><em>h</em><em>asseuse</em><em> puis Gladiatrice</em></div>
 <div class="section-head"><strong><em>Âge :  </em></strong><em>124 ans  (équivalent ~20 ans humains)</em></div>
@@ -300,7 +300,7 @@ strong{color:var(--parchment);font-weight:600;}
 <p class="ambiance"><em>« Je n&#x27;ai pas été chassée pour ce que j&#x27;ai fait. Mais pour avoir choisi. »</em></p>
 </div>
 <div class="scene-panel" id="s1_sc1" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">SARETH  ·  CASSANDRA</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s1','s1_sc0')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s1','s1_sc2')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">SARETH  ·  CASSANDRA</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s1" data-scid="s1_sc0">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s1" data-scid="s1_sc2">Suiv. &#8594;</button></div></div>
 <p class="ambiance"><em>Demi-Elfe  ·  Sorcière du Domaine Gris (Ombre)  ·  Ex 6ème Division, Wissenland</em></p>
 <div class="section-head"><strong><em>Âge :  </em></strong><em>30 ans</em></div>
 <p><strong><em>Apparence :  </em></strong><em>Belle, cheveux longs noirs</em></p>
@@ -466,7 +466,7 @@ strong{color:var(--parchment);font-weight:600;}
 <p class="ambiance"><em>Très proche de Séverine (Den), elle veille sincèrement sur elle. Un ancrage rare dans une existence tournée vers la puissance.</em></p>
 </div>
 <div class="scene-panel" id="s1_sc2" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">AZART  ·  QUENTIN</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s1','s1_sc1')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s1','s1_sc3')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">AZART  ·  QUENTIN</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s1" data-scid="s1_sc1">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s1" data-scid="s1_sc3">Suiv. &#8594;</button></div></div>
 <p class="ambiance"><em>Humain  ·  Voleur  ·  Rues de Nuln</em></p>
 <div class="section-head"><strong><em>Âge :  </em></strong><em>18 ans</em></div>
 <p><strong><em>Apparence :  </em></strong><em>Beau jeune homme, cheveux rasés et mi-longs, yeux verts</em></p>
@@ -497,7 +497,7 @@ strong{color:var(--parchment);font-weight:600;}
 <p class="ambiance"><em>« Je n&#x27;ai pas besoin qu&#x27;on m&#x27;aime. Juste qu&#x27;on me remarque. »</em></p>
 </div>
 <div class="scene-panel" id="s1_sc3" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">LE DUO  ·  DEN SARETH</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s1','s1_sc2')">&#8592; Préc.</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">LE DUO  ·  DEN SARETH</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s1" data-scid="s1_sc2">&#8592; Préc.</button></div></div>
 <p class="ambiance"><em>Contexte hors RP — Narratif GM</em></p>
 <div class="section-head"><strong>DEN&#x27;L ENDRI &amp; SARETH — AVANT LA CAMPAGNE</strong></div>
 <p>Très jeune, Den a quitté les bois des hauteurs des Montagnes Grises, à l&#x27;est d&#x27;Athel Loren. Dès les premières années de son voyage, elle rencontre Sareth, demi-elfe issue de la noblesse de Wissenburg et d&#x27;une Mage Elfe d&#x27;Améthyste réputée dans le cercle fermé du Domaine de la Mort Impériale.</p>
@@ -548,7 +548,7 @@ strong{color:var(--parchment);font-weight:600;}
 <p class="ambiance"><em>RP — Cinq semaines de voyage</em></p>
 </div>
 <div class="scene-panel" id="s2_sc0" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">SYSTÈME DE VOYAGE</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s2','s2_intro')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s2','s2_sc1')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">SYSTÈME DE VOYAGE</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s2" data-scid="s2_intro">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s2" data-scid="s2_sc1">Suiv. &#8594;</button></div></div>
 <p><strong><strong>Le voyage de Nuln à Swartzhafen prend environ cinq semaines à cheval. Les routes se dégradent à mesure qu&#x27;on avance vers l&#x27;est. En Sylvanie, certains tronçons ne sont plus que des pistes boueuses que les cartes ne mentionnent plus.</strong></strong></p>
 <p><strong><strong>Ce système joue chaque semaine comme une unité narrative. Le MJ choisit un événement principal et peut en ajouter un second si le groupe le cherche ou si la situation l&#x27;appelle.</strong></strong></p>
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">Objectif : que le voyage pèse. Pas de survie au gramme près, mais des décisions qui coûtent, des corps qui fatiguent. L&#x27;arrivée à Swartzhafen doit déjà entamer les PJ.</div></div>
@@ -564,7 +564,7 @@ strong{color:var(--parchment);font-weight:600;}
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">Les PJ partent avec 5 Co d&#x27;avance chacun. Suffisant pour le voyage sans luxe. La gestion n&#x27;est pas le sujet, mais les choix ont un coût.</div></div>
 </div>
 <div class="scene-panel" id="s2_sc1" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">LES CINQ SEMAINES</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s2','s2_sc0')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s2','s2_sc2')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">LES CINQ SEMAINES</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s2" data-scid="s2_sc0">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s2" data-scid="s2_sc2">Suiv. &#8594;</button></div></div>
 <div class="section-head"><strong>SEMAINE 1 — LE WISSENLAND</strong></div>
 <div class="jet-roll"><span class="jet-icon">⚄</span><span class="jet-detail"><strong><span class="mod mod-neu">Difficulté voyage : </span></strong>(+20) Routes impériales entretenues, terrain connu.</span></div>
 <p><strong><strong>Les routes pavées, les convois marchands, les villages animés. Mais ils ne sont plus des soldats en mission officielle. Le contraste avec la vie militaire se fait sentir dès le premier bivouac.</strong></strong></p>
@@ -625,7 +625,7 @@ strong{color:var(--parchment);font-weight:600;}
 <p class="ambiance"><em>RP — À l&#x27;aube, départ de Swartzhafen</em></p>
 </div>
 <div class="scene-panel" id="s2_sc2" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">VOYAGE SWARTZHAFEN → DOKHERN</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s2','s2_sc1')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s2','s2_sc3')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">VOYAGE SWARTZHAFEN → DOKHERN</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s2" data-scid="s2_sc1">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s2" data-scid="s2_sc3">Suiv. &#8594;</button></div></div>
 <p><strong><strong>Une demi-journée à cheval depuis Swartzhafen. La route existe encore — un axe nord-est utilisé par les marchands locaux, maintenant déserté. Les bocages ferment progressivement la vue. Les arbres, encore à demi-feuillus, projettent des ombres longues malgré le matin.</strong></strong></p>
 <p><strong><strong>Ce trajet se joue en temps réel, heure par heure. Pas de mécanique de survie — mais une immersion complète dans la progression.</strong></strong></p>
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">Ce voyage est court mais il doit peser. Le MJ décrit la dégradation progressive : la route qui se réduit, les bruits qui changent, le silence qui s&#x27;installe. Chaque heure amène quelque chose.</div></div>
@@ -696,7 +696,7 @@ strong{color:var(--parchment);font-weight:600;}
 <p class="ambiance"><em>RP/Combat — Nord-est de Dokhern</em></p>
 </div>
 <div class="scene-panel" id="s2_sc3" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">TRAJET VERS LE MANOIR</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s2','s2_sc2')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s2','s2_sc4')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">TRAJET VERS LE MANOIR</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s2" data-scid="s2_sc2">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s2" data-scid="s2_sc4">Suiv. &#8594;</button></div></div>
 <p><strong><strong>Le manoir Tremmler se trouve au nord-est de Dokhern, à une heure de marche ou une demi-heure à cheval par un chemin forestier. On passe d&#x27;abord à travers les ruines du village — il faut traverser ce que Dokhern est devenu avant d&#x27;atteindre la route du manoir.</strong></strong></p>
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">Ce trajet court doit être joué comme une transition. Pas de mécanique, mais une accumulation de détails qui préparent psychologiquement les PJ à ce qu&#x27;ils vont trouver.</div></div>
 <div class="section-head"><strong>EN QUITTANT DOKHERN</strong></div>
@@ -811,7 +811,7 @@ strong{color:var(--parchment);font-weight:600;}
 <p class="ambiance"><em>RP — Cinq semaines · Système simplifié par semaine</em></p>
 </div>
 <div class="scene-panel" id="s2_sc4" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">SYSTÈME DE VOYAGE</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s2','s2_sc3')">&#8592; Préc.</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">SYSTÈME DE VOYAGE</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s2" data-scid="s2_sc3">&#8592; Préc.</button></div></div>
 <p><strong><strong>Cinq semaines depuis Swartzhafen jusqu&#x27;à Nuln. La Sylvanie derrière eux, l&#x27;Averland à traverser, le Wissenland en approche. Les routes s&#x27;améliorent à mesure qu&#x27;ils s&#x27;éloignent — mais les premières semaines sont longues, grises, silencieuses.</strong></strong></p>
 <p><strong><strong>Ce voyage se joue par semaine, pas par jour. Chaque semaine, le MJ choisit un ou deux événements. L&#x27;objectif : laisser les PJ traiter ce qu&#x27;ils ont vécu, créer une ambiance de retour inquiète — sans alourdir.</strong></strong></p>
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">Ce n&#x27;est pas un voyage neutre. Les PJ reviennent avec des images dans la tête, un mort à annoncer, et la certitude que quelque chose de plus grand se prépare. Le MJ utilise les semaines pour laisser ça remonter.</div></div>
@@ -940,7 +940,7 @@ strong{color:var(--parchment);font-weight:600;}
 <p class="ambiance"><em>« Des caveaux scellés par décret. Même nous, on n&#x27;a pas le droit d&#x27;y entrer. »</em></p>
 </div>
 <div class="scene-panel" id="s4_sc0" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">GOUVERNEMENT</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s4','s4_intro')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s4','s4_sc1')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">GOUVERNEMENT</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_intro">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc1">Suiv. &#8594;</button></div></div>
 <p>Le gouvernement de Swartzhafen présente une façade d&#x27;ordre. En réalité, plusieurs de ses membres sont engagés dans la toile, consciemment ou non. Certains croient agir pour le bien. D&#x27;autres savent exactement ce qu&#x27;ils couvrent.</p>
 <p><strong><strong>Accroche : </strong>Le couvre-feu est décrété, il faudrait en connaître la légitimité. Des disparitions ont lieues, des échauffourées, rien qui n&#x27;est entériné par le couvre feu ou les isolations temporaires de quartiers. Des fouilles, des excavations, déplacements et cloisonnements de cryptes sont autorisés sans explication. C&#x27;est troublant et doit être vérifier. Les comptes des taxations locales et des impôts dûs à Nuln et l&#x27;Empire, sont forcément incohérents ou douteux, il faut le vérifier. </strong></p>
 <p><strong><strong>Indice : </strong>Documents officiels : désignation d&#x27;un secteur nord peu malfamé, verrouillé par la garde. Les ordres transitent de main en main pour atterrir systématiquement chez la Sergent Lysa Harden.</strong></p>
@@ -963,7 +963,7 @@ strong{color:var(--parchment);font-weight:600;}
 <p class="ambiance"><em>Ne se voit pas corrompu, se voit visionnaire. Et il gangrène de nombreux esprits.</em></p>
 </div>
 <div class="scene-panel" id="s4_sc1" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">NOBLESSE</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s4','s4_sc0')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s4','s4_sc2')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">NOBLESSE</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc0">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc2">Suiv. &#8594;</button></div></div>
 <p>Trois nobles forment le triangle actif de la toile. Chacun y joue un rôle distinct.</p>
 <p><strong><strong>Celestia Bal  </strong>le cœur actif, déterminée, manipulatrice, obsédée, avec un laboratoire et un apothicaire douteux personnel.</strong></p>
 <p><strong><strong>Eckhart von Reikenau  </strong>le rouage logistique, lâche mais utile. </strong></p>
@@ -1001,7 +1001,7 @@ strong{color:var(--parchment);font-weight:600;}
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">Son arrestation ou sa chute aura un impact politique énorme. Elle peut débattre avec les PJ. Elle n&#x27;est ni folle, ni lâche, mais dangereusement convaincue.</div></div>
 </div>
 <div class="scene-panel" id="s4_sc2" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">MILICE</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s4','s4_sc1')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s4','s4_sc3')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">MILICE</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc1">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc3">Suiv. &#8594;</button></div></div>
 <p><strong><strong>Accroche : </strong>Prêter attention aux gardes, à la milice, aux mouvements, aux rondes. Regarder attentivement la Sergent Lysa Harden et, si possible, les documents en sa possession.</strong></p>
 <p class="ambiance"><em>La milice ne tourne pas rond. Certains accès sont bloqués, des quartiers entiers, au prétexte de conflits entre gangs.</em></p>
 <p><strong><strong>PNJ  </strong><strong>Capitaine Elric Varn</strong></strong></p>
@@ -1021,7 +1021,7 @@ strong{color:var(--parchment);font-weight:600;}
 <p class="ambiance"><em>Faire en sorte que ce ne soit plus un problème.</em></p>
 </div>
 <div class="scene-panel" id="s4_sc3" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">CULTES</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s4','s4_sc2')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s4','s4_sc4')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">CULTES</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc2">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc4">Suiv. &#8594;</button></div></div>
 <p><strong><strong>PNJ  </strong><strong>Père Adelmar — Culte de Morr</strong></strong></p>
 <p class="ambiance"><em>Calme, las, lucide.</em></p>
 <p class="ambiance"><em>Ferme les yeux sur le fait que des tombes sont vidées, même des cryptes sans raison acceptable.</em></p>
@@ -1036,7 +1036,7 @@ strong{color:var(--parchment);font-weight:600;}
 <p class="ambiance"><em>Espère gagner en influence face au culte de Morr, très puissant en Sylvanie.</em></p>
 </div>
 <div class="scene-panel" id="s4_sc4" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">MAGIE</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s4','s4_sc3')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s4','s4_sc5')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">MAGIE</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc3">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc5">Suiv. &#8594;</button></div></div>
 <p><strong><strong>Accroche : </strong>Un rituel de détection ne montre rien, ce qui est troublant en soi. Ce n&#x27;est pas caché : c&#x27;est désaccordé.</strong></p>
 <p><strong><strong>Indice Sareth : </strong>Quelque chose est là. Shyish vibre. Mais cela ne peut être vu des mages ordinaires.</strong></p>
 <p><strong><strong>PNJ  </strong><strong>Maîtresse Kyriad Weiss — Collège de la Mort (Shyish)</strong></strong></p>
@@ -1058,7 +1058,7 @@ strong{color:var(--parchment);font-weight:600;}
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">Brael est la clé pour expliquer pourquoi les détections magiques ne donnent rien. C&#x27;est lui qui entretient l&#x27;écart. Le trouver est difficile — il opère de nuit, depuis plusieurs points différents. Un PJ avec des connaissances magiques (Sareth) peut repérer les traces résiduelles d&#x27;Hysh dans le quartier nord avec un bon jet de Magie.</div></div>
 </div>
 <div class="scene-panel" id="s4_sc5" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">TRANSPORTS</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s4','s4_sc4')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s4','s4_sc6')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">TRANSPORTS</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc4">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc6">Suiv. &#8594;</button></div></div>
 <p><strong><strong>Accroche : </strong>Des caisses lourdes, scellées, sans manifeste, transitent la nuit. En y étant attentif : messes basses, pots-de-vin, échanges de grosses livraisons, changements de papiers et de routes.</strong></p>
 <p>Ordres tous les trois jours. Les notes indiquent nuit, heure, toujours erratiques et irréguliers. Départs de cargaisons escortées, livrées dans le secteur bloqué (nord) à différentes bâtisses, industries, hangars, artisans.</p>
 <p><strong><strong>Indice : </strong>Sur les notes de transport : les premières lettres composent P-Â-L-E-S, et les seuls chiffres doublés ou très abîmés sont 12, 4, 7, 2.</strong></p>
@@ -1076,7 +1076,7 @@ strong{color:var(--parchment);font-weight:600;}
 <p class="ambiance"><em>Les caisses sont vides... mais traitées, chaux, sels, glyphes. On transporte une préparation, des ingrédients. Pas des corps. Pas encore.</em></p>
 </div>
 <div class="scene-panel" id="s4_sc6" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">MILIEU POPULAIRE</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s4','s4_sc5')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s4','s4_sc7')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">MILIEU POPULAIRE</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc5">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc7">Suiv. &#8594;</button></div></div>
 <p><strong><strong>PNJ  </strong><strong>Gernulf — Fossoyeur</strong></strong></p>
 <p class="ambiance"><em>Homme rude, opportuniste mais sans vice. Sortait du lot. Piste à relancer. Les PJ peuvent aussi le croiser </em><em>dans</em><em> une taverne.</em></p>
 <p class="ambiance"><em>Fossoyeur sur-payé, rie et s&#x27;en félicite.</em></p>
@@ -1095,7 +1095,7 @@ strong{color:var(--parchment);font-weight:600;}
 <p>Dans cet entrepôt dont l’adresse correspond aux chiffres souvent en évidence codée dans les divers documents: Secteur industriel 12, numéro 4, 7eme porte, 2eme pilier. A l&#x27;entrée, il y a une petite tâche blanche, comparable à celles sur les caisses. C&#x27;est vaste et haut de plafond, le deuxième pilier qui semble porteur n&#x27;a pas de plinthes ni de jointures à sa base. Le sol alentour est étonnamment propre et paraît récent. C&#x27;est une lourde trappe, qu&#x27;il faut manipuler avec de longs et solides pieds-de-biche, à plusieurs personnes.</p>
 </div>
 <div class="scene-panel" id="s4_sc7" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">LES PÂLES — L&#x27;ORGANISATION</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s4','s4_sc6')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s4','s4_sc8')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">LES PÂLES — L&#x27;ORGANISATION</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc6">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc8">Suiv. &#8594;</button></div></div>
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">Section confidentielle, Infrastructure narrative centrale. À révéler progressivement selon la progression des PJ.</div></div>
 <div class="section-head"><strong>VISION &amp; IDÉOLOGIE</strong></div>
 <p>Les Pâles sont une organisation secrète née d&#x27;une conviction radicale : la Sylvanie est condamnée par les vrais morts-vivants, les vampires et les nécromanciens qui la rongent depuis des siècles. L&#x27;Empire ne peut pas gagner par la force. La magie ne suffit pas. La politique non plus.</p>
@@ -1214,7 +1214,7 @@ strong{color:var(--parchment);font-weight:600;}
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">La nuance entre documents bas et haut de gamme est importante : les PJ peuvent trouver le code seuls sur les notes de terrain, mais ils auront besoin de Veld pour que cette preuve soit crédible face à un magistrat — et pour remonter les documents officiels. Sans lui, ils ont des indices. Avec lui, ils ont des preuves implaccables.</div></div>
 </div>
 <div class="scene-panel" id="s4_sc8" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">VARRO KALT</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s4','s4_sc7')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s4','s4_sc9')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">VARRO KALT</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc7">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc9">Suiv. &#8594;</button></div></div>
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">CONFIDENTIEL, NE PAS RÉVÉLER AUX JOUEURS AVANT LE MOMENT NARRATIF APPROPRIÉ Nom véritable : Varro Kalt (non révélé). Rôle public : assistant silencieux et masqué de Darlasov. Vérité cachée : le premier Pâle réussi, un ancien combattant inconnu. Son identité est le pivot de toute la toile. Il est à la fois preuve “vivante” du projet et son meilleur gardien. Sa nature ne doit être révélée qu&#x27;au moment où les PJ sont en mesure d&#x27;en comprendre toutes les implications.</div></div>
 <p>Ce qu&#x27;il est concrètement : lent, massif, presque décérébré mais pas tout à fait, plus conscient qu&#x27;un zombie ordinaire, incapable de parler distinctement mais capable d&#x27;obéir, d&#x27;anticiper un danger, de protéger. Résistance physique hors norme. Le côté implacable est déjà là. La partie humaine, elle, est presque entièrement perdue pour le moment.</p>
 <p class="ambiance"><em>Ce que les PJ perçoivent d&#x27;abord : une silhouette grande, lente et à la mobilité étrange, masqué. Jamais présenté. Jamais nommé. Quand quelqu&#x27;un s&#x27;approche trop d’Anselm, il se place entre. Il ne menace pas. Il est juste là.</em></p>
@@ -1232,7 +1232,7 @@ strong{color:var(--parchment);font-weight:600;}
 <p><strong><strong><span style="color:#5E804F">Butin :</span></strong> Son équipement.</strong></p>
 </div>
 <div class="scene-panel" id="s4_sc9" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">LE COMTE TREMMLER</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s4','s4_sc8')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s4','s4_sc10')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">LE COMTE TREMMLER</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc8">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc10">Suiv. &#8594;</button></div></div>
 <p>Le corbeau qui suit les PJ depuis Dokhern, mais ne se montre presque jamais ou si peu, n&#x27;est pas un animal ordinaire. C&#x27;est le Comte Tremmler lui-même, vampirisé depuis des décennies, sa forme animale maîtrisée est ce corbeau borgne de l&#x27;œil gauche.</p>
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">CONFIDENTIEL, À révéler progressivement, jamais d&#x27;un bloc. Le portrait au manoir représentait bien le propriétaire : le Comte Tremmler, borgne de l&#x27;œil gauche depuis un duel de jeunesse. La similitude avec le corbeau n&#x27;est pas une coïncidence, c&#x27;est la même conscience. Tremmler n&#x27;est pas allié aux Pâles. Il est dans sa propre logique vampirique. Il peut croiser la route des PJ à plusieurs titres : ennemi personnel (ils ont fouillé son manoir et volé son or), observateur de la situation de Swartzhafen, et plus tard acteur central quand les vampires de Sylvanie entreront en scène. Sa vengeance n&#x27;est pas immédiate. Il est patient comme le sont les vampires. Mais elle est certaine.</div></div>
 <p><strong><strong>PNJ  </strong><strong>Comte Aldric Tremmler</strong></strong></p>
@@ -1253,7 +1253,7 @@ strong{color:var(--parchment);font-weight:600;}
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">Pistes narratives pour plus tard :- Tremmler peut contacter les PJ directement, en tant que noble sylvanien, pas en tant que vampire déclaré.- Il peut leur offrir des informations sur les vampires en échange de quelque chose qu&#x27;ils ont pris dans son manoir.- Il peut se révéler allié temporaire contre les vampires anciens, pas par altruisme, mais parce que leur réveil menace aussi son indépendance.- La vengeance pour le vol de son or peut prendre des formes variées : humiliation publique, piège tendu, ou simple rappel qu&#x27;il sait exactement qui ils sont.</div></div>
 </div>
 <div class="scene-panel" id="s4_sc10" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">LA NOBLESSE VAMPIRIQUE DE SYLVANIE — ARC 2 ESQUISSÉ</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s4','s4_sc9')">&#8592; Préc.</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">LA NOBLESSE VAMPIRIQUE DE SYLVANIE — ARC 2 ESQUISSÉ</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s4" data-scid="s4_sc9">&#8592; Préc.</button></div></div>
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">Cette section documente les fils narratifs de la faction vampirique pour un éventuel Arc 2. Elle ne doit pas être jouée dans l&#x27;Arc 1 — mais le MJ doit la connaître pour que les indices semés (Tremmler, le corbeau, les vampires alliés des Pâles) aient une cohérence en sous-main.</div></div>
 <div class="section-head"><strong>LA SITUATION ACTUELLE</strong></div>
 <p><strong><strong>La Sylvanie est fragmentée entre plusieurs factions vampiriques qui coexistent sans s&#x27;unifier. Les anciens — vampires du temps de Vlad von Carstein — considèrent les Pâles avec un mélange d&#x27;intérêt et de mépris. Des morts-vivants de science qui ne doivent rien à la magie : c&#x27;est séduisant comme outil, mais incontrôlable comme projet.</strong></strong></p>
@@ -1278,7 +1278,7 @@ strong{color:var(--parchment);font-weight:600;}
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">Ces scènes ne sont pas linéaires. Les PJ peuvent rencontrer les acteurs de la toile dans n&#x27;importe quel ordre selon leurs choix dans la ville, quartiers populaires, quais, temples, cercles nobles. Chaque fil mène aux même bâtiment abritant la trappe des égouts nord par des chemins différents. PALES est leur destination commune, mais ce n&#x27;est pas le laboratoire, c&#x27;est l&#x27;accès. Les scènes B à E sont des points d&#x27;entrée indépendants. Le MJ les active selon les pistes que les PJ suivent.</div></div>
 </div>
 <div class="scene-panel" id="s5_sc0" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">TABLEAU RÉCAPITULATIF — PNJ, LIEUX &amp; INDICES</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s5','s5_intro')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s5','s5_sc1')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">TABLEAU RÉCAPITULATIF — PNJ, LIEUX &amp; INDICES</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s5" data-scid="s5_intro">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s5" data-scid="s5_sc1">Suiv. &#8594;</button></div></div>
 <p class="ambiance"><em>Ressource MJ — Vue d&#x27;ensemble de la toile investigative</em></p>
 <p class="ambiance"><em>Chaque PNJ et lieu apporte un ou plusieurs indices. Le tableau ci-dessous permet au MJ de savoir rapidement ce que les PJ peuvent obtenir, comment, et vers quoi ça les mène.</em></p>
 <table class="pj-table">
@@ -1337,7 +1337,7 @@ strong{color:var(--parchment);font-weight:600;}
 </table>
 </div>
 <div class="scene-panel" id="s5_sc1" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">1 — MISE EN PLACE</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s5','s5_sc0')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s5','s5_sc2')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">1 — MISE EN PLACE</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s5" data-scid="s5_sc0">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s5" data-scid="s5_sc2">Suiv. &#8594;</button></div></div>
 <p><strong><strong>Une seule scène obligatoire : l&#x27;installation à la maison de Federico. Elle pose les règles de la mission et ouvre les premières pistes d&#x27;enquête.</strong></strong></p>
 <div class="section-head" style="color:var(--GLD);border-bottom-color:rgba(184,146,42,0.3)"><strong>Scène 1  </strong><strong>INSTALLATION — LA MAISON DE FEDERICO</strong></div>
 <p class="ambiance"><em>RP — Arrivée à Swartzhafen avec Federico</em></p>
@@ -1356,7 +1356,7 @@ strong{color:var(--parchment);font-weight:600;}
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">Federico ne dit pas ces choses gratuitement. Il teste si les PJ posent des questions pertinentes, signe d&#x27;intelligence ou signe qu&#x27;ils savent déjà des choses. Tout ce qu&#x27;ils lui révèlent ainsi part dans son carnet. Il travaille pour l&#x27;Eclipse, pas pour eux. Jusqu’à être impressionné et qu’ils les sachent profondément fiables, il les considère remplaçables à tout moment.</div></div>
 </div>
 <div class="scene-panel" id="s5_sc2" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">2 — FILS D&#x27;ENTRÉE</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s5','s5_sc1')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s5','s5_sc3')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">2 — FILS D&#x27;ENTRÉE</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s5" data-scid="s5_sc1">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s5" data-scid="s5_sc3">Suiv. &#8594;</button></div></div>
 <p><strong><strong>Ces scènes se déclenchent naturellement dans les premiers jours. Chacune peut fonctionner indépendamment. En activer deux ou trois simultanément crée l&#x27;élan de l&#x27;enquête.</strong></strong></p>
 <div class="section-head" style="color:var(--GLD);border-bottom-color:rgba(184,146,42,0.3)"><strong>Scène 2  </strong><strong>PÈRE ADELMAR — LE CULTE DE MORR</strong></div>
 <p class="ambiance"><em>RP/Social — Temple de Morr, Swartzhafen</em></p>
@@ -1425,7 +1425,7 @@ strong{color:var(--parchment);font-weight:600;}
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">Ce corps est l&#x27;élément déclencheur le plus efficace pour rendre le trafic concret. Il transforme les rumeurs en réalité. Les PJ comprennent que des gens meurent, méthodiquement, proprement, pour une raison qui n&#x27;est pas ordinaire.La garde peut être sur les lieux. Si les PJ fouillent trop, le Garde Suspicieux peut les repérer (15% de chances, voir Partie IV, Milice).</div></div>
 </div>
 <div class="scene-panel" id="s5_sc3" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">3 — APPROFONDISSEMENT</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s5','s5_sc2')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s5','s5_sc4')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">3 — APPROFONDISSEMENT</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s5" data-scid="s5_sc2">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s5" data-scid="s5_sc4">Suiv. &#8594;</button></div></div>
 <p><strong><strong>Ces scènes s&#x27;ouvrent quand les PJ ont des pistes établies. Elles relient les fils et convergent vers le secteur nord. Certaines requièrent une couverture ou un contact préalable.</strong></strong></p>
 <div class="section-head" style="color:var(--GLD);border-bottom-color:rgba(184,146,42,0.3)"><strong>Scène 7  </strong><strong>SERGENT LYSA HARDEN — LA MILICE</strong></div>
 <p class="ambiance"><em>RP/Filature — Quartier nord</em></p>
@@ -1446,7 +1446,7 @@ strong{color:var(--parchment);font-weight:600;}
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">Les PJ qui filent Harden finissent avec le bâtiment de transit nord comme point focal. Sans jamais lui avoir parlé. C&#x27;est le chemin le plus propre, et il ne coûte que du temps et de la discrétion.</div></div>
 </div>
 <div class="scene-panel" id="s5_sc4" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">RENCONTRES — LA NOBLESSE &amp; LA TOILE</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s5','s5_sc3')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s5','s5_sc5')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">RENCONTRES — LA NOBLESSE &amp; LA TOILE</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s5" data-scid="s5_sc3">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s5" data-scid="s5_sc5">Suiv. &#8594;</button></div></div>
 <p class="ambiance"><em>Scènes accessibles selon les opportunités et la couverture des PJ</em></p>
 <p class="ambiance"><em>Ces rencontres permettent aux PJ d&#x27;approcher progressivement les nobles impliqués. Elles ne sont pas dramatiques en elles-mêmes, ce sont des portes qui s&#x27;entrouvrent. La vérité se révèle par accumulation.</em></p>
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">Les nobles ne sont pas accessibles directement sans prétexte. Federico peut faciliter une introduction selon la couverture des PJ, ce n&#x27;est pas gratuit, et ça laisse une trace. Chaque rencontre est un risque de reconnaissance autant qu&#x27;une opportunité d&#x27;information.</div></div>
@@ -1535,7 +1535,7 @@ strong{color:var(--parchment);font-weight:600;}
 <div class="jet-roll"><span class="jet-icon">⚄</span><span class="jet-label">Sareth — Ulgu :</span><span class="mod mod-neu">(0)</span><span class="jet-detail">Aucun signal Shyish sur les zones de livraison. Les corps ne sont pas animés magiquement. Ils sont préparés. Pourquoi ?</span></div>
 </div>
 <div class="scene-panel" id="s5_sc5" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">SCÈNES COMPLÉMENTAIRES — AUTRES STRATES</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s5','s5_sc4')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s5','s5_sc6')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">SCÈNES COMPLÉMENTAIRES — AUTRES STRATES</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s5" data-scid="s5_sc4">&#8592; Préc.</button><button class="nav-btn" data-action="scene" data-sid="s5" data-scid="s5_sc6">Suiv. &#8594;</button></div></div>
 <p class="ambiance"><em>Accessibles selon l&#x27;angle d&#x27;approche des PJ — chacune renforce le faisceau d&#x27;indices</em></p>
 <div class="section-head" style="color:var(--GLD);border-bottom-color:rgba(184,146,42,0.3)"><strong>Scène 12  </strong><strong>MAÎTRESSE KYRIAD WEISS — LE SILENCE MAGIQUE</strong></div>
 <p class="ambiance"><em>RP/Social — Collège de la Mort, Swartzhafen</em></p>
@@ -1713,7 +1713,7 @@ strong{color:var(--parchment);font-weight:600;}
 <div class="mj-box"><span class="mj-label">MJ</span><div class="mj-text">La Rathaus est le pivot narratif entre Approfondissement et Résolution. Les PJ sortent avec des documents qu&#x27;ils ne comprennent pas encore entièrement — mais qu&#x27;ils peuvent apporter à Scheel et Veld. C&#x27;est ici que les indices deviennent des preuves, et que les preuves rendent l&#x27;action institutionnelle possible.</div></div>
 </div>
 <div class="scene-panel" id="s5_sc6" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">4 — RÉSOLUTION</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s5','s5_sc5')">&#8592; Préc.</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">4 — RÉSOLUTION</h2><div class="scene-nav"><button class="nav-btn" data-action="scene" data-sid="s5" data-scid="s5_sc5">&#8592; Préc.</button></div></div>
 <p><strong><strong>Le point de convergence. Les PJ ont assez de fils pour entrer dans les tunnels. L&#x27;ordre entre le charnier et le laboratoire dépend de leur angle d&#x27;approche.</strong></strong></p>
 <div class="section-head" style="color:var(--GLD);border-bottom-color:rgba(184,146,42,0.3)"><strong>Scène 21  </strong><strong>VARN — LE CAPITAINE AGIT</strong></div>
 <p><strong><em>RP/Résolution — Bureau de la milice, Swartzhafen</em></strong></p>
@@ -1847,23 +1847,6 @@ strong{color:var(--parchment);font-weight:600;}
 const SEARCH_INDEX = [{"sid": "s0", "scid": "s0_sc0", "section": "Introduction & Contexte", "title": "CONTEXTE GÉNÉRAL"}, {"sid": "s1", "scid": "s1_sc0", "section": "Les Personnages Joueurs", "title": "DEN'L ENDRI  ·  SÉVERINE"}, {"sid": "s1", "scid": "s1_sc1", "section": "Les Personnages Joueurs", "title": "SARETH  ·  CASSANDRA"}, {"sid": "s1", "scid": "s1_sc2", "section": "Les Personnages Joueurs", "title": "AZART  ·  QUENTIN"}, {"sid": "s1", "scid": "s1_sc3", "section": "Les Personnages Joueurs", "title": "LE DUO  ·  DEN SARETH"}, {"sid": "s2", "scid": "s2_sc0", "section": "Acte 1 : Armand", "title": "SYSTÈME DE VOYAGE"}, {"sid": "s2", "scid": "s2_sc1", "section": "Acte 1 : Armand", "title": "LES CINQ SEMAINES"}, {"sid": "s2", "scid": "s2_sc2", "section": "Acte 1 : Armand", "title": "VOYAGE SWARTZHAFEN → DOKHERN"}, {"sid": "s2", "scid": "s2_sc3", "section": "Acte 1 : Armand", "title": "TRAJET VERS LE MANOIR"}, {"sid": "s2", "scid": "s2_sc4", "section": "Acte 1 : Armand", "title": "SYSTÈME DE VOYAGE"}, {"sid": "s4", "scid": "s4_sc0", "section": "A — LA TOILE", "title": "GOUVERNEMENT"}, {"sid": "s4", "scid": "s4_sc1", "section": "A — LA TOILE", "title": "NOBLESSE"}, {"sid": "s4", "scid": "s4_sc2", "section": "A — LA TOILE", "title": "MILICE"}, {"sid": "s4", "scid": "s4_sc3", "section": "A — LA TOILE", "title": "CULTES"}, {"sid": "s4", "scid": "s4_sc4", "section": "A — LA TOILE", "title": "MAGIE"}, {"sid": "s4", "scid": "s4_sc5", "section": "A — LA TOILE", "title": "TRANSPORTS"}, {"sid": "s4", "scid": "s4_sc6", "section": "A — LA TOILE", "title": "MILIEU POPULAIRE"}, {"sid": "s4", "scid": "s4_sc7", "section": "A — LA TOILE", "title": "LES PÂLES — L'ORGANISATION"}, {"sid": "s4", "scid": "s4_sc8", "section": "A — LA TOILE", "title": "VARRO KALT"}, {"sid": "s4", "scid": "s4_sc9", "section": "A — LA TOILE", "title": "LE COMTE TREMMLER"}, {"sid": "s4", "scid": "s4_sc10", "section": "A — LA TOILE", "title": "LA NOBLESSE VAMPIRIQUE DE SYLVANIE — ARC 2 ESQUISSÉ"}, {"sid": "s5", "scid": "s5_sc0", "section": "B — LES SCÈNES", "title": "TABLEAU RÉCAPITULATIF — PNJ, LIEUX & INDICES"}, {"sid": "s5", "scid": "s5_sc1", "section": "B — LES SCÈNES", "title": "1 — MISE EN PLACE"}, {"sid": "s5", "scid": "s5_sc2", "section": "B — LES SCÈNES", "title": "2 — FILS D'ENTRÉE"}, {"sid": "s5", "scid": "s5_sc3", "section": "B — LES SCÈNES", "title": "3 — APPROFONDISSEMENT"}, {"sid": "s5", "scid": "s5_sc4", "section": "B — LES SCÈNES", "title": "RENCONTRES — LA NOBLESSE & LA TOILE"}, {"sid": "s5", "scid": "s5_sc5", "section": "B — LES SCÈNES", "title": "SCÈNES COMPLÉMENTAIRES — AUTRES STRATES"}, {"sid": "s5", "scid": "s5_sc6", "section": "B — LES SCÈNES", "title": "4 — RÉSOLUTION"}];
 
 
-// Fix mobile : délégation d'événements sur la sidebar
-document.addEventListener('DOMContentLoaded', function() {
-  var sidebar = document.getElementById('sidebar');
-  if (sidebar) {
-    sidebar.addEventListener('click', function(e) {
-      var btn = e.target.closest('button');
-      if (!btn) return;
-      e.preventDefault();
-      e.stopPropagation();
-      var oc = btn.getAttribute('onclick');
-      if (oc) {
-        try { eval(oc); } catch(err) { console.log(err); }
-      }
-    }, {passive: false});
-  }
-});
-
 function showWelcome() {
   document.getElementById('welcome').style.display='block';
   document.querySelectorAll('.section-panel').forEach(p=>p.style.display='none');
@@ -1906,9 +1889,47 @@ function doSearch(q) {
   const ql=q.toLowerCase();
   const hits=SEARCH_INDEX.filter(i=>i.title.toLowerCase().includes(ql)||i.section.toLowerCase().includes(ql)).slice(0,9);
   if(!hits.length){box.classList.remove('visible');return;}
-  box.innerHTML=hits.map(h=>`<div class="sr-item" onclick="showScene('${h.sid}','${h.scid}');document.getElementById('search-input').value='';document.getElementById('search-results').classList.remove('visible')"><div class="sr-section">${h.section}</div><div class="sr-title">${h.title}</div></div>`).join('');
+  box.innerHTML=hits.map(h=>`<div class="sr-item" data-action="scene" data-sid="${h.sid}" data-scid="${h.scid}"><div class="sr-section">${h.section}</div><div class="sr-title">${h.title}</div></div>`).join('');
   box.classList.add('visible');
 }
+
+
+// Navigation mobile — data-attributes, pas d'onclick inline
+(function() {
+  function initNav() {
+    function handleNavBtn(btn) {
+      var action = btn.getAttribute('data-action');
+      if (!action) return;
+      // Fermer la recherche si ouverte
+      document.getElementById('search-input').value = '';
+      document.getElementById('search-results').classList.remove('visible');
+      if (action === 'welcome') { showWelcome(); }
+      else if (action === 'section') { showSection(btn.getAttribute('data-sid')); }
+      else if (action === 'scene')   { showScene(btn.getAttribute('data-sid'), btn.getAttribute('data-scid')); }
+    }
+
+    // Click (desktop + Android Chrome)
+    document.addEventListener('click', function(e) {
+      var btn = e.target.closest('[data-action]');
+      if (btn) handleNavBtn(btn);
+    });
+
+    // Touchend (iOS Safari — évite le délai 300ms)
+    document.addEventListener('touchend', function(e) {
+      var btn = e.target.closest('[data-action]');
+      if (btn) {
+        e.preventDefault();
+        handleNavBtn(btn);
+      }
+    }, {passive: false});
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNav);
+  } else {
+    initNav();
+  }
+})();
 
 document.addEventListener('click',e=>{
   if(!e.target.closest('.topbar-right')) document.getElementById('search-results').classList.remove('visible');
