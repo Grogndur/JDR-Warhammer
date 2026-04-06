@@ -1,1 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campagnes — Warhammer Fantasy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0a0f;
+    --parchment: #f0e8d8;
+    --parchment-dark: #d4c8a8;
+    --BLU: #1C3A5A;
+    --GLD: #B8922A;
+    --VIO: #674EA7;
+    --GRN: #5E804F;
+    --SUB: #555566;
+    --blood: #8B1A1A;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--ink); color: var(--parchment); font-family: 'Crimson Text', serif; min-height: 100vh; overflow-x: hidden; }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(28,58,90,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(103,78,167,0.08) 0%, transparent 50%),
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.01) 2px, rgba(255,255,255,0.01) 4px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
 
+  /* HEADER */
+  header { text-align: center; padding: 3rem 0 2.5rem; }
+  header::after { content: ''; display: block; width: 60%; height: 1px; background: linear-gradient(to right, transparent, var(--GLD), transparent); margin: 1.5rem auto 0; }
+  .hub-label { font-family: 'Crimson Text', serif; font-style: italic; color: var(--GLD); font-size: 0.9rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  h1 { font-family: 'Cinzel', serif; font-size: clamp(1.6rem, 5vw, 2.8rem); font-weight: 700; color: var(--parchment); letter-spacing: 0.05em; text-shadow: 0 0 40px rgba(184,146,42,0.3), 0 2px 4px rgba(0,0,0,0.8); line-height: 1.2; }
+  .hub-sub { font-family: 'Cinzel', serif; font-size: 0.75rem; color: var(--SUB); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 0.6rem; }
+
+  /* SECTION LABEL */
+  .section-title { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--SUB); margin: 2.5rem 0 1.25rem; display: flex; align-items: center; gap: 1rem; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+
+  /* CAMPAIGN PORTALS */
+  .portals { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 2rem 0; }
+  @media (max-width: 680px) { .portals { grid-template-columns: 1fr; } }
+
+  .portal { display: block; text-decoration: none; border-radius: 3px; padding: 2rem 1.75rem; transition: all 0.3s ease; position: relative; overflow: hidden; cursor: pointer; }
+  .portal::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s; }
+  .portal:hover { transform: translateY(-3px); }
+  .portal:hover::before { opacity: 1; }
+
+  /* Eclipse portal */
+  .portal-eclipse {
+    background: rgba(28,58,90,0.14);
+    border: 1px solid rgba(184,146,42,0.25);
+    border-top: 3px solid var(--GLD);
+  }
+  .portal-eclipse::before { background: linear-gradient(135deg, rgba(184,146,42,0.06) 0%, transparent 60%); }
+  .portal-eclipse:hover { border-color: rgba(184,146,42,0.55); background: rgba(28,58,90,0.22); box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(184,146,42,0.12); }
+
+  /* Boue et Sang portal */
+  .portal-bds {
+    background: rgba(139,26,26,0.1);
+    border: 1px solid rgba(139,26,26,0.25);
+    border-top: 3px solid #8B1A1A;
+  }
+  .portal-bds::before { background: linear-gradient(135deg, rgba(139,26,26,0.08) 0%, transparent 60%); }
+  .portal-bds:hover { border-color: rgba(139,26,26,0.55); background: rgba(139,26,26,0.16); box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(139,26,26,0.12); }
+
+  .portal-symbol { font-size: 2.2rem; margin-bottom: 1rem; display: block; line-height: 1; }
+  .portal-system { font-family: 'Crimson Text', serif; font-style: italic; font-size: 0.8rem; letter-spacing: 0.1em; margin-bottom: 0.4rem; }
+  .portal-eclipse .portal-system { color: rgba(184,146,42,0.7); }
+  .portal-bds .portal-system { color: rgba(180,60,60,0.8); }
+
+  .portal-name { font-family: 'Cinzel', serif; font-size: clamp(1.2rem, 3vw, 1.7rem); font-weight: 700; color: var(--parchment); letter-spacing: 0.04em; margin-bottom: 0.3rem; line-height: 1.15; }
+  .portal-arc { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 1rem; }
+  .portal-eclipse .portal-arc { color: var(--GLD); opacity: 0.7; }
+  .portal-bds .portal-arc { color: #c05050; opacity: 0.8; }
+
+  .portal-desc { font-size: 0.92rem; color: var(--parchment-dark); line-height: 1.55; font-style: italic; margin-bottom: 1.25rem; }
+
+  .portal-enter { display: inline-flex; align-items: center; gap: 0.5rem; font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.45rem 1rem; border-radius: 2px; transition: all 0.2s; }
+  .portal-eclipse .portal-enter { background: rgba(184,146,42,0.15); color: var(--GLD); border: 1px solid rgba(184,146,42,0.3); }
+  .portal-eclipse:hover .portal-enter { background: rgba(184,146,42,0.25); border-color: rgba(184,146,42,0.5); }
+  .portal-bds .portal-enter { background: rgba(139,26,26,0.2); color: #c06060; border: 1px solid rgba(139,26,26,0.35); }
+  .portal-bds:hover .portal-enter { background: rgba(139,26,26,0.3); border-color: rgba(139,26,26,0.55); }
+
+  /* DIVIDER */
+  .ornament { text-align: center; color: var(--GLD); opacity: 0.35; font-size: 1rem; letter-spacing: 0.6em; margin: 0.5rem 0; }
+
+  /* FOOTER */
+  footer { text-align: center; padding: 2rem 0; color: var(--SUB); font-size: 0.8rem; font-style: italic; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 3rem; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="hub-label">Warhammer Fantasy Roleplay</div>
+    <h1>Campagnes</h1>
+    <div class="hub-sub">Choisissez votre campagne</div>
+  </header>
+
+  <div class="ornament">· · ·</div>
+
+  <div class="section-title">Campagnes actives</div>
+
+  <div class="portals">
+
+    <!-- L'ÉCLIPSE -->
+    <a class="portal portal-eclipse" href="eclipse/index.html">
+      <span class="portal-symbol">🌑</span>
+      <div class="portal-system">Warhammer FRP 4e édition</div>
+      <div class="portal-name">L'Éclipse</div>
+      <div class="portal-arc">Arc I · Lune Pâle</div>
+      <div class="portal-desc">Wissenland, Sylvanie, Nuln. Trois agents de l'Eclipse remontent un réseau de morts-vivants scientifiques dans les égouts de Swartzhafen.</div>
+      <span class="portal-enter">Entrer →</span>
+    </a>
+
+    <!-- DE BOUE ET DE SANG -->
+    <a class="portal portal-bds" href="bds/index.html">
+      <span class="portal-symbol">⚔️</span>
+      <div class="portal-system">Warhammer FRP — à définir</div>
+      <div class="portal-name">De Boue et de Sang</div>
+      <div class="portal-arc">En préparation</div>
+      <div class="portal-desc">Une nouvelle campagne. Six joueurs, un monde à découvrir. Le site sera complété au fur et à mesure.</div>
+      <span class="portal-enter">Entrer →</span>
+    </a>
+
+  </div>
+
+  <footer>
+    Campagnes privées &nbsp;·&nbsp; Warhammer Fantasy Roleplay
+  </footer>
+
+</div>
+</body>
+</html>
