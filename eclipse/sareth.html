@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sareth — L'Éclipse</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:#0a0a0f; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
+    --GLD:#B8922A; --VIO:#674EA7; --VIO2:#9b7fd4; --GRN:#5E804F; --SUB:#555566;
+    --shadow-color:#2a1a4a;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--ink); color:var(--parchment); font-family:'Crimson Text',serif; min-height:100vh; }
+  body::before { content:''; position:fixed; inset:0;
+    background: radial-gradient(ellipse at 30% 0%, rgba(103,78,167,0.13) 0%, transparent 55%),
+                radial-gradient(ellipse at 70% 100%, rgba(28,58,90,0.08) 0%, transparent 50%);
+    pointer-events:none; z-index:0; }
+
+  nav { position:sticky; top:0; z-index:100; background:rgba(10,10,15,0.93); backdrop-filter:blur(8px); border-bottom:1px solid rgba(103,78,167,0.25); padding:0.6rem 1.5rem; display:flex; align-items:center; gap:1rem; }
+  nav a { color:var(--SUB); text-decoration:none; font-size:0.82rem; font-style:italic; transition:color 0.2s; }
+  nav a:hover { color:var(--GLD); }
+  .nav-current { color:var(--VIO2) !important; font-style:normal; font-family:'Cinzel',serif; font-size:0.82rem; }
+  .nav-sep { color:var(--SUB); opacity:0.3; }
+
+  .layout { position:relative; z-index:1; max-width:980px; margin:0 auto; padding:1.5rem 1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media(max-width:680px){ .layout { grid-template-columns:1fr; } }
+
+  /* HEADER */
+  .perso-header { grid-column:1/-1; display:flex; align-items:flex-end; gap:1.5rem; padding-bottom:1.25rem; border-bottom:1px solid rgba(103,78,167,0.22); flex-wrap:wrap; }
+  .perso-avatar { width:58px; height:58px; border-radius:2px; background:linear-gradient(135deg,rgba(103,78,167,0.25),rgba(28,58,90,0.4)); border:1px solid rgba(103,78,167,0.45); display:flex; align-items:center; justify-content:center; font-size:1.7rem; flex-shrink:0; }
+  .perso-info h1 { font-family:'Cinzel',serif; font-size:2rem; font-weight:700; line-height:1; letter-spacing:0.05em; }
+  .perso-info .sub { font-style:italic; color:var(--VIO2); font-size:0.95rem; margin-top:0.2rem; }
+  .perso-info .player { color:var(--SUB); font-size:0.78rem; margin-top:0.15rem; letter-spacing:0.05em; }
+  .perso-meta { margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:0.3rem; font-size:0.8rem; color:var(--SUB); font-style:italic; }
+  .perso-meta span { color:var(--parchment-dark); font-style:normal; }
+
+  /* CARDS */
+  .card { background:rgba(10,10,15,0.65); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:1.1rem; }
+  .card.vio { border-color:rgba(103,78,167,0.2); }
+  .card-title { font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.9rem; display:flex; align-items:center; gap:0.5rem; }
+  .card-title::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.05); }
+  .card-title.gld { color:var(--GLD); }
+  .card-title.vio { color:var(--VIO2); }
+  .card-title.grn { color:var(--GRN); }
+  .full { grid-column:1/-1; }
+
+  /* STATS */
+  .stats-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:0.45rem; }
+  @media(max-width:400px){ .stats-grid { grid-template-columns:repeat(3,1fr); } }
+  .stat-box { background:rgba(103,78,167,0.06); border:1px solid rgba(103,78,167,0.13); border-radius:2px; padding:0.45rem 0.3rem; text-align:center; }
+  .stat-label { font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); display:block; margin-bottom:0.15rem; }
+  .stat-val { font-family:'Cinzel',serif; font-size:1.25rem; font-weight:600; line-height:1; display:block; }
+  .stat-bonus { font-size:0.62rem; color:var(--VIO2); opacity:0.7; display:block; margin-top:0.1rem; }
+
+  /* RESSOURCES */
+  .res-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.75rem; }
+  .res-box { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:0.6rem; text-align:center; }
+  .res-label { font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.3rem; display:block; }
+  .res-val { font-family:'Cinzel',serif; font-size:1.5rem; line-height:1; display:block; }
+  .res-sub { font-size:0.7rem; color:var(--SUB); margin-top:0.1rem; display:block; }
+  .wounds-ctrl { display:flex; align-items:center; gap:0.5rem; justify-content:center; margin-top:0.5rem; }
+  .btn-small { width:30px; height:30px; border-radius:2px; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+  .btn-wound { background:rgba(139,26,26,0.2); border:1px solid rgba(139,26,26,0.4); color:#e08080; }
+  .btn-wound:hover { background:rgba(139,26,26,0.35); }
+  .btn-heal { background:rgba(94,128,79,0.15); border:1px solid rgba(94,128,79,0.35); color:var(--GRN); }
+  .btn-heal:hover { background:rgba(94,128,79,0.3); }
+
+  .fortune-pip { width:24px; height:24px; border-radius:50%; border:1.5px solid rgba(184,146,42,0.5); cursor:pointer; transition:all 0.15s; background:transparent; }
+  .fortune-pip.active { background:var(--GLD); box-shadow:0 0 5px rgba(184,146,42,0.4); border-color:var(--GLD); }
+
+  /* MONNAIE */
+  .money-row { display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap; margin-top:0.25rem; }
+  .money-item { display:flex; flex-direction:column; align-items:center; gap:0.1rem; }
+  .money-val { font-family:'Cinzel',serif; font-size:1.4rem; color:var(--GLD); }
+  .money-label { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); }
+  .money-btns { display:flex; gap:0.2rem; margin-top:0.2rem; }
+  .money-btn { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); color:var(--SUB); cursor:pointer; font-size:0.7rem; width:20px; height:20px; border-radius:1px; transition:all 0.15s; display:flex; align-items:center; justify-content:center; }
+  .money-btn:hover { color:var(--GLD); border-color:rgba(184,146,42,0.3); }
+
+  /* COMPÉTENCES */
+  .skill-list { list-style:none; }
+  .skill-list li { display:flex; justify-content:space-between; align-items:center; padding:0.3rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.87rem; }
+  .skill-list li:last-child { border-bottom:none; }
+  .skill-name { color:var(--parchment-dark); }
+  .skill-val { font-family:'Cinzel',serif; color:var(--GLD); font-size:0.9rem; font-weight:600; min-width:28px; text-align:right; }
+
+  /* TALENTS */
+  .talent-list { list-style:none; }
+  .talent-list li { padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.87rem; }
+  .talent-list li:last-child { border-bottom:none; }
+  .talent-name { color:var(--VIO2); font-weight:600; }
+  .talent-desc { color:var(--SUB); font-size:0.8rem; font-style:italic; display:block; margin-top:0.1rem; }
+
+  /* ARMURE / ARMES */
+  .armor-table { width:100%; border-collapse:collapse; font-size:0.82rem; margin-bottom:0.75rem; }
+  .armor-table th { text-align:left; color:var(--SUB); font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.2rem 0.4rem 0.4rem; font-weight:400; border-bottom:1px solid rgba(255,255,255,0.05); }
+  .armor-table td { padding:0.3rem 0.4rem; border-bottom:1px solid rgba(255,255,255,0.03); color:var(--parchment-dark); }
+  .armor-pa { font-family:'Cinzel',serif; color:var(--GLD); font-weight:600; }
+  .weapon-item { padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .weapon-item:last-child { border-bottom:none; }
+  .weapon-name { color:var(--parchment); font-size:0.9rem; font-weight:600; }
+  .weapon-stats { display:flex; gap:0.75rem; margin-top:0.2rem; flex-wrap:wrap; }
+  .weapon-stat { font-size:0.72rem; }
+  .weapon-stat-label { color:var(--SUB); }
+  .weapon-stat-val { color:var(--GLD); font-family:'Cinzel',serif; }
+  .inv-item { display:flex; justify-content:space-between; align-items:center; padding:0.3rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.85rem; gap:0.5rem; }
+  .inv-item:last-child { border-bottom:none; }
+  .inv-name { color:var(--parchment-dark); flex:1; }
+  .inv-detail { font-size:0.72rem; color:var(--SUB); font-style:italic; white-space:nowrap; }
+
+  /* SORTS */
+  .sort-item { border:1px solid rgba(103,78,167,0.15); border-radius:2px; margin-bottom:0.4rem; overflow:hidden; cursor:pointer; transition:border-color 0.2s; }
+  .sort-item:hover { border-color:rgba(103,78,167,0.35); }
+  .sort-header { display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0.7rem; background:rgba(103,78,167,0.07); }
+  .sort-name { font-family:'Cinzel',serif; font-size:0.85rem; color:var(--parchment); font-weight:600; }
+  .sort-meta { display:flex; gap:0.5rem; align-items:center; }
+  .sort-ni { font-family:'Cinzel',serif; font-size:0.78rem; color:var(--VIO2); }
+  .sort-portee { font-size:0.72rem; color:var(--SUB); }
+  .sort-body { display:none; padding:0.5rem 0.7rem; font-size:0.83rem; color:var(--parchment-dark); line-height:1.5; border-top:1px solid rgba(103,78,167,0.1); }
+  .sort-item.open .sort-body { display:block; }
+
+  /* XP */
+  .xp-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; text-align:center; margin-bottom:0.9rem; }
+  .xp-box { background:rgba(103,78,167,0.08); border:1px solid rgba(103,78,167,0.15); border-radius:2px; padding:0.5rem; }
+  .xp-label { font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--VIO2); display:block; margin-bottom:0.2rem; opacity:0.8; }
+  .xp-val { font-family:'Cinzel',serif; font-size:1.2rem; }
+  .ambition-label { font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--VIO); margin-bottom:0.2rem; display:block; opacity:0.9; }
+  .trait-block { font-size:0.86rem; line-height:1.55; color:var(--parchment-dark); margin-bottom:0.5rem; }
+
+  /* NOTES */
+  .notes-area { width:100%; background:rgba(10,10,15,0.5); border:1px solid rgba(255,255,255,0.07); border-radius:2px; color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.65rem; resize:vertical; min-height:70px; line-height:1.5; }
+  .notes-area:focus { outline:none; border-color:rgba(103,78,167,0.35); }
+  .btn-save { background:rgba(103,78,167,0.12); border:1px solid rgba(103,78,167,0.35); color:var(--VIO2); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.35rem 0.75rem; border-radius:2px; cursor:pointer; margin-top:0.5rem; transition:background 0.15s; }
+  .btn-save:hover { background:rgba(103,78,167,0.22); }
+  .save-confirm { font-size:0.78rem; color:var(--GRN); margin-left:0.75rem; opacity:0; transition:opacity 0.5s; }
+
+  /* ══════════════════════════════════
+     TRACES D'OMBRE — système complet
+  ══════════════════════════════════ */
+  .traces-card { background:rgba(10,10,15,0.75); border:1px solid rgba(103,78,167,0.3); border-radius:2px; padding:1.1rem; position:relative; overflow:hidden; }
+  .traces-card::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%, rgba(103,78,167,0.1) 0%, transparent 70%); pointer-events:none; }
+
+  .traces-pips { display:flex; gap:0.35rem; flex-wrap:wrap; margin-bottom:0.75rem; }
+  .trace-pip {
+    width:32px; height:32px; border-radius:2px; display:flex; align-items:center; justify-content:center;
+    font-family:'Cinzel',serif; font-size:0.75rem; font-weight:600; cursor:pointer;
+    border:1px solid rgba(103,78,167,0.2); background:rgba(103,78,167,0.05);
+    color:var(--SUB); transition:all 0.2s;
+  }
+  .trace-pip:hover { border-color:rgba(103,78,167,0.5); color:var(--parchment-dark); }
+  .trace-pip.active { background:rgba(103,78,167,0.35); border-color:rgba(103,78,167,0.7); color:var(--VIO2); box-shadow:0 0 8px rgba(103,78,167,0.3); }
+  .trace-pip.permanent { border-color:rgba(103,78,167,0.6); background:rgba(103,78,167,0.2); color:var(--VIO2); cursor:default; }
+  .trace-pip.danger { border-color:rgba(139,26,26,0.6); }
+  .trace-pip.active.danger { background:rgba(139,26,26,0.3); border-color:rgba(139,26,26,0.8); color:#e08080; box-shadow:0 0 8px rgba(139,26,26,0.3); }
+
+  .palier-box { background:rgba(103,78,167,0.08); border:1px solid rgba(103,78,167,0.2); border-radius:2px; padding:0.65rem 0.75rem; margin-bottom:0.75rem; }
+  .palier-name { font-family:'Cinzel',serif; font-size:0.78rem; color:var(--VIO2); font-weight:600; margin-bottom:0.25rem; letter-spacing:0.05em; }
+  .palier-desc { font-size:0.82rem; color:var(--parchment-dark); line-height:1.5; font-style:italic; }
+
+  .meditation-box { background:rgba(28,58,90,0.15); border:1px solid rgba(28,58,90,0.3); border-radius:2px; padding:0.5rem 0.75rem; margin-bottom:0.75rem; font-size:0.82rem; color:var(--parchment-dark); }
+  .meditation-box strong { color:var(--VIO2); }
+
+  /* Jet d'affinité */
+  .jet-btn {
+    width:100%; font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.15em; text-transform:uppercase;
+    padding:0.6rem; border-radius:2px; cursor:pointer; transition:all 0.2s;
+    background:rgba(103,78,167,0.15); border:1px solid rgba(103,78,167,0.4); color:var(--VIO2);
+    margin-bottom:0.75rem;
+  }
+  .jet-btn:hover { background:rgba(103,78,167,0.28); border-color:rgba(103,78,167,0.65); }
+
+  .jet-result { display:none; border:1px solid rgba(103,78,167,0.3); border-radius:2px; padding:0.75rem; background:rgba(103,78,167,0.08); }
+  .jet-result.visible { display:block; }
+  .jet-palier { font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.25rem; }
+  .jet-number { font-family:'Cinzel',serif; font-size:2rem; color:var(--VIO2); line-height:1; margin-bottom:0.25rem; }
+  .jet-effet-name { font-family:'Cinzel',serif; font-size:0.95rem; color:var(--parchment); font-weight:600; margin-bottom:0.35rem; }
+  .jet-effet-desc { font-size:0.85rem; color:var(--parchment-dark); line-height:1.5; font-style:italic; }
+  .jet-trace-warning { margin-top:0.5rem; font-family:'Cinzel',serif; font-size:0.75rem; color:#c07070; letter-spacing:0.08em; padding:0.3rem 0.5rem; background:rgba(139,26,26,0.15); border:1px solid rgba(139,26,26,0.3); border-radius:2px; }
+
+  .trait-line { font-size:0.85rem; line-height:1.6; color:var(--parchment-dark); padding:0.1rem 0; }
+  .trait-line.plus { color:var(--GRN); }
+  .trait-line.minus { color:#c07060; }
+
+  /* CORRUPTION / ÉTATS */
+  .cet-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; }
+  .cet-box { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:0.5rem 0.6rem; }
+  .cet-label { font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.35rem; display:block; font-family:'Cinzel',serif; }
+  .cet-input { width:100%; background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.85rem; padding:0.2rem 0; resize:none; min-height:48px; line-height:1.4; }
+  .cet-input:focus { outline:none; border-bottom-color:var(--VIO2); }
+  .cet-input::placeholder { color:rgba(85,85,102,0.5); font-style:italic; }
+  .card-title.red { color:#c0392b; }
+
+  .histo { font-size:0.87rem; line-height:1.7; color:var(--parchment-dark); }
+  .histo p { margin-bottom:0.65rem; }
+  .histo p:last-child { margin-bottom:0; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html">← Accueil</a>
+  <span class="nav-sep">·</span>
+  <span class="nav-current">Sareth</span>
+</nav>
+
+<div class="layout">
+
+
+  <!-- HEADER -->
+  <div class="perso-header">
+    <div class="perso-avatar">🌑</div>
+    <div class="perso-info">
+      <h1>Sareth Liamah</h1>
+      <div class="sub">Sorcière de l'Ombre (Ulgu) · Lettrée · Échelon 2</div>
+      <div class="player">Cassandra · Demi-Elfe · 30 ans · Argent 3</div>
+    </div>
+    <div class="perso-meta">
+      <div>Taille 1m69 · Poids 56 kg</div>
+      <div>Longs noirs, yeux noirs</div>
+    </div>
+  </div>
+
+
+  <!-- CARACTÉRISTIQUES -->
+  <div class="card vio full">
+    <div class="card-title vio">Caractéristiques</div>
+    <div class="stats-grid">
+      <div class="stat-box">
+        <span class="stat-label">CC</span>
+        <span class="stat-val">32</span>
+        <span class="stat-bonus">B:3</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">CT</span>
+        <span class="stat-val">29</span>
+        <span class="stat-bonus">B:2</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">F</span>
+        <span class="stat-val">28</span>
+        <span class="stat-bonus">B:2</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">End</span>
+        <span class="stat-val">30</span>
+        <span class="stat-bonus">B:3</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Ini</span>
+        <span class="stat-val">36</span>
+        <span class="stat-bonus">B:3</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Ag</span>
+        <span class="stat-val">33</span>
+        <span class="stat-bonus">B:3</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Dex</span>
+        <span class="stat-val">28</span>
+        <span class="stat-bonus">B:2</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Int</span>
+        <span class="stat-val">58</span>
+        <span class="stat-bonus">B:5</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">FM</span>
+        <span class="stat-val">60</span>
+        <span class="stat-bonus">B:6</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-label">Soc</span>
+        <span class="stat-val">41</span>
+        <span class="stat-bonus">B:4</span>
+      </div>
+    </div>
+    <div style="font-size:0.7rem;color:var(--SUB);margin-top:0.5rem;font-style:italic;">★ Bonus racial · FM ×6 bonus de carrière (Sorcière)</div>
+  </div>
+
+
+  <!-- ÉTAT & RESSOURCES -->
+  <div class="card vio">
+    <div class="card-title" style="color:#c0392b;">État & Ressources</div>
+    <div class="res-grid">
+      <div class="res-box">
+        <span class="res-label">Blessures</span>
+        <span class="res-val" id="wounds-cur">14</span>
+        <span class="res-sub">/ 14 max</span>
+        <div class="wounds-ctrl">
+          <button class="btn-small btn-wound" onclick="changeWound(-1)">−</button>
+          <button class="btn-small btn-heal" onclick="changeWound(1)">+</button>
+        </div>
+      </div>
+      <div class="res-box">
+        <span class="res-label">Mouvement</span>
+        <span class="res-val">4</span>
+        <span class="res-sub">cases / tour</span>
+      </div>
+    </div>
+    <div style="margin-bottom:0.6rem;">
+      <div class="card-title" style="color:var(--GLD);margin-bottom:0.4rem;font-size:0.62rem;">Destin & Chance</div>
+      <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Destin</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--GLD);">2</span>
+          <div style="display:flex;gap:0.3rem;" id="chance-pips"></div>
+        </div>
+        <div style="color:var(--SUB);font-size:1rem;">→</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Chance</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--parchment);" id="chance-val">2</span>
+          <div style="display:flex;gap:0.3rem;" id="chance-track"></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:0.75rem;">
+      <div class="card-title" style="color:var(--VIO2);margin-bottom:0.4rem;font-size:0.62rem;">Résilience & Détermination</div>
+      <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Résilience</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--VIO2);">2</span>
+        </div>
+        <div style="color:var(--SUB);font-size:1rem;">→</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Détermination</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--parchment);" id="determ-val">2</span>
+          <div style="display:flex;gap:0.3rem;" id="determ-pips"></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card-title" style="margin-bottom:0.4rem;font-size:0.62rem;">Monnaie</div>
+      <div class="money-row">
+        <div class="money-item">
+          <span class="money-val" id="money-or">62</span>
+          <span class="money-label">CO</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('or',-1)">−</button>
+            <button class="money-btn" onclick="chMoney('or',1)">+</button>
+          </div>
+        </div>
+        <div class="money-item">
+          <span class="money-val" id="money-argent">0</span>
+          <span class="money-label">PA</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('argent',-1)">−</button>
+            <button class="money-btn" onclick="chMoney('argent',1)">+</button>
+          </div>
+        </div>
+        <div class="money-item">
+          <span class="money-val" id="money-cuivre">0</span>
+          <span class="money-label">SC</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('cuivre',-1)">−</button>
+            <button class="money-btn" onclick="chMoney('cuivre',1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- CORRUPTION · MUTATIONS · ÉTATS -->
+  <div class="card">
+    <div class="card-title red">Corruption · Mutations · États</div>
+    <div class="cet-grid">
+      <div class="cet-box"><span class="cet-label">Corruption</span><textarea class="cet-input" id="cet-corruption" placeholder="—"></textarea></div>
+      <div class="cet-box"><span class="cet-label">Mutations</span><textarea class="cet-input" id="cet-mutations" placeholder="—"></textarea></div>
+      <div class="cet-box"><span class="cet-label">États actifs</span><textarea class="cet-input" id="cet-etats" placeholder="Sonné, Exténué…"></textarea></div>
+    </div>
+  </div>
+
+
+  <!-- COMPÉTENCES DE BASE -->
+  <div class="card">
+    <div class="card-title gld">Compétences de base (sélection)</div>
+    <ul class="skill-list">
+      <li><span class="skill-name">Calme</span><span class="skill-val">65</span></li>
+      <li><span class="skill-name">Charme</span><span class="skill-val">41</span></li>
+      <li><span class="skill-name">Corps à Corps (Base)</span><span class="skill-val">36</span></li>
+      <li><span class="skill-name">Dressage</span><span class="skill-val">60</span></li>
+      <li><span class="skill-name">Esquive</span><span class="skill-val">34</span></li>
+      <li><span class="skill-name">Intuition</span><span class="skill-val">37</span></li>
+      <li><span class="skill-name">Jeu</span><span class="skill-val">58</span></li>
+      <li><span class="skill-name">Manipulation</span><span class="skill-val">41</span></li>
+      <li><span class="skill-name">Marchandage</span><span class="skill-val">46</span></li>
+      <li><span class="skill-name">Perception</span><span class="skill-val">37</span></li>
+      <li><span class="skill-name">Survie en extérieur</span><span class="skill-val">58</span></li>
+    </ul>
+  </div>
+
+
+  <!-- COMPÉTENCES AVANCÉES -->
+  <div class="card">
+    <div class="card-title vio">Compétences avancées</div>
+    <ul class="skill-list">
+      <li><span class="skill-name">Langue (Eltharin) <span style="color:var(--SUB);font-size:0.72rem;">(Int)</span></span><span class="skill-val">61</span></li>
+      <li><span class="skill-name">Savoir (Reikland) <span style="color:var(--SUB);font-size:0.72rem;">(Int)</span></span><span class="skill-val">61</span></li>
+      <li><span class="skill-name">Évaluation <span style="color:var(--SUB);font-size:0.72rem;">(Int)</span></span><span class="skill-val">63</span></li>
+      <li><span class="skill-name">Corps à corps (arme d'hast) <span style="color:var(--SUB);font-size:0.72rem;">(CC)</span></span><span class="skill-val">32</span></li>
+      <li><span class="skill-name">Focalisation Ombre (Ulgu) <span style="color:var(--SUB);font-size:0.72rem;">(Int)</span></span><span class="skill-val">58</span></li>
+      <li><span class="skill-name">Langue (Magick) <span style="color:var(--SUB);font-size:0.72rem;">(Int)</span></span><span class="skill-val">58</span></li>
+      <li><span class="skill-name">Savoir (Magie) <span style="color:var(--SUB);font-size:0.72rem;">(Int)</span></span><span class="skill-val">58</span></li>
+    </ul>
+  </div>
+
+
+  <!-- TALENTS -->
+  <div class="card">
+    <div class="card-title vio">Talents & Capacités</div>
+    <ul class="talent-list">
+      <li><span class="talent-name">Lire / Écrire</span><span class="talent-desc">Sait lire et écrire, toute langue parlée.</span></li>
+      <li><span class="talent-name">Affable</span><span class="talent-desc">+5 Soc.</span></li>
+      <li><span class="talent-name">Harmonisation aethyrique</span><span class="talent-desc">Pas d'Incantation Imparfaite si double à un Test de Focalisation réussi.</span></li>
+      <li><span class="talent-name">Magie mineure</span><span class="talent-desc">Maîtrise de la Magie Mineure (BFM = nombre de sorts connus).</span></li>
+      <li><span class="talent-name">Magie des Arcanes "Gris / Ombre"</span><span class="talent-desc">Maîtrise de la Magie des Arcanes "Gris / Ombre".</span></li>
+    </ul>
+    <div style="margin-top:0.75rem;padding-top:0.6rem;border-top:1px solid rgba(255,255,255,0.05);">
+      <div class="card-title" style="color:var(--SUB);margin-bottom:0.5rem;font-size:0.62rem;">Traits raciaux</div>
+      <ul style="list-style:none;font-size:0.83rem;line-height:1.8;color:var(--parchment-dark);">
+        <li>· <strong style="color:var(--parchment);">Perspicace</strong> : +5 Int</li>
+        <li>· <strong style="color:var(--parchment);">Noblesse</strong> : toujours considéré d'un plus haut Statut. Doit être vêtu de façon appropriée.</li>
+        <li>· <strong style="color:var(--parchment);">Vision nocturne</strong> : 20m</li>
+        <li>· <strong style="color:var(--parchment);">Imperturbable</strong> : +5 FM</li>
+        <li>· <strong style="color:var(--parchment);">Attirante</strong> : possible utilisation des unités en tant que DR en Test de Charme / Influence.</li>
+      </ul>
+    </div>
+  </div>
+
+
+  <!-- ARMURE & ARMES -->
+  <div class="card">
+    <div class="card-title gld">Armure</div>
+    <table class="armor-table">
+      <thead><tr><th>Localisation</th><th>PA</th><th>Loc.</th></tr></thead>
+      <tbody>
+        <tr><td>Tête</td><td class="armor-pa">0</td><td>01-09</td></tr>
+        <tr><td>Bras droit</td><td class="armor-pa">0</td><td>10-24</td></tr>
+        <tr><td>Bras gauche</td><td class="armor-pa">0</td><td>25-44</td></tr>
+        <tr><td>Corps</td><td class="armor-pa">0</td><td>45-79</td></tr>
+        <tr><td>Jambe dr.</td><td class="armor-pa">0</td><td>80-89</td></tr>
+        <tr><td>Jambe gau.</td><td class="armor-pa">0</td><td>90-00</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-bottom:0.5rem;font-size:0.8rem;color:var(--SUB);font-style:italic;padding:0.2rem 0;">Aucune armure portée.</div>
+    <div class="card-title gld" style="margin-top:0.75rem;margin-bottom:0.5rem;">Armes</div>
+    <div class="weapon-item">
+      <div class="weapon-name">Bâton de combat</div>
+      <div class="weapon-stats">
+        <span class="weapon-stat"><span class="weapon-stat-label">All. </span><span class="weapon-stat-val">Longue</span></span>
+        <span class="weapon-stat"><span class="weapon-stat-label">Dég. </span><span class="weapon-stat-val">BF+4</span></span>
+        <span class="weapon-stat"><span class="weapon-stat-label">Attr. </span><span class="weapon-stat-val">Assommante, Défensive</span></span>
+      </div>
+    </div>
+    <div class="weapon-item">
+      <div class="weapon-name">Dague</div>
+      <div class="weapon-stats">
+        <span class="weapon-stat"><span class="weapon-stat-label">All. </span><span class="weapon-stat-val">Très courte</span></span>
+        <span class="weapon-stat"><span class="weapon-stat-label">Dég. </span><span class="weapon-stat-val">BF+2</span></span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- INVENTAIRE -->
+  <div class="card">
+    <div class="card-title grn">Inventaire</div>
+    <div class="inv-item"><span class="inv-name">Besace</span><span class="inv-detail">Portée en bandoulière</span></div>
+    <div class="inv-item"><span class="inv-name">Bourse</span><span class="inv-detail">Ceinture</span></div>
+    <div class="inv-item"><span class="inv-name">Toges (type Sorcière Grise / Ombre)</span><span class="inv-detail">Sur soi ou Besace</span></div>
+    <div class="inv-item"><span class="inv-name">Vêtements courants (type Lettrée)</span><span class="inv-detail">Sur soi ou Besace</span></div>
+    <div class="inv-item"><span class="inv-name">Vêtements nobles</span><span class="inv-detail">Sur soi ou Besace</span></div>
+    <div class="inv-item"><span class="inv-name">Licence Magique du Domaine Gris / Ombre</span><span class="inv-detail">Grande poche intérieure de toge</span></div>
+    <div class="inv-item"><span class="inv-name">Grimoire</span><span class="inv-detail">Besace</span></div>
+  </div>
+
+
+  <!-- SORTS -->
+  <div class="card vio full">
+    <div class="card-title vio">Sorts — Tradition Ulgu (Ombre) · Langue : Magick</div>
+    <div id="sorts-list"></div>
+  </div>
+
+
+  <!-- TRACES D'OMBRE -->
+  <div class="traces-card full" style="grid-column:1/-1;">
+    <div class="card-title vio" style="position:relative;">Traces d'Ombre · Ulgu</div>
+
+    <div class="traces-pips" id="traces-pips"></div>
+
+    <div class="palier-box">
+      <div class="palier-name" id="palier-name">—</div>
+      <div class="palier-desc" id="palier-desc">—</div>
+    </div>
+
+    <div class="meditation-box">
+      Méditation — seuil actuel : <span id="meditation-text">—</span>
+    </div>
+
+    <button class="jet-btn" onclick="jetAffinite()">⬡ Jet d'Affinité d'Ombre (1d20)</button>
+
+    <div class="jet-result" id="jet-result"></div>
+  </div>
+
+
+  <!-- XP & AMBITIONS -->
+  <div class="card full">
+    <div class="card-title vio">Expérience & Ambitions</div>
+    <div class="xp-row">
+      <div class="xp-box"><span class="xp-label">Actuelle</span><span class="xp-val">100</span></div>
+      <div class="xp-box"><span class="xp-label">Dépensée</span><span class="xp-val">0</span></div>
+      <div class="xp-box"><span class="xp-label">Totale</span><span class="xp-val">0</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:0.75rem;flex-wrap:wrap;">
+      <div>
+        <span class="ambition-label">Ambition courte</span>
+        <div class="trait-block">Comprendre ce qui se passe en Sylvanie. Maîtriser ses pouvoirs.</div>
+        <span class="ambition-label" style="margin-top:0.5rem;">Motivation</span>
+        <div class="trait-block">Construire sa vraie destinée, exigeante, choisie, brillante.</div>
+      </div>
+      <div>
+        <span class="ambition-label">Ambition longue</span>
+        <div class="trait-block">Trouver sa propre voie. Devenir une Sorcière reconnue et riche.</div>
+        <span class="ambition-label" style="margin-top:0.5rem;">Psychologie</span>
+        <div class="trait-block" style="font-style:italic;color:var(--SUB);">Son rapport intime avec l'Ombre crée de vraies perturbations dans sa personnalité et son état général, surtout psychologique.</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div>
+        <div class="trait-line plus">+ Intelligence tactique et lecture des situations hors norme.</div>
+        <div class="trait-line plus">+ Maîtrise d'Ulgu d'une puissance rare pour son niveau.</div>
+        <div class="trait-line plus">+ Empathie fine, voit les failles des gens, les siennes comprises.</div>
+        <div class="trait-line plus">+ Équilibre naturel entre prudence, réflexion, audace et ambition.</div>
+        <div class="trait-line plus">+ Veille sur Den sans jamais la diminuer.</div>
+      </div>
+      <div>
+        <div class="trait-line minus">− Porte un héritage double : noblesse humaine et lignée elfique, en plus de l'Ombre.</div>
+        <div class="trait-line minus">− Tension identitaire permanente et stressante.</div>
+        <div class="trait-line minus">− Tendance vénale et aristocrate, qui peut lui attirer des soucis.</div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- HISTORIQUE -->
+  <div class="card full">
+    <div class="card-title vio">Historique</div>
+    <div class="histo">
+      <p>Sareth, Demi-Elfe et Sorcière du Domaine Gris (Ombre), anciennement affiliée à la 6ème Division de l'armée régulière du Wissenland. Issue de la noblesse de Nuln et d'une Elfe Sylvaine immigrée en Empire, devenue une grande Sorcière de la Mort.</p>
+      <p>Sareth est née d'un accident métaphysique. Lors d'un rituel qui tournait mal, sa mère a sacrifié sa vie pour la sauver et dans cet instant, Shyish s'est figé pendant qu'Ulgu trouvait un hôte stable, anormalement stable. L'Ombre s'est logée en elle comme une spirale confortable, hors de portée du Vent de la Mort.</p>
+      <p>Le résultat est singulier. Shyish ne la lit pas correctement — les effets liés aux âmes, au destin final, à la mort glissent autour d'elle ou hésitent. Elle donne l'impression d'être floue, mal enregistrée par le monde, présente mais insaisissable. Ulgu adore ça. Les autres Vents s'en méfient. Elle, elle l'a accepté comme une évidence et en a tiré une certitude tranquille sur sa propre valeur.</p>
+      <p>Cette certitude est devenue un ego. Elle est souvent supérieure aux autres, elle le sait, et ne fait pas toujours l'effort de le dissimuler. Elle est vénale, ambitieuse, avide de reconnaissance — pas pour briller en surface, mais pour être incontournable en profondeur. Son aspiration n'est pas le pouvoir bruyant. C'est d'être au centre de tout ce qui concerne son domaine, sans que personne ne puisse vraiment s'en passer.</p>
+      <p>Et être riche. Réellement riche, tout en donnant l'impression de ne jamais posséder quoi que ce soit.</p>
+      <p>Vénale — un réel problème, car cela entre en contradiction totale avec les lois de son Collège d'Ombre, qui exige une manière de vivre tout à fait humble, si ce n'est un vœu de pauvreté radical. Elle doit absolument maîtriser ce défaut. Les sanctions seraient... extrêmes.</p>
+      <p>Elle est très proche de Den, sur laquelle elle veille sincèrement. Sa magie est puissante et incroyablement utile pour tout groupe qui nécessite un soutien discret et décisif.</p>
+    </div>
+  </div>
+
+
+  <!-- NOTES SESSION -->
+  <div class="card full">
+    <div class="card-title">Notes de session</div>
+    <div style="font-size:0.82rem;color:var(--SUB);font-style:italic;margin-bottom:0.5rem;line-height:1.5;">
+      Trace d'Ombre : 1 · Ulgu se fait persistant, fort et s'émancipe · Armand est dur en affaire, mais nous sommes riches
+    </div>
+    <textarea class="notes-area" id="session-notes" rows="4" placeholder="Plans, observations, rituels..."></textarea>
+    <button class="btn-save" onclick="saveAll()">Sauvegarder</button>
+    <span class="save-confirm" id="save-confirm">✓ Sauvegardé</span>
+  </div>
+
+</div>
+
+
+<script>
+// ══════════ SORTS ══════════
+const SORTS = [
+  { name:"Sommeil",           ni:0, portee:"Contact",  desc:"Cible s'endort (se réveille en tombant). État Inconscient." },
+  { name:"Drain",             ni:0, portee:"Contact",  desc:"Proj. Mag +0 Dégât NoPA, regain 1B." },
+  { name:"Pas léger",         ni:0, portee:"Soi",      desc:"FM min, n'impacte plus rien par le rapport au sol. −30 Pistage." },
+  { name:"Explosion",         ni:4, portee:"FM m",     desc:"AOE BFM m, Proj. Mag +3 Dégâts." },
+  { name:"Ombres étrangleuses",ni:6, portee:"BFM m",   desc:"BFM Rounds, +1 Exténué, Suffocation, Muet." },
+];
+
+// ══════════ AFFINITÉ ══════════
+// Déclenchement : sur incantation critique ou événement narratif pertinent — tirer 1d20
+const AFFINITE = [
+  null,
+  { palier:"I · Échos",          name:"Écart de monde",        desc:"L'ombre reproduit les gestes avec un demi-seconde de retard. Test de Calme pour témoins sensibles.", trace:false },
+  { palier:"I · Échos",          name:"Regard fourbe",          desc:"Son ombre regarde ailleurs, comme distraite. Indice ambigu à la discrétion du MJ, ou +5 à un test de Perception de Sareth. Test de Calme pour témoins.", trace:false },
+  { palier:"I · Échos",          name:"Zone du Néant",          desc:"Lumière vacillante dans un rayon de 10m pendant 2–3 secondes. Flammes repoussées, bougies éteintes. Purement atmosphérique.", trace:false },
+  { palier:"I · Échos",          name:"Reflet absent",          desc:"Aucune ombre dans les surfaces réfléchissantes pendant 1d6 minutes. PNJ superstitieux troublés. Risque inquisitorial si observé.", trace:false },
+  { palier:"I · Échos",          name:"Faune en doute",         desc:"Chevaux, chiens, rats refusent de l'approcher jusqu'à la prochaine scène. –10 aux tests impliquant des animaux.", trace:false },
+  { palier:"II · Interférences", name:"Murmure du Néant",      desc:"Ses lèvres bougent alors qu'elle se tait. Témoins : Test de Peur 1. Sareth : test FM ou –10 au prochain jet social (la dissonance la déstabilise aussi).", trace:false },
+  { palier:"II · Interférences", name:"Voix double",           desc:"Un timbre grave double sa voix pendant une réplique. +10 Intimidation, –10 Charme pour la scène entière.", trace:false },
+  { palier:"II · Interférences", name:"Protection instinctive",desc:"Un voile d'encre absorbe un impact. Ignore 1 Blessure ou +1 Armure contre une attaque. Réactionnel, déclenché automatiquement.", trace:false },
+  { palier:"II · Interférences", name:"Assistance grise",      desc:"L'ombre esquive avant que Sareth réagisse. Relance un test d'Esquive raté. Une seule fois par scène.", trace:false },
+  { palier:"II · Interférences", name:"Main sombre",           desc:"Forme noire agrippe brièvement un ennemi au contact. –10 à tous ses jets pendant 1 round, +10 aux jets de Sareth contre cet ennemi ce round.", trace:false },
+  { palier:"III · Présence",     name:"Silence forcé",         desc:"Sons étouffés dans un rayon de 5m pendant 1d3 rounds. +20 Discrétion et Incantation dans ce périmètre. Les ennemis ne peuvent pas crier pour appeler de l'aide.", trace:false },
+  { palier:"III · Présence",     name:"Saignement d'Ombre",    desc:"Toute blessure de Sareth suinte une substance noire, froide. Aucun effet sur elle. Test de Peur 1 pour tout témoin qui la voit blessée cette scène. Dure jusqu'au prochain repos.", trace:false },
+  { palier:"III · Présence",     name:"Souvenir volé",         desc:"L'ombre projette un souvenir — qui n'est pas celui de Sareth. Indice narratif à la discrétion du MJ (vrai ou faux, elle ne sait pas). Test de Calme pour Sareth.", trace:false },
+  { palier:"III · Présence",     name:"Empreinte persistante", desc:"L'ombre de Sareth reste après son départ, imitant ses derniers gestes pendant 1d6 heures. Quiconque passe peut voir qu'elle a été là, et deviner ce qu'elle faisait.", trace:false },
+  { palier:"III · Présence",     name:"Reflet erroné",         desc:"Dans toutes les surfaces réfléchissantes de la scène, Sareth apparaît autrement — posture différente, expression opposée, parfois un autre visage. Test de Calme pour tout témoin, Peur 1 si critique. Dure toute la scène.", trace:false },
+  { palier:"IV · Rupture",       name:"Substitution partielle",desc:"Pendant 1 round, c'est l'ombre qui agit à la place de Sareth. Réussite automatique à un jet de son choix. En contrepartie : Sareth reçoit 1 Trace d'Ombre. Test de Calme.", trace:true },
+  { palier:"IV · Rupture",       name:"Transcendance grise",   desc:"L'ombre prononce un mot que seule Sareth entend. +10 à tous ses jets pendant 1d6 rounds — elle agit dans un état second, précis et froid. En contrepartie : 1 Trace d'Ombre. Le MJ note ce que l'ombre a dit.", trace:true },
+  { palier:"IV · Rupture",       name:"L'Ombre souveraine",    desc:"L'ombre agit seule, sans Sareth, pendant 1d3 rounds. Elle peut se déplacer, interagir, créer une diversion ou révéler quelque chose. Sareth ne contrôle pas ce qu'elle fait. Conséquence narrative MJ. 1 Trace d'Ombre. Peur 1 pour tous les témoins.", trace:true },
+  { palier:"IV · Rupture",       name:"L'Ombre projetée",      desc:"L'ombre de Sareth se détache entièrement et se projette là où Ulgu le juge nécessaire — pas où Sareth le voudrait. Elle voit et entend à travers elle. Durée : jusqu'à ce que le MJ décide qu'elle a accompli quelque chose. Peur 2 témoins. 1 Trace d'Ombre. Test de Calme : réussite = infos claires / échec = fragments confus.", trace:true },
+  { palier:"IV · Rupture",       name:"Doppelgänger",          desc:"Dans un dense amas de volutes d'une fumée épaisse, un son lourd et assourdissant, l'ombre de Sareth prend forme et volume dans la réalité. Elle peut se déplacer, interagir, se jeter sur une créature… puis s'évapore. Le corps de Sareth est nimbé de fines particules d'ombre — filaments, cheveux ou tentacules. Ses yeux, nez, bouche évacuent une épaisse encre noire. Elle peut tenter de retenir son ombre sur FM. Terreur 1 pour tous les témoins. 1–2 Traces d'Ombre selon le contexte.", trace:true },
+];
+
+const PALIERS = [
+  { range:[1,2],  name:"1–2 · Échos",          desc:"L'ombre commence à se souvenir. Parfois légèrement en avance sur ses gestes. Rêves fréquents et chargés. Les PNJ sensibles à la magie ressentent un léger malaise en sa présence. Aucun effet mécanique — pure atmosphère." },
+  { range:[3,4],  name:"3–4 · Porosité",        desc:"La frontière s'amincit. +10 Intimidation (situationnel, non contrôlé). –10 Empathie et Charme dans les interactions longues ou intimes. Les animaux réagissent. Les morts-vivants à faible intelligence hésitent une seconde avant d'agir contre elle." },
+  { range:[5,6],  name:"5–6 · Partage",         desc:"L'Ombre a des opinions. Elle commence à agir de sa propre initiative — jamais contre Sareth, mais pas nécessairement selon ses souhaits. Souvenirs de certaines périodes devenus flous. Visions de sa mère — éclairs brefs, parfois spectraux. Le MJ peut déclencher une micro-action de l'ombre une fois par session (narratif pur). +5 aux jets de Magie Ulgu." },
+  { range:[7,8],  name:"7–8 · Substitution",    desc:"L'Ombre peut prendre la main. Une fois par session, lors d'un moment crucial, Ulgu peut agir à travers Sareth (réussite automatique). Le MJ choisit le moment. Sareth peut refuser via test FM (0) — échec : l'ombre agit quand même. Contrepartie narrative obligatoire. –10 aux tests de Calme liés à l'ombre." },
+  { range:[9,10], name:"9–10 · Dette cosmique",  desc:"Ulgu réclame. Le MJ propose un choix narratif majeur — pas d'urgence, pas de combat : une décision sur la nature de ce lien. Trois voies : Sceller l'Ombre (Traces max 8, risque inquisitorial), Accepter le lien (Traces min 5, palier 7–8 permanent, Morr observe), Ne rien décider (effets 7–8 hors contrôle, +1 difficulté Calme par jet d'Affinité jusqu'à prochaine méditation)." },
+];
+
+const MED_TABLE = [
+  { range:[1,2],  label:"80 ou moins — avec BFM : 86 ou moins" },
+  { range:[3,4],  label:"60 ou moins — avec BFM : 66 ou moins" },
+  { range:[5,6],  label:"40 ou moins — avec BFM : 46 ou moins" },
+  { range:[7,8],  label:"20 ou moins — avec BFM : 26 ou moins" },
+  { range:[9,10], label:"05 ou moins — avec BFM : 11 ou moins" },
+];
+
+// ══════════ STATE ══════════
+let state = {
+  wounds: 14, chance: 2, determ: 2,
+  traces: 1,
+  money: { or:62, argent:0, cuivre:0 },
+  notes: '', cet: { corruption:'', mutations:'', etats:'' }
+};
+
+function load() {
+  const s = localStorage.getItem('sareth_v2');
+  if (s) try { Object.assign(state, JSON.parse(s)); } catch(e) {}
+  document.getElementById('wounds-cur').textContent = state.wounds;
+  updateWoundColor();
+  ['or','argent','cuivre'].forEach(k => document.getElementById('money-'+k).textContent = state.money[k] || 0);
+  document.getElementById('session-notes').value = state.notes || '';
+  ['corruption','mutations','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) el.value=(state.cet&&state.cet[k])||''; });
+  renderChance(); renderDeterm(); renderTraces(); renderSorts();
+}
+
+function save() { localStorage.setItem('sareth_v2', JSON.stringify(state)); }
+
+function changeWound(d) {
+  state.wounds = Math.max(0, Math.min(14, state.wounds + d));
+  document.getElementById('wounds-cur').textContent = state.wounds;
+  updateWoundColor(); save();
+}
+function updateWoundColor() {
+  const el = document.getElementById('wounds-cur');
+  const p = state.wounds / 14;
+  el.style.color = p > 0.6 ? 'var(--parchment)' : p > 0.3 ? '#e8a040' : '#e05050';
+}
+
+function chMoney(k, d) {
+  state.money[k] = Math.max(0, (state.money[k]||0) + d);
+  document.getElementById('money-'+k).textContent = state.money[k]; save();
+}
+
+function makePips(id, current, max, fn) {
+  const c = document.getElementById(id); c.innerHTML = '';
+  for (let i=0; i<max; i++) {
+    const p = document.createElement('div');
+    p.className = 'fortune-pip' + (i < current ? ' active' : '');
+    p.onclick = () => fn(i < current ? i : i+1);
+    c.appendChild(p);
+  }
+}
+function renderChance() { makePips('chance-track', state.chance, 2, v => { state.chance=v; save(); renderChance(); }); }
+function renderDeterm() { makePips('determ-pips', state.determ, 2, v => { state.determ=v; save(); renderDeterm(); }); }
+
+function renderTraces() {
+  const c = document.getElementById('traces-pips'); c.innerHTML = '';
+  for (let i=1; i<=10; i++) {
+    const pip = document.createElement('div');
+    let cls = 'trace-pip';
+    if (i <= state.traces) cls += ' active';
+    if (i === 1) cls += ' permanent';
+    if (i >= 9) cls += ' danger';
+    pip.className = cls;
+    pip.textContent = i;
+    if (i > 1) {
+      pip.onclick = () => {
+        state.traces = (i <= state.traces) ? i-1 : i;
+        save(); renderTraces();
+      };
+    }
+    c.appendChild(pip);
+  }
+  const palier = PALIERS.find(p => state.traces >= p.range[0] && state.traces <= p.range[1]);
+  if (palier) {
+    document.getElementById('palier-name').textContent = palier.name;
+    document.getElementById('palier-desc').textContent = palier.desc;
+  }
+  const med = MED_TABLE.find(p => state.traces >= p.range[0] && state.traces <= p.range[1]);
+  if (med) document.getElementById('meditation-text').innerHTML = `<strong>${med.label}</strong>`;
+}
+
+function renderSorts() {
+  const c = document.getElementById('sorts-list'); c.innerHTML = '';
+  SORTS.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'sort-item';
+    div.innerHTML = `
+      <div class="sort-header">
+        <span class="sort-name">${s.name}</span>
+        <div class="sort-meta">
+          <span class="sort-ni">NI ${s.ni}</span>
+          <span class="sort-portee">${s.portee}</span>
+        </div>
+      </div>
+      <div class="sort-body">${s.desc}</div>
+    `;
+    div.onclick = () => div.classList.toggle('open');
+    c.appendChild(div);
+  });
+}
+
+function jetAffinite() {
+  const roll = Math.floor(Math.random()*20)+1;
+  const effet = AFFINITE[roll];
+  const c = document.getElementById('jet-result');
+  c.className = 'jet-result visible';
+  c.innerHTML = `
+    <div class="jet-palier">${effet.palier}</div>
+    <div class="jet-number">${roll}</div>
+    <div class="jet-effet-name">${effet.name}</div>
+    <div class="jet-effet-desc">${effet.desc}</div>
+    ${effet.trace ? `<div class="jet-trace-warning">⬡ +1 Trace d'Ombre</div>` : ''}
+  `;
+  if (effet.trace && state.traces < 10) {
+    setTimeout(() => {
+      if (confirm(`Résultat ${roll} — ${effet.name}\n\nAjouter 1 Trace d'Ombre ? (${state.traces} → ${state.traces+1})`)) {
+        state.traces = Math.min(10, state.traces+1);
+        save(); renderTraces();
+      }
+    }, 300);
+  }
+}
+
+function saveAll() {
+  state.notes = document.getElementById('session-notes').value;
+  if (!state.cet) state.cet={};
+  ['corruption','mutations','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) state.cet[k]=el.value; });
+  save();
+  const c = document.getElementById('save-confirm');
+  c.style.opacity='1'; setTimeout(()=>c.style.opacity='0', 2000);
+}
+document.getElementById('session-notes').addEventListener('blur', saveAll);
+['cet-corruption','cet-mutations','cet-etats'].forEach(id => { const el=document.getElementById(id); if(el) el.addEventListener('blur', saveAll); });
+load();
+</script>
+</body>
+</html>
