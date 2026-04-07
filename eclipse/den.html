@@ -652,12 +652,13 @@ function load() {
     if (saved.cet)       Object.assign(state.cet, saved.cet);
     if (saved.xp)        Object.assign(state.xp, saved.xp);
     if (saved.stats)     Object.assign(state.stats, saved.stats);
-    if (saved.skillsBase) state.skillsBase = saved.skillsBase;
-    if (saved.skillsAdv)  state.skillsAdv  = saved.skillsAdv;
-    if (saved.talents)    state.talents     = saved.talents;
-    if (saved.weapons)    state.weapons     = saved.weapons;
-    if (saved.inventory)  state.inventory   = saved.inventory;
-    if (saved.armor)      state.armor       = saved.armor;
+    if (saved.skillsBase)  state.skillsBase  = saved.skillsBase;
+    if (saved.skillsAdv)   state.skillsAdv   = saved.skillsAdv;
+    if (saved.talents)     state.talents      = saved.talents;
+    if (saved.weapons)     state.weapons      = saved.weapons;
+    if (saved.inventory)   state.inventory    = saved.inventory;
+    if (saved.armor)       state.armor        = saved.armor;
+    if (saved.armorPieces) state.armorPieces  = saved.armorPieces;
   } catch(e) {}
   renderAll();
 }
