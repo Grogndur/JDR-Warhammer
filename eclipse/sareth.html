@@ -269,19 +269,15 @@
   .astat-v { color:var(--GLD); font-family:'Cinzel',serif; }
 
   /* ── GITHUB SYNC ── */
-  .gh-bar { display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; padding:0.6rem 0.9rem; background:rgba(36,41,47,0.6); border:1px solid rgba(255,255,255,0.07); border-radius:2px; margin-bottom:0.5rem; }
-  .gh-token-input { flex:1; min-width:180px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.1); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.82rem; padding:0.3rem 0.55rem; border-radius:2px; }
-  .gh-token-input:focus { outline:none; border-color:rgba(184,146,42,0.4); }
-  .gh-token-input::placeholder { color:rgba(85,85,102,0.6); font-style:italic; }
-  .gh-btn { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.32rem 0.7rem; border-radius:2px; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
-  .gh-btn-push { background:rgba(36,160,96,0.15); border:1px solid rgba(36,160,96,0.4); color:#4caf82; }
-  .gh-btn-push:hover { background:rgba(36,160,96,0.28); }
-  .gh-btn-pull { background:rgba(28,58,90,0.2); border:1px solid rgba(28,58,90,0.5); color:#6a9fc8; }
-  .gh-btn-pull:hover { background:rgba(28,58,90,0.35); }
-  .gh-status { font-size:0.75rem; font-style:italic; color:var(--SUB); flex:1; min-width:120px; }
-  .gh-status.ok  { color:#4caf82; }
-  .gh-status.err { color:#e05050; }
-  .gh-status.loading { color:var(--GLD); }
+  .io-bar { display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; padding:0.6rem 0.9rem; background:rgba(36,41,47,0.6); border:1px solid rgba(255,255,255,0.07); border-radius:2px; margin-bottom:0.5rem; }
+  .io-btn { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.32rem 0.9rem; border-radius:2px; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .io-btn-export { background:rgba(36,160,96,0.15); border:1px solid rgba(36,160,96,0.4); color:#4caf82; }
+  .io-btn-export:hover { background:rgba(36,160,96,0.28); }
+  .io-btn-import { background:rgba(184,146,42,0.1); border:1px solid rgba(184,146,42,0.35); color:var(--GLD); }
+  .io-btn-import:hover { background:rgba(184,146,42,0.22); }
+  .io-status { font-size:0.75rem; font-style:italic; color:var(--SUB); flex:1; }
+  .io-status.ok  { color:#4caf82; }
+  .io-status.err { color:#e05050; }
 
   .form-panel { display:none; border:1px solid rgba(103,78,167,0.2); border-radius:2px; padding:0.65rem; margin-top:0.5rem; flex-direction:column; gap:0.4rem; background:rgba(103,78,167,0.06); }
   .form-panel.visible { display:flex; }
@@ -335,11 +331,11 @@
 <div class="layout">
 
   <!-- GITHUB SYNC BAR -->
-  <div class="gh-bar full" style="grid-column:1/-1;">
-    <input class="gh-token-input" id="gh-token" type="password" placeholder="GitHub Personal Access Token (ghp_…)" />
-    <button class="gh-btn gh-btn-push" onclick="ghPush()">↑ Sauvegarder sur GitHub</button>
-    <button class="gh-btn gh-btn-pull" onclick="ghPull()">↓ Charger depuis GitHub</button>
-    <span class="gh-status" id="gh-status">Token non configuré</span>
+  <div class="io-bar full" style="grid-column:1/-1;">
+    <button class="io-btn io-btn-export" onclick="exportJSON()">↓ Exporter sauvegarde</button>
+    <button class="io-btn io-btn-import" onclick="document.getElementById('import-input').click()">↑ Importer sauvegarde</button>
+    <input type="file" id="import-input" accept=".json" style="display:none" onchange="importJSON(this)" />
+    <span class="io-status" id="io-status"></span>
   </div>
 
 
@@ -1334,121 +1330,46 @@ window.addEventListener('beforeunload', saveAll);
 
 
 
-// ══════ GITHUB SYNC ══════
-const GH_OWNER  = 'Grogndur';
-const GH_REPO   = 'JDR-Warhammer';
-const GH_BRANCH = 'main';
-const GH_FILE   = 'data/sareth.json';
-const GH_API    = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`;
-
-function ghToken() {
-  const inp = document.getElementById('gh-token');
-  const stored = localStorage.getItem('gh_token_sareth');
-  if (inp && inp.value.trim()) {
-    localStorage.setItem('gh_token_sareth', inp.value.trim());
-    return inp.value.trim();
-  }
-  if (stored) { if (inp) inp.value = stored; return stored; }
-  return null;
-}
-
-function ghSetStatus(msg, cls) {
-  const el = document.getElementById('gh-status'); if (!el) return;
+// ══════ EXPORT / IMPORT JSON ══════
+function ioStatus(msg, cls) {
+  const el = document.getElementById('io-status'); if (!el) return;
   el.textContent = msg;
-  el.className = 'gh-status' + (cls ? ' ' + cls : '');
+  el.className = 'io-status' + (cls ? ' ' + cls : '');
 }
 
-async function ghGetFileMeta() {
-  const token = ghToken(); if (!token) return null;
-  try {
-    const r = await fetch(GH_API + '?ref=' + GH_BRANCH + '&t=' + Date.now(), {
-      headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json', 'Cache-Control': 'no-cache' }
-    });
-    if (!r.ok) return null;
-    return await r.json();
-  } catch(e) { return null; }
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'sareth.json'; a.click();
+  ioStatus('✓ Exporté', 'ok'); setTimeout(()=>ioStatus('',''),3000);
 }
-
-async function ghPush() {
-  const token = ghToken();
-  if (!token) { ghSetStatus('Token manquant', 'err'); return; }
-  
-  // Désactiver le bouton pendant le push
-  const btn = document.querySelector('.gh-btn-push');
-  if (btn) btn.disabled = true;
-  ghSetStatus('Récupération du SHA…', 'loading');
-  
-  try {
-    // 1. Récupérer le SHA actuel (obligatoire pour mettre à jour)
-    const meta = await ghGetFileMeta();
-    const sha = meta ? meta.sha : null;
-    
-    // 2. Encoder le state actuel
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(state, null, 2))));
-    const body = { message: 'save sareth ' + new Date().toISOString(), content, branch: GH_BRANCH };
-    if (sha) body.sha = sha;
-    
-    ghSetStatus('Envoi vers GitHub…', 'loading');
-    
-    // 3. Push
-    const r = await fetch(GH_API, {
-      method: 'PUT',
-      headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    
-    if (r.ok) {
-      ghSetStatus('✓ Sauvegardé · ' + new Date().toLocaleTimeString(), 'ok');
-    } else {
-      const err = await r.json();
-      ghSetStatus('Erreur : ' + (err.message || r.status), 'err');
-    }
-  } catch(e) {
-    ghSetStatus('Erreur réseau : ' + e.message, 'err');
-  } finally {
-    if (btn) btn.disabled = false;
-  }
+function importJSON(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const saved = JSON.parse(e.target.result);
+      ['wounds','woundsMax','chance','determ','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
+      if(saved.money) Object.assign(state.money, saved.money);
+      if(saved.cet) Object.assign(state.cet, saved.cet);
+      if(saved.xp) Object.assign(state.xp, saved.xp);
+      if(saved.stats) Object.assign(state.stats, saved.stats);
+      if(saved.skillsBase) state.skillsBase=saved.skillsBase;
+      if(saved.skillsAdv) state.skillsAdv=saved.skillsAdv;
+      if(saved.talents) state.talents=saved.talents;
+      if(saved.weapons) state.weapons=saved.weapons;
+      if(saved.inventory) state.inventory=saved.inventory;
+      if(saved.armor) state.armor=saved.armor;
+      if(saved.sorts) state.sorts=saved.sorts;
+      if(saved.traces!==undefined) state.traces=saved.traces;
+      if(saved.armorPieces) state.armorPieces=saved.armorPieces;
+      save(); renderAll();
+      ioStatus('✓ Importé', 'ok'); setTimeout(()=>ioStatus('',''),3000);
+    } catch(err) { ioStatus('Erreur : ' + err.message, 'err'); }
+  };
+  reader.readAsText(file);
+  input.value = '';
 }
-
-async function ghPull() {
-  const token = ghToken();
-  if (!token) { ghSetStatus('Token manquant', 'err'); return; }
-  ghSetStatus('Chargement…', 'loading');
-  try {
-    const meta = await ghGetFileMeta();
-    if (!meta) { ghSetStatus('Aucune sauvegarde GitHub trouvée', 'err'); return; }
-    const json = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g, '')))));
-    Object.assign(state, json);
-    localStorage.setItem('sareth_v3', JSON.stringify(state));
-    renderAll();
-    ghSetStatus('✓ Chargé depuis GitHub · ' + new Date().toLocaleTimeString(), 'ok');
-  } catch(e) { ghSetStatus('Erreur : ' + e.message, 'err'); }
-}
-
-async function ghAutoLoad() {
-  const token = ghToken();
-  if (!token) { ghSetStatus('Token non configuré', ''); return; }
-  
-  // N'écraser le localStorage QUE s'il est vide
-  const local = localStorage.getItem('sareth_v3');
-  if (local) {
-    ghSetStatus('Données locales utilisées — ↑ pour synchro GitHub', '');
-    return;
-  }
-  
-  // localStorage vide : charger depuis GitHub
-  ghSetStatus('Chargement initial depuis GitHub…', 'loading');
-  try {
-    const meta = await ghGetFileMeta();
-    if (!meta) { ghSetStatus('Prêt — aucune sauvegarde GitHub encore', ''); return; }
-    const json = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g, '')))));
-    Object.assign(state, json);
-    localStorage.setItem('sareth_v3', JSON.stringify(state));
-    renderAll();
-    ghSetStatus('✓ Chargé depuis GitHub · ' + new Date().toLocaleTimeString(), 'ok');
-  } catch(e) { ghSetStatus('GitHub inaccessible', ''); }
-}
-
 
 // ══════ ÉDITION INLINE UNIVERSELLE ══════
 
@@ -1642,7 +1563,6 @@ const _origRenderSorts = renderSorts;
 renderSorts = function() { _origRenderSorts(); applySortEditable(); };
 
 load();
-ghAutoLoad();
 </script>
 </body>
 </html>
