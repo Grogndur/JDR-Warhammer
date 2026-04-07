@@ -214,6 +214,20 @@
   .coll-form-field { display:flex; flex-direction:column; }
   .coll-stats-bar { display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid rgba(184,146,42,0.1); font-size:0.75rem; color:var(--SUB); flex-wrap:wrap; gap:0.4rem; }
   .coll-stat-pill { background:rgba(184,146,42,0.08); border:1px solid rgba(184,146,42,0.18); border-radius:10px; padding:0.15rem 0.5rem; font-family:'Cinzel',serif; font-size:0.65rem; color:var(--GLD); }
+
+  /* ── PIPS ICÔNES ── */
+  .pip { width:26px; height:26px; border-radius:3px; border:1.5px solid rgba(184,146,42,0.35); cursor:pointer; transition:all 0.15s; background:transparent; display:flex; align-items:center; justify-content:center; color:rgba(184,146,42,0.2); }
+  .pip.on { background:rgba(184,146,42,0.12); border-color:var(--GLD); color:var(--GLD); box-shadow:0 0 4px rgba(184,146,42,0.25); }
+  .pip svg { pointer-events:none; }
+  /* ── PIÈCES D'ARMURE ── */
+  .armor-piece { padding:0.45rem 0; border-bottom:1px solid rgba(255,255,255,0.04); display:flex; align-items:flex-start; gap:0.5rem; }
+  .armor-piece:last-child { border-bottom:none; }
+  .armor-piece-content { flex:1; }
+  .armor-piece-name { color:var(--parchment); font-size:0.88rem; font-weight:600; }
+  .armor-piece-stats { display:flex; gap:0.6rem; margin-top:0.15rem; flex-wrap:wrap; }
+  .astat { font-size:0.72rem; }
+  .astat-l { color:var(--SUB); }
+  .astat-v { color:var(--GLD); font-family:'Cinzel',serif; }
 </style>
 </head>
 <body>
@@ -255,7 +269,7 @@
       <div class="res-box">
         <span class="res-label">Blessures</span>
         <span class="res-val" id="w-cur">12</span>
-        <span class="res-sub">/ <span id="w-max">12</span> max</span>
+        <span class="res-sub">/ <input type="number" id="w-max-input" value="12" min="1" max="99" onchange="updateWoundsMax(this.value)" style="background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.12);color:var(--SUB);font-family:'Cinzel',serif;font-size:0.7rem;width:28px;text-align:center;padding:0;cursor:pointer;" /> max</span>
         <div class="wounds-ctrl">
           <button class="btn-small btn-wound" onclick="chWound(-1)">−</button>
           <button class="btn-small btn-heal" onclick="chWound(1)">+</button>
@@ -332,7 +346,7 @@
       <div class="form-panel" id="adv-form">
         <input class="form-input" id="adv-name" placeholder="Nom de la compétence" />
         <input class="form-input" id="adv-car" placeholder="Car. (Dex, Ag…)" />
-        <input class="form-input" id="adv-aug" placeholder="Augm." type="number" value="0" style="width:80px;" />
+        <input class="form-input" id="adv-aug" placeholder="Aug. (ex: 5)" type="number" style="width:80px;" />
         <div style="display:flex;gap:0.4rem;">
           <button class="btn-add btn-acc" onclick="addAdvSkill()">Ajouter</button>
           <button class="btn-cancel" onclick="toggleForm('adv-form')">Annuler</button>
@@ -372,7 +386,25 @@
 
   <!-- ARMURE -->
   <div class="card">
-    <div class="card-title gld">Armure par localisation</div>
+    <div class="card-title gld" style="margin-bottom:0.4rem;font-size:0.62rem;">Pièces d'armure portées</div>
+    <div id="armor-pieces-list"></div>
+    <div style="margin-top:0.3rem;margin-bottom:0.9rem;">
+      <button class="btn-add btn-gld" onclick="toggleForm('armor-piece-form')">+ Ajouter une pièce</button>
+      <div class="form-panel" id="armor-piece-form">
+        <div class="form-grid2">
+          <input class="form-input" id="ap-name" placeholder="Nom (Veste de cuir…)" style="grid-column:1/-1;" />
+          <input class="form-input" id="ap-pa"   placeholder="PA — ex: 1" type="number" />
+          <input class="form-input" id="ap-enc"  placeholder="ENC — ex: 0" type="number" />
+          <input class="form-input" id="ap-pen"  placeholder="Pénalité (−1 Ag…)" />
+          <input class="form-input" id="ap-attr" placeholder="Attributs (Résistante, Lourde…)" />
+        </div>
+        <div style="display:flex;gap:0.4rem;margin-top:0.3rem;">
+          <button class="btn-add btn-gld" onclick="addArmorPiece()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleForm('armor-piece-form')">Annuler</button>
+        </div>
+      </div>
+    </div>
+    <div class="card-title gld" style="margin-top:0.3rem;">Armure par localisation</div>
     <table class="armor-table">
       <thead><tr><th>Localisation</th><th>PA</th><th>Loc.</th></tr></thead>
       <tbody id="armor-body"></tbody>
@@ -386,7 +418,7 @@
           <input class="form-input" id="wep-name" placeholder="Nom" />
           <input class="form-input" id="wep-all" placeholder="Allonge" />
           <input class="form-input" id="wep-deg" placeholder="Dégâts (BF+4…)" />
-          <input class="form-input" id="wep-enc" placeholder="ENC" />
+          <input class="form-input" id="wep-enc" placeholder="ENC — ex: 0" />
           <input class="form-input" id="wep-attr" placeholder="Attributs" style="grid-column:1/-1;" />
         </div>
         <div style="display:flex;gap:0.4rem;margin-top:0.3rem;">
@@ -663,6 +695,7 @@ let state = {
   inventory:   JSON.parse(JSON.stringify(INV_DEF)),
   armor:       JSON.parse(JSON.stringify(ARMOR_LOCS)),
   collection:  JSON.parse(JSON.stringify(COLL_DEF)),
+  armorPieces: [],
 };
 
 STATS_DEF.forEach(s => { state.stats[s.key] = { init:s.init, avance:s.avance }; });
@@ -689,6 +722,7 @@ function load() {
     if (saved.inventory)   state.inventory   = saved.inventory;
     if (saved.armor)       state.armor       = saved.armor;
     if (saved.collection)  state.collection  = saved.collection;
+    if (saved.armorPieces) state.armorPieces = saved.armorPieces;
   } catch(e) {}
   renderAll();
 }
@@ -709,10 +743,10 @@ function saveAll() {
 
 function renderAll() {
   renderStats(); renderSkillsBase(); renderSkillsAdv(); renderTalents();
-  renderArmor(); renderWeapons(); renderInventory(); renderCollection();
+  renderArmor(); renderArmorPieces(); renderWeapons(); renderInventory(); renderCollection();
   renderChance(); renderDeterm(); renderCollNewStars();
   document.getElementById('w-cur').textContent = state.wounds;
-  document.getElementById('w-max').textContent = state.woundsMax;
+  const wmi=document.getElementById('w-max-input'); if(wmi) wmi.value=state.woundsMax||12;
   updateWC();
   ['or','argent','cuivre'].forEach(k => document.getElementById('m-'+k).textContent = state.money[k]||0);
   document.getElementById('session-notes').value = state.notes||'';
@@ -736,9 +770,8 @@ function renderStats() {
       <span class="stat-total" id="stat-total-${def.key}">${total}</span>
       <span class="stat-bonus" id="stat-bf-${def.key}">B:${bf}</span>
       <div class="stat-edit-row">
-        <span style="font-size:0.5rem;color:var(--SUB);">Init</span>
-        <input class="editable-num" style="width:34px;font-size:0.78rem;color:var(--parchment-dark);border-bottom-color:rgba(255,255,255,0.06);" type="number" value="${s.init}" onchange="updateStat('${def.key}','init',this.value)" />
-        <span class="plus">+</span>
+        <span style="font-size:0.62rem;color:var(--SUB);opacity:0.55;" title="Init — figé">${s.init}</span>
+        <span class="plus" style="opacity:0.35;">+</span>
         <input class="editable-num" style="width:34px;font-size:0.78rem;color:var(--acc2);border-bottom-color:rgba(184,112,42,0.15);" type="number" value="${s.avance}" onchange="updateStat('${def.key}','avance',this.value)" />
       </div>
     `;
@@ -746,6 +779,7 @@ function renderStats() {
   });
 }
 function updateStat(key, field, val) {
+  if(field==='init') return; // init figé
   state.stats[key][field] = parseInt(val)||0;
   const total = getStatTotal(key);
   const bf = Math.floor(total/10);
@@ -766,6 +800,13 @@ function updateWC() {
   el.style.color = p>0.6?'var(--parchment)':p>0.3?'#e8a040':'#e05050';
 }
 
+
+function updateWoundsMax(val) {
+  state.woundsMax = Math.max(1, parseInt(val)||1);
+  const inp = document.getElementById('w-max-input');
+  if(inp) inp.value = state.woundsMax;
+  save();
+}
 // ══════ MONNAIE ══════
 function chMoney(k,d) {
   state.money[k]=Math.max(0,(state.money[k]||0)+d);
@@ -773,17 +814,20 @@ function chMoney(k,d) {
 }
 
 // ══════ CHANCE / DETERM ══════
-function makePips(id,cur,max,fn) {
+const CLOVER_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="16" height="16"><g transform="translate(90,90)"><path d="M 0 30 Q 10 52 18 66" fill="none" stroke="#2d6b1a" stroke-width="9" stroke-linecap="round"/><path d="M 0 0 C -18 -4,-58 -10,-68 -28 C -76 -44,-58 -58,-38 -50 C -22 -44,-8 -30,0 -12 C 2 -8,2 -4,0 0 Z" fill="#3a8c1e" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><path d="M 0 0 C 18 -4,58 -10,68 -28 C 76 -44,58 -58,38 -50 C 22 -44,8 -30,0 -12 C -2 -8,-2 -4,0 0 Z" fill="#3a8c1e" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><path d="M 0 0 C -18 4,-58 10,-68 28 C -76 44,-58 58,-38 50 C -22 44,-8 30,0 12 C 2 8,2 4,0 0 Z" fill="#4aac28" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><path d="M 0 0 C 18 4,58 10,68 28 C 76 44,58 58,38 50 C 22 44,8 30,0 12 C -2 8,-2 4,0 0 Z" fill="#4aac28" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><circle cx="0" cy="0" r="7" fill="#2d6b1a"/></g></svg>`;
+const FLAME_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="14" height="16"><g transform="translate(50,62)"><path d="M 0,-55 C 2,-45 14,-40 18,-30 L 26,-44 C 28,-33 38,-26 32,-14 L 46,-22 C 46,-11 50,-2 34,5 L 50,1 C 50,13 46,2 42,22 C 32,34 14,43 0,45 C -14,43 -32,34 -42,22 C -46,2 -50,13 -50,1 L -34,5 C -50,-2 -46,-11 -46,-22 L -32,-14 C -38,-26 -28,-33 -26,-44 L -18,-30 C -14,-40 -2,-45 0,-55 Z" fill="#f0922a"/></g></svg>`;
+function makePips(id,cur,max,fn,icon) {
   const c=document.getElementById(id); if(!c) return; c.innerHTML='';
   for(let i=0;i<max;i++){
     const pip=document.createElement('div');
     pip.className='pip'+(i<cur?' on':'');
+    if(icon) pip.innerHTML=icon;
     pip.onclick=()=>fn(i<cur?i:i+1);
     c.appendChild(pip);
   }
 }
-function renderChance() { makePips('chance-track',state.chance,4,v=>{state.chance=v;save();renderChance();}); }
-function renderDeterm() { makePips('determ-pips',state.determ,2,v=>{state.determ=v;save();renderDeterm();}); }
+function renderChance() { makePips('chance-track',state.chance,4,v=>{state.chance=v;save();renderChance();},CLOVER_ICON); }
+function renderDeterm() { makePips('determ-pips',state.determ,2,v=>{state.determ=v;save();renderDeterm();},FLAME_ICON); }
 
 // ══════ COMPÉTENCES BASE ══════
 function renderSkillsBase() {
@@ -914,6 +958,51 @@ function addInvItem() {
   renderInventory(); save(); toggleForm('inv-form');
 }
 
+
+// ══════ PIÈCES D'ARMURE ══════
+function renderArmorPieces() {
+  const c = document.getElementById('armor-pieces-list'); if(!c) return;
+  c.innerHTML = '';
+  if(!state.armorPieces) state.armorPieces = [];
+  if(state.armorPieces.length === 0){
+    c.innerHTML = '<div style="font-size:0.8rem;color:var(--SUB);font-style:italic;padding:0.2rem 0 0.5rem;">Aucune pièce portée.</div>';
+    return;
+  }
+  state.armorPieces.forEach((ap,i) => {
+    const div = document.createElement('div');
+    div.className = 'armor-piece';
+    div.innerHTML = `
+      <div class="armor-piece-content">
+        <div class="armor-piece-name">${ap.name}</div>
+        <div class="armor-piece-stats">
+          <span class="astat"><span class="astat-l">PA </span><span class="astat-v">${ap.pa||0}</span></span>
+          ${ap.enc?`<span class="astat"><span class="astat-l">ENC </span><span class="astat-v">${ap.enc}</span></span>`:''}
+          ${ap.pen?`<span class="astat"><span class="astat-l">Pén. </span><span class="astat-v">${ap.pen}</span></span>`:''}
+          ${ap.attr?`<span class="astat"><span class="astat-l">Attr. </span><span class="astat-v">${ap.attr}</span></span>`:''}
+        </div>
+      </div>
+      <span class="del-btn" onclick="deleteArmorPiece(${i})">✕</span>
+    `;
+    c.appendChild(div);
+  });
+}
+function deleteArmorPiece(idx) {
+  if(confirm('Retirer cette pièce ?')){ state.armorPieces.splice(idx,1); renderArmorPieces(); save(); }
+}
+function addArmorPiece() {
+  if(!state.armorPieces) state.armorPieces = [];
+  const name = document.getElementById('ap-name').value.trim(); if(!name) return;
+  state.armorPieces.push({
+    name,
+    pa:   parseInt(document.getElementById('ap-pa').value)||0,
+    enc:  parseInt(document.getElementById('ap-enc').value)||0,
+    pen:  document.getElementById('ap-pen').value.trim(),
+    attr: document.getElementById('ap-attr').value.trim(),
+  });
+  ['ap-name','ap-pen','ap-attr'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ap-pa').value='0'; document.getElementById('ap-enc').value='0';
+  renderArmorPieces(); save(); toggleForm('armor-piece-form');
+}
 // ══════ UTILS ══════
 function toggleForm(id) { document.getElementById(id).classList.toggle('visible'); }
 
