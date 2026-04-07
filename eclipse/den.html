@@ -925,7 +925,7 @@ function addArmorPiece() {
     attr: document.getElementById('ap-attr').value.trim(),
   });
   ['ap-name','ap-pen','ap-attr'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('ap-pa').value='0'; document.getElementById('ap-enc').value='0';
+  document.getElementById('ap-pa').value=''; document.getElementById('ap-enc').value='';
   renderArmorPieces(); save(); toggleForm('armor-piece-form');
 }
 // ══════ UTILS ══════

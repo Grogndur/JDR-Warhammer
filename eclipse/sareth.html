@@ -282,6 +282,9 @@
   .gh-status.ok  { color:#4caf82; }
   .gh-status.err { color:#e05050; }
   .gh-status.loading { color:var(--GLD); }
+
+  .form-panel { display:none; border:1px solid rgba(103,78,167,0.2); border-radius:2px; padding:0.65rem; margin-top:0.5rem; flex-direction:column; gap:0.4rem; background:rgba(103,78,167,0.06); }
+  .form-panel.visible { display:flex; }
 </style>
 </head>
 <body>
@@ -1278,7 +1281,7 @@ function addArmorPiece() {
     attr: document.getElementById('ap-attr').value.trim(),
   });
   ['ap-name','ap-pen','ap-attr'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('ap-pa').value='0'; document.getElementById('ap-enc').value='0';
+  document.getElementById('ap-pa').value=''; document.getElementById('ap-enc').value='';
   renderArmorPieces(); save(); toggleForm('armor-piece-form');
 }
 // ══════ EVENT LISTENERS ══════
