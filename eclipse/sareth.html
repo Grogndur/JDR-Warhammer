@@ -820,6 +820,10 @@ function load() {
 function save() { localStorage.setItem('sareth_v3', JSON.stringify(state)); }
 
 function saveAll() {
+  // Auto-push GitHub si token configuré (sans bloquer l'UI)
+  if(localStorage.getItem('gh_token_sareth')) {
+    setTimeout(()=>ghPush(), 100);
+  }
   state.notes = document.getElementById('session-notes').value;
   if (!state.cet) state.cet = {};
   ['corruption','mutations','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) state.cet[k]=el.value; });

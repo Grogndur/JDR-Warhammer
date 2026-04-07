@@ -632,9 +632,7 @@ let state = {
   weapons:    JSON.parse(JSON.stringify(WEAPONS_DEF)),
   inventory:  JSON.parse(JSON.stringify(INV_DEF)),
   armor:      JSON.parse(JSON.stringify(ARMOR_LOCS)),
-  armorPieces: [
-    { name:'Veste de suir', pa:1, enc:0, pen:'−1 Ag', attr:'Résistante, Lourde' },
-  ],
+  armorPieces: [],
 };
 
 STATS_DEF.forEach(s => { state.stats[s.key] = { init:s.init, avance:s.avance }; });
@@ -667,6 +665,10 @@ function load() {
 function save() { localStorage.setItem('denl_v3', JSON.stringify(state)); }
 
 function saveAll() {
+  // Auto-push GitHub si token configuré (sans bloquer l'UI)
+  if(localStorage.getItem('gh_token_den')) {
+    setTimeout(()=>ghPush(), 100);
+  }
   state.notes = document.getElementById('session-notes').value;
   if (!state.cet) state.cet = {};
   ['corruption','mutations','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) state.cet[k]=el.value; });
