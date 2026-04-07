@@ -1196,6 +1196,7 @@ function addCollItem() {
 window.addEventListener('beforeunload', saveAll);
 
 
+
 // ══════ GITHUB SYNC ══════
 const GH_OWNER  = 'Grogndur';
 const GH_REPO   = 'JDR-Warhammer';
@@ -1210,89 +1211,77 @@ function ghToken() {
     localStorage.setItem('gh_token_azart', inp.value.trim());
     return inp.value.trim();
   }
-  if (stored) {
-    if (inp) inp.value = stored;
-    return stored;
-  }
+  if (stored) { if (inp) inp.value = stored; return stored; }
   return null;
 }
 
 function ghSetStatus(msg, cls) {
-  const el = document.getElementById('gh-status');
-  if (!el) return;
+  const el = document.getElementById('gh-status'); if (!el) return;
   el.textContent = msg;
   el.className = 'gh-status' + (cls ? ' ' + cls : '');
 }
 
-async function ghGetSHA() {
-  const token = ghToken();
-  if (!token) return null;
+async function ghGetFileMeta() {
+  const token = ghToken(); if (!token) return null;
   try {
-    const r = await fetch(GH_API + '?ref=' + GH_BRANCH, {
-      headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json' }
+    const r = await fetch(GH_API + '?ref=' + GH_BRANCH + '&t=' + Date.now(), {
+      headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json', 'Cache-Control': 'no-cache' }
     });
-    if (r.status === 404) return null;
     if (!r.ok) return null;
-    const d = await r.json();
-    return d.sha || null;
+    return await r.json();
   } catch(e) { return null; }
 }
 
 async function ghPush() {
   const token = ghToken();
-  if (!token) { ghSetStatus('Token manquant — colle ton token ci-dessus', 'err'); return; }
-  ghSetStatus('Sauvegarde en cours…', 'loading');
-  // Sauvegarder localement d'abord
-  state.notes = document.getElementById('session-notes') ? document.getElementById('session-notes').value : state.notes;
-  save();
-  // Récupérer le SHA frais depuis GitHub
-  const sha = await ghGetSHA();
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(state, null, 2))));
-  const body = { message: 'save azart ' + new Date().toISOString(), content, branch: GH_BRANCH };
-  if (sha) body.sha = sha;
+  if (!token) { ghSetStatus('Token manquant', 'err'); return; }
+  
+  // Désactiver le bouton pendant le push
+  const btn = document.querySelector('.gh-btn-push');
+  if (btn) btn.disabled = true;
+  ghSetStatus('Récupération du SHA…', 'loading');
+  
   try {
+    // 1. Récupérer le SHA actuel (obligatoire pour mettre à jour)
+    const meta = await ghGetFileMeta();
+    const sha = meta ? meta.sha : null;
+    
+    // 2. Encoder le state actuel
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(state, null, 2))));
+    const body = { message: 'save azart ' + new Date().toISOString(), content, branch: GH_BRANCH };
+    if (sha) body.sha = sha;
+    
+    ghSetStatus('Envoi vers GitHub…', 'loading');
+    
+    // 3. Push
     const r = await fetch(GH_API, {
       method: 'PUT',
       headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
+    
     if (r.ok) {
-      ghSetStatus('✓ Sauvegardé sur GitHub · ' + new Date().toLocaleTimeString(), 'ok');
-    } else if (r.status === 409 || r.status === 422) {
-      // Conflit SHA — on récupère le SHA frais et on retente
-      ghSetStatus('Conflit SHA, nouvelle tentative…', 'loading');
-      const freshSha = await ghGetSHA();
-      if (freshSha) body.sha = freshSha;
-      const r2 = await fetch(GH_API, {
-        method: 'PUT',
-        headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      if (r2.ok) {
-        ghSetStatus('✓ Sauvegardé sur GitHub · ' + new Date().toLocaleTimeString(), 'ok');
-      } else {
-        const err2 = await r2.json();
-        ghSetStatus('Erreur GitHub : ' + (err2.message || r2.status), 'err');
-      }
+      ghSetStatus('✓ Sauvegardé · ' + new Date().toLocaleTimeString(), 'ok');
     } else {
       const err = await r.json();
-      ghSetStatus('Erreur GitHub : ' + (err.message || r.status), 'err');
+      ghSetStatus('Erreur : ' + (err.message || r.status), 'err');
     }
-  } catch(e) { ghSetStatus('Erreur réseau : ' + e.message, 'err'); }
+  } catch(e) {
+    ghSetStatus('Erreur réseau : ' + e.message, 'err');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
 }
 
 async function ghPull() {
   const token = ghToken();
-  if (!token) { ghSetStatus('Token manquant — colle ton token ci-dessus', 'err'); return; }
-  ghSetStatus('Chargement depuis GitHub…', 'loading');
+  if (!token) { ghSetStatus('Token manquant', 'err'); return; }
+  ghSetStatus('Chargement…', 'loading');
   try {
-    const r = await fetch(GH_API + '?ref=' + GH_BRANCH, {
-      headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json' }
-    });
-    if (r.status === 404) { ghSetStatus('Aucune sauvegarde GitHub trouvée — fais une première sauvegarde', 'err'); return; }
-    if (!r.ok) { ghSetStatus('Erreur GitHub : ' + r.status, 'err'); return; }
-    const d = await r.json();
-    const json = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g, '')))));
+    const meta = await ghGetFileMeta();
+    if (!meta) { ghSetStatus('Aucune sauvegarde GitHub trouvée', 'err'); return; }
+    const json = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/
+/g, '')))));
     Object.assign(state, json);
     localStorage.setItem('azart_v1', JSON.stringify(state));
     renderAll();
@@ -1302,23 +1291,28 @@ async function ghPull() {
 
 async function ghAutoLoad() {
   const token = ghToken();
-  if (!token) { ghSetStatus('Token non configuré — entre ton token pour activer la sync GitHub', ''); return; }
-  ghSetStatus('Sync GitHub…', 'loading');
+  if (!token) { ghSetStatus('Token non configuré', ''); return; }
+  
+  // N'écraser le localStorage QUE s'il est vide
+  const local = localStorage.getItem('azart_v1');
+  if (local) {
+    ghSetStatus('Données locales utilisées — ↑ pour synchro GitHub', '');
+    return;
+  }
+  
+  // localStorage vide : charger depuis GitHub
+  ghSetStatus('Chargement initial depuis GitHub…', 'loading');
   try {
-    const r = await fetch(GH_API + '?ref=' + GH_BRANCH, {
-      headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json' }
-    });
-    if (r.status === 404) { ghSetStatus('Prêt — aucune sauvegarde GitHub encore', ''); return; }
-    if (!r.ok) { ghSetStatus('GitHub inaccessible, données locales utilisées', ''); return; }
-    const d = await r.json();
-    const json = JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g, '')))));
+    const meta = await ghGetFileMeta();
+    if (!meta) { ghSetStatus('Prêt — aucune sauvegarde GitHub encore', ''); return; }
+    const json = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/
+/g, '')))));
     Object.assign(state, json);
     localStorage.setItem('azart_v1', JSON.stringify(state));
     renderAll();
-    ghSetStatus('✓ Synchronisé · ' + new Date().toLocaleTimeString(), 'ok');
-  } catch(e) { ghSetStatus('GitHub inaccessible, données locales utilisées', ''); }
+    ghSetStatus('✓ Chargé depuis GitHub · ' + new Date().toLocaleTimeString(), 'ok');
+  } catch(e) { ghSetStatus('GitHub inaccessible', ''); }
 }
-
 
 
 // ══════ ÉDITION INLINE UNIVERSELLE ══════
