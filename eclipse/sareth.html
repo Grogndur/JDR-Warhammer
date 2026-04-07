@@ -870,8 +870,7 @@ function renderStats() {
       <span class="stat-total" id="stat-total-${def.key}">${total}</span>
       <span class="stat-bonus">B:${bf}</span>
       <div class="stat-edit-row">
-        <span class="stat-sub" style="font-size:0.5rem;color:var(--SUB);">Init</span>
-        <input class="editable-num" style="width:34px;font-size:0.78rem;color:var(--parchment-dark);border-bottom-color:rgba(255,255,255,0.06);" type="number" value="${s.init}" onchange="updateStat('${def.key}','init',this.value)" />
+        <span style="font-size:0.62rem;color:var(--SUB);opacity:0.55;" title="Init — figé">${s.init}</span>
         <span class="plus">+</span>
         <input class="editable-num" style="width:34px;font-size:0.78rem;color:var(--VIO2);border-bottom-color:rgba(103,78,167,0.15);" type="number" value="${s.avance}" onchange="updateStat('${def.key}','avance',this.value)" />
       </div>
