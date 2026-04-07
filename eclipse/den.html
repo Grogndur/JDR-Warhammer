@@ -239,6 +239,17 @@
   .armor-piece-name:hover .edit-hint,
   .talent-name:hover .edit-hint,
   .inv-name:hover .edit-hint { opacity: 0.5; }
+
+  /* ── EXPORT / IMPORT ── */
+  .io-bar { display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; padding:0.6rem 0.9rem; background:rgba(36,41,47,0.6); border:1px solid rgba(255,255,255,0.07); border-radius:2px; margin-bottom:0.5rem; }
+  .io-btn { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.32rem 0.9rem; border-radius:2px; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .io-btn-export { background:rgba(36,160,96,0.15); border:1px solid rgba(36,160,96,0.4); color:#4caf82; }
+  .io-btn-export:hover { background:rgba(36,160,96,0.28); }
+  .io-btn-import { background:rgba(184,146,42,0.1); border:1px solid rgba(184,146,42,0.35); color:var(--GLD); }
+  .io-btn-import:hover { background:rgba(184,146,42,0.22); }
+  .io-status { font-size:0.75rem; font-style:italic; color:var(--SUB); flex:1; }
+  .io-status.ok  { color:#4caf82; }
+  .io-status.err { color:#e05050; }
 </style>
 </head>
 <body>
