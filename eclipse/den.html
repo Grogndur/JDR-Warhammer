@@ -1064,8 +1064,7 @@ async function ghPull() {
   try {
     const meta = await ghGetFileMeta();
     if (!meta) { ghSetStatus('Aucune sauvegarde GitHub trouvée', 'err'); return; }
-    const json = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/
-/g, '')))));
+    const json = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g, '')))));
     Object.assign(state, json);
     localStorage.setItem('denl_v3', JSON.stringify(state));
     renderAll();
@@ -1089,8 +1088,7 @@ async function ghAutoLoad() {
   try {
     const meta = await ghGetFileMeta();
     if (!meta) { ghSetStatus('Prêt — aucune sauvegarde GitHub encore', ''); return; }
-    const json = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/
-/g, '')))));
+    const json = JSON.parse(decodeURIComponent(escape(atob(meta.content.replace(/\n/g, '')))));
     Object.assign(state, json);
     localStorage.setItem('denl_v3', JSON.stringify(state));
     renderAll();
