@@ -285,6 +285,44 @@
 
   .form-panel { display:none; border:1px solid rgba(103,78,167,0.2); border-radius:2px; padding:0.65rem; margin-top:0.5rem; flex-direction:column; gap:0.4rem; background:rgba(103,78,167,0.06); }
   .form-panel.visible { display:flex; }
+
+  /* ── ÉDITION INLINE ── */
+  .editable-field {
+    cursor: pointer;
+    border-bottom: 1px dashed transparent;
+    transition: border-color 0.15s;
+    display: inline-block;
+    min-width: 20px;
+  }
+  .editable-field:hover { border-bottom-color: rgba(255,255,255,0.2); }
+  .editable-field:focus {
+    outline: none;
+    border-bottom: 1px solid var(--GLD);
+    background: rgba(184,146,42,0.06);
+    border-radius: 1px;
+  }
+  .editable-field-area {
+    cursor: pointer;
+    border-bottom: 1px dashed transparent;
+    transition: border-color 0.15s;
+    display: inline-block;
+    min-width: 60px;
+    width: 100%;
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-style: inherit;
+    resize: none;
+    min-height: 1.4em;
+  }
+  .editable-field-area:hover { border-bottom-color: rgba(255,255,255,0.2); }
+  .editable-field-area:focus { outline: none; border-bottom: 1px solid var(--GLD); background: rgba(184,146,42,0.04); border-radius: 1px; }
+  .edit-hint { font-size: 0.58rem; color: var(--SUB); opacity: 0; transition: opacity 0.2s; letter-spacing: 0.08em; font-style: italic; margin-left: 0.3rem; }
+  .weapon-name:hover .edit-hint,
+  .armor-piece-name:hover .edit-hint,
+  .talent-name:hover .edit-hint,
+  .inv-name:hover .edit-hint { opacity: 0.5; }
 </style>
 </head>
 <body>
@@ -1399,6 +1437,198 @@ async function ghAutoLoad() {
   } catch(e) { ghSetStatus('GitHub inaccessible, données locales utilisées', ''); }
 }
 
+
+
+// ══════ ÉDITION INLINE UNIVERSELLE ══════
+
+// Rend un span cliquable → input inline
+function makeEditable(el, onSave, opts) {
+  opts = opts || {};
+  const isArea = opts.multiline || false;
+  el.title = 'Double-cliquer pour modifier';
+  el.style.cursor = 'pointer';
+
+  el.addEventListener('dblclick', function(e) {
+    e.stopPropagation();
+    const current = el.textContent;
+    const tag = isArea ? 'textarea' : 'input';
+    const inp = document.createElement(tag);
+    inp.value = current;
+    inp.className = isArea ? 'editable-field-area' : 'editable-field';
+    if (isArea) { inp.rows = 2; inp.style.width = '100%'; }
+    inp.style.fontSize = window.getComputedStyle(el).fontSize;
+    inp.style.color = window.getComputedStyle(el).color;
+    inp.style.fontFamily = window.getComputedStyle(el).fontFamily;
+    inp.style.fontWeight = window.getComputedStyle(el).fontWeight;
+    el.replaceWith(inp);
+    inp.focus();
+    inp.select();
+
+    function commit() {
+      const val = inp.value.trim() || current;
+      el.textContent = val;
+      inp.replaceWith(el);
+      onSave(val);
+    }
+    inp.addEventListener('blur', commit);
+    inp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !isArea) { e.preventDefault(); commit(); }
+      if (e.key === 'Escape') { inp.value = current; commit(); }
+    });
+  });
+}
+
+// ── Armes : rend tous les champs éditables après render ──
+function applyWeaponEditable() {
+  document.querySelectorAll('.weapon-item').forEach((item, i) => {
+    const nameEl = item.querySelector('.weapon-name');
+    if (nameEl && !nameEl.dataset.editable) {
+      nameEl.dataset.editable = '1';
+      makeEditable(nameEl, val => { if(state.weapons[i]) { state.weapons[i].name = val; save(); } });
+    }
+    item.querySelectorAll('.wstat-v, .astat-v').forEach((el, j) => {
+      if (el.dataset.editable) return;
+      el.dataset.editable = '1';
+      const fields = ['all','deg','enc','attr'];
+      makeEditable(el, val => {
+        if (!state.weapons[i]) return;
+        // Détermine quel champ selon position
+        const stats = item.querySelectorAll('.wstat-v, .astat-v');
+        const idx = Array.from(stats).indexOf(el);
+        const key = fields[idx] !== undefined ? fields[idx] : 'attr';
+        state.weapons[i][key] = val; save();
+      });
+    });
+  });
+}
+
+// ── Pièces d'armure ──
+function applyArmorPieceEditable() {
+  document.querySelectorAll('.armor-piece').forEach((item, i) => {
+    const nameEl = item.querySelector('.armor-piece-name');
+    if (nameEl && !nameEl.dataset.editable) {
+      nameEl.dataset.editable = '1';
+      makeEditable(nameEl, val => { if(state.armorPieces[i]) { state.armorPieces[i].name = val; save(); } });
+    }
+    item.querySelectorAll('.astat-v').forEach((el) => {
+      if (el.dataset.editable) return;
+      el.dataset.editable = '1';
+      const label = el.previousElementSibling ? el.previousElementSibling.textContent.trim().toLowerCase() : '';
+      makeEditable(el, val => {
+        if (!state.armorPieces[i]) return;
+        if (label.startsWith('pa')) state.armorPieces[i].pa = parseInt(val)||0;
+        else if (label.startsWith('enc')) state.armorPieces[i].enc = parseInt(val)||0;
+        else if (label.startsWith('pén')) state.armorPieces[i].pen = val;
+        else state.armorPieces[i].attr = val;
+        save();
+      });
+    });
+  });
+}
+
+// ── Talents ──
+function applyTalentEditable() {
+  document.querySelectorAll('.talent-list li').forEach((li, i) => {
+    const nameEl = li.querySelector('.talent-name');
+    const descEl = li.querySelector('.talent-desc');
+    if (nameEl && !nameEl.dataset.editable) {
+      nameEl.dataset.editable = '1';
+      makeEditable(nameEl, val => { if(state.talents[i]) { state.talents[i].name = val; save(); } });
+    }
+    if (descEl && !descEl.dataset.editable) {
+      descEl.dataset.editable = '1';
+      makeEditable(descEl, val => { if(state.talents[i]) { state.talents[i].desc = val; save(); } }, { multiline: false });
+    }
+  });
+}
+
+// ── Inventaire ──
+function applyInventoryEditable() {
+  document.querySelectorAll('#inv-list .inv-item').forEach((item, i) => {
+    const nameEl = item.querySelector('.inv-name');
+    const detailEl = item.querySelector('.inv-detail');
+    if (nameEl && !nameEl.dataset.editable) {
+      nameEl.dataset.editable = '1';
+      makeEditable(nameEl, val => { if(state.inventory[i]) { state.inventory[i].name = val; save(); } });
+    }
+    if (detailEl && !detailEl.dataset.editable) {
+      detailEl.dataset.editable = '1';
+      makeEditable(detailEl, val => { if(state.inventory[i]) { state.inventory[i].detail = val; save(); } });
+    }
+  });
+}
+
+// ── Compétences avancées ──
+function applyAdvSkillEditable() {
+  document.querySelectorAll('#skills-adv-list li').forEach((li, i) => {
+    const nameEl = li.querySelector('.skill-name');
+    if (nameEl && !nameEl.dataset.editable) {
+      nameEl.dataset.editable = '1';
+      makeEditable(nameEl, val => {
+        if (state.skillsAdv[i]) {
+          // Extraire juste le nom sans la car entre parenthèses
+          const clean = val.replace(/\s*\([^)]*\)\s*$/, '').trim();
+          state.skillsAdv[i].name = clean;
+          renderSkillsAdv();
+          save();
+        }
+      });
+    }
+  });
+}
+
+// ── Hook dans les fonctions render existantes ──
+const _origRenderWeapons = renderWeapons;
+renderWeapons = function() { _origRenderWeapons(); applyWeaponEditable(); };
+
+const _origRenderArmorPieces = renderArmorPieces;
+renderArmorPieces = function() { _origRenderArmorPieces(); applyArmorPieceEditable(); };
+
+const _origRenderTalents = renderTalents;
+renderTalents = function() { _origRenderTalents(); applyTalentEditable(); };
+
+const _origRenderInventory = renderInventory;
+renderInventory = function() { _origRenderInventory(); applyInventoryEditable(); };
+
+const _origRenderSkillsAdv = renderSkillsAdv;
+renderSkillsAdv = function() { _origRenderSkillsAdv(); applyAdvSkillEditable(); };
+
+
+// ── Sorts (Sareth) ──
+function applySortEditable() {
+  document.querySelectorAll('#sorts-list .sort-item').forEach((item, i) => {
+    const nameEl = item.querySelector('.sort-name-display');
+    if (nameEl && !nameEl.dataset.editable) {
+      nameEl.dataset.editable = '1';
+      makeEditable(nameEl, val => { if(state.sorts[i]) { state.sorts[i].name = val; save(); } });
+    }
+    const badges = item.querySelectorAll('.sort-badge');
+    badges.forEach(badge => {
+      if (badge.dataset.editable) return;
+      badge.dataset.editable = '1';
+      makeEditable(badge, val => {
+        if (!state.sorts[i]) return;
+        const cls = badge.className;
+        const raw = val.replace(/^[^0-9a-zA-ZÀ-ÿ]+/, '').trim();
+        if (cls.includes('ni')) state.sorts[i].ni = parseInt(raw)||0;
+        else if (cls.includes('portee')) state.sorts[i].portee = raw;
+        else if (cls.includes('duree')) state.sorts[i].duree = raw;
+        else if (cls.includes('cible')) state.sorts[i].cible = raw;
+        else if (cls.includes('type')) state.sorts[i].type = raw;
+        save();
+      });
+    });
+    // Description et incantation imparfaite dans le body
+    const descDiv = item.querySelector('.sort-body-text');
+    if (descDiv && !descDiv.dataset.editable) {
+      descDiv.dataset.editable = '1';
+      makeEditable(descDiv, val => { if(state.sorts[i]) { state.sorts[i].desc = val; save(); } }, { multiline: true });
+    }
+  });
+}
+
+const _origRenderSorts = renderSorts;
+renderSorts = function() { _origRenderSorts(); applySortEditable(); };
 
 load();
 ghAutoLoad();
