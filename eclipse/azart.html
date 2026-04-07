@@ -792,10 +792,7 @@ function load() {
 function save() { localStorage.setItem('azart_v1', JSON.stringify(state)); }
 
 function saveAll() {
-  // Auto-push GitHub si token configuré (sans bloquer l'UI)
-  if(localStorage.getItem('gh_token_azart')) {
-    setTimeout(()=>ghPush(), 100);
-  }
+
   state.notes = document.getElementById('session-notes').value;
   if (!state.cet) state.cet = {};
   ['corruption','mutations','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) state.cet[k]=el.value; });
@@ -1245,9 +1242,12 @@ async function ghPush() {
   const token = ghToken();
   if (!token) { ghSetStatus('Token manquant — colle ton token ci-dessus', 'err'); return; }
   ghSetStatus('Sauvegarde en cours…', 'loading');
-  saveAll();
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(state, null, 2))));
+  // Sauvegarder localement d'abord
+  state.notes = document.getElementById('session-notes') ? document.getElementById('session-notes').value : state.notes;
+  save();
+  // Récupérer le SHA frais depuis GitHub
   const sha = await ghGetSHA();
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(state, null, 2))));
   const body = { message: 'save azart ' + new Date().toISOString(), content, branch: GH_BRANCH };
   if (sha) body.sha = sha;
   try {
