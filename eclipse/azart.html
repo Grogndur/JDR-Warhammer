@@ -200,10 +200,16 @@
   .coll-desc-cell { padding:0 0.5rem 0.65rem 1.5rem !important; }
   .coll-desc-text { font-size:0.82rem; color:var(--parchment-dark); line-height:1.6; font-style:italic; background:rgba(184,146,42,0.04); border-left:2px solid rgba(184,146,42,0.2); padding:0.4rem 0.6rem; border-radius:1px; }
 
-  /* Étoiles de valeur subjective */
-  .coll-stars { display:flex; gap:2px; justify-content:flex-end; margin-top:0.2rem; }
-  .coll-star { width:8px; height:8px; border-radius:50%; background:rgba(184,146,42,0.15); border:1px solid rgba(184,146,42,0.3); cursor:pointer; transition:all 0.15s; }
-  .coll-star.on { background:var(--GLD); border-color:var(--GLD); box-shadow:0 0 4px rgba(184,146,42,0.5); }
+  /* Pièces de valeur subjective */
+  .coll-stars { display:flex; gap:3px; margin-top:0.25rem; align-items:center; }
+  .coll-coin { width:14px; height:14px; border-radius:50%; background:rgba(184,146,42,0.1); border:1.5px solid rgba(184,146,42,0.25); cursor:pointer; transition:all 0.18s; position:relative; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .coll-coin::after { content:''; width:6px; height:6px; border-radius:50%; background:rgba(184,146,42,0.2); transition:all 0.18s; }
+  .coll-coin.on { background:radial-gradient(circle at 38% 35%, #f0d060, #B8922A 60%, #8a6010); border-color:#c8a030; box-shadow:0 1px 4px rgba(184,146,42,0.55), inset 0 1px 0 rgba(255,240,100,0.3); }
+  .coll-coin.on::after { background:rgba(255,240,150,0.35); width:5px; height:5px; }
+  .coll-val-label { font-family:'Cinzel',serif; font-size:0.72rem; color:var(--GLD); margin-left:5px; letter-spacing:0.04em; opacity:0.9; }
+  /* Select dark — collection */
+  .coll-select { background:#0f0f18 !important; color:var(--parchment) !important; border:1px solid rgba(184,112,42,0.3) !important; }
+  .coll-select option { background:#0f0f18; color:var(--parchment); }
 
   /* Formulaire ajout */
   .coll-form { display:none; background:rgba(184,146,42,0.05); border:1px solid rgba(184,146,42,0.2); border-radius:2px; padding:0.75rem; margin-top:0.65rem; flex-direction:column; gap:0.45rem; }
@@ -559,7 +565,7 @@
 
   <!-- COLLECTION SECRÈTE -->
   <div class="collection-card full">
-    <div class="card-title gld" style="position:relative;">Collection secrète · Objets chéris</div>
+    <div class="card-title gld" style="position:relative;">Collection secrète · Trésor</div>
     <div class="collection-intro">
       Ces objets n'ont pas tous une grande valeur marchande. Mais ils ont <strong>été vus</strong>. Portés en public, nommés, remarqués — ou simplement trop beaux pour être abandonnés.<br>
       <span style="font-size:0.78rem;opacity:0.7;">Valeur réelle estimée · Valeur subjective d'Azart · Cliquer pour lire la description</span>
@@ -571,7 +577,6 @@
           <th style="width:18px;"></th>
           <th>Objet</th>
           <th class="right" style="width:90px;">Valeur réelle</th>
-          <th class="right" style="width:110px;">Valeur Azart</th>
           <th style="width:22px;"></th>
         </tr>
       </thead>
@@ -592,12 +597,8 @@
             <span class="coll-form-label">Valeur réelle (ex: 3 PA)</span>
             <input class="form-input" id="coll-val-real" placeholder="3 PA" />
           </div>
-          <div class="coll-form-field">
+          <div class="coll-form-field" style="grid-column:1/-1;">
             <span class="coll-form-label">Valeur pour Azart</span>
-            <input class="form-input" id="coll-val-azart" placeholder="Inestimable" />
-          </div>
-          <div class="coll-form-field">
-            <span class="coll-form-label">Importance (★)</span>
             <div style="display:flex;gap:5px;align-items:center;margin-top:0.35rem;" id="coll-new-stars"></div>
           </div>
           <div class="coll-form-field" style="grid-column:1/-1;">
@@ -606,12 +607,25 @@
           </div>
           <div class="coll-form-field" style="grid-column:1/-1;">
             <span class="coll-form-label">Statut</span>
-            <select class="form-input" id="coll-statut" style="cursor:pointer;background:rgba(184,112,42,0.07);">
-              <option value="possédé">Possédé — caché sur soi</option>
-              <option value="planque">En planque</option>
+            <select class="form-input coll-select" id="coll-statut" style="cursor:pointer;" onchange="toggleCacheDescForm(this.value)">
+              <option value="possédé">Sur soi — caché sur le corps</option>
+              <option value="sac">Dans le sac</option>
+              <option value="planque">Cache secrète</option>
               <option value="perdu">Perdu / volé</option>
               <option value="donné">Donné (regretté)</option>
             </select>
+          </div>
+          <div class="coll-form-field" id="cache-desc-field" style="grid-column:1/-1;display:none;">
+            <span class="coll-form-label">Description de la cache</span>
+            <input class="form-input" id="coll-cache-desc" placeholder="Loose sous la troisième lame du plancher, auberge du Tonneau Percé…" />
+          </div>
+          <div class="coll-form-field" id="perdu-note-field" style="grid-column:1/-1;display:none;">
+            <span class="coll-form-label">Où / comment — pour le retrouver</span>
+            <input class="form-input" id="coll-perdu-note" placeholder="Volé par le crocheteur à l'auberge des Trois Couteaux, nuit du 12…" />
+          </div>
+          <div class="coll-form-field" id="donne-note-field" style="grid-column:1/-1;display:none;">
+            <span class="coll-form-label">À qui — et pourquoi ça le ronge</span>
+            <input class="form-input" id="coll-donne-note" placeholder="Offert à Mira pour acheter son silence. Regretté immédiatement." />
           </div>
         </div>
         <div style="display:flex;gap:0.4rem;margin-top:0.2rem;">
@@ -641,10 +655,11 @@
 
 // ── Collection secrète ──
 const COLL_STATUT_STYLE = {
-  'possédé': { color:'var(--GRN)',  label:'Sur soi'   },
-  'planque':  { color:'var(--acc2)',label:'En planque' },
-  'perdu':    { color:'#c07070',    label:'Perdu'      },
-  'donné':    { color:'var(--SUB)', label:'Donné'      },
+  'possédé': { color:'var(--GRN)',  label:'Sur soi'      },
+  'sac':     { color:'var(--acc2)', label:'Dans le sac'  },
+  'planque':  { color:'#8ba8c4',    label:'Cache secrète' },
+  'perdu':    { color:'#c07070',    label:'Perdu'         },
+  'donné':    { color:'var(--SUB)', label:'Donné'         },
 };
 
 const COLL_DEF = [
@@ -1078,12 +1093,33 @@ function renderCollNewStars() {
   }
 }
 
-function starsHTML(count, itemIdx) {
-  let h='';
+const COLL_LABELS = ['', 'À vendre', 'Banal', 'Intéressant', 'Précieux', 'Inestimable'];
+
+function coinsHTML(count, itemIdx) {
+  const label = COLL_LABELS[count] || '';
+  let h = '';
   for(let i=1;i<=5;i++){
-    h+=`<div class="coll-star${i<=count?' on':''}" onclick="updateCollStars(${itemIdx},${i});event.stopPropagation();"></div>`;
+    h+=`<div class="coll-coin${i<=count?' on':''}" onclick="updateCollStars(${itemIdx},${i});event.stopPropagation();" title="${COLL_LABELS[i]}"></div>`;
   }
+  h += `<span class="coll-val-label">${label}</span>`;
   return h;
+}
+
+function renderCollNewStars() {
+  const c = document.getElementById('coll-new-stars'); if(!c) return;
+  c.innerHTML='';
+  const label = COLL_LABELS[collNewStars] || '';
+  for(let i=1;i<=5;i++){
+    const s=document.createElement('div');
+    s.className='coll-coin'+(i<=collNewStars?' on':'');
+    s.title = COLL_LABELS[i];
+    s.onclick=()=>{ collNewStars=i; renderCollNewStars(); };
+    c.appendChild(s);
+  }
+  const lbl = document.createElement('span');
+  lbl.className='coll-val-label';
+  lbl.textContent = label;
+  c.appendChild(lbl);
 }
 
 function renderCollection() {
@@ -1098,32 +1134,73 @@ function renderCollection() {
     tr.innerHTML=`
       <td class="coll-expand">▶</td>
       <td>
-        <div class="coll-name">${item.name}
+        <div class="coll-name" data-coll-field="name" data-coll-idx="${i}" style="cursor:text;" title="Cliquer pour modifier le nom">${item.name}
           <span style="font-size:0.6rem;margin-left:0.4rem;padding:0.1rem 0.4rem;border-radius:8px;background:rgba(255,255,255,0.04);color:${st.color};border:1px solid ${st.color}44;">${st.label}</span>
         </div>
-        <div style="display:flex;gap:2px;margin-top:0.25rem;">${starsHTML(item.stars||0,i)}</div>
+        <div class="coll-stars">${coinsHTML(item.stars||0,i)}</div>
       </td>
-      <td class="coll-val-real">${item.valReal||'—'}</td>
-      <td><div class="coll-val-azart">${item.valAzart||'—'}</div></td>
+      <td class="coll-val-real" data-coll-field="valReal" data-coll-idx="${i}" title="Cliquer pour modifier" style="cursor:text;">${item.valReal||'—'}</td>
       <td style="text-align:center;"><span class="del-btn" onclick="deleteCollItem(${i});event.stopPropagation();" title="Supprimer">✕</span></td>
     `;
-    tr.onclick=()=>tr.classList.toggle('open');
+    tr.onclick=(e)=>{ if(!e.target.closest('[data-coll-field]') && !e.target.closest('.coll-coin') && !e.target.closest('.del-btn')) tr.classList.toggle('open'); };
     tbody.appendChild(tr);
 
     const descTr = document.createElement('tr');
     descTr.className='coll-desc-row';
     const sel = Object.entries(COLL_STATUT_STYLE).map(([k,v])=>`<option value="${k}" ${item.statut===k?'selected':''}>${v.label}</option>`).join('');
+    const cacheDescHtml = (item.statut === 'planque' && item.cacheDesc)
+      ? `<div style="margin-top:0.3rem;font-size:0.78rem;color:#8ba8c4;font-style:italic;">📍 ${item.cacheDesc}</div>` : '';
+    const perduNoteHtml = (item.statut === 'perdu' && item.perduNote)
+      ? `<div style="margin-top:0.3rem;font-size:0.78rem;color:#c07070;font-style:italic;">🔍 ${item.perduNote}</div>` : '';
+    const donneNoteHtml = (item.statut === 'donné' && item.donneNote)
+      ? `<div style="margin-top:0.3rem;font-size:0.78rem;color:var(--SUB);font-style:italic;">↪ ${item.donneNote}</div>` : '';
+    const descContent = item.desc || '';
     descTr.innerHTML=`
       <td></td>
-      <td colspan="4" class="coll-desc-cell">
-        <div class="coll-desc-text">${item.desc||'<em style="opacity:0.4">Aucune description.</em>'}</div>
+      <td colspan="3" class="coll-desc-cell">
+        <div class="coll-desc-text" data-coll-field="desc" data-coll-idx="${i}" contenteditable="true" spellcheck="false" title="Cliquer pour modifier la description" style="outline:none;cursor:text;min-height:1.6em;transition:background 0.15s;">${descContent || '<em style="opacity:0.4">Cliquer pour ajouter une description…</em>'}</div>
+        ${cacheDescHtml}${perduNoteHtml}${donneNoteHtml}
         <div style="display:flex;gap:0.5rem;margin-top:0.45rem;flex-wrap:wrap;align-items:center;">
-          <select onchange="updateCollStatut(${i},this.value)" style="background:rgba(10,10,15,0.7);border:1px solid rgba(255,255,255,0.08);color:var(--parchment-dark);font-family:'Crimson Text',serif;font-size:0.8rem;padding:0.2rem 0.4rem;border-radius:1px;cursor:pointer;">${sel}</select>
-          <button onclick="editCollItem(${i});event.stopPropagation();" style="font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.22rem 0.5rem;border-radius:1px;cursor:pointer;background:rgba(184,146,42,0.08);border:1px solid rgba(184,146,42,0.25);color:var(--GLD);">✎ Modifier</button>
+          <select class="coll-select" onchange="updateCollStatut(${i},this.value)" style="font-family:'Crimson Text',serif;font-size:0.8rem;padding:0.2rem 0.4rem;border-radius:1px;cursor:pointer;">${sel}</select>
         </div>
       </td>
     `;
     tbody.appendChild(descTr);
+
+    // Édition inline desc (contenteditable)
+    const descEl = descTr.querySelector('[data-coll-field="desc"]');
+    descEl.addEventListener('focus', ()=>{ if(!item.desc) descEl.innerHTML=''; descEl.style.background='rgba(184,146,42,0.08)'; });
+    descEl.addEventListener('blur', ()=>{
+      descEl.style.background='';
+      const val = descEl.innerText.trim();
+      state.collection[i].desc = val;
+      if(!val) descEl.innerHTML='<em style="opacity:0.4">Cliquer pour ajouter une description…</em>';
+      save();
+    });
+  });
+
+  // Édition inline name et valReal
+  tbody.querySelectorAll('[data-coll-field]:not([contenteditable])').forEach(el => {
+    el.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const field = el.dataset.collField;
+      const idx = parseInt(el.dataset.collIdx);
+      const current = state.collection[idx][field] || '';
+      const inp = document.createElement('input');
+      inp.value = current === '—' ? '' : current;
+      inp.style.cssText = `background:rgba(184,146,42,0.1);border:1px solid rgba(184,146,42,0.4);color:var(--parchment);font-family:'Crimson Text',serif;font-size:0.85rem;padding:0.15rem 0.3rem;border-radius:1px;width:${field==='valReal'?'80px':'160px'};outline:none;`;
+      el.replaceWith(inp);
+      inp.focus(); inp.select();
+      function commit() {
+        const val = inp.value.trim() || '—';
+        state.collection[idx][field] = val;
+        el.textContent = val;
+        inp.replaceWith(el);
+        save(); renderCollStats();
+      }
+      inp.addEventListener('blur', commit);
+      inp.addEventListener('keydown', e=>{ if(e.key==='Enter'){e.preventDefault();commit();} if(e.key==='Escape'){inp.value=current;commit();} });
+    });
   });
 
   renderCollStats();
@@ -1133,32 +1210,83 @@ function renderCollStats() {
   const bar = document.getElementById('coll-stats-bar'); if(!bar||!state.collection) return;
   const total=state.collection.length;
   if(!total){ bar.innerHTML='<span style="font-style:italic;opacity:0.4;font-size:0.78rem;">Aucun objet pour l\'instant.</span>'; return; }
-  const posses=state.collection.filter(i=>i.statut==='possédé').length;
-  const planque=state.collection.filter(i=>i.statut==='planque').length;
-  const perdu=state.collection.filter(i=>i.statut==='perdu').length;
+  const posses = state.collection.filter(i=>i.statut==='possédé').length;
+  const sac    = state.collection.filter(i=>i.statut==='sac').length;
+  const planque= state.collection.filter(i=>i.statut==='planque').length;
+  const perdu  = state.collection.filter(i=>i.statut==='perdu').length;
   const avgStars=(state.collection.reduce((a,i)=>a+(i.stars||0),0)/total).toFixed(1);
+
+  // Valeur totale réelle
+  let totalPA = 0;
+  state.collection.forEach(item => {
+    if (!item.valReal || item.valReal === '—') return;
+    const m = item.valReal.match(/(\d+(?:[.,]\d+)?)\s*(PA|PO|PC)?/i);
+    if (m) {
+      let val = parseFloat(m[1].replace(',','.'));
+      const unit = (m[2]||'PA').toUpperCase();
+      if (unit === 'PO') val *= 20;
+      else if (unit === 'PC') val /= 12;
+      totalPA += val;
+    }
+  });
+  const totalStr = totalPA > 0 ? (totalPA % 1 === 0 ? totalPA + ' PA' : totalPA.toFixed(1) + ' PA') : '—';
+  const avgLabel = COLL_LABELS[Math.round(parseFloat(avgStars))] || '';
+  const allInestimable = total > 0 && state.collection.every(i => (i.stars||0) === 5);
+  const fmBonusHtml = allInestimable ? `
+    <div style="margin-top:0.6rem;padding:0.35rem 0.65rem;border:1px solid rgba(103,78,167,0.35);border-radius:2px;background:rgba(103,78,167,0.07);display:inline-flex;align-items:center;gap:0.45rem;">
+      <span style="color:#674EA7;font-size:0.72rem;">✦</span>
+      <span style="font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.1em;color:#8a7abf;">FM +5 permanent</span>
+      <span style="font-size:0.7rem;color:var(--SUB);font-style:italic;">— chaque objet est Inestimable</span>
+    </div>` : '';
+
   bar.innerHTML=`
-    <span style="font-style:italic;opacity:0.55;font-size:0.78rem;">${total} objet${total>1?'s':''} dans la collection</span>
-    <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
-      ${posses?`<span class="coll-stat-pill" style="color:var(--GRN);">${posses} sur soi</span>`:''}
-      ${planque?`<span class="coll-stat-pill" style="color:var(--acc2);">${planque} en planque</span>`:''}
-      ${perdu?`<span class="coll-stat-pill" style="color:#c07070;">${perdu} perdu${perdu>1?'s':''}</span>`:''}
-      <span class="coll-stat-pill">★ moy. ${avgStars}</span>
+    <div style="display:flex;flex-direction:column;gap:0.3rem;">
+      <span style="font-style:italic;opacity:0.55;font-size:0.78rem;">${total} objet${total>1?'s':''} dans la collection</span>
+      <div style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center;">
+        ${posses?`<span class="coll-stat-pill" style="color:var(--GRN);">${posses} sur soi</span>`:''}
+        ${sac?`<span class="coll-stat-pill" style="color:var(--acc2);">${sac} dans le sac</span>`:''}
+        ${planque?`<span class="coll-stat-pill" style="color:#8ba8c4;">${planque} en cache</span>`:''}
+        ${perdu?`<span class="coll-stat-pill" style="color:#c07070;">${perdu} perdu${perdu>1?'s':''}</span>`:''}
+        ${avgLabel?`<span class="coll-stat-pill">${avgLabel} en moyenne</span>`:''}
+      </div>
+      ${fmBonusHtml}
+    </div>
+    <div style="text-align:right;min-width:90px;">
+      <div style="font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--GLD);opacity:0.6;margin-bottom:0.15rem;font-family:'Cinzel',serif;">Total</div>
+      <div style="font-family:'Cinzel',serif;font-size:1rem;color:var(--GLD);font-weight:600;">${totalStr}</div>
     </div>
   `;
 }
 
 function updateCollStars(idx,val) { state.collection[idx].stars=val; renderCollection(); save(); }
-function updateCollStatut(idx,val) { state.collection[idx].statut=val; renderCollection(); save(); }
-
-function editCollItem(idx) {
-  const item=state.collection[idx];
-  const name=prompt('Nom :',item.name); if(name===null) return;
-  const valReal=prompt('Valeur réelle :',item.valReal||'');  if(valReal===null) return;
-  const valAzart=prompt('Valeur pour Azart :',item.valAzart||''); if(valAzart===null) return;
-  const desc=prompt('Description / contexte :',item.desc||''); if(desc===null) return;
-  Object.assign(state.collection[idx],{name,valReal,valAzart,desc});
+function updateCollStatut(idx, val) {
+  state.collection[idx].statut = val;
+  if (val === 'planque') {
+    const cd = prompt('Description de la cache :', state.collection[idx].cacheDesc || '');
+    if (cd !== null) state.collection[idx].cacheDesc = cd.trim();
+  } else if (val === 'perdu') {
+    const pn = prompt('Où / comment — pour le retrouver :', state.collection[idx].perduNote || '');
+    if (pn !== null) state.collection[idx].perduNote = pn.trim();
+  } else if (val === 'donné') {
+    const dn = prompt('À qui — et pourquoi ça le ronge :', state.collection[idx].donneNote || '');
+    if (dn !== null) state.collection[idx].donneNote = dn.trim();
+  }
   renderCollection(); save();
+}
+
+
+
+
+function toggleCacheDescForm(val) {
+  const fields = { 'planque': 'cache-desc-field', 'perdu': 'perdu-note-field', 'donné': 'donne-note-field' };
+  ['cache-desc-field','perdu-note-field','donne-note-field'].forEach(id => {
+    const f = document.getElementById(id);
+    if (f) f.style.display = 'none';
+  });
+  if (fields[val]) {
+    const f = document.getElementById(fields[val]);
+    if (f) f.style.display = 'flex';
+  }
 }
 
 function deleteCollItem(idx) {
@@ -1168,15 +1296,23 @@ function deleteCollItem(idx) {
 function addCollItem() {
   const name=document.getElementById('coll-name').value.trim(); if(!name) return;
   if(!state.collection) state.collection=[];
+  const statut = document.getElementById('coll-statut').value;
+  const cacheDesc  = statut === 'planque' ? (document.getElementById('coll-cache-desc').value.trim()) : '';
+  const perduNote  = statut === 'perdu'   ? (document.getElementById('coll-perdu-note').value.trim()) : '';
+  const donneNote  = statut === 'donné'   ? (document.getElementById('coll-donne-note').value.trim()) : '';
   state.collection.push({
     name,
-    valReal:  document.getElementById('coll-val-real').value.trim()||'—',
-    valAzart: document.getElementById('coll-val-azart').value.trim()||'—',
-    stars:    collNewStars,
-    statut:   document.getElementById('coll-statut').value,
-    desc:     document.getElementById('coll-desc').value.trim(),
+    valReal:    document.getElementById('coll-val-real').value.trim()||'—',
+    valAzart:   COLL_LABELS[collNewStars] || '',
+    stars:      collNewStars,
+    statut,
+    cacheDesc,
+    perduNote,
+    donneNote,
+    desc:       document.getElementById('coll-desc').value.trim(),
   });
-  ['coll-name','coll-val-real','coll-val-azart','coll-desc'].forEach(id=>document.getElementById(id).value='');
+  ['coll-name','coll-val-real','coll-desc','coll-cache-desc','coll-perdu-note','coll-donne-note'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['cache-desc-field','perdu-note-field','donne-note-field'].forEach(id=>{ const f=document.getElementById(id); if(f) f.style.display='none'; });
   collNewStars=3; renderCollNewStars();
   renderCollection(); save(); toggleForm('coll-form');
 }
