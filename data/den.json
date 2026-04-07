@@ -355,11 +355,11 @@
   ],
   "armorPieces": [
     {
-      "name": "Veste de suir",
+      "name": "Veste de cuir",
       "pa": 1,
       "enc": 0,
-      "pen": "−1 Ag",
-      "attr": "Résistante, Lourde"
+      "pen": "",
+      "attr": ""
     }
   ]
 }
