@@ -9,63 +9,82 @@
   :root {
     --ink:#0a0a0f; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
     --GLD:#B8922A; --VIO:#674EA7; --GRN:#5E804F; --SUB:#555566;
-    --acc:#B8922A; --acc-border:rgba(184,146,42,0.2); --acc-border-s:rgba(184,146,42,0.4);
-    --bg-grad:radial-gradient(ellipse at 70% 0%, rgba(184,146,42,0.07) 0%, transparent 55%);
-    --stat-bg:rgba(184,146,42,0.05); --stat-border:rgba(184,146,42,0.1);
-    --btn-bg:rgba(184,146,42,0.12);
+    --acc:#B8702A; --acc2:#d4904a;
+    --acc-border:rgba(184,112,42,0.2); --acc-border-s:rgba(184,112,42,0.4);
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:var(--ink); color:var(--parchment); font-family:'Crimson Text',serif; min-height:100vh; }
-  body::before { content:''; position:fixed; inset:0; background:var(--bg-grad); pointer-events:none; z-index:0; }
+  body::before { content:''; position:fixed; inset:0;
+    background: radial-gradient(ellipse at 30% 0%, rgba(184,112,42,0.09) 0%, transparent 55%),
+                radial-gradient(ellipse at 70% 100%, rgba(184,146,42,0.05) 0%, transparent 50%);
+    pointer-events:none; z-index:0; }
+
   nav { position:sticky; top:0; z-index:100; background:rgba(10,10,15,0.93); backdrop-filter:blur(8px); border-bottom:1px solid var(--acc-border); padding:0.6rem 1.5rem; display:flex; align-items:center; gap:1rem; }
   nav a { color:var(--SUB); text-decoration:none; font-size:0.82rem; font-style:italic; transition:color 0.2s; }
   nav a:hover { color:var(--GLD); }
-  .nav-current { color:var(--acc) !important; font-style:normal; font-family:'Cinzel',serif; font-size:0.82rem; }
+  .nav-current { color:var(--acc2) !important; font-style:normal; font-family:'Cinzel',serif; font-size:0.82rem; }
   .nav-sep { color:var(--SUB); opacity:0.3; }
-  .layout { position:relative; z-index:1; max-width:980px; margin:0 auto; padding:1.5rem 1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-  @media(max-width:680px){ .layout { grid-template-columns:1fr; } }
-  .full { grid-column:1/-1; }
+
+  .layout { position:relative; z-index:1; max-width:1050px; margin:0 auto; padding:1.5rem 1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media(max-width:700px){ .layout { grid-template-columns:1fr; } }
+
   .perso-header { grid-column:1/-1; display:flex; align-items:flex-end; gap:1.5rem; padding-bottom:1.25rem; border-bottom:1px solid var(--acc-border); flex-wrap:wrap; }
-  .perso-avatar { width:58px; height:58px; border-radius:2px; background:linear-gradient(135deg,rgba(184,146,42,0.15),rgba(85,85,102,0.25)); border:1px solid var(--acc-border-s); display:flex; align-items:center; justify-content:center; font-size:1.7rem; flex-shrink:0; }
+  .perso-avatar { width:58px; height:58px; border-radius:2px; background:linear-gradient(135deg,rgba(184,112,42,0.15),rgba(85,85,102,0.25)); border:1px solid var(--acc-border-s); display:flex; align-items:center; justify-content:center; font-size:1.7rem; flex-shrink:0; }
   .perso-info h1 { font-family:'Cinzel',serif; font-size:2rem; font-weight:700; line-height:1; letter-spacing:0.05em; }
-  .perso-info .sub { font-style:italic; color:var(--acc); font-size:0.95rem; margin-top:0.2rem; }
+  .perso-info .sub { font-style:italic; color:var(--acc2); font-size:0.95rem; margin-top:0.2rem; }
   .perso-info .player { color:var(--SUB); font-size:0.78rem; margin-top:0.15rem; }
   .perso-meta { margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:0.3rem; font-size:0.8rem; color:var(--SUB); font-style:italic; }
-  .perso-meta span { color:var(--parchment-dark); font-style:normal; }
+
   .card { background:rgba(10,10,15,0.65); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:1.1rem; }
   .card.acc { border-color:var(--acc-border); }
   .card-title { font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.9rem; display:flex; align-items:center; gap:0.5rem; }
   .card-title::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.05); }
-  .card-title.acc { color:var(--acc); }
+  .card-title.acc { color:var(--acc2); }
   .card-title.gld { color:var(--GLD); }
   .card-title.vio { color:#674EA7; }
   .card-title.grn { color:var(--GRN); }
   .card-title.red { color:#c0392b; }
+  .full { grid-column:1/-1; }
+
+  /* ── EDITABLE ── */
+  .editable-num {
+    background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08);
+    color:var(--GLD); font-family:'Cinzel',serif; font-size:0.95rem; font-weight:600;
+    text-align:center; width:44px; padding:0.1rem 0; transition:border-color 0.15s;
+  }
+  .editable-num:focus { outline:none; border-bottom-color:var(--GLD); }
+  .form-input { background:rgba(184,112,42,0.07); border:1px solid rgba(184,112,42,0.2); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.3rem 0.5rem; border-radius:1px; width:100%; }
+  .form-input:focus { outline:none; border-color:var(--acc2); }
+  .form-textarea { background:rgba(184,112,42,0.07); border:1px solid rgba(184,112,42,0.2); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.3rem 0.5rem; border-radius:1px; width:100%; resize:vertical; min-height:60px; line-height:1.45; }
+  .form-textarea:focus { outline:none; border-color:var(--acc2); }
+
+  /* ── STATS ── */
   .stats-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:0.45rem; }
-  @media(max-width:400px){ .stats-grid { grid-template-columns:repeat(3,1fr); } }
-  .stat-box { background:var(--stat-bg); border:1px solid var(--stat-border); border-radius:2px; padding:0.45rem 0.3rem; text-align:center; }
-  .stat-label { font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); display:block; margin-bottom:0.15rem; }
-  .stat-val { font-family:'Cinzel',serif; font-size:1.25rem; font-weight:600; line-height:1; display:block; }
-  .stat-bonus { font-size:0.62rem; color:var(--acc); opacity:0.7; display:block; margin-top:0.1rem; }
+  @media(max-width:500px){ .stats-grid { grid-template-columns:repeat(3,1fr); } }
+  .stat-box { background:rgba(184,112,42,0.05); border:1px solid rgba(184,112,42,0.12); border-radius:2px; padding:0.45rem 0.3rem; text-align:center; }
+  .stat-label { font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); display:block; margin-bottom:0.2rem; }
+  .stat-total { font-family:'Cinzel',serif; font-size:1.3rem; font-weight:700; color:var(--acc2); display:block; margin-top:0.1rem; }
+  .stat-bonus { font-size:0.6rem; color:var(--SUB); display:block; margin-top:0.05rem; }
+  .stat-edit-row { display:flex; gap:0.25rem; justify-content:center; align-items:center; margin-top:0.3rem; }
+  .stat-edit-row .editable-num { font-size:0.78rem; width:34px; color:var(--parchment-dark); border-bottom-color:rgba(255,255,255,0.06); }
+  .stat-edit-row .plus { color:var(--acc2); font-size:0.65rem; }
+
+  /* ── RESSOURCES ── */
   .res-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.75rem; }
   .res-box { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:0.6rem; text-align:center; }
   .res-label { font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.3rem; display:block; }
   .res-val { font-family:'Cinzel',serif; font-size:1.5rem; line-height:1; display:block; }
   .res-sub { font-size:0.7rem; color:var(--SUB); margin-top:0.1rem; display:block; }
   .wounds-ctrl { display:flex; align-items:center; gap:0.5rem; justify-content:center; margin-top:0.5rem; }
-  .btn-sm { width:30px; height:30px; border-radius:2px; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
-  .btn-w { background:rgba(139,26,26,0.2); border:1px solid rgba(139,26,26,0.4); color:#e08080; }
-  .btn-w:hover { background:rgba(139,26,26,0.35); }
-  .btn-h { background:rgba(94,128,79,0.15); border:1px solid rgba(94,128,79,0.35); color:var(--GRN); }
-  .btn-h:hover { background:rgba(94,128,79,0.3); }
+  .btn-small { width:30px; height:30px; border-radius:2px; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+  .btn-wound { background:rgba(139,26,26,0.2); border:1px solid rgba(139,26,26,0.4); color:#e08080; }
+  .btn-wound:hover { background:rgba(139,26,26,0.35); }
+  .btn-heal { background:rgba(94,128,79,0.15); border:1px solid rgba(94,128,79,0.35); color:var(--GRN); }
+  .btn-heal:hover { background:rgba(94,128,79,0.3); }
   .pip { width:24px; height:24px; border-radius:50%; border:1.5px solid rgba(184,146,42,0.5); cursor:pointer; transition:all 0.15s; background:transparent; }
   .pip.on { background:var(--GLD); box-shadow:0 0 5px rgba(184,146,42,0.4); border-color:var(--GLD); }
-  .cet-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; }
-  .cet-box { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:0.5rem 0.6rem; }
-  .cet-label { font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.35rem; display:block; font-family:'Cinzel',serif; }
-  .cet-input { width:100%; background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.85rem; padding:0.2rem 0; resize:none; min-height:48px; line-height:1.4; }
-  .cet-input:focus { outline:none; border-bottom-color:var(--acc); }
-  .cet-input::placeholder { color:rgba(85,85,102,0.5); font-style:italic; }
+
+  /* ── MONNAIE ── */
   .money-row { display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap; margin-top:0.25rem; }
   .money-item { display:flex; flex-direction:column; align-items:center; gap:0.1rem; }
   .money-val { font-family:'Cinzel',serif; font-size:1.4rem; color:var(--GLD); }
@@ -73,54 +92,128 @@
   .money-btns { display:flex; gap:0.2rem; margin-top:0.2rem; }
   .money-btn { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); color:var(--SUB); cursor:pointer; font-size:0.7rem; width:20px; height:20px; border-radius:1px; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
   .money-btn:hover { color:var(--GLD); border-color:rgba(184,146,42,0.3); }
+
+  /* ── COMPÉTENCES ── */
   .skill-list { list-style:none; }
-  .skill-list li { display:flex; justify-content:space-between; align-items:center; padding:0.3rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.87rem; }
+  .skill-list li { display:flex; align-items:center; padding:0.28rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.86rem; gap:0.4rem; }
   .skill-list li:last-child { border-bottom:none; }
-  .skill-name { color:var(--parchment-dark); }
-  .skill-val { font-family:'Cinzel',serif; color:var(--GLD); font-size:0.9rem; font-weight:600; min-width:28px; text-align:right; }
+  .skill-name { color:var(--parchment-dark); flex:1; }
+  .skill-aug .editable-num { width:38px; font-size:0.82rem; color:var(--acc2); border-bottom-color:rgba(184,112,42,0.12); }
+  .skill-total { font-family:'Cinzel',serif; color:var(--GLD); font-size:0.9rem; font-weight:600; min-width:28px; text-align:right; }
+  .del-btn { color:rgba(139,26,26,0.4); cursor:pointer; font-size:0.72rem; flex-shrink:0; transition:color 0.15s; }
+  .del-btn:hover { color:#e08080; }
+
+  /* ── TALENTS ── */
   .talent-list { list-style:none; }
-  .talent-list li { padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.87rem; }
+  .talent-list li { padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.87rem; display:flex; align-items:flex-start; gap:0.5rem; }
   .talent-list li:last-child { border-bottom:none; }
-  .talent-name { color:var(--acc); font-weight:600; }
+  .talent-content { flex:1; }
+  .talent-name { color:var(--acc2); font-weight:600; }
   .talent-desc { color:var(--SUB); font-size:0.8rem; font-style:italic; display:block; margin-top:0.1rem; }
+
+  /* ── ARMURE ── */
   .armor-table { width:100%; border-collapse:collapse; font-size:0.82rem; margin-bottom:0.75rem; }
   .armor-table th { text-align:left; color:var(--SUB); font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.2rem 0.4rem 0.4rem; font-weight:400; border-bottom:1px solid rgba(255,255,255,0.05); }
-  .armor-table td { padding:0.3rem 0.4rem; border-bottom:1px solid rgba(255,255,255,0.03); color:var(--parchment-dark); }
-  .armor-pa { font-family:'Cinzel',serif; color:var(--GLD); font-weight:600; }
-  .weapon-item { padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .armor-table td { padding:0.25rem 0.4rem; border-bottom:1px solid rgba(255,255,255,0.03); color:var(--parchment-dark); vertical-align:middle; }
+  .armor-pa-input { font-family:'Cinzel',serif; color:var(--GLD); font-weight:600; text-align:center; background:transparent; border:none; border-bottom:1px solid rgba(184,146,42,0.15); width:36px; font-size:0.9rem; padding:0.05rem 0; }
+  .armor-pa-input:focus { outline:none; border-bottom-color:var(--GLD); }
+
+  /* ── ARMES ── */
+  .weapon-item { padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.04); display:flex; align-items:flex-start; gap:0.5rem; }
   .weapon-item:last-child { border-bottom:none; }
+  .weapon-content { flex:1; }
   .weapon-name { color:var(--parchment); font-size:0.9rem; font-weight:600; }
   .weapon-stats { display:flex; gap:0.75rem; margin-top:0.2rem; flex-wrap:wrap; }
   .wstat { font-size:0.72rem; }
   .wstat-l { color:var(--SUB); }
   .wstat-v { color:var(--GLD); font-family:'Cinzel',serif; }
-  .inv-item { display:flex; justify-content:space-between; align-items:center; padding:0.3rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.85rem; gap:0.5rem; }
+
+  /* ── INVENTAIRE ── */
+  .inv-item { display:flex; align-items:center; padding:0.28rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.85rem; gap:0.4rem; }
   .inv-item:last-child { border-bottom:none; }
   .inv-name { color:var(--parchment-dark); flex:1; }
   .inv-detail { font-size:0.72rem; color:var(--SUB); font-style:italic; white-space:nowrap; }
+
+  /* ── FORMULAIRES ── */
+  .form-panel { display:none; background:rgba(184,112,42,0.06); border:1px solid rgba(184,112,42,0.2); border-radius:2px; padding:0.65rem; margin-top:0.5rem; flex-direction:column; gap:0.4rem; }
+  .form-panel.visible { display:flex; }
+  .form-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:0.4rem; }
+  .btn-add { font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.35rem 0.75rem; border-radius:2px; cursor:pointer; transition:all 0.15s; display:inline-flex; align-items:center; gap:0.3rem; }
+  .btn-acc { background:rgba(184,112,42,0.1); border:1px solid rgba(184,112,42,0.35); color:var(--acc2); }
+  .btn-acc:hover { background:rgba(184,112,42,0.22); }
+  .btn-gld { background:rgba(184,146,42,0.08); border:1px solid rgba(184,146,42,0.3); color:var(--GLD); }
+  .btn-gld:hover { background:rgba(184,146,42,0.18); }
+  .btn-cancel { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); color:var(--SUB); font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.3rem 0.6rem; border-radius:2px; cursor:pointer; }
+
+  /* ── XP ── */
   .xp-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; text-align:center; margin-bottom:0.9rem; }
   .xp-box { background:rgba(103,78,167,0.08); border:1px solid rgba(103,78,167,0.15); border-radius:2px; padding:0.5rem; }
   .xp-label { font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:#674EA7; display:block; margin-bottom:0.2rem; opacity:0.8; }
-  .xp-val { font-family:'Cinzel',serif; font-size:1.2rem; }
+  .xp-val-input { font-family:'Cinzel',serif; font-size:1.2rem; color:var(--parchment); background:transparent; border:none; border-bottom:1px solid rgba(103,78,167,0.2); text-align:center; width:70px; }
+  .xp-val-input:focus { outline:none; border-bottom-color:#674EA7; }
   .amb-label { font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:#674EA7; margin-bottom:0.2rem; display:block; opacity:0.9; }
   .trait-block { font-size:0.86rem; line-height:1.55; color:var(--parchment-dark); margin-bottom:0.5rem; }
-  .histo { font-size:0.87rem; line-height:1.7; color:var(--parchment-dark); }
-  .histo p { margin-bottom:0.65rem; }
-  .histo p:last-child { margin-bottom:0; }
-  .citation { font-style:italic; color:var(--SUB); font-size:0.9rem; border-left:2px solid var(--acc-border-s); padding-left:0.75rem; margin-top:0.6rem; }
+  .trait-line { font-size:0.85rem; line-height:1.6; color:var(--parchment-dark); padding:0.1rem 0; }
+  .trait-line.plus { color:var(--GRN); }
+  .trait-line.minus { color:#c07060; }
+
+  /* ── CORRUPTION ── */
+  .cet-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; }
+  .cet-box { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:0.5rem 0.6rem; }
+  .cet-label { font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.35rem; display:block; font-family:'Cinzel',serif; }
+  .cet-input { width:100%; background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.85rem; padding:0.2rem 0; resize:none; min-height:48px; line-height:1.4; }
+  .cet-input:focus { outline:none; border-bottom-color:var(--acc2); }
+  .cet-input::placeholder { color:rgba(85,85,102,0.5); font-style:italic; }
+
+  /* ── NOTES ── */
   .notes-area { width:100%; background:rgba(10,10,15,0.5); border:1px solid rgba(255,255,255,0.07); border-radius:2px; color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.65rem; resize:vertical; min-height:70px; line-height:1.5; }
   .notes-area:focus { outline:none; border-color:var(--acc-border-s); }
-  .btn-save { background:var(--btn-bg); border:1px solid var(--acc-border-s); color:var(--acc); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.35rem 0.75rem; border-radius:2px; cursor:pointer; margin-top:0.5rem; transition:background 0.15s; }
+  .btn-save { background:rgba(184,112,42,0.12); border:1px solid var(--acc-border-s); color:var(--acc2); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.35rem 0.75rem; border-radius:2px; cursor:pointer; margin-top:0.5rem; transition:background 0.15s; }
+  .btn-save:hover { background:rgba(184,112,42,0.22); }
   .save-confirm { font-size:0.78rem; color:var(--GRN); margin-left:0.75rem; opacity:0; transition:opacity 0.5s; }
-  .italic-note { font-style:italic; color:var(--SUB); font-size:0.8rem; line-height:1.45; margin-bottom:0.6rem; }
-  .trophee-item { display:flex; align-items:center; gap:0.5rem; padding:0.3rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.86rem; }
-  .trophee-name { color:var(--parchment-dark); flex:1; font-style:italic; }
-  .trophee-del { background:none; border:none; color:rgba(139,26,26,0.4); cursor:pointer; font-size:0.7rem; transition:color 0.15s; }
-  .trophee-del:hover { color:#e08080; }
-  .add-row { display:flex; gap:0.4rem; margin-top:0.5rem; }
-  .add-row input { background:rgba(10,10,15,0.6); border:1px solid rgba(255,255,255,0.07); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.86rem; padding:0.3rem 0.5rem; border-radius:2px; flex:1; }
-  .add-row input:focus { outline:none; border-color:rgba(184,146,42,0.3); }
-  .add-btn { background:rgba(184,146,42,0.12); border:1px solid rgba(184,146,42,0.28); color:var(--GLD); font-family:'Cinzel',serif; font-size:0.68rem; padding:0.3rem 0.55rem; border-radius:2px; cursor:pointer; white-space:nowrap; }
+
+  .histo { font-size:0.87rem; line-height:1.7; color:var(--parchment-dark); }
+  .histo p { margin-bottom:0.65rem; }
+  .citation { font-style:italic; color:var(--SUB); font-size:0.9rem; border-left:2px solid var(--acc-border-s); padding-left:0.75rem; margin-top:0.6rem; }
+
+  /* ── COLLECTION SECRÈTE ── */
+  .collection-card { background:rgba(10,10,15,0.75); border:1px solid rgba(184,146,42,0.22); border-radius:2px; padding:1.1rem; position:relative; overflow:hidden; }
+  .collection-card::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%, rgba(184,146,42,0.06) 0%, transparent 65%); pointer-events:none; }
+  .collection-intro { font-size:0.82rem; color:var(--SUB); font-style:italic; line-height:1.5; margin-bottom:0.9rem; padding:0.5rem 0.75rem; border-left:2px solid rgba(184,146,42,0.3); }
+  .collection-intro strong { color:var(--acc2); font-style:normal; }
+
+  .coll-table { width:100%; border-collapse:collapse; font-size:0.83rem; }
+  .coll-table th { text-align:left; font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--GLD); opacity:0.75; padding:0.3rem 0.5rem 0.5rem; border-bottom:1px solid rgba(184,146,42,0.15); font-weight:400; }
+  .coll-table th.right { text-align:right; }
+  .coll-row { border-bottom:1px solid rgba(255,255,255,0.03); cursor:pointer; transition:background 0.15s; }
+  .coll-row:last-child { border-bottom:none; }
+  .coll-row:hover { background:rgba(184,146,42,0.04); }
+  .coll-row td { padding:0.4rem 0.5rem; vertical-align:top; }
+  .coll-name { color:var(--parchment); font-weight:600; font-size:0.88rem; }
+  .coll-name-sub { color:var(--SUB); font-size:0.72rem; font-style:italic; display:block; margin-top:0.1rem; }
+  .coll-val-real { font-family:'Cinzel',serif; color:var(--SUB); font-size:0.82rem; text-align:right; white-space:nowrap; }
+  .coll-val-azart { font-family:'Cinzel',serif; color:var(--GLD); font-size:0.88rem; font-weight:600; text-align:right; white-space:nowrap; }
+  .coll-expand { color:var(--SUB); font-size:0.65rem; width:18px; text-align:center; transition:transform 0.15s; user-select:none; }
+  .coll-row.open .coll-expand { transform:rotate(90deg); color:var(--acc2); }
+  .coll-desc-row { display:none; }
+  .coll-row.open + .coll-desc-row { display:table-row; }
+  .coll-desc-cell { padding:0 0.5rem 0.65rem 1.5rem !important; }
+  .coll-desc-text { font-size:0.82rem; color:var(--parchment-dark); line-height:1.6; font-style:italic; background:rgba(184,146,42,0.04); border-left:2px solid rgba(184,146,42,0.2); padding:0.4rem 0.6rem; border-radius:1px; }
+
+  /* Étoiles de valeur subjective */
+  .coll-stars { display:flex; gap:2px; justify-content:flex-end; margin-top:0.2rem; }
+  .coll-star { width:8px; height:8px; border-radius:50%; background:rgba(184,146,42,0.15); border:1px solid rgba(184,146,42,0.3); cursor:pointer; transition:all 0.15s; }
+  .coll-star.on { background:var(--GLD); border-color:var(--GLD); box-shadow:0 0 4px rgba(184,146,42,0.5); }
+
+  /* Formulaire ajout */
+  .coll-form { display:none; background:rgba(184,146,42,0.05); border:1px solid rgba(184,146,42,0.2); border-radius:2px; padding:0.75rem; margin-top:0.65rem; flex-direction:column; gap:0.45rem; }
+  .coll-form.visible { display:flex; }
+  .coll-form-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.4rem; }
+  @media(max-width:600px){ .coll-form-grid { grid-template-columns:1fr; } }
+  .coll-form-label { font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--GLD); opacity:0.8; display:block; margin-bottom:0.15rem; }
+  .coll-form-field { display:flex; flex-direction:column; }
+  .coll-stats-bar { display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid rgba(184,146,42,0.1); font-size:0.75rem; color:var(--SUB); flex-wrap:wrap; gap:0.4rem; }
+  .coll-stat-pill { background:rgba(184,146,42,0.08); border:1px solid rgba(184,146,42,0.18); border-radius:10px; padding:0.15rem 0.5rem; font-family:'Cinzel',serif; font-size:0.65rem; color:var(--GLD); }
 </style>
 </head>
 <body>
@@ -132,9 +225,9 @@
 
 <div class="layout">
 
-  <!-- 1. HEADER -->
+  <!-- HEADER -->
   <div class="perso-header">
-    <div class="perso-avatar">🗝️</div>
+    <div class="perso-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44" width="32" height="32" fill="none"><path d="M8 40 C8 28, 14 16, 22 10 C30 4, 36 8, 36 8" stroke="#B8702A" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.9"/><path d="M8 40 C14 32, 20 20, 22 10" stroke="#d4904a" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.6"/><path d="M36 8 C38 16, 36 28, 30 36 C26 40, 18 42, 12 40" stroke="#8B4e1a" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.7"/><circle cx="22" cy="22" r="3" fill="#B8702A" opacity="0.4"/></svg></div>
     <div class="perso-info">
       <h1>Azart</h1>
       <div class="sub">Voleur · Roublard · Échelon 2</div>
@@ -142,45 +235,36 @@
     </div>
     <div class="perso-meta">
       <div>Taille 1m70 · Poids 65 kg</div>
-      <div>Mi-longs droite, rasés gauche · Châtains, yeux verts, presque imberbe</div>
+      <div>Châtains mi-longs droite, rasés gauche, yeux verts</div>
     </div>
   </div>
 
-  <!-- 2. CARACTÉRISTIQUES -->
+
+  <!-- CARACTÉRISTIQUES -->
   <div class="card acc full">
     <div class="card-title acc">Caractéristiques</div>
-    <div class="stats-grid">
-      <div class="stat-box"><span class="stat-label">CC</span><span class="stat-val">40</span><span class="stat-bonus">B:4</span></div>
-<div class="stat-box"><span class="stat-label">CT</span><span class="stat-val">30</span><span class="stat-bonus">B:3</span></div>
-<div class="stat-box"><span class="stat-label">F</span><span class="stat-val">32</span><span class="stat-bonus">B:3</span></div>
-<div class="stat-box"><span class="stat-label">End</span><span class="stat-val">30</span><span class="stat-bonus">B:3</span></div>
-<div class="stat-box"><span class="stat-label">Ini</span><span class="stat-val">33</span><span class="stat-bonus">B:3</span></div>
-<div class="stat-box"><span class="stat-label">Ag</span><span class="stat-val">45</span><span class="stat-bonus">B:4</span></div>
-<div class="stat-box"><span class="stat-label">Dex</span><span class="stat-val">44</span><span class="stat-bonus">B:4</span></div>
-<div class="stat-box"><span class="stat-label">Int</span><span class="stat-val">32</span><span class="stat-bonus">B:3</span></div>
-<div class="stat-box"><span class="stat-label">FM</span><span class="stat-val">31</span><span class="stat-bonus">B:3</span></div>
-<div class="stat-box"><span class="stat-label">Soc</span><span class="stat-val">38</span><span class="stat-bonus">B:3</span></div>
-    </div>
+    <div class="stats-grid" id="stats-grid"></div>
+    <div style="font-size:0.7rem;color:var(--SUB);margin-top:0.6rem;font-style:italic;">Init = valeur de départ · Avancé = points dépensés · Total = calculé automatiquement</div>
   </div>
 
-  <!-- 3. ÉTAT & RESSOURCES -->
-  
+
+  <!-- ÉTAT & RESSOURCES -->
   <div class="card acc">
-    <div class="card-title red">État &amp; Ressources</div>
+    <div class="card-title red">État & Ressources</div>
     <div class="res-grid">
       <div class="res-box">
         <span class="res-label">Blessures</span>
         <span class="res-val" id="w-cur">12</span>
-        <span class="res-sub">/ 12 max</span>
+        <span class="res-sub">/ <span id="w-max">12</span> max</span>
         <div class="wounds-ctrl">
-          <button class="btn-sm btn-w" onclick="chWound(-1)">−</button>
-          <button class="btn-sm btn-h" onclick="chWound(1)">+</button>
+          <button class="btn-small btn-wound" onclick="chWound(-1)">−</button>
+          <button class="btn-small btn-heal" onclick="chWound(1)">+</button>
         </div>
       </div>
       <div class="res-box"><span class="res-label">Mouvement</span><span class="res-val">4</span><span class="res-sub">cases / tour</span></div>
     </div>
     <div style="margin-bottom:0.6rem;">
-      <div class="card-title gld" style="margin-bottom:0.4rem;font-size:0.62rem;">Destin &amp; Chance</div>
+      <div class="card-title gld" style="margin-bottom:0.4rem;font-size:0.62rem;">Destin & Chance</div>
       <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
         <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
           <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Destin</span>
@@ -196,7 +280,7 @@
       </div>
     </div>
     <div style="margin-bottom:0.75rem;">
-      <div class="card-title vio" style="margin-bottom:0.4rem;font-size:0.62rem;">Résilience &amp; Détermination</div>
+      <div class="card-title vio" style="margin-bottom:0.4rem;font-size:0.62rem;">Résilience & Détermination</div>
       <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
         <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
           <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Résilience</span>
@@ -220,8 +304,8 @@
     </div>
   </div>
 
-  <!-- 4. CORRUPTION · MUTATIONS · ÉTATS -->
-  
+
+  <!-- CORRUPTION -->
   <div class="card">
     <div class="card-title red">Corruption · Mutations · États</div>
     <div class="cet-grid">
@@ -231,244 +315,727 @@
     </div>
   </div>
 
-  <!-- 5. COMPÉTENCES DE BASE -->
+
+  <!-- COMPÉTENCES DE BASE -->
   <div class="card">
     <div class="card-title gld">Compétences de base</div>
-    <ul class="skill-list">
-      <li><span class="skill-name">Athlétisme</span><span class="skill-val">50</span></li>
-      <li><span class="skill-name">Calme</span><span class="skill-val">39</span></li>
-      <li><span class="skill-name">Charme</span><span class="skill-val">43</span></li>
-      <li><span class="skill-name">Conduite</span><span class="skill-val">45</span></li>
-      <li><span class="skill-name">Corps à Corps (Base)</span><span class="skill-val">43</span></li>
-      <li><span class="skill-name">Discrétion</span><span class="skill-val">45</span></li>
-      <li><span class="skill-name">Escalade</span><span class="skill-val">37</span></li>
-      <li><span class="skill-name">Esquive</span><span class="skill-val">50</span></li>
-      <li><span class="skill-name">Intuition</span><span class="skill-val">38</span></li>
-      <li><span class="skill-name">Manipulation</span><span class="skill-val">38</span></li>
-      <li><span class="skill-name">Monter</span><span class="skill-val">45</span></li>
-      <li><span class="skill-name">Perception</span><span class="skill-val">38</span></li>
-      <li><span class="skill-name">Ragot</span><span class="skill-val">43</span></li>
-      <li><span class="skill-name">Résistance</span><span class="skill-val">35</span></li>
-    </ul>
+    <ul class="skill-list" id="skills-base-list"></ul>
   </div>
 
-  <!-- 6. COMPÉTENCES AVANCÉES -->
+
+  <!-- COMPÉTENCES AVANCÉES -->
   <div class="card">
     <div class="card-title vio">Compétences avancées</div>
-    <ul class="skill-list">
-      <li><span class="skill-name">Évaluation <span style="color:var(--SUB);font-size:0.72rem;">(Int)</span></span><span class="skill-val">37</span></li>
-      <li><span class="skill-name">Savoir (Reikland) <span style="color:var(--SUB);font-size:0.72rem;">(Int)</span></span><span class="skill-val">32</span></li>
-      <li><span class="skill-name">Discrétion (Urbaine) <span style="color:var(--SUB);font-size:0.72rem;">(Ag)</span></span><span class="skill-val">51</span></li>
-      <li><span class="skill-name">Crochetage <span style="color:#c0502a;font-size:0.72rem;">⚠ en cours</span></span><span class="skill-val" style="color:#c0502a;">34</span></li>
-      <li><span class="skill-name">Escamotage <span style="color:#c0502a;font-size:0.72rem;">⚠ en cours</span></span><span class="skill-val" style="color:#c0502a;">34</span></li>
-    </ul>
+    <ul class="skill-list" id="skills-adv-list"></ul>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-acc" onclick="toggleForm('adv-form')">+ Ajouter</button>
+      <div class="form-panel" id="adv-form">
+        <input class="form-input" id="adv-name" placeholder="Nom de la compétence" />
+        <input class="form-input" id="adv-car" placeholder="Car. (Dex, Ag…)" />
+        <input class="form-input" id="adv-aug" placeholder="Augm." type="number" value="0" style="width:80px;" />
+        <div style="display:flex;gap:0.4rem;">
+          <button class="btn-add btn-acc" onclick="addAdvSkill()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleForm('adv-form')">Annuler</button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- 7. TALENTS & TRAITS RACIAUX -->
+
+  <!-- TALENTS -->
   <div class="card">
-    <div class="card-title" style="color:#B8922A;">Talents &amp; Capacités</div>
-    <ul class="talent-list">
-      <li><span class="talent-name">Chat de gouttière</span><span class="talent-desc">Possible inversion des dés en Discrétion Urbaine.</span></li>
-      <li><span class="talent-name">Criminel</span><span class="talent-desc">Statut de carrière pour revenus et impact social.</span></li>
-      <li><span class="talent-name">Frappe assommante</span><span class="talent-desc">Pas de pénalité à localiser la tête avec arme assommante et improvisée.</span></li>
-      <li><span class="talent-name">Fuite</span><span class="talent-desc">+1 M en fuite.</span></li>
-    </ul>
+    <div class="card-title acc">Talents & Capacités</div>
+    <ul class="talent-list" id="talent-list"></ul>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-acc" onclick="toggleForm('talent-form')">+ Ajouter</button>
+      <div class="form-panel" id="talent-form">
+        <input class="form-input" id="talent-name-new" placeholder="Nom du talent" />
+        <input class="form-input" id="talent-desc-new" placeholder="Description" />
+        <div style="display:flex;gap:0.4rem;">
+          <button class="btn-add btn-acc" onclick="addTalent()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleForm('talent-form')">Annuler</button>
+        </div>
+      </div>
+    </div>
     <div style="margin-top:0.75rem;padding-top:0.6rem;border-top:1px solid rgba(255,255,255,0.05);">
-      <div class="card-title" style="color:var(--SUB);margin-bottom:0.5rem;font-size:0.62rem;">Traits raciaux &amp; capacités spéciales</div>
+      <div class="card-title" style="color:var(--SUB);margin-bottom:0.5rem;font-size:0.62rem;">Traits raciaux & capacités spéciales</div>
       <ul style="list-style:none;font-size:0.83rem;line-height:1.8;color:var(--parchment-dark);">
         <li>· <strong style="color:var(--parchment);">Affable</strong> : +5 Soc</li>
         <li>· <strong style="color:var(--parchment);">Doigts de fée</strong> : +5 Dex</li>
         <li>· <strong style="color:var(--parchment);">Tireur de Précision</strong> : +5 CT</li>
         <li>· <strong style="color:var(--parchment);">Réflexes foudroyants</strong> : +5 Ag</li>
-        <li>· <strong style="color:var(--parchment);">Imitation</strong> : Test I/j, imite accents et façon de parler</li>
+        <li>· <strong style="color:var(--parchment);">Imitation</strong> : Test I/j, permet d'imiter parfaitement les accents, façon de parler, etc.</li>
       </ul>
     </div>
   </div>
 
-  <!-- 8. ARMURE & ARMES -->
+
+  <!-- ARMURE -->
   <div class="card">
-    <div class="card-title gld">Armure &amp; Armes</div>
-    <table class="armor-table"><thead><tr><th>Localisation</th><th>PA</th><th>Loc.</th></tr></thead><tbody>
-      <tr><td>Tête</td><td class="armor-pa">0</td><td>01-09</td></tr>
-      <tr><td>Bras droit</td><td class="armor-pa">1</td><td>10-24</td></tr>
-      <tr><td>Bras gauche</td><td class="armor-pa">1</td><td>25-44</td></tr>
-      <tr><td>Corps</td><td class="armor-pa">2</td><td>45-79</td></tr>
-      <tr><td>Jambe dr.</td><td class="armor-pa">0</td><td>80-89</td></tr>
-      <tr><td>Jambe gau.</td><td class="armor-pa">0</td><td>90-00</td></tr>
-    </tbody></table>
-    <div class="inv-item"><span class="inv-name">Manchons de cuir</span><span class="inv-detail">PA 1 · −1 Ag · Résistante, Lourde</span></div>
-    <div class="inv-item"><span class="inv-name">Plastron de cuir bouilli</span><span class="inv-detail">PA 2 · −1 Ag · Points faibles</span></div>
+    <div class="card-title gld">Armure par localisation</div>
+    <table class="armor-table">
+      <thead><tr><th>Localisation</th><th>PA</th><th>Loc.</th></tr></thead>
+      <tbody id="armor-body"></tbody>
+    </table>
     <div class="card-title gld" style="margin-top:0.75rem;margin-bottom:0.5rem;">Armes</div>
-    <div class="weapon-item">
-      <div class="weapon-name">Épée de Maître Artisan</div>
-      <div class="weapon-stats">
-        <span class="wstat"><span class="wstat-l">All. </span><span class="wstat-v">Moyenne</span></span>
-        <span class="wstat"><span class="wstat-l">Dég. </span><span class="wstat-v">BF+4</span></span>
-        <span class="wstat"><span class="wstat-l">Attr. </span><span class="wstat-v">+2 CC, Solide, Fiable</span></span>
-      </div>
-    </div>
-    <div class="weapon-item">
-      <div class="weapon-name">Dague (chef d'œuvre)</div>
-      <div class="weapon-stats">
-        <span class="wstat"><span class="wstat-l">All. </span><span class="wstat-v">Très courte</span></span>
-        <span class="wstat"><span class="wstat-l">Dég. </span><span class="wstat-v">BF+2</span></span>
-        <span class="wstat"><span class="wstat-l">Attr. </span><span class="wstat-v">+1 Dégât, Solide, Fiable</span></span>
-      </div>
-    </div>
-    <div class="weapon-item">
-      <div class="weapon-name">Couteaux de lancer (chef d'œuvre)</div>
-      <div class="weapon-stats">
-        <span class="wstat"><span class="wstat-l">All. </span><span class="wstat-v">BFx2</span></span>
-        <span class="wstat"><span class="wstat-l">Dég. </span><span class="wstat-v">BF+2</span></span>
-        <span class="wstat"><span class="wstat-l">Attr. </span><span class="wstat-v">+5 CT, +10 CT Surprise, Solide, Fiable</span></span>
+    <div id="weapons-list"></div>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-gld" onclick="toggleForm('weapon-form')">+ Ajouter une arme</button>
+      <div class="form-panel" id="weapon-form">
+        <div class="form-grid2">
+          <input class="form-input" id="wep-name" placeholder="Nom" />
+          <input class="form-input" id="wep-all" placeholder="Allonge" />
+          <input class="form-input" id="wep-deg" placeholder="Dégâts (BF+4…)" />
+          <input class="form-input" id="wep-enc" placeholder="ENC" />
+          <input class="form-input" id="wep-attr" placeholder="Attributs" style="grid-column:1/-1;" />
+        </div>
+        <div style="display:flex;gap:0.4rem;margin-top:0.3rem;">
+          <button class="btn-add btn-gld" onclick="addWeapon()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleForm('weapon-form')">Annuler</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- 9. INVENTAIRE -->
+
+  <!-- INVENTAIRE -->
   <div class="card">
     <div class="card-title grn">Inventaire</div>
-    <div class="inv-item"><span class="inv-name">Sac à dos</span><span class="inv-detail">Porté</span></div>
-    <div class="inv-item"><span class="inv-name">Pied de biche</span><span class="inv-detail">Sac à dos</span></div>
-    <div class="inv-item"><span class="inv-name">Outils de voleur</span><span class="inv-detail">Sac à dos</span></div>
-    <div class="inv-item"><span class="inv-name">Corde 10m</span><span class="inv-detail">Sac à dos</span></div>
-    <div class="inv-item"><span class="inv-name">Cape très imperméable (chef d'œuvre)</span><span class="inv-detail">Sur soi ou sac à dos</span></div>
-    <div class="inv-item"><span class="inv-name">Poison Paralysant Instantané (2 doses)</span><span class="inv-detail">Sac à dos</span></div>
-    <div class="inv-item"><span class="inv-name">Poison Léthargique en 2 rounds, 4D10 min (6 doses)</span><span class="inv-detail">Sac à dos</span></div>
-    <div class="inv-item"><span class="inv-name">Montre à gousset / Baromètre en argent</span><span class="inv-detail">Sac à dos</span></div>
-    <div class="inv-item"><span class="inv-name">Bague en argent</span><span class="inv-detail">Portée</span></div>
-    <div class="inv-item"><span class="inv-name">Médaillon avec photo d'un jeune noble</span><span class="inv-detail">Sac à dos</span></div>
-  </div>
-
-  <!-- 10. XP & AMBITIONS -->
-  
-  <div class="card">
-    <div class="card-title vio">Expérience &amp; Ambitions</div>
-    <div class="xp-row">
-      <div class="xp-box"><span class="xp-label">Actuelle</span><span class="xp-val">100</span></div>
-      <div class="xp-box"><span class="xp-label">Dépensée</span><span class="xp-val">0</span></div>
-      <div class="xp-box"><span class="xp-label">Totale</span><span class="xp-val">0</span></div>
+    <div id="inv-list"></div>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-acc" onclick="toggleForm('inv-form')">+ Ajouter un objet</button>
+      <div class="form-panel" id="inv-form">
+        <input class="form-input" id="inv-name-new" placeholder="Nom de l'objet" />
+        <input class="form-input" id="inv-detail-new" placeholder="Emplacement / Note" />
+        <div style="display:flex;gap:0.4rem;">
+          <button class="btn-add btn-acc" onclick="addInvItem()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleForm('inv-form')">Annuler</button>
+        </div>
+      </div>
     </div>
-    <div style="margin-bottom:0.5rem;"><span class="amb-label">Ambition courte</span><div class="trait-block">Ne dépendre de personne matériellement. Être indispensable au groupe.</div></div>
-    <div style="margin-bottom:0.5rem;"><span class="amb-label">Ambition longue</span><div class="trait-block">Être « reconnu » officiellement par quelqu'un qui compte.</div></div>
-    <div><span class="amb-label">Motivation</span><div class="trait-block">Obtenir confiance, complicité et félicitations gratuites.</div></div>
   </div>
 
-  <!-- 11. HISTORIQUE -->
-  
+
+  <!-- XP & AMBITIONS -->
   <div class="card full">
-    <div class="card-title" style="color:#B8922A;">Historique</div>
+    <div class="card-title vio">Expérience & Ambitions</div>
+    <div class="xp-row">
+      <div class="xp-box"><span class="xp-label">Actuelle</span><input class="xp-val-input" id="xp-actuelle" type="number" value="100" onchange="saveAll()" /></div>
+      <div class="xp-box"><span class="xp-label">Dépensée</span><input class="xp-val-input" id="xp-depensee" type="number" value="0" onchange="saveAll()" /></div>
+      <div class="xp-box"><span class="xp-label">Totale</span><input class="xp-val-input" id="xp-totale" type="number" value="0" onchange="saveAll()" /></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:0.75rem;">
+      <div>
+        <span class="amb-label">Ambition courte</span>
+        <div class="trait-block">Ne dépendre de personne matériellement. Être indispensable au groupe.</div>
+        <span class="amb-label" style="margin-top:0.5rem;">Motivation</span>
+        <div class="trait-block">Obtenir confiance, complicité et félicitations gratuites.</div>
+      </div>
+      <div>
+        <span class="amb-label">Ambition longue</span>
+        <div class="trait-block">Être "reconnu" officiellement par quelqu'un qui compte.</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div>
+        <div class="trait-line plus">+ Discrétion et agilité exceptionnelles.</div>
+        <div class="trait-line plus">+ Lecture rapide des gens et des situations sociales.</div>
+        <div class="trait-line plus">+ Adaptable, ingénieux, capable de trouver une sortie là où il n'y en a pas.</div>
+        <div class="trait-line plus">+ Charme naturel quand il choisit de s'en servir.</div>
+      </div>
+      <div>
+        <div class="trait-line minus">− Manipulable par la validation, une figure d'autorité qui le reconnaît peut lui faire prendre des risques inconsidérés.</div>
+        <div class="trait-line minus">− Tendance à surestimer sa discrétion dans les environnements inconnus.</div>
+        <div class="trait-line minus">− Le besoin d'être remarqué peut le pousser à se montrer au mauvais moment.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- HISTORIQUE -->
+  <div class="card full">
+    <div class="card-title acc">Historique</div>
     <div class="histo">
       <p>Voleur humain, ex gosse des rues de Nuln, il a dû se débrouiller sans même connaître ses origines. On peut dire qu'il s'en sort plutôt bien, étant ne serait-ce qu'encore en vie.</p>
-      <p>C'est un petit criminel, un voleur adroit et il a le don de se faire apprécier. Il est encore trop jeune pour avoir un objectif clair dans sa vie et se contente surtout de vivre au jour le jour. Résolument auto centré, par nécessité de survie puis par construction et habitude, il ne cherche cependant pas à nuire, mais à prendre tout ce qu'il peut de la vie, sans que cela ne torde trop la morale.</p>
-      <p>Très sociable, en apparence doux et inoffensif, il sait se défendre et son instinct de préservation est des plus aiguisés. Il peut faire preuve de stratégie, mais peut également se montrer impulsif et agir de façon adolescente. Sa tendance à se remplir les poches en de nombreuses occasions peut lui attirer des ennuis. Il n'est pas idiot, il sait qu'il ne peut aller loin sans les autres.</p>
-      <p>Azart veut montrer, posséder, briller, mais ce n'est pas exactement ce qu'il désire le plus. Ce qu'il veut vraiment, c'est être reconnu et surtout par quelqu'un qui compte. L'or est un substitut. Le prestige, un langage. Il en a tiré une règle simple : si je suis utile, on m'accepte. Alors il impressionne, il offre, il partage, pas par altruisme, mais pour entendre "bien joué".</p>
-      <p>Ce mécanisme est son talon d'Achille et Armand l'a parfaitement compris. Pas besoin d'or ni de menace pour tenir Azart : il suffit d'un regard, d'un statut implicite, d'une proximité symbolique. Quand une figure d'autorité le félicite, il prend plus de risques que d'habitude. Il chérit les objets qui ont été vus — une bague portée en public, un symbole reconnu. L'objet n'a pas besoin d'être riche. Il a besoin d'être regardé.</p>
-      <p>Son fantasme secret n'est pas la noblesse. C'est la légitimité incontestable et soulignée. Être présenté, être nommé, être adoubé pour ce qu'il est vraiment. Mais il n'est pas servile. S'il sent le mépris réel, il se détache. La blessure est profonde.</p>
+      <p>C'est un petit criminel, un voleur adroit et il a le don de se faire apprécier. Il est encore trop jeune pour avoir un objectif clair dans sa vie et se contente surtout de vivre au jour le jour. 18 ans. Beau jeune homme aux cheveux rasés et mi-longs, les yeux verts et d'allure gracile. Résolument auto centré, par nécessité de survie puis par construction et habitude, il ne cherche cependant pas à nuire, mais à prendre tout ce qu'il peut de la vie, sans que cela ne torde trop la morale (du moins celle qu'il s'est fixé).</p>
+      <p>Très sociable, en apparence doux et inoffensif, il sait se défendre et son instinct de préservation est des plus aiguisés. Il peut faire preuve de stratégie, mais peut également se montrer impulsif et agir de façon adolescente. Sa tendance à se remplir les poches en de nombreuses occasions peut lui attirer des ennuis. Il n'est pas idiot, il sait qu'il ne peut aller loin sans les autres et cela rééquilibre un peu.</p>
+      <p>Azart veut montrer, posséder, briller, mais ce n'est pas exactement ce qu'il désire le plus. Ce qu'il veut vraiment, c'est être reconnu et surtout par quelqu'un qui compte. L'or est un substitut. Le prestige, un langage. Quelque part derrière, il y a une admiration jamais obtenue, des félicitations toujours conditionnelles, une figure qui n'a jamais vraiment regardé. Il en a tiré une règle simple : si je suis utile, on m'accepte. Alors il impressionne, il offre, il partage, pas par altruisme, mais pour entendre "bien joué".</p>
+      <p>Ce mécanisme est son talon d'Achille et Armand l'a parfaitement compris. Pas besoin d'or ni de menace pour tenir Azart : il suffit d'un regard, d'un statut implicite, d'une proximité symbolique.</p>
+      <p>Quand une figure d'autorité le félicite, le recommande, le présente officiellement, il prend plus de risques que d'habitude. Il chérit les objets, parfois malgré peu de valeur marchand ou pas si rares. Il ne les garde pas tous bien sûr, seulement ceux qui ont été vus. Son fantasme secret n'est pas la noblesse. C'est la légitimité incontestable et soulignée. Être présent, être nommé, être adoubé pour ce qu'il est vraiment. Mais il n'est pas servile. S'il sent le mépris réel, s'il comprend qu'il n'est qu'un outil, il se détache. La blessure est profonde. Elle l'a déjà formé une fois, il sait que ce ne sera pas la dernière.</p>
       <div class="citation">« Je n'ai pas besoin qu'on m'aime. Juste qu'on me remarque. »</div>
     </div>
   </div>
-  <!-- 12. SYSTÈME SPÉCIAL -->
-  <div class="card acc full">
-    <div class="card-title gld">Trophées — Objets vus &amp; reconnus</div>
-    <div class="italic-note">Azart garde les objets qui ont été vus. Ce qui compte n'est pas la valeur — c'est le témoin.</div>
-    <div id="trophee-list"></div>
-    <div class="add-row">
-      <input type="text" id="trophee-input" placeholder="Objet ou souvenir...">
-      <button class="add-btn" onclick="addTrophee()">+ Ajouter</button>
+
+
+  <!-- COLLECTION SECRÈTE -->
+  <div class="collection-card full">
+    <div class="card-title gld" style="position:relative;">Collection secrète · Objets chéris</div>
+    <div class="collection-intro">
+      Ces objets n'ont pas tous une grande valeur marchande. Mais ils ont <strong>été vus</strong>. Portés en public, nommés, remarqués — ou simplement trop beaux pour être abandonnés.<br>
+      <span style="font-size:0.78rem;opacity:0.7;">Valeur réelle estimée · Valeur subjective d'Azart · Cliquer pour lire la description</span>
+    </div>
+
+    <table class="coll-table">
+      <thead>
+        <tr>
+          <th style="width:18px;"></th>
+          <th>Objet</th>
+          <th class="right" style="width:90px;">Valeur réelle</th>
+          <th class="right" style="width:110px;">Valeur Azart</th>
+          <th style="width:22px;"></th>
+        </tr>
+      </thead>
+      <tbody id="coll-body"></tbody>
+    </table>
+
+    <div class="coll-stats-bar" id="coll-stats-bar"></div>
+
+    <div style="margin-top:0.65rem;">
+      <button class="btn-add btn-gld" onclick="toggleForm('coll-form')" style="font-size:0.6rem;">✦ Ajouter un objet</button>
+      <div class="coll-form" id="coll-form">
+        <div class="coll-form-grid">
+          <div class="coll-form-field" style="grid-column:1/-1;">
+            <span class="coll-form-label">Nom de l'objet</span>
+            <input class="form-input" id="coll-name" placeholder="Bague en argent ciselée…" />
+          </div>
+          <div class="coll-form-field">
+            <span class="coll-form-label">Valeur réelle (ex: 3 PA)</span>
+            <input class="form-input" id="coll-val-real" placeholder="3 PA" />
+          </div>
+          <div class="coll-form-field">
+            <span class="coll-form-label">Valeur pour Azart</span>
+            <input class="form-input" id="coll-val-azart" placeholder="Inestimable" />
+          </div>
+          <div class="coll-form-field">
+            <span class="coll-form-label">Importance (★)</span>
+            <div style="display:flex;gap:5px;align-items:center;margin-top:0.35rem;" id="coll-new-stars"></div>
+          </div>
+          <div class="coll-form-field" style="grid-column:1/-1;">
+            <span class="coll-form-label">Description · Contexte · Pourquoi ça compte</span>
+            <textarea class="form-textarea" id="coll-desc" placeholder="Qui l'a vu, dans quel contexte, ce que ça représente pour lui…"></textarea>
+          </div>
+          <div class="coll-form-field" style="grid-column:1/-1;">
+            <span class="coll-form-label">Statut</span>
+            <select class="form-input" id="coll-statut" style="cursor:pointer;background:rgba(184,112,42,0.07);">
+              <option value="possédé">Possédé — caché sur soi</option>
+              <option value="planque">En planque</option>
+              <option value="perdu">Perdu / volé</option>
+              <option value="donné">Donné (regretté)</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:0.4rem;margin-top:0.2rem;">
+          <button class="btn-add btn-gld" onclick="addCollItem()">Ajouter à la collection</button>
+          <button class="btn-cancel" onclick="toggleForm('coll-form')">Annuler</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- 13. NOTES DE SESSION -->
-  
+
+  <!-- NOTES SESSION -->
   <div class="card full">
     <div class="card-title">Notes de session</div>
-    <div style="font-size:0.82rem;color:var(--SUB);font-style:italic;margin-bottom:0.5rem;line-height:1.5;">Projet arbalète à lames (artisan Nain, Nuln) · Remise −5% Apothicaire Sofya · Mission Armand réussie</div>
-    <textarea class="notes-area" id="session-notes" rows="4" placeholder="Plans, contacts, observations..."></textarea>
+    <div style="font-size:0.82rem;color:var(--SUB);font-style:italic;margin-bottom:0.5rem;line-height:1.5;">
+      Arbalète à lames en cours · Fournisseur : Maître Artisan Nain de Nuln · Apothicaire Sofya −5% · Première mission Armand réussie
+    </div>
+    <textarea class="notes-area" id="session-notes" rows="5" placeholder="Plans, contacts, observations..."></textarea>
     <button class="btn-save" onclick="saveAll()">Sauvegarder</button>
     <span class="save-confirm" id="save-confirm">✓ Sauvegardé</span>
   </div>
 
 </div>
-<script>
 
+<script>
+// ══════ DONNÉES INITIALES ══════
+
+const STATS_DEF = [
+  { key:'cc',  label:'CC',  init:40, avance:0  },
+  { key:'ct',  label:'CT',  init:25, avance:5  },
+  { key:'f',   label:'F',   init:32, avance:0  },
+  { key:'e',   label:'End', init:30, avance:0  },
+  { key:'ini', label:'Ini', init:28, avance:5  },
+  { key:'ag',  label:'Ag',  init:35, avance:10 },
+  { key:'dex', label:'Dex', init:39, avance:5  },
+  { key:'int', label:'Int', init:32, avance:0  },
+  { key:'fm',  label:'FM',  init:26, avance:5  },
+  { key:'soc', label:'Soc', init:38, avance:0  },
+];
+
+const SKILLS_BASE_DEF = [
+  { name:'Art',                    car:'Dex', aug:0,  base:44 },
+  { name:'Athlétisme',             car:'Ag',  aug:5,  base:45 },
+  { name:'Calme',                  car:'FM',  aug:8,  base:31 },
+  { name:'Charme',                 car:'Soc', aug:5,  base:38 },
+  { name:'Commandement',           car:'Soc', aug:0,  base:38 },
+  { name:'Conduite',               car:'Ag',  aug:0,  base:45 },
+  { name:'Corps à Corps (Base)',   car:'CC',  aug:3,  base:40 },
+  { name:'Discrétion',             car:'Ag',  aug:0,  base:45 },
+  { name:'Dressage',               car:'FM',  aug:0,  base:31 },
+  { name:'Escalade',               car:'F',   aug:5,  base:32 },
+  { name:'Esquive',                car:'Ag',  aug:5,  base:45 },
+  { name:'Intimidation',           car:'F',   aug:0,  base:32 },
+  { name:'Intuition',              car:'Ini', aug:5,  base:33 },
+  { name:'Jeu',                    car:'Int', aug:0,  base:32 },
+  { name:'Manipulation',           car:'Soc', aug:0,  base:38 },
+  { name:'Marchandage',            car:'Soc', aug:0,  base:38 },
+  { name:'Monter',                 car:'Ag',  aug:0,  base:45 },
+  { name:'Navigation',             car:'Ini', aug:0,  base:33 },
+  { name:'Perception',             car:'Ini', aug:5,  base:33 },
+  { name:'Ragot',                  car:'Soc', aug:5,  base:38 },
+  { name:'Ramer',                  car:'F',   aug:0,  base:32 },
+  { name:'Représentation',         car:'Soc', aug:0,  base:38 },
+  { name:'Résistance à l\'alcool', car:'End', aug:0,  base:30 },
+  { name:'Résistance',             car:'End', aug:5,  base:30 },
+  { name:'Survie en extérieur',    car:'Int', aug:0,  base:32 },
+];
+
+const SKILLS_ADV_DEF = [
+  { name:'Évaluation',                          car:'Int', aug:5,   carVal:32 },
+  { name:'Savoir (Reikland)',                   car:'Int', aug:0,   carVal:32 },
+  { name:'Discrétion (Urbaine)',                car:'Ag',  aug:6,   carVal:45 },
+  { name:'Crochetage (en cours d\'acquisition)',car:'Dex', aug:-10, carVal:44 },
+  { name:'Escamotage (en cours d\'acquisition)',car:'Dex', aug:-10, carVal:44 },
+];
+
+const TALENTS_DEF = [
+  { name:'Chat de gouttière', desc:'Possible inversion des dés en Discrétion Urbaine.' },
+  { name:'Criminel',          desc:'Statut de carrière pour revenus et impact social.' },
+  { name:'Frappe assommante', desc:'Pas de pénalité à localiser la tête avec arme assommante et improvisée.' },
+  { name:'Fuite',             desc:'+1 M en fuite.' },
+];
+
+const ARMOR_LOCS = [
+  { loc:'Tête',       range:'01-09', pa:0 },
+  { loc:'Bras droit', range:'10-24', pa:1 },
+  { loc:'Bras gauche',range:'25-44', pa:1 },
+  { loc:'Corps',      range:'45-79', pa:2 },
+  { loc:'Jambe dr.',  range:'80-89', pa:0 },
+  { loc:'Jambe gau.', range:'90-00', pa:0 },
+];
+
+const WEAPONS_DEF = [
+  { name:'Épée de Maître Artisan',          all:'Moyenne',    deg:'BF+4', enc:0, attr:'+2 CC, Solide, Fiable' },
+  { name:'Dague (chef d\'œuvre)',            all:'Très courte',deg:'BF+2', enc:0, attr:'+1 Dégât, Solide, Fiable' },
+  { name:'Couteaux de lancer (chef d\'œuvre)',all:'BFx2',     deg:'BF+2', enc:0, attr:'+5 CT, +10 CT Surprise, Solide, Fiable' },
+];
+
+const INV_DEF = [
+  { name:'Sac à dos',                                        detail:'Porté',               enc:0 },
+  { name:'Pied de biche',                                    detail:'Sac à dos',            enc:0 },
+  { name:'Outils de voleur',                                 detail:'Sac à dos',            enc:0 },
+  { name:'Corde 10m',                                        detail:'Sac à dos',            enc:0 },
+  { name:'Cape très imperméable (chef d\'œuvre)',            detail:'Sur soi ou sac à dos', enc:0 },
+  { name:'Poison Paralysant Instantané (2 doses)',           detail:'Sac à dos',            enc:0 },
+  { name:'Poison Léthargique, en 2 rounds, pendant 4D10 min (6 doses)', detail:'Sac à dos', enc:0 },
+  { name:'Montre à gousset / Baromètre en argent',          detail:'Sac à dos',            enc:0 },
+  { name:'Bague en argent',                                  detail:'Portée',               enc:0 },
+  { name:'Médaillon avec une photo d\'un jeune noble',       detail:'Sac à dos',            enc:0 },
+];
+
+// ══════ STATE ══════
 let state = {
-  wounds: 12, chance: 4, determ: 2,
-  money: { or: 10, argent: 3, cuivre: 0 },
-  notes: '', cet: { corruption:'', mutations:'', etats:'' }
-  }, trophees: [
+  wounds: 12, woundsMax: 12,
+  chance: 4, determ: 2,
+  money: { or:10, argent:3, cuivre:0 },
+  notes: '', cet: { corruption:'', mutations:'', etats:'' },
+  xp: { actuelle:100, depensee:0, totale:0 },
+  stats: {},
+  skillsBase: JSON.parse(JSON.stringify(SKILLS_BASE_DEF)),
+  skillsAdv:  JSON.parse(JSON.stringify(SKILLS_ADV_DEF)),
+  talents:    JSON.parse(JSON.stringify(TALENTS_DEF)),
+  weapons:    JSON.parse(JSON.stringify(WEAPONS_DEF)),
+  inventory:   JSON.parse(JSON.stringify(INV_DEF)),
+  armor:       JSON.parse(JSON.stringify(ARMOR_LOCS)),
+  collection:  JSON.parse(JSON.stringify(COLL_DEF)),
 };
 
-function save() { localStorage.setItem('azart_v3', JSON.stringify(state)); }
+STATS_DEF.forEach(s => { state.stats[s.key] = { init:s.init, avance:s.avance }; });
+
+function getStatTotal(key) {
+  const s = state.stats[key];
+  return (parseInt(s.init)||0) + (parseInt(s.avance)||0);
+}
+
+// ══════ LOAD / SAVE ══════
 function load() {
-  const s = localStorage.getItem('azart_v3');
-  if (s) try { Object.assign(state, JSON.parse(s)); } catch(e) {}
+  const raw = localStorage.getItem('azart_v1');
+  if (raw) try {
+    const saved = JSON.parse(raw);
+    ['wounds','woundsMax','chance','determ','notes'].forEach(k => { if (saved[k]!==undefined) state[k]=saved[k]; });
+    if (saved.money)     Object.assign(state.money, saved.money);
+    if (saved.cet)       Object.assign(state.cet, saved.cet);
+    if (saved.xp)        Object.assign(state.xp, saved.xp);
+    if (saved.stats)     Object.assign(state.stats, saved.stats);
+    if (saved.skillsBase) state.skillsBase = saved.skillsBase;
+    if (saved.skillsAdv)  state.skillsAdv  = saved.skillsAdv;
+    if (saved.talents)    state.talents     = saved.talents;
+    if (saved.weapons)    state.weapons     = saved.weapons;
+    if (saved.inventory)   state.inventory   = saved.inventory;
+    if (saved.armor)       state.armor       = saved.armor;
+    if (saved.collection)  state.collection  = saved.collection;
+  } catch(e) {}
+  renderAll();
+}
+
+function save() { localStorage.setItem('azart_v1', JSON.stringify(state)); }
+
+function saveAll() {
+  state.notes = document.getElementById('session-notes').value;
+  if (!state.cet) state.cet = {};
+  ['corruption','mutations','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) state.cet[k]=el.value; });
+  state.xp.actuelle = parseInt(document.getElementById('xp-actuelle').value)||0;
+  state.xp.depensee = parseInt(document.getElementById('xp-depensee').value)||0;
+  state.xp.totale   = parseInt(document.getElementById('xp-totale').value)||0;
+  save();
+  const c = document.getElementById('save-confirm');
+  c.style.opacity='1'; setTimeout(()=>c.style.opacity='0',2000);
+}
+
+function renderAll() {
+  renderStats(); renderSkillsBase(); renderSkillsAdv(); renderTalents();
+  renderArmor(); renderWeapons(); renderInventory(); renderCollection();
+  renderChance(); renderDeterm(); renderCollNewStars();
   document.getElementById('w-cur').textContent = state.wounds;
+  document.getElementById('w-max').textContent = state.woundsMax;
   updateWC();
   ['or','argent','cuivre'].forEach(k => document.getElementById('m-'+k).textContent = state.money[k]||0);
   document.getElementById('session-notes').value = state.notes||'';
-  ['corruption','mutations','etats'].forEach(k => {
-    const el = document.getElementById('cet-'+k);
-    if (el) el.value = (state.cet&&state.cet[k])||'';
+  ['corruption','mutations','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) el.value=(state.cet&&state.cet[k])||''; });
+  document.getElementById('xp-actuelle').value = state.xp.actuelle;
+  document.getElementById('xp-depensee').value = state.xp.depensee;
+  document.getElementById('xp-totale').value   = state.xp.totale;
+}
+
+// ══════ STATS ══════
+function renderStats() {
+  const g = document.getElementById('stats-grid'); g.innerHTML='';
+  STATS_DEF.forEach(def => {
+    const s = state.stats[def.key];
+    const total = (parseInt(s.init)||0) + (parseInt(s.avance)||0);
+    const bf = Math.floor(total/10);
+    const div = document.createElement('div');
+    div.className = 'stat-box';
+    div.innerHTML = `
+      <span class="stat-label">${def.label}</span>
+      <span class="stat-total" id="stat-total-${def.key}">${total}</span>
+      <span class="stat-bonus" id="stat-bf-${def.key}">B:${bf}</span>
+      <div class="stat-edit-row">
+        <span style="font-size:0.5rem;color:var(--SUB);">Init</span>
+        <input class="editable-num" style="width:34px;font-size:0.78rem;color:var(--parchment-dark);border-bottom-color:rgba(255,255,255,0.06);" type="number" value="${s.init}" onchange="updateStat('${def.key}','init',this.value)" />
+        <span class="plus">+</span>
+        <input class="editable-num" style="width:34px;font-size:0.78rem;color:var(--acc2);border-bottom-color:rgba(184,112,42,0.15);" type="number" value="${s.avance}" onchange="updateStat('${def.key}','avance',this.value)" />
+      </div>
+    `;
+    g.appendChild(div);
   });
-  renderChance(); renderDeterm();
-  renderTrophees();
 }
-function updateWC() {
-  const el = document.getElementById('w-cur');
-  const p = state.wounds / 12;
-  el.style.color = p > 0.6 ? 'var(--parchment)' : p > 0.3 ? '#e8a040' : '#e05050';
+function updateStat(key, field, val) {
+  state.stats[key][field] = parseInt(val)||0;
+  const total = getStatTotal(key);
+  const bf = Math.floor(total/10);
+  const et=document.getElementById('stat-total-'+key); if(et) et.textContent=total;
+  const eb=document.getElementById('stat-bf-'+key);    if(eb) eb.textContent='B:'+bf;
+  save();
 }
+
+// ══════ BLESSURES ══════
 function chWound(d) {
-  state.wounds = Math.max(0, Math.min(12, state.wounds + d));
+  state.wounds = Math.max(0, Math.min(state.woundsMax, state.wounds+d));
   document.getElementById('w-cur').textContent = state.wounds;
   updateWC(); save();
 }
-function chMoney(k, d) {
-  state.money[k] = Math.max(0, (state.money[k]||0) + d);
-  document.getElementById('m-'+k).textContent = state.money[k]; save();
+function updateWC() {
+  const el=document.getElementById('w-cur');
+  const p=state.wounds/state.woundsMax;
+  el.style.color = p>0.6?'var(--parchment)':p>0.3?'#e8a040':'#e05050';
 }
-function makePips(id, cur, max, fn) {
-  const c = document.getElementById(id); if(!c) return; c.innerHTML='';
-  for (let i=0;i<max;i++) {
-    const pip = document.createElement('div');
-    pip.className = 'pip'+(i<cur?' on':'');
-    pip.onclick = () => fn(i<cur?i:i+1);
+
+// ══════ MONNAIE ══════
+function chMoney(k,d) {
+  state.money[k]=Math.max(0,(state.money[k]||0)+d);
+  document.getElementById('m-'+k).textContent=state.money[k]; save();
+}
+
+// ══════ CHANCE / DETERM ══════
+function makePips(id,cur,max,fn) {
+  const c=document.getElementById(id); if(!c) return; c.innerHTML='';
+  for(let i=0;i<max;i++){
+    const pip=document.createElement('div');
+    pip.className='pip'+(i<cur?' on':'');
+    pip.onclick=()=>fn(i<cur?i:i+1);
     c.appendChild(pip);
   }
 }
-function renderChance() { makePips('chance-track', state.chance, 4, v => { state.chance=v; save(); renderChance(); }); }
-function renderDeterm() { makePips('determ-pips', state.determ, 2, v => { state.determ=v; save(); renderDeterm(); }); }
-function saveAll() {
-  state.notes = document.getElementById('session-notes').value;
-  if (!state.cet) state.cet={};
-  ['corruption','mutations','etats'].forEach(k => {
-    const el = document.getElementById('cet-'+k);
-    if (el) state.cet[k] = el.value;
-  });
-  save();
-  const c = document.getElementById('save-confirm');
-  c.style.opacity='1'; setTimeout(()=>c.style.opacity='0', 2000);
-}
-['session-notes','cet-corruption','cet-mutations','cet-etats'].forEach(id => {
-  const el = document.getElementById(id);
-  if (el) el.addEventListener('blur', saveAll);
-});
+function renderChance() { makePips('chance-track',state.chance,4,v=>{state.chance=v;save();renderChance();}); }
+function renderDeterm() { makePips('determ-pips',state.determ,2,v=>{state.determ=v;save();renderDeterm();}); }
 
-function addTrophee() {
-  const v = document.getElementById('trophee-input').value.trim();
-  if (!v) return;
-  if (!state.trophees) state.trophees = [];
-  state.trophees.push(v);
-  document.getElementById('trophee-input').value = '';
-  save(); renderTrophees();
+// ══════ COMPÉTENCES BASE ══════
+function renderSkillsBase() {
+  const ul=document.getElementById('skills-base-list'); ul.innerHTML='';
+  state.skillsBase.forEach((sk,i)=>{
+    const total=(parseInt(sk.base)||0)+(parseInt(sk.aug)||0);
+    const li=document.createElement('li');
+    li.innerHTML=`
+      <span class="skill-name">${sk.name} <span style="color:var(--SUB);font-size:0.7rem;">(${sk.car})</span></span>
+      <div class="skill-aug"><input class="editable-num" type="number" value="${sk.aug||0}" style="width:38px;font-size:0.8rem;color:var(--acc2);border-bottom-color:rgba(184,112,42,0.12);" onchange="updateSkillBaseAug(${i},this.value)" /></div>
+      <span class="skill-total" id="sk-base-total-${i}">${total}</span>
+    `;
+    ul.appendChild(li);
+  });
 }
-function removeTrophee(i) { state.trophees.splice(i,1); save(); renderTrophees(); }
-function renderTrophees() {
-  const c = document.getElementById('trophee-list');
-  if (!state.trophees||!state.trophees.length) { c.innerHTML='<div style="font-size:0.8rem;color:var(--SUB);font-style:italic;padding:0.2rem 0;">Aucun trophée pour l'instant.</div>'; return; }
-  c.innerHTML = state.trophees.map((t,i) => `<div class="trophee-item"><span class="trophee-name">⬡ ${t}</span><button class="trophee-del" onclick="removeTrophee(${i})">✕</button></div>`).join('');
+function updateSkillBaseAug(idx,val) {
+  state.skillsBase[idx].aug=parseInt(val)||0;
+  const total=(state.skillsBase[idx].base||0)+state.skillsBase[idx].aug;
+  const el=document.getElementById('sk-base-total-'+idx); if(el) el.textContent=total;
+  save();
 }
+
+// ══════ COMPÉTENCES AVANCÉES ══════
+function renderSkillsAdv() {
+  const ul=document.getElementById('skills-adv-list'); ul.innerHTML='';
+  state.skillsAdv.forEach((sk,i)=>{
+    const total=(parseInt(sk.carVal)||0)+(parseInt(sk.aug)||0);
+    const li=document.createElement('li');
+    li.innerHTML=`
+      <span class="skill-name">${sk.name} <span style="color:var(--SUB);font-size:0.7rem;">(${sk.car})</span></span>
+      <div class="skill-aug"><input class="editable-num" type="number" value="${sk.aug||0}" style="width:38px;font-size:0.8rem;color:var(--acc2);border-bottom-color:rgba(184,112,42,0.12);" onchange="updateSkillAdv(${i},this.value)" /></div>
+      <span class="skill-total" id="sk-adv-total-${i}">${total}</span>
+      <span class="del-btn" onclick="deleteAdvSkill(${i})">✕</span>
+    `;
+    ul.appendChild(li);
+  });
+}
+function updateSkillAdv(idx,val) { state.skillsAdv[idx].aug=parseInt(val)||0; renderSkillsAdv(); save(); }
+function deleteAdvSkill(idx) { if(confirm('Supprimer ?')){ state.skillsAdv.splice(idx,1); renderSkillsAdv(); save(); } }
+function addAdvSkill() {
+  const name=document.getElementById('adv-name').value.trim(); if(!name) return;
+  state.skillsAdv.push({ name, car:document.getElementById('adv-car').value.trim()||'?', aug:parseInt(document.getElementById('adv-aug').value)||0, carVal:0 });
+  document.getElementById('adv-name').value=''; document.getElementById('adv-aug').value='0';
+  renderSkillsAdv(); save(); toggleForm('adv-form');
+}
+
+// ══════ TALENTS ══════
+function renderTalents() {
+  const ul=document.getElementById('talent-list'); ul.innerHTML='';
+  state.talents.forEach((t,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML=`
+      <div class="talent-content"><span class="talent-name">${t.name}</span><span class="talent-desc">${t.desc}</span></div>
+      <span class="del-btn" onclick="deleteTalent(${i})">✕</span>
+    `;
+    ul.appendChild(li);
+  });
+}
+function deleteTalent(idx) { if(confirm('Supprimer ce talent ?')){ state.talents.splice(idx,1); renderTalents(); save(); } }
+function addTalent() {
+  const name=document.getElementById('talent-name-new').value.trim(); if(!name) return;
+  state.talents.push({name, desc:document.getElementById('talent-desc-new').value.trim()});
+  document.getElementById('talent-name-new').value=''; document.getElementById('talent-desc-new').value='';
+  renderTalents(); save(); toggleForm('talent-form');
+}
+
+// ══════ ARMURE ══════
+function renderArmor() {
+  const tbody=document.getElementById('armor-body'); tbody.innerHTML='';
+  state.armor.forEach((a,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td style="color:var(--parchment-dark);">${a.loc}</td>
+      <td><input class="armor-pa-input" type="number" value="${a.pa||0}" onchange="updateArmorPA(${i},this.value)" /></td>
+      <td style="color:var(--SUB);font-size:0.75rem;">${a.range}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+function updateArmorPA(idx,val) { state.armor[idx].pa=parseInt(val)||0; save(); }
+
+// ══════ ARMES ══════
+function renderWeapons() {
+  const c=document.getElementById('weapons-list'); c.innerHTML='';
+  state.weapons.forEach((w,i)=>{
+    const div=document.createElement('div'); div.className='weapon-item';
+    div.innerHTML=`
+      <div class="weapon-content">
+        <div class="weapon-name">${w.name}</div>
+        <div class="weapon-stats">
+          <span class="wstat"><span class="wstat-l">All. </span><span class="wstat-v">${w.all}</span></span>
+          <span class="wstat"><span class="wstat-l">Dég. </span><span class="wstat-v">${w.deg}</span></span>
+          ${w.enc!==undefined?`<span class="wstat"><span class="wstat-l">ENC </span><span class="wstat-v">${w.enc}</span></span>`:''}
+          ${w.attr?`<span class="wstat"><span class="wstat-l">Attr. </span><span class="wstat-v">${w.attr}</span></span>`:''}
+        </div>
+      </div>
+      <span class="del-btn" onclick="deleteWeapon(${i})">✕</span>
+    `;
+    c.appendChild(div);
+  });
+}
+function deleteWeapon(idx) { if(confirm('Supprimer ?')){ state.weapons.splice(idx,1); renderWeapons(); save(); } }
+function addWeapon() {
+  const name=document.getElementById('wep-name').value.trim(); if(!name) return;
+  state.weapons.push({ name, all:document.getElementById('wep-all').value.trim()||'—', deg:document.getElementById('wep-deg').value.trim()||'—', enc:parseInt(document.getElementById('wep-enc').value)||0, attr:document.getElementById('wep-attr').value.trim() });
+  ['wep-name','wep-all','wep-deg','wep-enc','wep-attr'].forEach(id=>document.getElementById(id).value='');
+  renderWeapons(); save(); toggleForm('weapon-form');
+}
+
+// ══════ INVENTAIRE ══════
+function renderInventory() {
+  const c=document.getElementById('inv-list'); c.innerHTML='';
+  state.inventory.forEach((item,i)=>{
+    const div=document.createElement('div'); div.className='inv-item';
+    div.innerHTML=`
+      <span class="inv-name">${item.name}</span>
+      <span class="inv-detail">${item.detail||''}</span>
+      <span class="del-btn" onclick="deleteInvItem(${i})">✕</span>
+    `;
+    c.appendChild(div);
+  });
+}
+function deleteInvItem(idx) { state.inventory.splice(idx,1); renderInventory(); save(); }
+function addInvItem() {
+  const name=document.getElementById('inv-name-new').value.trim(); if(!name) return;
+  state.inventory.push({ name, detail:document.getElementById('inv-detail-new').value.trim(), enc:0 });
+  ['inv-name-new','inv-detail-new'].forEach(id=>document.getElementById(id).value='');
+  renderInventory(); save(); toggleForm('inv-form');
+}
+
+// ══════ UTILS ══════
+function toggleForm(id) { document.getElementById(id).classList.toggle('visible'); }
+
+// ══════ COLLECTION SECRÈTE ══════
+const COLL_STATUT_STYLE = {
+  'possédé': { color:'var(--GRN)',  label:'Sur soi'   },
+  'planque':  { color:'var(--acc2)',label:'En planque' },
+  'perdu':    { color:'#c07070',    label:'Perdu'      },
+  'donné':    { color:'var(--SUB)', label:'Donné'      },
+};
+
+const COLL_DEF = [
+  { name:'Bague en argent', valReal:'2 PA', valAzart:'Précieux', stars:3, statut:'possédé',
+    desc:'Portée en public chez le Maître Artisan. Quelqu\'un l\'a remarquée et en a complimenté le goût. Pas la valeur — le goût.' },
+  { name:'Médaillon avec la photo d\'un jeune noble', valReal:'5 PA', valAzart:'Inestimable', stars:5, statut:'possédé',
+    desc:'Il ne sait pas qui c\'est. Mais quelqu\'un a pris la peine de faire graver ce visage. Être immortalisé ainsi — c\'est exactement ce qu\'il veut.' },
+];
+
+let collNewStars = 3;
+
+function renderCollNewStars() {
+  const c = document.getElementById('coll-new-stars'); if(!c) return;
+  c.innerHTML='';
+  for(let i=1;i<=5;i++){
+    const s=document.createElement('div');
+    s.className='coll-star'+(i<=collNewStars?' on':'');
+    s.onclick=()=>{ collNewStars=i; renderCollNewStars(); };
+    c.appendChild(s);
+  }
+}
+
+function starsHTML(count, itemIdx) {
+  let h='';
+  for(let i=1;i<=5;i++){
+    h+=`<div class="coll-star${i<=count?' on':''}" onclick="updateCollStars(${itemIdx},${i});event.stopPropagation();"></div>`;
+  }
+  return h;
+}
+
+function renderCollection() {
+  const tbody = document.getElementById('coll-body'); if(!tbody) return;
+  tbody.innerHTML='';
+  if(!state.collection) state.collection=[];
+
+  state.collection.forEach((item,i)=>{
+    const st = COLL_STATUT_STYLE[item.statut] || COLL_STATUT_STYLE['possédé'];
+    const tr = document.createElement('tr');
+    tr.className='coll-row';
+    tr.innerHTML=`
+      <td class="coll-expand">▶</td>
+      <td>
+        <div class="coll-name">${item.name}
+          <span style="font-size:0.6rem;margin-left:0.4rem;padding:0.1rem 0.4rem;border-radius:8px;background:rgba(255,255,255,0.04);color:${st.color};border:1px solid ${st.color}44;">${st.label}</span>
+        </div>
+        <div style="display:flex;gap:2px;margin-top:0.25rem;">${starsHTML(item.stars||0,i)}</div>
+      </td>
+      <td class="coll-val-real">${item.valReal||'—'}</td>
+      <td><div class="coll-val-azart">${item.valAzart||'—'}</div></td>
+      <td style="text-align:center;"><span class="del-btn" onclick="deleteCollItem(${i});event.stopPropagation();" title="Supprimer">✕</span></td>
+    `;
+    tr.onclick=()=>tr.classList.toggle('open');
+    tbody.appendChild(tr);
+
+    const descTr = document.createElement('tr');
+    descTr.className='coll-desc-row';
+    const sel = Object.entries(COLL_STATUT_STYLE).map(([k,v])=>`<option value="${k}" ${item.statut===k?'selected':''}>${v.label}</option>`).join('');
+    descTr.innerHTML=`
+      <td></td>
+      <td colspan="4" class="coll-desc-cell">
+        <div class="coll-desc-text">${item.desc||'<em style="opacity:0.4">Aucune description.</em>'}</div>
+        <div style="display:flex;gap:0.5rem;margin-top:0.45rem;flex-wrap:wrap;align-items:center;">
+          <select onchange="updateCollStatut(${i},this.value)" style="background:rgba(10,10,15,0.7);border:1px solid rgba(255,255,255,0.08);color:var(--parchment-dark);font-family:'Crimson Text',serif;font-size:0.8rem;padding:0.2rem 0.4rem;border-radius:1px;cursor:pointer;">${sel}</select>
+          <button onclick="editCollItem(${i});event.stopPropagation();" style="font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.22rem 0.5rem;border-radius:1px;cursor:pointer;background:rgba(184,146,42,0.08);border:1px solid rgba(184,146,42,0.25);color:var(--GLD);">✎ Modifier</button>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(descTr);
+  });
+
+  renderCollStats();
+}
+
+function renderCollStats() {
+  const bar = document.getElementById('coll-stats-bar'); if(!bar||!state.collection) return;
+  const total=state.collection.length;
+  if(!total){ bar.innerHTML='<span style="font-style:italic;opacity:0.4;font-size:0.78rem;">Aucun objet pour l\'instant.</span>'; return; }
+  const posses=state.collection.filter(i=>i.statut==='possédé').length;
+  const planque=state.collection.filter(i=>i.statut==='planque').length;
+  const perdu=state.collection.filter(i=>i.statut==='perdu').length;
+  const avgStars=(state.collection.reduce((a,i)=>a+(i.stars||0),0)/total).toFixed(1);
+  bar.innerHTML=`
+    <span style="font-style:italic;opacity:0.55;font-size:0.78rem;">${total} objet${total>1?'s':''} dans la collection</span>
+    <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+      ${posses?`<span class="coll-stat-pill" style="color:var(--GRN);">${posses} sur soi</span>`:''}
+      ${planque?`<span class="coll-stat-pill" style="color:var(--acc2);">${planque} en planque</span>`:''}
+      ${perdu?`<span class="coll-stat-pill" style="color:#c07070;">${perdu} perdu${perdu>1?'s':''}</span>`:''}
+      <span class="coll-stat-pill">★ moy. ${avgStars}</span>
+    </div>
+  `;
+}
+
+function updateCollStars(idx,val) { state.collection[idx].stars=val; renderCollection(); save(); }
+function updateCollStatut(idx,val) { state.collection[idx].statut=val; renderCollection(); save(); }
+
+function editCollItem(idx) {
+  const item=state.collection[idx];
+  const name=prompt('Nom :',item.name); if(name===null) return;
+  const valReal=prompt('Valeur réelle :',item.valReal||'');  if(valReal===null) return;
+  const valAzart=prompt('Valeur pour Azart :',item.valAzart||''); if(valAzart===null) return;
+  const desc=prompt('Description / contexte :',item.desc||''); if(desc===null) return;
+  Object.assign(state.collection[idx],{name,valReal,valAzart,desc});
+  renderCollection(); save();
+}
+
+function deleteCollItem(idx) {
+  if(confirm('Retirer cet objet de la collection ?')){ state.collection.splice(idx,1); renderCollection(); save(); }
+}
+
+function addCollItem() {
+  const name=document.getElementById('coll-name').value.trim(); if(!name) return;
+  if(!state.collection) state.collection=[];
+  state.collection.push({
+    name,
+    valReal:  document.getElementById('coll-val-real').value.trim()||'—',
+    valAzart: document.getElementById('coll-val-azart').value.trim()||'—',
+    stars:    collNewStars,
+    statut:   document.getElementById('coll-statut').value,
+    desc:     document.getElementById('coll-desc').value.trim(),
+  });
+  ['coll-name','coll-val-real','coll-val-azart','coll-desc'].forEach(id=>document.getElementById(id).value='');
+  collNewStars=3; renderCollNewStars();
+  renderCollection(); save(); toggleForm('coll-form');
+}
+
+// ══════ EVENTS ══════
+document.getElementById('session-notes').addEventListener('blur', saveAll);
+['cet-corruption','cet-mutations','cet-etats'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('blur',saveAll); });
 
 load();
 </script>
