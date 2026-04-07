@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Campagnes — Warhammer Fantasy</title>
+<title>L'Éclipse — Lune Pâle</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
@@ -16,7 +16,6 @@
     --VIO: #674EA7;
     --GRN: #5E804F;
     --SUB: #555566;
-    --blood: #8B1A1A;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: var(--ink); color: var(--parchment); font-family: 'Crimson Text', serif; min-height: 100vh; overflow-x: hidden; }
@@ -31,6 +30,19 @@
     pointer-events: none;
     z-index: 0;
   }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,15,0.93); backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(184,146,42,0.15);
+    padding: 0.6rem 1.5rem; display: flex; align-items: center; gap: 1rem;
+  }
+  nav a { color: var(--SUB); text-decoration: none; font-size: 0.82rem; font-style: italic; transition: color 0.2s; }
+  nav a:hover { color: var(--GLD); }
+  .nav-sep { color: var(--SUB); opacity: 0.3; }
+  .nav-current { color: var(--GLD) !important; font-style: normal; font-family: 'Cinzel', serif; font-size: 0.82rem; }
+
   .container { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
 
   /* HEADER */
@@ -38,58 +50,54 @@
   header::after { content: ''; display: block; width: 60%; height: 1px; background: linear-gradient(to right, transparent, var(--GLD), transparent); margin: 1.5rem auto 0; }
   .hub-label { font-family: 'Crimson Text', serif; font-style: italic; color: var(--GLD); font-size: 0.9rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.5rem; }
   h1 { font-family: 'Cinzel', serif; font-size: clamp(1.6rem, 5vw, 2.8rem); font-weight: 700; color: var(--parchment); letter-spacing: 0.05em; text-shadow: 0 0 40px rgba(184,146,42,0.3), 0 2px 4px rgba(0,0,0,0.8); line-height: 1.2; }
-  .hub-sub { font-family: 'Cinzel', serif; font-size: 0.75rem; color: var(--SUB); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 0.6rem; }
+  .hub-arc { font-family: 'Cinzel', serif; font-size: 0.75rem; color: var(--GLD); opacity: 0.7; letter-spacing: 0.2em; text-transform: uppercase; margin-top: 0.6rem; }
+  .hub-desc { font-style: italic; color: var(--parchment-dark); font-size: 0.95rem; margin-top: 0.8rem; max-width: 520px; margin-left: auto; margin-right: auto; line-height: 1.6; }
 
   /* SECTION LABEL */
   .section-title { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--SUB); margin: 2.5rem 0 1.25rem; display: flex; align-items: center; gap: 1rem; }
   .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
 
-  /* CAMPAIGN PORTALS */
-  .portals { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 2rem 0; }
-  @media (max-width: 680px) { .portals { grid-template-columns: 1fr; } }
+  /* GRID CARDS */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin: 1.5rem 0; }
 
-  .portal { display: block; text-decoration: none; border-radius: 3px; padding: 2rem 1.75rem; transition: all 0.3s ease; position: relative; overflow: hidden; cursor: pointer; }
-  .portal::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s; }
-  .portal:hover { transform: translateY(-3px); }
-  .portal:hover::before { opacity: 1; }
+  .card { display: block; text-decoration: none; border-radius: 3px; padding: 1.6rem 1.5rem; transition: all 0.3s ease; position: relative; overflow: hidden; }
+  .card::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s; }
+  .card:hover { transform: translateY(-3px); }
+  .card:hover::before { opacity: 1; }
 
-  /* Eclipse portal */
-  .portal-eclipse {
-    background: rgba(28,58,90,0.14);
-    border: 1px solid rgba(184,146,42,0.25);
-    border-top: 3px solid var(--GLD);
-  }
-  .portal-eclipse::before { background: linear-gradient(135deg, rgba(184,146,42,0.06) 0%, transparent 60%); }
-  .portal-eclipse:hover { border-color: rgba(184,146,42,0.55); background: rgba(28,58,90,0.22); box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(184,146,42,0.12); }
+  /* PJ cards — chaque personnage a sa couleur acc */
+  .card-azart  { background: rgba(28,58,90,0.14); border: 1px solid rgba(28,58,90,0.35); border-top: 3px solid #1C3A5A; }
+  .card-azart::before  { background: linear-gradient(135deg, rgba(28,58,90,0.1) 0%, transparent 60%); }
+  .card-azart:hover  { border-color: rgba(28,58,90,0.7); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
+  .card-azart .card-accent { color: #4a7ab5; }
 
-  /* Boue et Sang portal */
-  .portal-bds {
-    background: rgba(139,26,26,0.1);
-    border: 1px solid rgba(139,26,26,0.25);
-    border-top: 3px solid #8B1A1A;
-  }
-  .portal-bds::before { background: linear-gradient(135deg, rgba(139,26,26,0.08) 0%, transparent 60%); }
-  .portal-bds:hover { border-color: rgba(139,26,26,0.55); background: rgba(139,26,26,0.16); box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(139,26,26,0.12); }
+  .card-den    { background: rgba(94,128,79,0.1); border: 1px solid rgba(94,128,79,0.3); border-top: 3px solid #5E804F; }
+  .card-den::before    { background: linear-gradient(135deg, rgba(94,128,79,0.08) 0%, transparent 60%); }
+  .card-den:hover    { border-color: rgba(94,128,79,0.6); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
+  .card-den .card-accent { color: #7aac65; }
 
-  .portal-symbol { font-size: 2.2rem; margin-bottom: 1rem; display: block; line-height: 1; }
-  .portal-system { font-family: 'Crimson Text', serif; font-style: italic; font-size: 0.8rem; letter-spacing: 0.1em; margin-bottom: 0.4rem; }
-  .portal-eclipse .portal-system { color: rgba(184,146,42,0.7); }
-  .portal-bds .portal-system { color: rgba(180,60,60,0.8); }
+  .card-sareth { background: rgba(103,78,167,0.1); border: 1px solid rgba(103,78,167,0.3); border-top: 3px solid #674EA7; }
+  .card-sareth::before { background: linear-gradient(135deg, rgba(103,78,167,0.08) 0%, transparent 60%); }
+  .card-sareth:hover { border-color: rgba(103,78,167,0.6); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
+  .card-sareth .card-accent { color: #9b82d4; }
 
-  .portal-name { font-family: 'Cinzel', serif; font-size: clamp(1.2rem, 3vw, 1.7rem); font-weight: 700; color: var(--parchment); letter-spacing: 0.04em; margin-bottom: 0.3rem; line-height: 1.15; }
-  .portal-arc { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 1rem; }
-  .portal-eclipse .portal-arc { color: var(--GLD); opacity: 0.7; }
-  .portal-bds .portal-arc { color: #c05050; opacity: 0.8; }
+  .card-scenario { background: rgba(184,146,42,0.08); border: 1px solid rgba(184,146,42,0.22); border-top: 3px solid var(--GLD); }
+  .card-scenario::before { background: linear-gradient(135deg, rgba(184,146,42,0.06) 0%, transparent 60%); }
+  .card-scenario:hover { border-color: rgba(184,146,42,0.5); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
+  .card-scenario .card-accent { color: var(--GLD); }
 
-  .portal-desc { font-size: 0.92rem; color: var(--parchment-dark); line-height: 1.55; font-style: italic; margin-bottom: 1.25rem; }
+  .card-symbol { font-size: 2rem; margin-bottom: 0.9rem; display: block; line-height: 1; }
+  .card-label { font-family: 'Crimson Text', serif; font-style: italic; font-size: 0.78rem; letter-spacing: 0.08em; margin-bottom: 0.25rem; }
+  .card-name { font-family: 'Cinzel', serif; font-size: 1.25rem; font-weight: 700; color: var(--parchment); letter-spacing: 0.04em; margin-bottom: 0.2rem; line-height: 1.15; }
+  .card-sub { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.55; margin-bottom: 0.9rem; }
+  .card-desc { font-size: 0.88rem; color: var(--parchment-dark); line-height: 1.5; font-style: italic; margin-bottom: 1.1rem; }
+  .card-enter { display: inline-flex; align-items: center; gap: 0.4rem; font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.38rem 0.85rem; border-radius: 2px; transition: all 0.2s; }
+  .card-azart  .card-enter { background: rgba(28,58,90,0.25); color: #4a7ab5; border: 1px solid rgba(28,58,90,0.5); }
+  .card-den    .card-enter { background: rgba(94,128,79,0.2); color: #7aac65; border: 1px solid rgba(94,128,79,0.4); }
+  .card-sareth .card-enter { background: rgba(103,78,167,0.2); color: #9b82d4; border: 1px solid rgba(103,78,167,0.4); }
+  .card-scenario .card-enter { background: rgba(184,146,42,0.15); color: var(--GLD); border: 1px solid rgba(184,146,42,0.3); }
 
-  .portal-enter { display: inline-flex; align-items: center; gap: 0.5rem; font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.45rem 1rem; border-radius: 2px; transition: all 0.2s; }
-  .portal-eclipse .portal-enter { background: rgba(184,146,42,0.15); color: var(--GLD); border: 1px solid rgba(184,146,42,0.3); }
-  .portal-eclipse:hover .portal-enter { background: rgba(184,146,42,0.25); border-color: rgba(184,146,42,0.5); }
-  .portal-bds .portal-enter { background: rgba(139,26,26,0.2); color: #c06060; border: 1px solid rgba(139,26,26,0.35); }
-  .portal-bds:hover .portal-enter { background: rgba(139,26,26,0.3); border-color: rgba(139,26,26,0.55); }
-
-  /* DIVIDER */
+  /* ORNAMENT */
   .ornament { text-align: center; color: var(--GLD); opacity: 0.35; font-size: 1rem; letter-spacing: 0.6em; margin: 0.5rem 0; }
 
   /* FOOTER */
@@ -97,43 +105,73 @@
 </style>
 </head>
 <body>
+
+<nav>
+  <a href="../index.html">← Accueil</a>
+  <span class="nav-sep">·</span>
+  <span class="nav-current">L'Éclipse</span>
+</nav>
+
 <div class="container">
 
   <header>
-    <div class="hub-label">Warhammer Fantasy Roleplay</div>
-    <h1>Campagnes</h1>
-    <div class="hub-sub">Choisissez votre campagne</div>
+    <div class="hub-label">Warhammer Fantasy Roleplay · 4e édition</div>
+    <h1>🌘 L'Éclipse</h1>
+    <div class="hub-desc">Espace dédié à la campagne L'Éclipse.</div>
   </header>
 
   <div class="ornament">· · ·</div>
 
-  <div class="section-title">Campagnes actives</div>
+  <div class="section-title">Personnages joueurs</div>
 
-  <div class="portals">
+  <div class="cards">
 
-    <!-- L'ÉCLIPSE -->
-    <a class="portal portal-eclipse" href="eclipse/index.html">
-      <span class="portal-symbol">🌘</span>
-      <div class="portal-system">Warhammer FRP 4e édition</div>
-      <div class="portal-name">L'Éclipse</div>
-      <div class="portal-desc">Espace dédié à la campagne L'Éclipse.</div>
-      <span class="portal-enter">Entrer →</span>
+    <a class="card card-azart" href="azart.html">
+      <span class="card-symbol">🗝️</span>
+      <div class="card-label card-accent">Quentin</div>
+      <div class="card-name">Azart</div>
+      <div class="card-sub">Voleur · Humain</div>
+      <div class="card-desc">Agile et opportuniste. Là où d'autres forcent, il glisse avec une précision chirurgicale.</div>
+      <span class="card-enter card-accent">Ouvrir →</span>
     </a>
 
-    <!-- DE BOUE ET DE SANG -->
-    <a class="portal portal-bds" href="bds/index.html">
-      <span class="portal-symbol">⚔️</span>
-      <div class="portal-system">Warhammer FRP — à définir</div>
-      <div class="portal-name">De Boue et de Sang</div>
-      <div class="portal-arc">En préparation</div>
-      <div class="portal-desc">Une nouvelle campagne. Six joueurs, un monde à découvrir. Le site sera complété au fur et à mesure.</div>
-      <span class="portal-enter">Entrer →</span>
+    <a class="card card-den" href="den.html">
+      <span class="card-symbol"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44" width="36" height="36" fill="none"><path d="M4 36 C4 36, 6 20, 22 12 C32 7, 38 14, 38 14 C38 14, 28 20, 20 28 C13 35, 4 36, 4 36 Z" fill="#5E804F" opacity="0.93"/><path d="M4 36 C12 28, 24 20, 38 14" stroke="#3d5c32" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.5"/><path d="M26 44 C26 44, 30 36, 36 28 C40 22, 44 24, 44 24 C44 24, 42 30, 38 36 C34 42, 26 44, 26 44 Z" fill="#B8702A" opacity="0.9"/><path d="M26 44 C31 38, 38 30, 44 24" stroke="#8B4e1a" stroke-width="0.9" stroke-linecap="round" fill="none" opacity="0.5"/></svg></span>
+      <div class="card-label card-accent">Séverine</div>
+      <div class="card-name">Den'l Endri</div>
+      <div class="card-sub">Gladiatrice · Elfe sylvaine</div>
+      <div class="card-desc">Fonceuse et brutale. Ses sens aiguisés d'elfe sylvaine s'allient à une violence directe et assumée.</div>
+      <span class="card-enter card-accent">Ouvrir →</span>
+    </a>
+
+    <a class="card card-sareth" href="sareth.html">
+      <span class="card-symbol"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 48" width="36" height="36" fill="none"><path d="M20 44 C18 38, 10 34, 12 26 C14 18, 22 20, 20 12 C18 6, 13 4, 15 0" stroke="#4a2d6e" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.5"/><path d="M20 44 C22 36, 30 32, 27 23 C24 14, 15 17, 18 9 C20 3, 26 2, 24 0" stroke="#674EA7" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.85"/><path d="M20 44 C19 37, 14 33, 16 25 C18 17, 25 19, 22 11 C20 5, 16 3, 18 0" stroke="#9b82d4" stroke-width="2" stroke-linecap="round" fill="none" opacity="1"/></svg></span>
+      <div class="card-label card-accent">Cassandra</div>
+      <div class="card-name">Sareth Liamah</div>
+      <div class="card-sub">Sorcière des ombres · Demi-elfe</div>
+      <div class="card-desc">Entre deux mondes. Maîtrise du Vent d'Ulgu, à la frontière du visible et de l'obscur.</div>
+      <span class="card-enter card-accent">Ouvrir →</span>
+    </a>
+
+  </div>
+
+  <div class="section-title">MJ</div>
+
+  <div class="cards">
+
+    <a class="card card-scenario" href="scenario.html">
+      <span class="card-symbol">📜</span>
+      <div class="card-label card-accent">Guillaume</div>
+      <div class="card-name">Scénario</div>
+      <div class="card-sub">Accès protégé · Maître de Jeu</div>
+      <div class="card-desc">Document complet de campagne : actes, scènes, PNJ, fils narratifs. Accès restreint par mot de passe.</div>
+      <span class="card-enter card-accent">Ouvrir →</span>
     </a>
 
   </div>
 
   <footer>
-    Campagnes privées &nbsp;·&nbsp; Warhammer Fantasy Roleplay
+    L'Éclipse · Arc I Lune Pâle &nbsp;·&nbsp; Warhammer Fantasy Roleplay
   </footer>
 
 </div>
