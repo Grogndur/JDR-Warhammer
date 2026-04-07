@@ -1160,10 +1160,14 @@ function jetAffinite() {
 }
 
 // ══════ EVENT LISTENERS ══════
-document.getElementById('session-notes').addEventListener('blur', saveAll);
-['cet-corruption','cet-mutations','cet-etats'].forEach(id=>{
-  const el=document.getElementById(id); if(el) el.addEventListener('blur',saveAll);
+['session-notes','cet-corruption','cet-mutations','cet-etats'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el){
+    el.addEventListener('blur', saveAll);
+    el.addEventListener('input', saveAll);
+  }
 });
+window.addEventListener('beforeunload', saveAll);
 
 load();
 </script>

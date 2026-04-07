@@ -227,7 +227,7 @@
 
   <!-- HEADER -->
   <div class="perso-header">
-    <div class="perso-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44" width="32" height="32" fill="none"><path d="M8 40 C8 28, 14 16, 22 10 C30 4, 36 8, 36 8" stroke="#B8702A" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.9"/><path d="M8 40 C14 32, 20 20, 22 10" stroke="#d4904a" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.6"/><path d="M36 8 C38 16, 36 28, 30 36 C26 40, 18 42, 12 40" stroke="#8B4e1a" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.7"/><circle cx="22" cy="22" r="3" fill="#B8702A" opacity="0.4"/></svg></div>
+    <div class="perso-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 58" width="32" height="42" fill="none"><g transform="translate(22,20)"><path d="M -20 0 Q 0 -28 20 0 Q 0 28 -20 0 Z" fill="none" stroke="#d4904a" stroke-width="2.2" stroke-linejoin="round"/><circle cx="0" cy="0" r="9" fill="#d4904a" opacity="0.18"/><circle cx="0" cy="0" r="9" fill="none" stroke="#d4904a" stroke-width="1.6"/><ellipse cx="0" cy="0" rx="4" ry="5" fill="#d4904a" opacity="0.9"/><ellipse cx="2.5" cy="-2.5" rx="1.5" ry="2" fill="#f0e8d8" opacity="0.45"/><rect x="-3" y="20" width="6" height="9" rx="0" fill="#d4904a"/><rect x="3" y="22" width="7" height="4" rx="1.5" fill="#d4904a"/><rect x="3" y="29" width="6" height="4" rx="1.5" fill="#d4904a"/><rect x="-3" y="29" width="6" height="7" rx="2" fill="#d4904a"/></g></svg></div>
     <div class="perso-info">
       <h1>Azart</h1>
       <div class="sub">Voleur · Roublard · Échelon 2</div>
@@ -548,6 +548,21 @@
 
 <script>
 // ══════ DONNÉES INITIALES ══════
+
+// ── Collection secrète ──
+const COLL_STATUT_STYLE = {
+  'possédé': { color:'var(--GRN)',  label:'Sur soi'   },
+  'planque':  { color:'var(--acc2)',label:'En planque' },
+  'perdu':    { color:'#c07070',    label:'Perdu'      },
+  'donné':    { color:'var(--SUB)', label:'Donné'      },
+};
+
+const COLL_DEF = [
+  { name:'Bague en argent', valReal:'2 PA', valAzart:'Précieux', stars:3, statut:'possédé',
+    desc:'Portée en public chez le Maître Artisan. Quelqu\'un l\'a remarquée et en a complimenté le goût. Pas la valeur — le goût.' },
+  { name:'Médaillon avec la photo d\'un jeune noble', valReal:'5 PA', valAzart:'Inestimable', stars:5, statut:'possédé',
+    desc:'Il ne sait pas qui c\'est. Mais quelqu\'un a pris la peine de faire graver ce visage. Être immortalisé ainsi — c\'est exactement ce qu\'il veut.' },
+];
 
 const STATS_DEF = [
   { key:'cc',  label:'CC',  init:40, avance:0  },
@@ -902,21 +917,6 @@ function addInvItem() {
 // ══════ UTILS ══════
 function toggleForm(id) { document.getElementById(id).classList.toggle('visible'); }
 
-// ══════ COLLECTION SECRÈTE ══════
-const COLL_STATUT_STYLE = {
-  'possédé': { color:'var(--GRN)',  label:'Sur soi'   },
-  'planque':  { color:'var(--acc2)',label:'En planque' },
-  'perdu':    { color:'#c07070',    label:'Perdu'      },
-  'donné':    { color:'var(--SUB)', label:'Donné'      },
-};
-
-const COLL_DEF = [
-  { name:'Bague en argent', valReal:'2 PA', valAzart:'Précieux', stars:3, statut:'possédé',
-    desc:'Portée en public chez le Maître Artisan. Quelqu\'un l\'a remarquée et en a complimenté le goût. Pas la valeur — le goût.' },
-  { name:'Médaillon avec la photo d\'un jeune noble', valReal:'5 PA', valAzart:'Inestimable', stars:5, statut:'possédé',
-    desc:'Il ne sait pas qui c\'est. Mais quelqu\'un a pris la peine de faire graver ce visage. Être immortalisé ainsi — c\'est exactement ce qu\'il veut.' },
-];
-
 let collNewStars = 3;
 
 function renderCollNewStars() {
@@ -1034,8 +1034,14 @@ function addCollItem() {
 }
 
 // ══════ EVENTS ══════
-document.getElementById('session-notes').addEventListener('blur', saveAll);
-['cet-corruption','cet-mutations','cet-etats'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('blur',saveAll); });
+['session-notes','cet-corruption','cet-mutations','cet-etats'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el){
+    el.addEventListener('blur', saveAll);
+    el.addEventListener('input', saveAll);
+  }
+});
+window.addEventListener('beforeunload', saveAll);
 
 load();
 </script>
