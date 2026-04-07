@@ -1395,6 +1395,22 @@ async function ghPush() {
     });
     if (r.ok) {
       ghSetStatus('✓ Sauvegardé sur GitHub · ' + new Date().toLocaleTimeString(), 'ok');
+    } else if (r.status === 409 || r.status === 422) {
+      // Conflit SHA — on récupère le SHA frais et on retente
+      ghSetStatus('Conflit SHA, nouvelle tentative…', 'loading');
+      const freshSha = await ghGetSHA();
+      if (freshSha) body.sha = freshSha;
+      const r2 = await fetch(GH_API, {
+        method: 'PUT',
+        headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (r2.ok) {
+        ghSetStatus('✓ Sauvegardé sur GitHub · ' + new Date().toLocaleTimeString(), 'ok');
+      } else {
+        const err2 = await r2.json();
+        ghSetStatus('Erreur GitHub : ' + (err2.message || r2.status), 'err');
+      }
     } else {
       const err = await r.json();
       ghSetStatus('Erreur GitHub : ' + (err.message || r.status), 'err');
