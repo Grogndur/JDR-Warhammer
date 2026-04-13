@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tryxx — Rhapsode de Kurnous</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:#08080d; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
+    --GLD:#B8922A; --VIO:#7a5a1a; --VIO2:#c8922a; --GRN:#6a8040; --SUB:#665545;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--ink); color:var(--parchment); font-family:'Crimson Text',serif; min-height:100vh; }
+  body::before { content:''; position:fixed; inset:0;
+    background: radial-gradient(ellipse at 30% 0%, rgba(122,90,26,0.12) 0%, transparent 55%),
+                radial-gradient(ellipse at 70% 100%, rgba(106,128,64,0.09) 0%, transparent 50%);
+    pointer-events:none; z-index:0; }
+
+  nav { position:sticky; top:0; z-index:100; background:rgba(8,8,13,0.93); backdrop-filter:blur(8px); border-bottom:1px solid rgba(184,146,42,0.2); padding:0.6rem 1.5rem; display:flex; align-items:center; gap:1rem; }
+  nav a { color:var(--SUB); text-decoration:none; font-size:0.82rem; font-style:italic; transition:color 0.2s; }
+  nav a:hover { color:var(--GLD); }
+  .nav-current { color:var(--VIO2) !important; font-style:normal; font-family:'Cinzel',serif; font-size:0.82rem; }
+  .nav-sep { color:var(--SUB); opacity:0.3; }
+
+  .layout { position:relative; z-index:1; max-width:1050px; margin:0 auto; padding:1.5rem 1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media(max-width:700px){ .layout { grid-template-columns:1fr; } }
+
+  .perso-header { grid-column:1/-1; display:flex; align-items:flex-end; gap:1.5rem; padding-bottom:1.25rem; border-bottom:1px solid rgba(184,146,42,0.2); flex-wrap:wrap; }
+  .perso-avatar { width:58px; height:58px; border-radius:2px; background:linear-gradient(135deg,rgba(184,146,42,0.2),rgba(106,128,64,0.35)); border:1px solid rgba(184,146,42,0.4); display:flex; align-items:center; justify-content:center; font-size:1.7rem; flex-shrink:0; }
+  .perso-info h1 { font-family:'Cinzel',serif; font-size:2rem; font-weight:700; line-height:1; letter-spacing:0.05em; }
+  .perso-info .sub { font-style:italic; color:var(--VIO2); font-size:0.95rem; margin-top:0.2rem; }
+  .perso-info .player { color:var(--SUB); font-size:0.78rem; margin-top:0.15rem; letter-spacing:0.05em; }
+  .perso-meta { margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:0.3rem; font-size:0.8rem; color:var(--SUB); font-style:italic; }
+
+  .card { background:rgba(8,8,13,0.65); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:1.1rem; }
+  .card.gld { border-color:rgba(184,146,42,0.2); }
+  .card-title { font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.9rem; display:flex; align-items:center; gap:0.5rem; }
+  .card-title::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.05); }
+  .card-title.gld { color:var(--GLD); }
+  .card-title.vio { color:var(--VIO2); }
+  .card-title.grn { color:var(--GRN); }
+  .card-title.red { color:#c0392b; }
+  .full { grid-column:1/-1; }
+
+  .editable { background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.1rem 0.2rem; width:100%; transition:border-color 0.15s; }
+  .editable:focus { outline:none; border-bottom-color:var(--VIO2); }
+  .editable::placeholder { color:rgba(102,85,69,0.45); font-style:italic; }
+  .editable-num { background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--GLD); font-family:'Cinzel',serif; font-size:0.95rem; font-weight:600; text-align:center; width:44px; padding:0.1rem 0; transition:border-color 0.15s; }
+  .editable-num:focus { outline:none; border-bottom-color:var(--GLD); }
+
+  .stats-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:0.45rem; }
+  @media(max-width:500px){ .stats-grid { grid-template-columns:repeat(3,1fr); } }
+  .stat-box { background:rgba(184,146,42,0.05); border:1px solid rgba(184,146,42,0.12); border-radius:2px; padding:0.45rem 0.3rem; text-align:center; }
+  .stat-label { font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); display:block; margin-bottom:0.2rem; }
+  .stat-total { font-family:'Cinzel',serif; font-size:1.3rem; font-weight:700; color:var(--VIO2); display:block; margin-top:0.1rem; }
+  .stat-bonus { font-size:0.6rem; color:var(--SUB); display:block; margin-top:0.05rem; }
+  .stat-edit-row { display:flex; gap:0.25rem; justify-content:center; align-items:center; margin-top:0.3rem; }
+  .stat-edit-row .editable-num { font-size:0.78rem; width:34px; color:var(--parchment-dark); border-bottom-color:rgba(255,255,255,0.06); }
+  .stat-edit-row .plus { color:var(--VIO2); font-size:0.65rem; }
+
+  .res-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.75rem; }
+  .res-box { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:0.6rem; text-align:center; }
+  .res-label { font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.3rem; display:block; }
+  .res-val { font-family:'Cinzel',serif; font-size:1.5rem; line-height:1; display:block; }
+  .res-sub { font-size:0.7rem; color:var(--SUB); margin-top:0.1rem; display:block; }
+  .wounds-ctrl { display:flex; align-items:center; gap:0.5rem; justify-content:center; margin-top:0.5rem; }
+  .btn-small { width:30px; height:30px; border-radius:2px; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+  .btn-wound { background:rgba(139,26,26,0.2); border:1px solid rgba(139,26,26,0.4); color:#e08080; }
+  .btn-wound:hover { background:rgba(139,26,26,0.35); }
+  .btn-heal { background:rgba(106,128,64,0.15); border:1px solid rgba(106,128,64,0.35); color:var(--GRN); }
+  .btn-heal:hover { background:rgba(106,128,64,0.3); }
+  .fortune-pip { width:24px; height:24px; border-radius:50%; border:1.5px solid rgba(184,146,42,0.5); cursor:pointer; transition:all 0.15s; background:transparent; }
+  .fortune-pip.active { background:var(--GLD); box-shadow:0 0 5px rgba(184,146,42,0.4); border-color:var(--GLD); }
+
+  .money-row { display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap; margin-top:0.25rem; }
+  .money-item { display:flex; flex-direction:column; align-items:center; gap:0.1rem; }
+  .money-val { font-family:'Cinzel',serif; font-size:1.4rem; color:var(--GLD); }
+  .money-label { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); }
+  .money-btns { display:flex; gap:0.2rem; margin-top:0.2rem; }
+  .money-btn { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); color:var(--SUB); cursor:pointer; font-size:0.7rem; width:20px; height:20px; border-radius:1px; transition:all 0.15s; display:flex; align-items:center; justify-content:center; }
+  .money-btn:hover { color:var(--GLD); border-color:rgba(184,146,42,0.3); }
+
+  .skill-list { list-style:none; }
+  .skill-list li { display:flex; align-items:center; padding:0.28rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.86rem; gap:0.4rem; }
+  .skill-list li:last-child { border-bottom:none; }
+  .skill-name { color:var(--parchment-dark); flex:1; }
+  .skill-aug { width:38px; }
+  .skill-aug .editable-num { width:38px; font-size:0.82rem; color:var(--VIO2); border-bottom-color:rgba(184,146,42,0.15); }
+  .skill-total { font-family:'Cinzel',serif; color:var(--GLD); font-size:0.9rem; font-weight:600; min-width:28px; text-align:right; }
+
+  /* ── BÉNÉDICTIONS (remplace "Sorts") ── */
+  .sort-item { border:1px solid rgba(184,146,42,0.2); border-radius:2px; margin-bottom:0.45rem; overflow:hidden; transition:border-color 0.2s; }
+  .sort-item:hover { border-color:rgba(184,146,42,0.45); }
+  .sort-header { display:flex; justify-content:space-between; align-items:center; padding:0.5rem 0.7rem; background:rgba(184,146,42,0.07); cursor:pointer; }
+  .sort-name-display { font-family:'Cinzel',serif; font-size:0.85rem; color:var(--parchment); font-weight:600; }
+  .sort-badges { display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; }
+  .sort-badge { font-size:0.65rem; padding:0.1rem 0.35rem; border-radius:1px; border:1px solid; letter-spacing:0.05em; white-space:nowrap; }
+  .sort-badge.ni { border-color:rgba(184,146,42,0.5); color:var(--VIO2); background:rgba(184,146,42,0.1); }
+  .sort-badge.portee { border-color:rgba(255,255,255,0.08); color:var(--parchment-dark); background:rgba(255,255,255,0.03); }
+  .sort-badge.duree { border-color:rgba(106,128,64,0.4); color:#9ab870; background:rgba(106,128,64,0.07); }
+  .sort-badge.cible { border-color:rgba(106,128,64,0.3); color:#9ab870; background:rgba(106,128,64,0.06); }
+  .sort-badge.type { border-color:rgba(102,85,69,0.35); color:var(--SUB); }
+  .sort-expand-icon { font-size:0.7rem; color:var(--SUB); margin-left:0.5rem; flex-shrink:0; transition:transform 0.15s; }
+  .sort-item.open .sort-expand-icon { transform:rotate(180deg); }
+  .sort-body { display:none; padding:0.65rem 0.75rem; font-size:0.84rem; color:var(--parchment-dark); line-height:1.55; border-top:1px solid rgba(184,146,42,0.1); }
+  .sort-item.open .sort-body { display:block; }
+  .sort-body-section { margin-bottom:0.5rem; }
+  .sort-body-label { font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--VIO); opacity:0.8; margin-bottom:0.15rem; display:block; }
+  .sort-body-text { font-style:italic; }
+  .sort-actions { display:flex; gap:0.4rem; margin-top:0.6rem; padding-top:0.5rem; border-top:1px solid rgba(255,255,255,0.04); }
+  .sort-btn { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.25rem 0.5rem; border-radius:1px; cursor:pointer; transition:all 0.15s; }
+  .sort-btn-edit { background:rgba(184,146,42,0.1); border:1px solid rgba(184,146,42,0.3); color:var(--VIO2); }
+  .sort-btn-edit:hover { background:rgba(184,146,42,0.22); }
+  .sort-btn-del { background:rgba(139,26,26,0.08); border:1px solid rgba(139,26,26,0.25); color:#c07070; }
+  .sort-btn-del:hover { background:rgba(139,26,26,0.2); }
+
+  .sort-form { background:rgba(12,10,4,0.97); border:1px solid rgba(184,146,42,0.35); border-radius:2px; padding:0.9rem; margin-top:0.5rem; display:none; }
+  .sort-form.visible { display:block; }
+  .sort-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.65rem; margin-bottom:0.65rem; }
+  @media(max-width:500px) { .sort-form-grid { grid-template-columns:1fr; } }
+  .sort-form-field { display:flex; flex-direction:column; gap:0.2rem; }
+  .sort-form-label { font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--VIO); opacity:0.85; }
+  .sort-form-input { background:rgba(184,146,42,0.07); border:1px solid rgba(184,146,42,0.2); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.3rem 0.5rem; border-radius:1px; width:100%; }
+  .sort-form-input:focus { outline:none; border-color:var(--VIO2); }
+  .sort-form-textarea { background:rgba(184,146,42,0.07); border:1px solid rgba(184,146,42,0.2); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.3rem 0.5rem; border-radius:1px; width:100%; resize:vertical; min-height:65px; line-height:1.45; }
+  .sort-form-textarea:focus { outline:none; border-color:var(--VIO2); }
+  .sort-form-actions { display:flex; gap:0.5rem; }
+  .btn-add { font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.35rem 0.75rem; border-radius:2px; cursor:pointer; transition:all 0.15s; display:inline-flex; align-items:center; gap:0.3rem; }
+  .btn-add-vio { background:rgba(184,146,42,0.1); border:1px solid rgba(184,146,42,0.4); color:var(--VIO2); }
+  .btn-add-vio:hover { background:rgba(184,146,42,0.22); }
+  .btn-add-gld { background:rgba(184,146,42,0.08); border:1px solid rgba(184,146,42,0.3); color:var(--GLD); }
+  .btn-add-gld:hover { background:rgba(184,146,42,0.18); }
+  .btn-cancel { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); color:var(--SUB); font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.3rem 0.6rem; border-radius:2px; cursor:pointer; }
+
+  .talent-list { list-style:none; }
+  .talent-list li { padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.87rem; display:flex; align-items:flex-start; gap:0.5rem; }
+  .talent-list li:last-child { border-bottom:none; }
+  .talent-content { flex:1; }
+  .talent-name { color:var(--VIO2); font-weight:600; }
+  .talent-desc { color:var(--SUB); font-size:0.8rem; font-style:italic; display:block; margin-top:0.1rem; }
+  .talent-del { color:rgba(139,26,26,0.5); cursor:pointer; font-size:0.75rem; flex-shrink:0; padding:0.1rem 0.2rem; transition:color 0.15s; }
+  .talent-del:hover { color:#e08080; }
+  .talent-form { display:none; background:rgba(184,146,42,0.06); border:1px solid rgba(184,146,42,0.2); border-radius:2px; padding:0.6rem; margin-top:0.5rem; gap:0.4rem; flex-direction:column; }
+  .talent-form.visible { display:flex; }
+
+  .armor-table { width:100%; border-collapse:collapse; font-size:0.82rem; margin-bottom:0.75rem; }
+  .armor-table th { text-align:left; color:var(--SUB); font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.2rem 0.4rem 0.4rem; font-weight:400; border-bottom:1px solid rgba(255,255,255,0.05); }
+  .armor-table td { padding:0.25rem 0.4rem; border-bottom:1px solid rgba(255,255,255,0.03); color:var(--parchment-dark); vertical-align:middle; }
+  .armor-pa-input { font-family:'Cinzel',serif; color:var(--GLD); font-weight:600; text-align:center; background:transparent; border:none; border-bottom:1px solid rgba(184,146,42,0.15); width:36px; font-size:0.9rem; padding:0.05rem 0; }
+  .armor-pa-input:focus { outline:none; border-bottom-color:var(--GLD); }
+
+  .weapon-item { padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.04); display:flex; align-items:flex-start; gap:0.5rem; }
+  .weapon-item:last-child { border-bottom:none; }
+  .weapon-content { flex:1; }
+  .weapon-name { color:var(--parchment); font-size:0.9rem; font-weight:600; }
+  .weapon-stats { display:flex; gap:0.75rem; margin-top:0.2rem; flex-wrap:wrap; }
+  .weapon-stat { font-size:0.72rem; }
+  .weapon-stat-label { color:var(--SUB); }
+  .weapon-stat-val { color:var(--GLD); font-family:'Cinzel',serif; }
+  .weapon-del { color:rgba(139,26,26,0.4); cursor:pointer; font-size:0.75rem; flex-shrink:0; padding:0.1rem 0.2rem; transition:color 0.15s; }
+  .weapon-del:hover { color:#e08080; }
+  .weapon-form { display:none; background:rgba(184,146,42,0.04); border:1px solid rgba(184,146,42,0.15); border-radius:2px; padding:0.65rem; margin-top:0.5rem; flex-direction:column; gap:0.4rem; }
+  .weapon-form.visible { display:flex; }
+  .weapon-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.4rem; }
+
+  .inv-item { display:flex; align-items:center; padding:0.28rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.85rem; gap:0.4rem; }
+  .inv-item:last-child { border-bottom:none; }
+  .inv-name { color:var(--parchment-dark); flex:1; }
+  .inv-detail { font-size:0.72rem; color:var(--SUB); font-style:italic; white-space:nowrap; }
+  .inv-del { color:rgba(139,26,26,0.4); cursor:pointer; font-size:0.72rem; flex-shrink:0; transition:color 0.15s; }
+  .inv-del:hover { color:#e08080; }
+  .inv-form { display:none; background:rgba(106,128,64,0.05); border:1px solid rgba(106,128,64,0.15); border-radius:2px; padding:0.6rem; margin-top:0.5rem; flex-direction:column; gap:0.35rem; }
+  .inv-form.visible { display:flex; }
+
+  .xp-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; text-align:center; margin-bottom:0.9rem; }
+  .xp-box { background:rgba(184,146,42,0.07); border:1px solid rgba(184,146,42,0.15); border-radius:2px; padding:0.5rem; }
+  .xp-label { font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--VIO2); display:block; margin-bottom:0.2rem; opacity:0.8; }
+  .xp-val-input { font-family:'Cinzel',serif; font-size:1.2rem; color:var(--parchment); background:transparent; border:none; border-bottom:1px solid rgba(184,146,42,0.2); text-align:center; width:70px; }
+  .xp-val-input:focus { outline:none; border-bottom-color:var(--VIO2); }
+
+  .ambition-label { font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--VIO); margin-bottom:0.2rem; display:block; opacity:0.9; }
+  .trait-block { font-size:0.86rem; line-height:1.55; color:var(--parchment-dark); margin-bottom:0.5rem; }
+  .trait-line { font-size:0.85rem; line-height:1.6; color:var(--parchment-dark); padding:0.1rem 0; }
+  .trait-line.plus { color:var(--GRN); }
+  .trait-line.minus { color:#c07060; }
+
+  .cet-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; }
+  .cet-box { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:0.5rem 0.6rem; }
+  .cet-label { font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.35rem; display:block; font-family:'Cinzel',serif; }
+  .cet-input { width:100%; background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.85rem; padding:0.2rem 0; resize:none; min-height:48px; line-height:1.4; }
+  .cet-input:focus { outline:none; border-bottom-color:var(--VIO2); }
+  .cet-input::placeholder { color:rgba(102,85,69,0.5); font-style:italic; }
+
+  .notes-area { width:100%; background:rgba(8,8,13,0.5); border:1px solid rgba(255,255,255,0.07); border-radius:2px; color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.65rem; resize:vertical; min-height:70px; line-height:1.5; }
+  .notes-area:focus { outline:none; border-color:rgba(184,146,42,0.35); }
+  .btn-save { background:rgba(184,146,42,0.12); border:1px solid rgba(184,146,42,0.35); color:var(--VIO2); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.35rem 0.75rem; border-radius:2px; cursor:pointer; margin-top:0.5rem; transition:background 0.15s; }
+  .btn-save:hover { background:rgba(184,146,42,0.22); }
+  .save-confirm { font-size:0.78rem; color:var(--GRN); margin-left:0.75rem; opacity:0; transition:opacity 0.5s; }
+
+  .histo { font-size:0.87rem; line-height:1.7; color:var(--parchment-dark); }
+  .histo p { margin-bottom:0.65rem; }
+  .histo p:last-child { margin-bottom:0; }
+
+  .pip { width:26px; height:26px; border-radius:3px; border:1.5px solid rgba(184,146,42,0.35); cursor:pointer; transition:all 0.15s; background:transparent; display:flex; align-items:center; justify-content:center; color:rgba(184,146,42,0.2); }
+  .pip.on { background:rgba(184,146,42,0.12); border-color:var(--GLD); color:var(--GLD); box-shadow:0 0 4px rgba(184,146,42,0.25); }
+  .pip svg { pointer-events:none; }
+
+  .armor-piece { padding:0.45rem 0; border-bottom:1px solid rgba(255,255,255,0.04); display:flex; align-items:flex-start; gap:0.5rem; }
+  .armor-piece:last-child { border-bottom:none; }
+  .armor-piece-content { flex:1; }
+  .armor-piece-name { color:var(--parchment); font-size:0.88rem; font-weight:600; }
+  .armor-piece-stats { display:flex; gap:0.6rem; margin-top:0.15rem; flex-wrap:wrap; }
+  .astat { font-size:0.72rem; }
+  .astat-l { color:var(--SUB); }
+  .astat-v { color:var(--GLD); font-family:'Cinzel',serif; }
+
+  .io-bar { display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; padding:0.6rem 0.9rem; background:rgba(36,41,47,0.6); border:1px solid rgba(255,255,255,0.07); border-radius:2px; margin-bottom:0.5rem; }
+  .io-btn { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.32rem 0.9rem; border-radius:2px; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .io-btn-export { background:rgba(36,160,96,0.15); border:1px solid rgba(36,160,96,0.4); color:#4caf82; }
+  .io-btn-export:hover { background:rgba(36,160,96,0.28); }
+  .io-btn-import { background:rgba(184,146,42,0.1); border:1px solid rgba(184,146,42,0.35); color:var(--GLD); }
+  .io-btn-import:hover { background:rgba(184,146,42,0.22); }
+  .io-status { font-size:0.75rem; font-style:italic; color:var(--SUB); flex:1; }
+  .io-status.ok { color:#4caf82; }
+  .io-status.err { color:#e05050; }
+
+  .form-panel { display:none; border:1px solid rgba(184,146,42,0.2); border-radius:2px; padding:0.65rem; margin-top:0.5rem; flex-direction:column; gap:0.4rem; background:rgba(184,146,42,0.05); }
+  .form-panel.visible { display:flex; }
+
+  .editable-field { cursor:pointer; border-bottom:1px dashed transparent; transition:border-color 0.15s; display:inline-block; min-width:20px; }
+  .editable-field:hover { border-bottom-color:rgba(255,255,255,0.2); }
+  .editable-field:focus { outline:none; border-bottom:1px solid var(--GLD); background:rgba(184,146,42,0.06); border-radius:1px; }
+  .editable-field-area { cursor:pointer; border-bottom:1px dashed transparent; transition:border-color 0.15s; display:inline-block; min-width:60px; width:100%; background:transparent; color:inherit; font-family:inherit; font-size:inherit; font-style:inherit; resize:none; min-height:1.4em; }
+  .editable-field-area:hover { border-bottom-color:rgba(255,255,255,0.2); }
+  .editable-field-area:focus { outline:none; border-bottom:1px solid var(--GLD); background:rgba(184,146,42,0.04); border-radius:1px; }
+
+  /* Kurnous accent band */
+  .kurnous-band { background:rgba(184,146,42,0.06); border:1px solid rgba(184,146,42,0.2); border-radius:2px; padding:0.5rem 0.8rem; margin-bottom:0.75rem; font-size:0.78rem; color:var(--parchment-dark); font-style:italic; }
+  .kurnous-band strong { color:var(--VIO2); font-style:normal; }
+
+  /* ── LIVRE DES PRÉSENCES ── */
+  .livre-card { background:rgba(8,8,12,0.7); border:1px solid rgba(184,146,42,0.25); border-radius:2px; padding:1.1rem; grid-column:1/-1; }
+  .livre-tabs { display:flex; gap:0.35rem; margin-bottom:0.9rem; flex-wrap:wrap; }
+  .livre-tab { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; padding:0.28rem 0.7rem; border-radius:1px; cursor:pointer; transition:all 0.15s; border:1px solid rgba(255,255,255,0.07); background:transparent; color:var(--SUB); }
+  .livre-tab.active { border-color:rgba(184,146,42,0.5); color:rgba(184,146,42,1); background:rgba(184,146,42,0.08); }
+  .livre-tab.leg { border-color:rgba(184,146,42,0.5) !important; color:var(--GLD) !important; background:rgba(184,146,42,0.07) !important; }
+  .livre-tab.leg.active { background:rgba(184,146,42,0.15) !important; }
+  .livre-panel { display:none; }
+  .livre-panel.active { display:block; }
+  .livre-entry { display:flex; align-items:flex-start; gap:0.55rem; padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.84rem; }
+  .livre-entry:last-child { border-bottom:none; }
+  .livre-entry-left { flex:1; }
+  .livre-entry-name { color:var(--parchment); font-weight:600; font-family:'Cinzel',serif; font-size:0.82rem; }
+  .livre-entry-avantage { color:var(--parchment-dark); font-size:0.78rem; font-style:italic; margin-top:0.1rem; line-height:1.4; }
+  .livre-statut { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.12rem 0.4rem; border-radius:1px; border:1px solid; white-space:nowrap; flex-shrink:0; cursor:pointer; transition:all 0.15s; }
+  .livre-statut.pressenti { border-color:rgba(102,85,85,0.5); color:#a08888; background:rgba(102,85,85,0.08); }
+  .livre-statut.identifie { border-color:rgba(184,146,42,0.5); color:rgba(184,146,42,1); background:rgba(184,146,42,0.1); }
+  .livre-statut.compris { border-color:rgba(184,146,42,0.6); color:var(--GLD); background:rgba(184,146,42,0.1); }
+  .livre-del { color:rgba(139,26,26,0.4); cursor:pointer; font-size:0.72rem; flex-shrink:0; transition:color 0.15s; padding:0.1rem; }
+  .livre-del:hover { color:#e08080; }
+  .livre-add-form { display:none; margin-top:0.6rem; background:rgba(184,146,42,0.05); border:1px solid rgba(184,146,42,0.15); border-radius:2px; padding:0.65rem; flex-direction:column; gap:0.4rem; }
+  .livre-add-form.visible { display:flex; }
+  .livre-add-form input, .livre-add-form textarea { background:rgba(184,146,42,0.07); border:1px solid rgba(184,146,42,0.2); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.3rem 0.5rem; border-radius:1px; width:100%; }
+  .livre-add-form input:focus, .livre-add-form textarea:focus { outline:none; border-color:rgba(184,146,42,0.5); }
+  .livre-add-form textarea { resize:vertical; min-height:50px; }
+  .livre-count { font-size:0.65rem; color:var(--SUB); font-style:italic; margin-bottom:0.5rem; }
+  .livre-empty { font-size:0.82rem; color:var(--SUB); font-style:italic; padding:0.4rem 0; }
+  .livre-badge-leg { display:inline-block; font-size:0.55rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--GLD); border:1px solid rgba(184,146,42,0.4); padding:0.05rem 0.3rem; border-radius:1px; margin-left:0.35rem; vertical-align:middle; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html">← Accueil</a>
+  <span class="nav-sep">·</span>
+  <span class="nav-current">Tryxx</span>
+</nav>
+
+<div class="layout">
+
+  <!-- EXPORT / IMPORT -->
+  <div class="io-bar full">
+    <button class="io-btn io-btn-export" onclick="exportJSON()">↓ Exporter sauvegarde</button>
+    <button class="io-btn io-btn-import" onclick="document.getElementById('import-input').click()">↑ Importer sauvegarde</button>
+    <input type="file" id="import-input" accept=".json" style="display:none" onchange="importJSON(this)" />
+    <span class="io-status" id="io-status"></span>
+  </div>
+
+  <!-- HEADER -->
+  <div class="perso-header">
+    <div class="perso-avatar">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 48" width="32" height="32" fill="none">
+        <!-- Antler / cor stylisé Kurnous -->
+        <path d="M12 38 Q10 28 14 20 Q18 12 20 6" stroke="#7a5a1a" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.5"/>
+        <path d="M28 38 Q30 28 26 20 Q22 12 20 6" stroke="#B8922A" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.85"/>
+        <path d="M14 20 Q8 16 6 10" stroke="#B8922A" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.7"/>
+        <path d="M26 20 Q32 16 34 10" stroke="#B8922A" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.7"/>
+        <path d="M16 26 Q11 24 9 18" stroke="#c8922a" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.5"/>
+        <path d="M24 26 Q29 24 31 18" stroke="#c8922a" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.5"/>
+        <circle cx="20" cy="42" r="3" fill="rgba(184,146,42,0.35)" stroke="#B8922A" stroke-width="1"/>
+      </svg>
+    </div>
+    <div class="perso-info">
+      <h1>Tryxx Effendyl</h1>
+      <div class="sub">Rhapsode de Kurnous (Elfe Sylvain) · Rural · 1 Voix des</div>
+      <div class="player">Timothé · Elfe Sylvain · Âge 140 · Bronze 1</div>
+    </div>
+    <div class="perso-meta">
+      <div>Taille 1m90 · Poids 85 kg</div>
+      <div>Longs jaune clair, yeux bleu clair</div>
+      <div style="color:var(--VIO2);font-size:0.75rem;">Tradition : Kurnous · Eltharin &amp; Nature</div>
+    </div>
+  </div>
+
+
+  <!-- CARACTÉRISTIQUES -->
+  <div class="card gld full">
+    <div class="card-title gld">Caractéristiques</div>
+    <div class="stats-grid" id="stats-grid"></div>
+    <div style="font-size:0.7rem;color:var(--SUB);margin-top:0.6rem;font-style:italic;">Init = valeur de départ · Avancé = points dépensés · Total = calculé automatiquement</div>
+  </div>
+
+
+  <!-- ÉTAT & RESSOURCES -->
+  <div class="card gld">
+    <div class="card-title red">État & Ressources</div>
+    <div class="res-grid">
+      <div class="res-box">
+        <span class="res-label">Blessures</span>
+        <span class="res-val" id="wounds-cur">15</span>
+        <span class="res-sub">/ <input type="number" id="w-max-input" value="15" min="1" max="99" onchange="updateWoundsMax(this.value)" style="background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.12);color:var(--SUB);font-family:'Cinzel',serif;font-size:0.7rem;width:28px;text-align:center;padding:0;cursor:pointer;" /> max</span>
+        <div class="wounds-ctrl">
+          <button class="btn-small btn-wound" onclick="changeWound(-1)">−</button>
+          <button class="btn-small btn-heal" onclick="changeWound(1)">+</button>
+        </div>
+      </div>
+      <div class="res-box">
+        <span class="res-label">Mouvement</span>
+        <span class="res-val">5</span>
+        <span class="res-sub">cases / tour</span>
+      </div>
+    </div>
+    <div style="margin-bottom:0.6rem;">
+      <div class="card-title" style="color:var(--GLD);margin-bottom:0.4rem;font-size:0.62rem;">Destin & Chance</div>
+      <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Destin</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--GLD);">1</span>
+          <div style="display:flex;gap:0.3rem;" id="chance-pips"></div>
+        </div>
+        <div style="color:var(--SUB);font-size:1rem;">→</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Chance</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--parchment);" id="chance-val">1</span>
+          <div style="display:flex;gap:0.3rem;" id="chance-track"></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:0.75rem;">
+      <div class="card-title" style="color:var(--VIO2);margin-bottom:0.4rem;font-size:0.62rem;">Résilience & Détermination</div>
+      <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Résilience</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--VIO2);">1</span>
+        </div>
+        <div style="color:var(--SUB);font-size:1rem;">→</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Détermination</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--parchment);" id="determ-val">1</span>
+          <div style="display:flex;gap:0.3rem;" id="determ-pips"></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card-title" style="margin-bottom:0.4rem;font-size:0.62rem;">Monnaie <span style="font-weight:400;opacity:0.5;font-family:'Crimson Text',serif;text-transform:none;letter-spacing:0;font-size:0.7rem;">1 Co = 20 Pa · 1 Pa = 12 Sc</span></div>
+      <div class="money-row">
+        <div class="money-item">
+          <span class="money-val" id="money-or">0</span>
+          <span class="money-label">CO</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('or',-1)" title="-1 Co">&#8722;</button>
+            <button class="money-btn" onclick="chMoney('or',1)"  title="+1 Co">+</button>
+          </div>
+        </div>
+        <div class="money-item">
+          <span class="money-val" id="money-argent">13</span>
+          <span class="money-label">PA</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('argent',-1)" title="-1 Pa">&#8722;</button>
+            <button class="money-btn" onclick="chMoney('argent',1)"  title="+1 Pa">+</button>
+          </div>
+        </div>
+        <div class="money-item">
+          <span class="money-val" id="money-cuivre">611</span>
+          <span class="money-label">SC</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('cuivre',-1)" title="-1 Sc">&#8722;</button>
+            <button class="money-btn" onclick="chMoney('cuivre',1)"  title="+1 Sc">+</button>
+          </div>
+        </div>
+      </div>
+      <div id="money-convert-msg" style="font-size:0.68rem;font-style:italic;color:var(--GLD);margin-top:0.35rem;min-height:0.9rem;opacity:0;transition:opacity 0.4s;"></div>
+    </div>
+  </div>
+  </div>
+
+
+  <!-- CORRUPTION -->
+  <div class="card">
+    <div class="card-title red">Corruption · Mutations · États</div>
+    <div class="cet-grid">
+      <div class="cet-box"><span class="cet-label">Corruption</span><textarea class="cet-input" id="cet-corruption" placeholder="—"></textarea></div>
+      <div class="cet-box"><span class="cet-label">Mutations</span><textarea class="cet-input" id="cet-mutations" placeholder="—"></textarea></div>
+      <div class="cet-box"><span class="cet-label">États actifs</span><textarea class="cet-input" id="cet-etats" placeholder="Sonné, Exténué…"></textarea></div>
+    </div>
+  </div>
+
+
+  <!-- COMPÉTENCES DE BASE -->
+  <div class="card">
+    <div class="card-title gld">Compétences de base</div>
+    <ul class="skill-list" id="skills-base-list"></ul>
+  </div>
+
+
+  <!-- COMPÉTENCES AVANCÉES -->
+  <div class="card">
+    <div class="card-title vio">Compétences avancées</div>
+    <ul class="skill-list" id="skills-adv-list"></ul>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-add-vio" onclick="toggleAdvForm()">+ Ajouter</button>
+      <div class="talent-form" id="adv-form">
+        <input class="sort-form-input" id="adv-name" placeholder="Nom de la compétence" />
+        <input class="sort-form-input" id="adv-car" placeholder="Car. (Int, FM…)" />
+        <input class="sort-form-input" id="adv-aug" placeholder="Aug. — ex: 5" type="number" style="width:80px;" />
+        <div class="sort-form-actions">
+          <button class="btn-add btn-add-vio" onclick="addAdvSkill()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleAdvForm()">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- TALENTS -->
+  <div class="card">
+    <div class="card-title vio">Talents & Capacités</div>
+    <ul class="talent-list" id="talent-list"></ul>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-add-vio" onclick="toggleTalentForm()">+ Ajouter</button>
+      <div class="talent-form" id="talent-form">
+        <input class="sort-form-input" id="talent-name-new" placeholder="Nom du talent" />
+        <input class="sort-form-input" id="talent-desc-new" placeholder="Description" />
+        <div class="sort-form-actions">
+          <button class="btn-add btn-add-vio" onclick="addTalent()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleTalentForm()">Annuler</button>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:0.75rem;padding-top:0.6rem;border-top:1px solid rgba(255,255,255,0.05);">
+      <div class="card-title" style="color:var(--SUB);margin-bottom:0.5rem;font-size:0.62rem;">Traits raciaux &amp; capacités spéciales</div>
+      <ul style="list-style:none;font-size:0.83rem;line-height:1.9;color:var(--parchment-dark);">
+        <li>· <strong style="color:var(--parchment);">Vibration de la Bête</strong> : peut communiquer des concepts simples (danger, nourriture, traque) aux animaux de la forêt en imitant leur cri à la perfection. Soc.</li>
+        <li>· <strong style="color:var(--parchment);">Seconde vue</strong> : vous pouvez percevoir les Vents changeants de la Magie (parfois teintes, volutes, intensité…).</li>
+        <li>· <strong style="color:var(--parchment);">Très Résistant</strong> : +5 E.</li>
+        <li>· <strong style="color:var(--parchment);">Nomade</strong> : en contexte Rural, on ne peut vous détecter si on est spécifiquement à l'affût ou à la recherche de personnes cachées. Pas de Test de Perception passif pour vous détecter.</li>
+        <li>· <strong style="color:var(--parchment);">Sens aiguisé (vue)</strong> : vous permet de repérer ce qui échappe à d'autres. Vous pouvez effectuer des Tests de Perception pour détecter des détails normalement imperceptibles.</li>
+      </ul>
+    </div>
+  </div>
+
+
+  <!-- ARMURE -->
+  <div class="card">
+    <div class="card-title gld" style="margin-bottom:0.4rem;font-size:0.62rem;">Pièces d'armure portées</div>
+    <div id="armor-pieces-list"></div>
+    <div style="margin-top:0.3rem;margin-bottom:0.9rem;">
+      <button class="btn-add btn-add-gld" onclick="toggleForm('armor-piece-form')">+ Ajouter une pièce</button>
+      <div class="form-panel" id="armor-piece-form">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;">
+          <input class="sort-form-input" id="ap-name" placeholder="Nom (Veste de cuir…)" style="grid-column:1/-1;" />
+          <input class="sort-form-input" id="ap-pa"   placeholder="PA — ex: 1" type="number" />
+          <input class="sort-form-input" id="ap-enc"  placeholder="ENC — ex: 0" type="number" />
+          <input class="sort-form-input" id="ap-pen"  placeholder="Pénalité (−1 Ag…)" />
+          <input class="sort-form-input" id="ap-attr" placeholder="Attributs (Résistante…)" />
+        </div>
+        <div style="display:flex;gap:0.4rem;margin-top:0.3rem;">
+          <button class="btn-add btn-add-gld" onclick="addArmorPiece()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleForm('armor-piece-form')">Annuler</button>
+        </div>
+      </div>
+    </div>
+    <div class="card-title gld" style="margin-top:0.3rem;">Armure par localisation</div>
+    <table class="armor-table">
+      <thead><tr><th>Localisation</th><th>PA</th><th>Loc.</th></tr></thead>
+      <tbody id="armor-body"></tbody>
+    </table>
+    <div class="card-title gld" style="margin-top:0.75rem;margin-bottom:0.5rem;">Armes</div>
+    <div id="weapons-list"></div>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-add-gld" onclick="toggleWeaponForm()">+ Ajouter une arme</button>
+      <div class="weapon-form" id="weapon-form">
+        <div class="weapon-form-grid">
+          <input class="sort-form-input" id="wep-name" placeholder="Nom" />
+          <input class="sort-form-input" id="wep-all" placeholder="Allonge" />
+          <input class="sort-form-input" id="wep-deg" placeholder="Dégâts (BF+4…)" />
+          <input class="sort-form-input" id="wep-enc" placeholder="ENC — ex: 0" />
+          <input class="sort-form-input" id="wep-attr" placeholder="Attributs" style="grid-column:1/-1;" />
+        </div>
+        <div class="sort-form-actions">
+          <button class="btn-add btn-add-gld" onclick="addWeapon()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleWeaponForm()">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- INVENTAIRE -->
+  <div class="card">
+    <div class="card-title grn">Inventaire</div>
+    <div id="inv-list"></div>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-add-gld" style="border-color:rgba(106,128,64,0.35);color:var(--GRN);background:rgba(106,128,64,0.07);" onclick="toggleInvForm()">+ Ajouter un objet</button>
+      <div class="inv-form" id="inv-form">
+        <input class="sort-form-input" id="inv-name-new" placeholder="Nom de l'objet" />
+        <input class="sort-form-input" id="inv-detail-new" placeholder="Emplacement / Note" />
+        <input class="sort-form-input" id="inv-enc-new" placeholder="ENC — ex: 0" type="number" style="width:80px;" />
+        <div class="sort-form-actions">
+          <button class="btn-add btn-add-gld" style="border-color:rgba(106,128,64,0.35);color:var(--GRN);" onclick="addInvItem()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleInvForm()">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVRE DES PRÉSENCES -->
+  <div class="livre-card">
+    <div class="card-title vio" style="margin-bottom:0.5rem;">Le Livre des Présences
+      <span style="font-size:0.62rem;color:var(--SUB);font-style:italic;font-family:'Crimson Text',serif;text-transform:none;letter-spacing:0;margin-left:0.5rem;">— carnet partagé Kantagoran &amp; Tryxx</span>
+    </div>
+    <div style="font-size:0.75rem;color:var(--SUB);font-style:italic;margin-bottom:0.75rem;line-height:1.5;">
+      Chaque entrée débloquée confère un <strong style="color:var(--parchment-dark);">avantage contextuel réutilisable</strong> quand la situation s'y prête. Statut : <span style="color:#a08888;">Pressenti</span> → <span style="color:var(--VIO2);">Identifié</span> → <span style="color:var(--GLD);">Compris</span>. Cliquer sur le statut pour le faire avancer.
+    </div>
+    <div class="livre-tabs">
+      <button class="livre-tab leg active" onclick="livreTab('legendaire')">⬟ Légendaire <span style="font-size:0.55rem;opacity:0.7;">(partagé)</span></button>
+      <button class="livre-tab" id="tab-faune" onclick="livreTab('faune')">Faune Sauvage <span style="font-size:0.55rem;opacity:0.7;">(Tryxx)</span></button>
+      <button class="livre-tab" id="tab-lieux" style="opacity:0.35;cursor:default;" disabled>Lieux &amp; Civilisations <span style="font-size:0.55rem;">(autre PJ)</span></button>
+    </div>
+
+    <!-- PANEL LÉGENDAIRE -->
+    <div class="livre-panel active" id="panel-legendaire">
+      <div class="livre-count" id="count-legendaire"></div>
+      <div id="list-legendaire"></div>
+      <button class="btn-add btn-add-gld" style="margin-top:0.5rem;" onclick="livreToggleForm('legendaire')">+ Ajouter une entrée</button>
+      <div class="livre-add-form" id="form-legendaire">
+        <input id="l-leg-name" placeholder="Nom (créature, entité, lieu légendaire…)" />
+        <textarea id="l-leg-avantage" placeholder="Avantage contextuel — ex: +20 Calme face aux dragons, connaissance de leur faiblesse…"></textarea>
+        <div style="display:flex;gap:0.4rem;align-items:center;">
+          <select id="l-leg-statut" style="background:rgba(184,146,42,0.07);border:1px solid rgba(184,146,42,0.2);color:var(--parchment);font-family:'Crimson Text',serif;font-size:0.85rem;padding:0.25rem 0.4rem;border-radius:1px;">
+            <option value="pressenti">Pressenti</option>
+            <option value="identifie">Identifié</option>
+            <option value="compris">Compris</option>
+          </select>
+          <button class="btn-add btn-add-gld" onclick="livreAdd('legendaire')">Ajouter</button>
+          <button class="btn-cancel" onclick="livreToggleForm('legendaire')">Annuler</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL PROPRE À CE PJ -->
+    <div class="livre-panel" id="panel-faune">
+      <div class="livre-count" id="count-faune"></div>
+      <div id="list-faune"></div>
+      <button class="btn-add btn-add-vio" style="margin-top:0.5rem;" onclick="livreToggleForm('faune')">+ Ajouter une entrée</button>
+      <div class="livre-add-form" id="form-faune">
+        <input id="l-faune-name" placeholder="Nom…" />
+        <textarea id="l-faune-avantage" placeholder="Avantage contextuel…"></textarea>
+        <div style="display:flex;gap:0.4rem;align-items:center;">
+          <select id="l-faune-statut" style="background:rgba(184,146,42,0.07);border:1px solid rgba(184,146,42,0.2);color:var(--parchment);font-family:'Crimson Text',serif;font-size:0.85rem;padding:0.25rem 0.4rem;border-radius:1px;">
+            <option value="pressenti">Pressenti</option>
+            <option value="identifie">Identifié</option>
+            <option value="compris">Compris</option>
+          </select>
+          <button class="btn-add btn-add-vio" onclick="livreAdd('faune')">Ajouter</button>
+          <button class="btn-cancel" onclick="livreToggleForm('faune')">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- BÉNÉDICTIONS DE KURNOUS -->
+  <div class="card gld full">
+    <div class="card-title gld">Bénédictions de Kurnous · Tradition : Kurnous · Langue : Eltharin &amp; Nature</div>
+    <div class="kurnous-band">
+      <strong>Les Chants</strong> n'en sont que rarement. Il s'agit surtout de rôles, de sons évoquant des animaux, d'impulsions sonores étranges, puissantes en envoûtantes.
+    </div>
+    <div id="sorts-list"></div>
+    <div style="margin-top:0.6rem;">
+      <button class="btn-add btn-add-vio" onclick="toggleSortForm()">+ Ajouter une bénédiction</button>
+      <div class="sort-form" id="sort-new-form">
+        <div class="sort-form-grid">
+          <div class="sort-form-field" style="grid-column:1/-1;"><span class="sort-form-label">Nom de la bénédiction</span><input class="sort-form-input" id="snew-name" placeholder="Nom" /></div>
+          <div class="sort-form-field"><span class="sort-form-label">NI</span><input class="sort-form-input" id="snew-ni" type="number" placeholder="NI — ex: 0" /></div>
+          <div class="sort-form-field"><span class="sort-form-label">Type</span><input class="sort-form-input" id="snew-type" placeholder="Bénédiction" /></div>
+          <div class="sort-form-field"><span class="sort-form-label">Portée</span><input class="sort-form-input" id="snew-portee" placeholder="6m / Contact…" /></div>
+          <div class="sort-form-field"><span class="sort-form-label">Durée</span><input class="sort-form-input" id="snew-duree" placeholder="6 Rounds / Instantané…" /></div>
+          <div class="sort-form-field"><span class="sort-form-label">Cible</span><input class="sort-form-input" id="snew-cible" placeholder="1 cible / AOE…" /></div>
+          <div class="sort-form-field"><span class="sort-form-label">Dégâts / Bonus</span><input class="sort-form-input" id="snew-deg" placeholder="+5CC / +1 Blessure…" /></div>
+          <div class="sort-form-field" style="grid-column:1/-1;"><span class="sort-form-label">Effet complet</span><textarea class="sort-form-textarea" id="snew-desc" placeholder="Description complète…"></textarea></div>
+          <div class="sort-form-field" style="grid-column:1/-1;"><span class="sort-form-label">Notes / Conditions</span><textarea class="sort-form-textarea" id="snew-imparf" placeholder="Conditions, limites, interactions…" style="min-height:45px;"></textarea></div>
+        </div>
+        <div class="sort-form-actions">
+          <button class="btn-add btn-add-vio" onclick="addSort()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleSortForm()">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- XP & AMBITIONS -->
+  <div class="card full">
+    <div class="card-title vio">Expérience & Ambitions</div>
+    <div class="xp-row">
+      <div class="xp-box"><span class="xp-label">Actuelle</span><input class="xp-val-input" id="xp-actuelle" type="number" value="120" onchange="saveAll()" /></div>
+      <div class="xp-box"><span class="xp-label">Dépensée</span><input class="xp-val-input" id="xp-depensee" type="number" value="0" onchange="saveAll()" /></div>
+      <div class="xp-box"><span class="xp-label">Totale</span><input class="xp-val-input" id="xp-totale" type="number" value="0" onchange="saveAll()" /></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:0.75rem;">
+      <div>
+        <span class="ambition-label">Ambition courte</span>
+        <div class="trait-block">Objectif immédiat…</div>
+        <span class="ambition-label" style="margin-top:0.5rem;">Motivation</span>
+        <div class="trait-block">Découvrir, préserver, lutter contre ce qui corrompt ou défigure le vivant.</div>
+      </div>
+      <div>
+        <span class="ambition-label">Ambition longue</span>
+        <div class="trait-block">Objectif de vie…</div>
+        <span class="ambition-label" style="margin-top:0.5rem;">Psychologie</span>
+        <div class="trait-block" style="font-style:italic;color:var(--SUB);">Peurs, folies, phobies, manies…</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div>
+        <div class="trait-line plus">+ Empathique, respectueux, sociable.</div>
+        <div class="trait-line plus">+ Profondément lié à la nature et aux êtres vivants.</div>
+        <div class="trait-line plus">+ Curiosité naturelle pour tout ce qui l'entoure, sans paraître naïf.</div>
+        <div class="trait-line plus">+ Décision directe et tranquille — fait confiance à son instinct.</div>
+        <div class="trait-line plus">+ Chants/Bénédictions : soutien décisif pour tout le groupe.</div>
+      </div>
+      <div>
+        <div class="trait-line minus">− Socialité inhabituelle pour un Elfe Sylvain — parfois incompris des siens.</div>
+        <div class="trait-line minus">− Jeune (140 ans) — apprentissage en cours, encore en construction.</div>
+        <div class="trait-line minus">− Fascination pour les Hommes qui peut le distraire de l'essentiel.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- HISTORIQUE -->
+  <div class="card full">
+    <div class="card-title vio">Historique</div>
+    <div class="histo">
+      <p>Cent quarante ans : jeunesse relative pour un Elfe Sylvain, suffisamment long pour avoir appris à lire la forêt en ses détails, pas encore assez pour avoir épuisé l'émerveillement qu'elle lui inspire. Tryxx a grandi à Athel Loren avec son frère Kantagoran — quarante ans de plus, ce qui ne compte pas vraiment à l'échelle de leur espèce, et pourtant. L'aîné partait souvent. Le cadet regardait partir. Ce n'était pas de l'abandon ; c'était une leçon silencieuse sur ce que signifie avoir une direction.</p>
+      <p>Leurs parents étaient une présence double et complémentaire : la mère avait la patience d'enseigner sans jamais hausser la voix, le père montrait sans expliquer. Tryxx a hérité de leur façon de faire confiance à ce qui vit, sans vouloir le posséder ni le fixer.</p>
+      <p>Il ressemble peu aux Elfes Sylvains tels qu'on les imagine : grand, blond, les yeux bleu clair, et d'une sociabilité inhabituelle pour les siens. Les humains l'intriguent plutôt qu'ils ne l'inquiètent. Il les observe avec le même appétit tranquille qu'il porte à tout ce qui vit.</p>
+      <p>Il avait peut-être vingt ans. Une sortie dans les bois avec Kantagoran, une curiosité de trop, un ours surgissant d'un taillis ; trop proche, trop soudain. Kantagoran n'avait pas le temps. Tryxx, paralysé de peur, a ouvert la bouche.</p>
+      <p>Ce qui en est sorti n'était pas un cri d'effroi. Quelque chose de plus profond, de plus ancien, qui venait d'un endroit qu'il ne connaissait pas encore. L'ours s'est figé. L'a reniflé longuement. Et est reparti.</p>
+      <p>Kantagoran n'a rien dit sur le moment. Plus tard, il a simplement posé la main sur l'épaule de son frère. Ça suffisait.</p>
+      <p>Le don n'avait pas de nom au début. Tryxx a passé des décennies à l'explorer seul dans les bois d'Athel Loren, en poussant ses limites par l'observation et l'imitation : les cris, les appels, les avertissements ; le langage primitif et précis des bêtes. Il apprenait comme on apprend une langue étrangère, par immersion totale, avec la patience de quelqu'un qui a le temps et la passion de quelqu'un qui n'en a pas besoin.</p>
+      <p>C'est un ancien d'Athel Loren qui a mis un nom sur ce qu'il faisait, et sur Kurnous, le Seigneur des Bêtes, dont Tryxx portait manifestement quelque chose sans le savoir. L'initiation formelle n'a pas changé sa foi : elle l'a confirmée. Kurnous n'est pas une abstraction pour lui, pas un dogme. C'est la forêt elle-même, son odeur, ses silences, la façon dont un cerf tourne la tête avant de fuir. Le divin et la nature sont la même chose.</p>
+      <p>Ses chants : prières, bénédictions, invocations primitives qui ressemblent davantage aux sons de la forêt qu'à de la musique. Son apprentissage : une évidence.</p>
+      <p>Quand Kantagoran a décidé de partir dans le monde des hommes, Tryxx a choisi de l'accompagner sans hésitation. Pas par attachement fraternel automatique — il aurait pu rester, il avait sa propre voie. Mais le monde extérieur l'appelle depuis longtemps déjà, et ses motivations se superposent naturellement à celles de son frère : découvrir, préserver, lutter contre ce qui corrompt ou défigure le vivant.</p>
+      <p>Les hommes le fascinent. Leur fougue, leur bruit, leur façon de remplir chaque espace disponible. Il ne les juge pas ; il les observe avec la même attention bienveillante qu'il porte aux animaux de la forêt, cherchant à comprendre leur logique propre avant de conclure quoi que ce soit.</p>
+    </div>
+  </div>
+
+
+  <!-- NOTES SESSION -->
+  <div class="card full">
+    <div class="card-title">Notes de session</div>
+    <textarea class="notes-area" id="session-notes" rows="4" placeholder="Observations, pistes, événements notables…"></textarea>
+    <button class="btn-save" onclick="saveAll()">Sauvegarder</button>
+    <span class="save-confirm" id="save-confirm">✓ Sauvegardé</span>
+  </div>
+
+</div><!-- .layout -->
+
+<script>
+// ══════ DONNÉES INITIALES ══════
+
+const STATS_DEF = [
+  { key:'cc',  label:'CC',  init:44, avance:0 },
+  { key:'ct',  label:'CT',  init:43, avance:0 },
+  { key:'f',   label:'F',   init:35, avance:0 },
+  { key:'e',   label:'End', init:36, avance:5 },
+  { key:'ini', label:'Ini', init:56, avance:0 },
+  { key:'ag',  label:'Ag',  init:48, avance:0 },
+  { key:'dex', label:'Dex', init:37, avance:0 },
+  { key:'int', label:'Int', init:41, avance:0 },
+  { key:'fm',  label:'FM',  init:46, avance:0 },
+  { key:'soc', label:'Soc', init:40, avance:10 },
+];
+
+const SKILLS_BASE_DEF = [
+  { name:'Art',                    car:'Dex', aug:0,  base:37 },
+  { name:'Athlétisme',             car:'Ag',  aug:5,  base:48 },
+  { name:'Calme',                  car:'FM',  aug:0,  base:46 },
+  { name:'Charme',                 car:'Soc', aug:0,  base:50 },
+  { name:'Commandement',           car:'Soc', aug:0,  base:45 },
+  { name:'Conduite',               car:'Ag',  aug:0,  base:48 },
+  { name:'Corps à Corps (Base)',   car:'CC',  aug:3,  base:44 },
+  { name:'Discrétion',             car:'Ag',  aug:0,  base:48 },
+  { name:'Dressage',               car:'FM',  aug:0,  base:46 },
+  { name:'Escalade',               car:'F',   aug:0,  base:35 },
+  { name:'Esquive',                car:'Ag',  aug:0,  base:48 },
+  { name:'Intimidation',           car:'F',   aug:0,  base:35 },
+  { name:'Intuition',              car:'Ini', aug:0,  base:56 },
+  { name:'Jeu',                    car:'Int', aug:0,  base:41 },
+  { name:'Manipulation',           car:'Soc', aug:0,  base:50 },
+  { name:'Marchandage',            car:'Soc', aug:0,  base:50 },
+  { name:'Monter',                 car:'Ag',  aug:0,  base:48 },
+  { name:'Navigation',             car:'Ini', aug:0,  base:56 },
+  { name:'Perception',             car:'Ini', aug:5,  base:56 },
+  { name:'Ragot',                  car:'Soc', aug:0,  base:50 },
+  { name:'Ramer',                  car:'F',   aug:0,  base:35 },
+  { name:'Représentation',         car:'Soc', aug:0,  base:43 },
+  { name:'Résistance à l\'alcool', car:'End', aug:0,  base:41 },
+  { name:'Résistance',             car:'End', aug:3,  base:41 },
+  { name:'Survie en extérieur',    car:'Int', aug:0,  base:41 },
+];
+
+const SKILLS_ADV_DEF = [
+  { name:'Langue (Eltharin)',        car:'Int', aug:3, carVal:41 },
+  { name:'Divertissement (Chant)',   car:'Soc', aug:5, carVal:50 },
+  { name:'Corps à Corps (Escrime)',  car:'CC',  aug:0, carVal:44 },
+];
+
+const TALENTS_DEF = [
+  { name:'Béni (Kurnous)', desc:'Permet d\'utiliser les Bénédictions de Kurnous.' },
+];
+
+const ARMOR_LOCS = [
+  { loc:'Tête',       range:'01-09', pa:0 },
+  { loc:'Bras droit', range:'10-24', pa:0 },
+  { loc:'Bras gauche',range:'25-44', pa:1 },
+  { loc:'Corps',      range:'45-79', pa:1 },
+  { loc:'Jambe dr.',  range:'80-89', pa:0 },
+  { loc:'Jambe gau.', range:'90-00', pa:0 },
+];
+
+const ARMOR_PIECES_DEF = [
+  { name:'Veste de cuir',    pa:1, enc:0, pen:'-1 Ag', attr:'Résistante, Lourde…' },
+  { name:'Cotte de mailles', pa:0, enc:0, pen:'-1 Ag', attr:'Résistante, Lourde…' },
+];
+
+const WEAPONS_DEF = [
+  { name:'Bâton de combat', all:'Longue',      deg:'BF+4', enc:0, attr:'Assommante, Défensive' },
+  { name:'Arc',             all:'50m',          deg:'BF+3', enc:0, attr:'' },
+  { name:'Dague',           all:'Très courte',  deg:'BF+2', enc:0, attr:'' },
+];
+
+const INV_DEF = [
+  { name:'Besace',          detail:'Portée en bandoulière', enc:0 },
+  { name:'Bourse',          detail:'Ceinture',              enc:0 },
+  { name:'Vêtements',       detail:'Sur soi et besace',     enc:0 },
+  { name:'Cape',            detail:'Sur soi et besace',     enc:0 },
+  { name:'Rations (1 jour)',detail:'Besace',                enc:0 },
+];
+
+const SORTS_DEF = [
+  {
+    name:'Hymne de fracas',
+    ni:0, type:'Bénédiction', portee:'6m', duree:'6 Rounds', cible:'Alliés', deg:'+5CC +5F',
+    desc:'+5 CC et +5 F à toutes les cibles alliées dans le rayon pendant 6 Rounds.',
+    imparf:''
+  },
+  {
+    name:'Murmure fatal',
+    ni:0, type:'Bénédiction', portee:'6m', duree:'Instantané', cible:'1 cible', deg:'—',
+    desc:'Test FM +10 sur la cible ou -1M et -5 à toutes ses caractéristiques.',
+    imparf:''
+  },
+  {
+    name:'Traque immobile',
+    ni:0, type:'Bénédiction', portee:'6m', duree:'—', cible:'1 allié', deg:'+5CT -1PA',
+    desc:'+5 CT et -1 PA à la cible alliée. Bonus au tir à couvert. 2DR+.',
+    imparf:''
+  },
+  {
+    name:'Écho de la forêt',
+    ni:0, type:'Bénédiction', portee:'6m', duree:'6 Rounds', cible:'1 allié', deg:'+1D2 dégâts',
+    desc:'Ajoute 1D2 dégâts supplémentaires aux attaques de la cible alliée pendant 6 Rounds.',
+    imparf:''
+  },
+  {
+    name:'Pulsation d\'émeraude',
+    ni:0, type:'Bénédiction', portee:'6m', duree:'2 Rounds', cible:'1 allié', deg:'+1 Blessure/Round',
+    desc:'+1 Blessure par Round à la cible alliée pendant 2 Rounds. Soin progressif.',
+    imparf:''
+  },
+  {
+    name:'Corps de Dryade',
+    ni:0, type:'Bénédiction', portee:'6m', duree:'6 Rounds', cible:'1 allié', deg:'+5E +5Ag',
+    desc:'+5 E et +5 Ag à la cible alliée pendant 6 Rounds. Renforce endurance et vivacité.',
+    imparf:''
+  },
+];
+
+// ══════ STATE ══════
+let state = {
+  wounds: 15, woundsMax: 15,
+  chance: 1, determ: 1,
+  money: { or:0, argent:13, cuivre:611 },
+  notes: '', cet: { corruption:'', mutations:'', etats:'' },
+  xp: { actuelle:120, depensee:0, totale:0 },
+  stats: {},
+  skillsBase: JSON.parse(JSON.stringify(SKILLS_BASE_DEF)),
+  skillsAdv: JSON.parse(JSON.stringify(SKILLS_ADV_DEF)),
+  talents: JSON.parse(JSON.stringify(TALENTS_DEF)),
+  weapons: JSON.parse(JSON.stringify(WEAPONS_DEF)),
+  inventory: JSON.parse(JSON.stringify(INV_DEF)),
+  sorts: JSON.parse(JSON.stringify(SORTS_DEF)),
+  armor: JSON.parse(JSON.stringify(ARMOR_LOCS)),
+  armorPieces: JSON.parse(JSON.stringify(ARMOR_PIECES_DEF)),
+};
+
+STATS_DEF.forEach(s => { state.stats[s.key] = { init: s.init, avance: s.avance }; });
+
+function getStatTotal(key) {
+  const s = state.stats[key];
+  return (parseInt(s.init)||0) + (parseInt(s.avance)||0);
+}
+
+// ══════ LOAD / SAVE ══════
+function load() {
+  const raw = localStorage.getItem('tryxx_v1');
+  if (raw) try {
+    const saved = JSON.parse(raw);
+    ['wounds','woundsMax','chance','determ','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
+    if(saved.money) Object.assign(state.money, saved.money);
+    if(saved.cet)   Object.assign(state.cet, saved.cet);
+    if(saved.xp)    Object.assign(state.xp, saved.xp);
+    if(saved.stats)       Object.assign(state.stats, saved.stats);
+    if(saved.skillsBase)  state.skillsBase  = saved.skillsBase;
+    if(saved.skillsAdv)   state.skillsAdv   = saved.skillsAdv;
+    if(saved.talents)     state.talents     = saved.talents;
+    if(saved.weapons)     state.weapons     = saved.weapons;
+    if(saved.inventory)   state.inventory   = saved.inventory;
+    if(saved.sorts)       state.sorts       = saved.sorts;
+    if(saved.armor)       state.armor       = saved.armor;
+    if(saved.armorPieces) state.armorPieces = saved.armorPieces;
+  } catch(e) {}
+  renderAll();
+}
+
+function save() { localStorage.setItem('tryxx_v1', JSON.stringify(state)); }
+
+function saveAll() {
+  state.notes = document.getElementById('session-notes').value;
+  if (!state.cet) state.cet = {};
+  ['corruption','mutations','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) state.cet[k]=el.value; });
+  state.xp.actuelle = parseInt(document.getElementById('xp-actuelle').value)||0;
+  state.xp.depensee = parseInt(document.getElementById('xp-depensee').value)||0;
+  state.xp.totale   = parseInt(document.getElementById('xp-totale').value)||0;
+  save();
+  const c = document.getElementById('save-confirm');
+  c.style.opacity='1'; setTimeout(()=>c.style.opacity='0',2000);
+}
+
+function renderAll() {
+  renderStats(); renderSkillsBase(); renderSkillsAdv(); renderTalents();
+  renderArmor(); renderArmorPieces(); renderWeapons(); renderInventory(); renderSorts();
+  renderChance(); renderDeterm();
+  document.getElementById('wounds-cur').textContent = state.wounds;
+  const wmi=document.getElementById('w-max-input'); if(wmi) wmi.value=state.woundsMax||15;
+  updateWoundColor();
+  ['or','argent','cuivre'].forEach(k => document.getElementById('money-'+k).textContent = state.money[k]||0);
+  document.getElementById('session-notes').value = state.notes||'';
+  ['corruption','mutations','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) el.value=(state.cet&&state.cet[k])||''; });
+  document.getElementById('xp-actuelle').value = state.xp.actuelle||120;
+  document.getElementById('xp-depensee').value = state.xp.depensee||0;
+  document.getElementById('xp-totale').value   = state.xp.totale||0;
+}
+
+// ══════ STATS ══════
+function renderStats() {
+  const g = document.getElementById('stats-grid'); g.innerHTML='';
+  STATS_DEF.forEach(def => {
+    const s = state.stats[def.key];
+    const total = (parseInt(s.init)||0)+(parseInt(s.avance)||0);
+    const bf = Math.floor(total/10);
+    const div = document.createElement('div'); div.className='stat-box';
+    div.innerHTML=`
+      <span class="stat-label">${def.label}</span>
+      <span class="stat-total" id="stat-total-${def.key}">${total}</span>
+      <span class="stat-bonus">B:${bf}</span>
+      <div class="stat-edit-row">
+        <span style="font-size:0.62rem;color:var(--SUB);opacity:0.55;">${s.init}</span>
+        <span class="plus">+</span>
+        <input class="editable-num" style="width:34px;font-size:0.78rem;color:var(--VIO2);border-bottom-color:rgba(184,146,42,0.15);" type="number" value="${s.avance}" onchange="updateStat('${def.key}',this.value)" />
+      </div>`;
+    g.appendChild(div);
+  });
+}
+function updateStat(key,val) {
+  state.stats[key].avance = parseInt(val)||0;
+  const total=getStatTotal(key); const bf=Math.floor(total/10);
+  const el=document.getElementById('stat-total-'+key);
+  if(el){ el.textContent=total; el.nextElementSibling.textContent='B:'+bf; }
+  save();
+}
+
+// ══════ WOUNDS ══════
+function updateWoundsMax(val) { state.woundsMax=Math.max(1,parseInt(val)||1); document.getElementById('w-max-input').value=state.woundsMax; save(); }
+function changeWound(d) { state.wounds=Math.max(0,Math.min(state.woundsMax,state.wounds+d)); document.getElementById('wounds-cur').textContent=state.wounds; updateWoundColor(); save(); }
+function updateWoundColor() {
+  const el=document.getElementById('wounds-cur'); const p=state.wounds/state.woundsMax;
+  el.style.color = p>0.6?'var(--parchment)':p>0.3?'#e8a040':'#e05050';
+}
+
+// ══════ MONNAIE ══════
+// Taux : 1 Co = 20 Pa | 1 Pa = 12 Sc
+function chMoney(k, d) {
+  var m = state.money;
+  if (!m.or)     m.or     = 0;
+  if (!m.argent) m.argent = 0;
+  if (!m.cuivre) m.cuivre = 0;
+  m[k] = (m[k] || 0) + d;
+  var msg = '';
+  if (m.cuivre >= 12) { var gain = Math.floor(m.cuivre / 12); m.cuivre -= gain * 12; m.argent += gain; msg += '+' + gain + ' Pa '; }
+  if (m.argent >= 20) { var gain2 = Math.floor(m.argent / 20); m.argent -= gain2 * 20; m.or += gain2; msg += '+' + gain2 + ' Co'; }
+  if (m.cuivre < 0) { var need = Math.ceil(-m.cuivre / 12); if (m.argent >= need) { m.argent -= need; m.cuivre += need * 12; msg += '−' + need + ' Pa→Sc '; } else { m.cuivre = 0; } }
+  if (m.argent < 0) { var need2 = Math.ceil(-m.argent / 20); if (m.or >= need2) { m.or -= need2; m.argent += need2 * 20; msg += '−' + need2 + ' Co→Pa'; } else { m.argent = 0; } }
+  m.or = Math.max(0, m.or); m.argent = Math.max(0, m.argent); m.cuivre = Math.max(0, m.cuivre);
+  document.getElementById('money-or').textContent = m.or;
+  document.getElementById('money-argent').textContent = m.argent;
+  document.getElementById('money-cuivre').textContent = m.cuivre;
+  var msgEl = document.getElementById('money-convert-msg');
+  if (msgEl && msg.trim()) { msgEl.textContent = '⇄ ' + msg.trim(); msgEl.style.opacity = '1'; clearTimeout(msgEl._t); msgEl._t = setTimeout(function(){ msgEl.style.opacity='0'; }, 2500); }
+  save();
+}
+
+// ══════ CHANCE / DETERM ══════
+const CLOVER_ICON=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="16" height="16"><g transform="translate(90,90)"><path d="M 0 30 Q 10 52 18 66" fill="none" stroke="#2d6b1a" stroke-width="9" stroke-linecap="round"/><path d="M 0 0 C -18 -4,-58 -10,-68 -28 C -76 -44,-58 -58,-38 -50 C -22 -44,-8 -30,0 -12 C 2 -8,2 -4,0 0 Z" fill="#3a8c1e" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><path d="M 0 0 C 18 -4,58 -10,68 -28 C 76 -44,58 -58,38 -50 C 22 -44,8 -30,0 -12 C -2 -8,-2 -4,0 0 Z" fill="#3a8c1e" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><path d="M 0 0 C -18 4,-58 10,-68 28 C -76 44,-58 58,-38 50 C -22 44,-8 30,0 12 C 2 8,2 4,0 0 Z" fill="#4aac28" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><path d="M 0 0 C 18 4,58 10,68 28 C 76 44,58 58,38 50 C 22 44,8 30,0 12 C -2 8,-2 4,0 0 Z" fill="#4aac28" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><circle cx="0" cy="0" r="7" fill="#2d6b1a"/></g></svg>`;
+const FLAME_ICON=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="14" height="16"><g transform="translate(50,62)"><path d="M 0,-55 C 2,-45 14,-40 18,-30 L 26,-44 C 28,-33 38,-26 32,-14 L 46,-22 C 46,-11 50,-2 34,5 L 50,1 C 50,13 46,2 42,22 C 32,34 14,43 0,45 C -14,43 -32,34 -42,22 C -46,2 -50,13 -50,1 L -34,5 C -50,-2 -46,-11 -46,-22 L -32,-14 C -38,-26 -28,-33 -26,-44 L -18,-30 C -14,-40 -2,-45 0,-55 Z" fill="#f0922a"/></g></svg>`;
+function makePipsIcon(id,cur,max,fn,icon) {
+  const c=document.getElementById(id); if(!c) return; c.innerHTML='';
+  for(let i=0;i<max;i++){
+    const pip=document.createElement('div'); pip.className='pip'+(i<cur?' on':'');
+    if(icon) pip.innerHTML=icon;
+    pip.onclick=()=>fn(i<cur?i:i+1);
+    c.appendChild(pip);
+  }
+}
+function renderChance() { makePipsIcon('chance-track',state.chance,1,v=>{state.chance=v;save();renderChance();},CLOVER_ICON); }
+function renderDeterm() { makePipsIcon('determ-pips',state.determ,1,v=>{state.determ=v;save();renderDeterm();},FLAME_ICON); }
+
+// ══════ COMPÉTENCES BASE ══════
+function renderSkillsBase() {
+  const ul=document.getElementById('skills-base-list'); ul.innerHTML='';
+  state.skillsBase.forEach((sk,i)=>{
+    const total=(parseInt(sk.base)||0)+(parseInt(sk.aug)||0);
+    const li=document.createElement('li');
+    li.innerHTML=`
+      <span class="skill-name">${sk.name} <span style="color:var(--SUB);font-size:0.7rem;">(${sk.car})</span></span>
+      <div class="skill-aug"><input class="editable-num" type="number" value="${sk.aug||0}" style="width:38px;font-size:0.8rem;color:var(--VIO2);border-bottom-color:rgba(184,146,42,0.12);" onchange="updateSkillBaseAug(${i},this.value)" /></div>
+      <span class="skill-total" id="sk-base-total-${i}">${total}</span>`;
+    ul.appendChild(li);
+  });
+}
+function updateSkillBaseAug(idx,val) {
+  state.skillsBase[idx].aug=parseInt(val)||0;
+  const total=(state.skillsBase[idx].base||0)+state.skillsBase[idx].aug;
+  const el=document.getElementById('sk-base-total-'+idx); if(el) el.textContent=total;
+  save();
+}
+
+// ══════ COMPÉTENCES AVANCÉES ══════
+function renderSkillsAdv() {
+  const ul=document.getElementById('skills-adv-list'); ul.innerHTML='';
+  state.skillsAdv.forEach((sk,i)=>{
+    const total=(parseInt(sk.carVal)||0)+(parseInt(sk.aug)||0);
+    const li=document.createElement('li');
+    li.innerHTML=`
+      <span class="skill-name">${sk.name} <span style="color:var(--SUB);font-size:0.7rem;">(${sk.car})</span></span>
+      <div class="skill-aug"><input class="editable-num" type="number" value="${sk.aug||0}" style="width:38px;font-size:0.8rem;color:var(--VIO2);border-bottom-color:rgba(184,146,42,0.12);" onchange="updateSkillAdv(${i},this.value)" /></div>
+      <span class="skill-total" id="sk-adv-total-${i}">${total}</span>
+      <span class="inv-del" onclick="deleteAdvSkill(${i})" title="Supprimer">✕</span>`;
+    ul.appendChild(li);
+  });
+  applyAdvSkillEditable();
+}
+function updateSkillAdv(idx,val) { state.skillsAdv[idx].aug=parseInt(val)||0; renderSkillsAdv(); save(); }
+function deleteAdvSkill(idx) { if(confirm('Supprimer ?')){ state.skillsAdv.splice(idx,1); renderSkillsAdv(); save(); } }
+function toggleAdvForm() { document.getElementById('adv-form').classList.toggle('visible'); }
+function addAdvSkill() {
+  const name=document.getElementById('adv-name').value.trim(); if(!name) return;
+  state.skillsAdv.push({name, car:document.getElementById('adv-car').value.trim()||'?', aug:parseInt(document.getElementById('adv-aug').value)||0, carVal:0});
+  document.getElementById('adv-name').value=''; document.getElementById('adv-aug').value='0';
+  renderSkillsAdv(); save(); toggleAdvForm();
+}
+
+// ══════ TALENTS ══════
+function renderTalents() {
+  const ul=document.getElementById('talent-list'); ul.innerHTML='';
+  state.talents.forEach((t,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML=`<div class="talent-content"><span class="talent-name">${t.name}</span><span class="talent-desc">${t.desc}</span></div><span class="talent-del" onclick="deleteTalent(${i})">✕</span>`;
+    ul.appendChild(li);
+  });
+  applyTalentEditable();
+}
+function deleteTalent(idx) { if(confirm('Supprimer ?')){ state.talents.splice(idx,1); renderTalents(); save(); } }
+function toggleTalentForm() { document.getElementById('talent-form').classList.toggle('visible'); }
+function addTalent() {
+  const name=document.getElementById('talent-name-new').value.trim(); if(!name) return;
+  state.talents.push({name, desc:document.getElementById('talent-desc-new').value.trim()});
+  document.getElementById('talent-name-new').value=''; document.getElementById('talent-desc-new').value='';
+  renderTalents(); save(); toggleTalentForm();
+}
+
+// ══════ ARMURE TABLE ══════
+function renderArmor() {
+  const tbody=document.getElementById('armor-body'); tbody.innerHTML='';
+  state.armor.forEach((a,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="color:var(--parchment-dark);">${a.loc}</td><td><input class="armor-pa-input" type="number" value="${a.pa||0}" onchange="updateArmorPA(${i},this.value)" /></td><td style="color:var(--SUB);font-size:0.75rem;">${a.range}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+function updateArmorPA(idx,val) { state.armor[idx].pa=parseInt(val)||0; save(); }
+
+// ══════ PIÈCES D'ARMURE ══════
+function renderArmorPieces() {
+  const c=document.getElementById('armor-pieces-list'); c.innerHTML='';
+  if(!state.armorPieces) state.armorPieces=[];
+  state.armorPieces.forEach((ap,i)=>{
+    const div=document.createElement('div'); div.className='armor-piece';
+    div.innerHTML=`
+      <div class="armor-piece-content">
+        <div class="armor-piece-name">${ap.name}</div>
+        <div class="armor-piece-stats">
+          <span class="astat"><span class="astat-l">PA </span><span class="astat-v">${ap.pa}</span></span>
+          ${ap.enc?`<span class="astat"><span class="astat-l">ENC </span><span class="astat-v">${ap.enc}</span></span>`:''}
+          ${ap.pen?`<span class="astat"><span class="astat-l">Pén. </span><span class="astat-v">${ap.pen}</span></span>`:''}
+          ${ap.attr?`<span class="astat"><span class="astat-l">Attr. </span><span class="astat-v">${ap.attr}</span></span>`:''}
+        </div>
+      </div>
+      <span class="inv-del" onclick="deleteArmorPiece(${i})">✕</span>`;
+    c.appendChild(div);
+  });
+  applyArmorPieceEditable();
+}
+function deleteArmorPiece(idx) { if(confirm('Retirer ?')){ state.armorPieces.splice(idx,1); renderArmorPieces(); save(); } }
+function addArmorPiece() {
+  if(!state.armorPieces) state.armorPieces=[];
+  const name=document.getElementById('ap-name').value.trim(); if(!name) return;
+  state.armorPieces.push({name, pa:parseInt(document.getElementById('ap-pa').value)||0, enc:parseInt(document.getElementById('ap-enc').value)||0, pen:document.getElementById('ap-pen').value.trim(), attr:document.getElementById('ap-attr').value.trim()});
+  ['ap-name','ap-pen','ap-attr'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ap-pa').value=''; document.getElementById('ap-enc').value='';
+  renderArmorPieces(); save(); toggleForm('armor-piece-form');
+}
+
+// ══════ ARMES ══════
+function renderWeapons() {
+  const c=document.getElementById('weapons-list'); c.innerHTML='';
+  state.weapons.forEach((w,i)=>{
+    const div=document.createElement('div'); div.className='weapon-item';
+    div.innerHTML=`
+      <div class="weapon-content">
+        <div class="weapon-name">${w.name}</div>
+        <div class="weapon-stats">
+          <span class="weapon-stat"><span class="weapon-stat-label">All. </span><span class="weapon-stat-val">${w.all}</span></span>
+          <span class="weapon-stat"><span class="weapon-stat-label">Dég. </span><span class="weapon-stat-val">${w.deg}</span></span>
+          ${w.attr?`<span class="weapon-stat"><span class="weapon-stat-label">Attr. </span><span class="weapon-stat-val">${w.attr}</span></span>`:''}
+        </div>
+      </div>
+      <span class="weapon-del" onclick="deleteWeapon(${i})">✕</span>`;
+    c.appendChild(div);
+  });
+  applyWeaponEditable();
+}
+function deleteWeapon(idx) { if(confirm('Supprimer ?')){ state.weapons.splice(idx,1); renderWeapons(); save(); } }
+function toggleWeaponForm() { document.getElementById('weapon-form').classList.toggle('visible'); }
+function addWeapon() {
+  const name=document.getElementById('wep-name').value.trim(); if(!name) return;
+  state.weapons.push({name, all:document.getElementById('wep-all').value.trim()||'—', deg:document.getElementById('wep-deg').value.trim()||'—', enc:parseInt(document.getElementById('wep-enc').value)||0, attr:document.getElementById('wep-attr').value.trim()});
+  ['wep-name','wep-all','wep-deg','wep-enc','wep-attr'].forEach(id=>document.getElementById(id).value='');
+  renderWeapons(); save(); toggleWeaponForm();
+}
+
+// ══════ INVENTAIRE ══════
+function renderInventory() {
+  const c=document.getElementById('inv-list'); c.innerHTML='';
+  state.inventory.forEach((item,i)=>{
+    const div=document.createElement('div'); div.className='inv-item';
+    div.innerHTML='<span class="inv-name">'+item.name+'</span>'+(item.enc?'<span style="font-size:0.68rem;color:var(--SUB);">ENC:'+item.enc+'</span>':'')+'<span class="inv-detail">'+(item.detail||'')+'</span><span class="inv-del" onclick="deleteInvItem('+i+')">x</span>';
+    c.appendChild(div);
+  });
+  applyInventoryEditable();
+}
+function deleteInvItem(idx) { state.inventory.splice(idx,1); renderInventory(); save(); }
+function toggleInvForm() { document.getElementById('inv-form').classList.toggle('visible'); }
+function addInvItem() {
+  const name=document.getElementById('inv-name-new').value.trim(); if(!name) return;
+  state.inventory.push({name, detail:document.getElementById('inv-detail-new').value.trim(), enc:parseInt(document.getElementById('inv-enc-new').value)||0});
+  ['inv-name-new','inv-detail-new','inv-enc-new'].forEach(id=>document.getElementById(id).value='');
+  renderInventory(); save(); toggleInvForm();
+}
+
+// ══════ BÉNÉDICTIONS (Sorts) ══════
+function renderSorts() {
+  const c=document.getElementById('sorts-list'); c.innerHTML='';
+  state.sorts.forEach((s,i)=>{
+    const div=document.createElement('div'); div.className='sort-item';
+    div.innerHTML=`
+      <div class="sort-header" onclick="this.parentElement.classList.toggle('open')">
+        <span class="sort-name-display">${s.name}</span>
+        <div class="sort-badges">
+          <span class="sort-badge type">${s.type||'Bénédiction'}</span>
+          ${s.portee?`<span class="sort-badge portee">📍 ${s.portee}</span>`:''}
+          ${s.duree?`<span class="sort-badge duree">⏱ ${s.duree}</span>`:''}
+          ${s.deg&&s.deg!=='—'?`<span class="sort-badge ni">⚔ ${s.deg}</span>`:''}
+          <span class="sort-expand-icon">▾</span>
+        </div>
+      </div>
+      <div class="sort-body">
+        ${s.desc?`<div class="sort-body-section"><span class="sort-body-label">Effet</span><div class="sort-body-text">${s.desc}</div></div>`:''}
+        ${s.imparf?`<div class="sort-body-section" style="margin-top:0.4rem;"><span class="sort-body-label">Notes</span><div class="sort-body-text" style="color:var(--parchment-dark);">${s.imparf}</div></div>`:''}
+        <div class="sort-actions">
+          <button class="sort-btn sort-btn-edit" onclick="editSort(${i});event.stopPropagation();">✎ Modifier</button>
+          <button class="sort-btn sort-btn-del" onclick="deleteSort(${i});event.stopPropagation();">✕ Supprimer</button>
+        </div>
+      </div>`;
+    c.appendChild(div);
+  });
+  applySortEditable();
+}
+function deleteSort(idx) { if(confirm('Supprimer ?')){ state.sorts.splice(idx,1); renderSorts(); save(); } }
+function editSort(idx) {
+  const s=state.sorts[idx];
+  const name=prompt('Nom',s.name); if(name===null) return;
+  const type=prompt('Type',s.type||'Bénédiction');
+  const portee=prompt('Portée',s.portee||'');
+  const duree=prompt('Durée',s.duree||'');
+  const cible=prompt('Cible',s.cible||'');
+  const deg=prompt('Dégâts / Bonus',s.deg||'—');
+  const desc=prompt('Effet complet',s.desc||'');
+  const imparf=prompt('Notes',s.imparf||'');
+  Object.assign(state.sorts[idx],{name,type,portee,duree,cible,deg,desc,imparf});
+  renderSorts(); save();
+}
+function toggleSortForm() { document.getElementById('sort-new-form').classList.toggle('visible'); }
+function addSort() {
+  const name=document.getElementById('snew-name').value.trim(); if(!name) return;
+  state.sorts.push({name, ni:parseInt(document.getElementById('snew-ni').value)||0, type:document.getElementById('snew-type').value.trim()||'Bénédiction', portee:document.getElementById('snew-portee').value.trim(), duree:document.getElementById('snew-duree').value.trim(), cible:document.getElementById('snew-cible').value.trim(), deg:document.getElementById('snew-deg').value.trim()||'—', desc:document.getElementById('snew-desc').value.trim(), imparf:document.getElementById('snew-imparf').value.trim()});
+  ['snew-name','snew-ni','snew-type','snew-portee','snew-duree','snew-cible','snew-deg','snew-desc','snew-imparf'].forEach(id=>document.getElementById(id).value='');
+  renderSorts(); save(); toggleSortForm();
+}
+
+// ══════ UTILITAIRES ══════
+function toggleForm(id) { document.getElementById(id).classList.toggle('visible'); }
+
+// ══════ EXPORT / IMPORT ══════
+function ioStatus(msg,cls) { const el=document.getElementById('io-status'); if(!el) return; el.textContent=msg; el.className='io-status'+(cls?' '+cls:''); }
+function exportJSON() {
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='tryxx.json'; a.click();
+  ioStatus('✓ Exporté','ok'); setTimeout(()=>ioStatus('',''),3000);
+}
+function importJSON(input) {
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try {
+      const saved=JSON.parse(e.target.result);
+      ['wounds','woundsMax','chance','determ','notes'].forEach(k=>{if(saved[k]!==undefined) state[k]=saved[k];});
+      if(saved.money) Object.assign(state.money,saved.money);
+      if(saved.cet) Object.assign(state.cet,saved.cet);
+      if(saved.xp) Object.assign(state.xp,saved.xp);
+      if(saved.stats) Object.assign(state.stats,saved.stats);
+      if(saved.skillsBase) state.skillsBase=saved.skillsBase;
+      if(saved.skillsAdv) state.skillsAdv=saved.skillsAdv;
+      if(saved.talents) state.talents=saved.talents;
+      if(saved.weapons) state.weapons=saved.weapons;
+      if(saved.inventory) state.inventory=saved.inventory;
+      if(saved.sorts) state.sorts=saved.sorts;
+      if(saved.armor) state.armor=saved.armor;
+      if(saved.armorPieces) state.armorPieces=saved.armorPieces;
+      save(); renderAll();
+      ioStatus('✓ Importé','ok'); setTimeout(()=>ioStatus('',''),3000);
+    } catch(err){ ioStatus('Erreur : '+err.message,'err'); }
+  };
+  reader.readAsText(file); input.value='';
+}
+
+// ══════ ÉDITION INLINE ══════
+function makeEditable(el,onSave,opts) {
+  opts=opts||{}; const isArea=opts.multiline||false;
+  el.title='Double-cliquer pour modifier'; el.style.cursor='pointer';
+  el.addEventListener('dblclick',function(e) {
+    e.stopPropagation(); const current=el.textContent;
+    const tag=isArea?'textarea':'input'; const inp=document.createElement(tag);
+    inp.value=current; inp.className=isArea?'editable-field-area':'editable-field';
+    if(isArea){inp.rows=2;inp.style.width='100%';}
+    inp.style.fontSize=window.getComputedStyle(el).fontSize;
+    inp.style.color=window.getComputedStyle(el).color;
+    inp.style.fontFamily=window.getComputedStyle(el).fontFamily;
+    inp.style.fontWeight=window.getComputedStyle(el).fontWeight;
+    el.replaceWith(inp); inp.focus(); inp.select();
+    function commit(){ const val=inp.value.trim()||current; el.textContent=val; inp.replaceWith(el); onSave(val); }
+    inp.addEventListener('blur',commit);
+    inp.addEventListener('keydown',function(e){ if(e.key==='Enter'&&!isArea){e.preventDefault();commit();} if(e.key==='Escape'){inp.value=current;commit();} });
+  });
+}
+
+function applyWeaponEditable() {
+  document.querySelectorAll('.weapon-item').forEach((item,i)=>{
+    const nameEl=item.querySelector('.weapon-name');
+    if(nameEl&&!nameEl.dataset.editable){ nameEl.dataset.editable='1'; makeEditable(nameEl,val=>{if(state.weapons[i]){state.weapons[i].name=val;save();}}); }
+  });
+}
+function applyArmorPieceEditable() {
+  document.querySelectorAll('.armor-piece').forEach((item,i)=>{
+    const nameEl=item.querySelector('.armor-piece-name');
+    if(nameEl&&!nameEl.dataset.editable){ nameEl.dataset.editable='1'; makeEditable(nameEl,val=>{if(state.armorPieces[i]){state.armorPieces[i].name=val;save();}}); }
+  });
+}
+function applyTalentEditable() {
+  document.querySelectorAll('.talent-list li').forEach((li,i)=>{
+    const nameEl=li.querySelector('.talent-name'); const descEl=li.querySelector('.talent-desc');
+    if(nameEl&&!nameEl.dataset.editable){ nameEl.dataset.editable='1'; makeEditable(nameEl,val=>{if(state.talents[i]){state.talents[i].name=val;save();}}); }
+    if(descEl&&!descEl.dataset.editable){ descEl.dataset.editable='1'; makeEditable(descEl,val=>{if(state.talents[i]){state.talents[i].desc=val;save();}},{multiline:false}); }
+  });
+}
+function applyInventoryEditable() {
+  document.querySelectorAll('#inv-list .inv-item').forEach((item,i)=>{
+    const nameEl=item.querySelector('.inv-name'); const detailEl=item.querySelector('.inv-detail');
+    if(nameEl&&!nameEl.dataset.editable){ nameEl.dataset.editable='1'; makeEditable(nameEl,val=>{if(state.inventory[i]){state.inventory[i].name=val;save();}}); }
+    if(detailEl&&!detailEl.dataset.editable){ detailEl.dataset.editable='1'; makeEditable(detailEl,val=>{if(state.inventory[i]){state.inventory[i].detail=val;save();}}); }
+  });
+}
+function applyAdvSkillEditable() {
+  document.querySelectorAll('#skills-adv-list li').forEach((li,i)=>{
+    const nameEl=li.querySelector('.skill-name');
+    if(nameEl&&!nameEl.dataset.editable){ nameEl.dataset.editable='1'; makeEditable(nameEl,val=>{ if(state.skillsAdv[i]){ state.skillsAdv[i].name=val.replace(/\s*\([^)]*\)\s*$/,'').trim(); renderSkillsAdv(); save(); } }); }
+  });
+}
+function applySortEditable() {
+  document.querySelectorAll('#sorts-list .sort-item').forEach((item,i)=>{
+    const nameEl=item.querySelector('.sort-name-display');
+    if(nameEl&&!nameEl.dataset.editable){ nameEl.dataset.editable='1'; makeEditable(nameEl,val=>{if(state.sorts[i]){state.sorts[i].name=val;save();}}); }
+    const descDiv=item.querySelector('.sort-body-text');
+    if(descDiv&&!descDiv.dataset.editable){ descDiv.dataset.editable='1'; makeEditable(descDiv,val=>{if(state.sorts[i]){state.sorts[i].desc=val;save();}},{multiline:true}); }
+  });
+}
+
+// ══════ EVENT LISTENERS ══════
+['session-notes','cet-corruption','cet-mutations','cet-etats'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el){ el.addEventListener('blur',saveAll); el.addEventListener('input',saveAll); }
+});
+window.addEventListener('beforeunload',saveAll);
+
+// ══════ LIVRE DES PRÉSENCES ══════
+const LIVRE_CATS = ['legendaire','lieux','faune'];
+let livreData = { legendaire:[], lieux:[], faune:[] };
+
+function livreLoad() {
+  const raw = localStorage.getItem('livre_tryxx_v1');
+  if(raw) try { const d=JSON.parse(raw); LIVRE_CATS.forEach(c=>{ if(d[c]) livreData[c]=d[c]; }); } catch(e){}
+  LIVRE_CATS.forEach(c=>livreRender(c));
+}
+function livreSave() { localStorage.setItem('livre_tryxx_v1', JSON.stringify(livreData)); }
+
+function livreTab(cat) {
+  document.querySelectorAll('.livre-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.livre-panel').forEach(p=>p.classList.remove('active'));
+  const btn = document.getElementById('tab-'+cat) || document.querySelector('.livre-tab.leg');
+  if(cat==='legendaire') document.querySelector('.livre-tab.leg').classList.add('active');
+  else if(btn) btn.classList.add('active');
+  const panel = document.getElementById('panel-'+cat);
+  if(panel) panel.classList.add('active');
+}
+
+function livreRender(cat) {
+  const list = document.getElementById('list-'+cat);
+  const count = document.getElementById('count-'+cat);
+  if(!list) return;
+  list.innerHTML='';
+  const entries = livreData[cat]||[];
+  if(count) count.textContent = entries.length ? entries.length+' entrée'+(entries.length>1?'s':'') : '';
+  if(!entries.length) {
+    list.innerHTML='<div class="livre-empty">Aucune entrée — tout reste à découvrir.</div>';
+    return;
+  }
+  entries.forEach((e,i)=>{
+    const div=document.createElement('div'); div.className='livre-entry';
+    const isLeg = cat==='legendaire';
+    div.innerHTML=`
+      <div class="livre-entry-left">
+        <div class="livre-entry-name">${e.name}${isLeg?'<span class="livre-badge-leg">légendaire</span>':''}</div>
+        ${e.avantage?`<div class="livre-entry-avantage">${e.avantage}</div>`:''}
+      </div>
+      <span class="livre-statut ${e.statut||'pressenti'}" onclick="livreNextStatut('${cat}',${i})">${e.statut==='identifie'?'Identifié':e.statut==='compris'?'Compris':'Pressenti'}</span>
+      <span class="livre-del" onclick="livreDelete('${cat}',${i})" title="Supprimer">✕</span>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function livreNextStatut(cat,idx) {
+  const cycle = ['pressenti','identifie','compris'];
+  const e = livreData[cat][idx];
+  const cur = cycle.indexOf(e.statut||'pressenti');
+  e.statut = cycle[(cur+1)%cycle.length];
+  livreSave(); livreRender(cat);
+}
+
+function livreDelete(cat,idx) {
+  if(confirm('Supprimer cette entrée ?')) { livreData[cat].splice(idx,1); livreSave(); livreRender(cat); }
+}
+
+function livreToggleForm(cat) {
+  const form=document.getElementById('form-'+cat);
+  if(form) form.classList.toggle('visible');
+}
+
+function livreAdd(cat) {
+  const nameEl = document.getElementById('l-'+cat+'-name');
+  const avEl   = document.getElementById('l-'+cat+'-avantage');
+  const stEl   = document.getElementById('l-'+cat+'-statut');
+  if(!nameEl||!nameEl.value.trim()) return;
+  livreData[cat].push({ name:nameEl.value.trim(), avantage:avEl?avEl.value.trim():'', statut:stEl?stEl.value:'pressenti' });
+  if(nameEl) nameEl.value='';
+  if(avEl) avEl.value='';
+  livreSave(); livreRender(cat); livreToggleForm(cat);
+}
+
+// Appel initial (après load principal)
+livreLoad();
+
+load();
+</script>
+</body>
+</html>

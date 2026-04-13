@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cade Mitchell — Chasseuse de Prime</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:#07080c; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
+    --GLD:#B8922A; --VIO:#4a5a7a; --VIO2:#8aaccc; --GRN:#5E7A60; --SUB:#4a5566;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--ink); color:var(--parchment); font-family:'Crimson Text',serif; min-height:100vh; }
+  body::before { content:''; position:fixed; inset:0;
+    background: radial-gradient(ellipse at 30% 0%, rgba(74,90,122,0.13) 0%, transparent 55%),
+                radial-gradient(ellipse at 70% 100%, rgba(138,172,204,0.06) 0%, transparent 50%);
+    pointer-events:none; z-index:0; }
+
+  nav { position:sticky; top:0; z-index:100; background:rgba(7,8,12,0.93); backdrop-filter:blur(8px); border-bottom:1px solid rgba(138,172,204,0.2); padding:0.6rem 1.5rem; display:flex; align-items:center; gap:1rem; }
+  nav a { color:var(--SUB); text-decoration:none; font-size:0.82rem; font-style:italic; transition:color 0.2s; }
+  nav a:hover { color:var(--GLD); }
+  .nav-current { color:var(--VIO2) !important; font-style:normal; font-family:'Cinzel',serif; font-size:0.82rem; }
+  .nav-sep { color:var(--SUB); opacity:0.3; }
+
+  .layout { position:relative; z-index:1; max-width:1050px; margin:0 auto; padding:1.5rem 1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media(max-width:700px){ .layout { grid-template-columns:1fr; } }
+
+  .perso-header { grid-column:1/-1; display:flex; align-items:flex-end; gap:1.5rem; padding-bottom:1.25rem; border-bottom:1px solid rgba(138,172,204,0.18); flex-wrap:wrap; }
+  .perso-avatar { width:58px; height:58px; border-radius:2px; background:linear-gradient(135deg,rgba(74,90,122,0.3),rgba(138,172,204,0.15)); border:1px solid rgba(138,172,204,0.4); display:flex; align-items:center; justify-content:center; font-size:1.7rem; flex-shrink:0; }
+  .perso-info h1 { font-family:'Cinzel',serif; font-size:2rem; font-weight:700; line-height:1; letter-spacing:0.05em; }
+  .perso-info .sub { font-style:italic; color:var(--VIO2); font-size:0.95rem; margin-top:0.2rem; }
+  .perso-info .player { color:var(--SUB); font-size:0.78rem; margin-top:0.15rem; letter-spacing:0.05em; }
+  .perso-meta { margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:0.3rem; font-size:0.8rem; color:var(--SUB); font-style:italic; }
+
+  .card { background:rgba(7,8,12,0.65); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:1.1rem; }
+  .card.blue { border-color:rgba(138,172,204,0.18); }
+  .card-title { font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.9rem; display:flex; align-items:center; gap:0.5rem; }
+  .card-title::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.05); }
+  .card-title.gld { color:var(--GLD); }
+  .card-title.vio { color:var(--VIO2); }
+  .card-title.grn { color:var(--GRN); }
+  .card-title.red { color:#c0392b; }
+  .full { grid-column:1/-1; }
+
+  .editable { background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.1rem 0.2rem; width:100%; transition:border-color 0.15s; }
+  .editable:focus { outline:none; border-bottom-color:var(--VIO2); }
+  .editable::placeholder { color:rgba(74,85,102,0.45); font-style:italic; }
+  .editable-num { background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--GLD); font-family:'Cinzel',serif; font-size:0.95rem; font-weight:600; text-align:center; width:44px; padding:0.1rem 0; transition:border-color 0.15s; }
+  .editable-num:focus { outline:none; border-bottom-color:var(--GLD); }
+
+  .stats-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:0.45rem; }
+  @media(max-width:500px){ .stats-grid { grid-template-columns:repeat(3,1fr); } }
+  .stat-box { background:rgba(74,90,122,0.07); border:1px solid rgba(74,90,122,0.15); border-radius:2px; padding:0.45rem 0.3rem; text-align:center; }
+  .stat-label { font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); display:block; margin-bottom:0.2rem; }
+  .stat-total { font-family:'Cinzel',serif; font-size:1.3rem; font-weight:700; color:var(--VIO2); display:block; margin-top:0.1rem; }
+  .stat-bonus { font-size:0.6rem; color:var(--SUB); display:block; margin-top:0.05rem; }
+  .stat-edit-row { display:flex; gap:0.25rem; justify-content:center; align-items:center; margin-top:0.3rem; }
+  .stat-edit-row .editable-num { font-size:0.78rem; width:34px; color:var(--parchment-dark); border-bottom-color:rgba(255,255,255,0.06); }
+  .stat-edit-row .plus { color:var(--VIO2); font-size:0.65rem; }
+
+  .res-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.75rem; }
+  .res-box { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:0.6rem; text-align:center; }
+  .res-label { font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.3rem; display:block; }
+  .res-val { font-family:'Cinzel',serif; font-size:1.5rem; line-height:1; display:block; }
+  .res-sub { font-size:0.7rem; color:var(--SUB); margin-top:0.1rem; display:block; }
+  .wounds-ctrl { display:flex; align-items:center; gap:0.5rem; justify-content:center; margin-top:0.5rem; }
+  .btn-small { width:30px; height:30px; border-radius:2px; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+  .btn-wound { background:rgba(139,26,26,0.2); border:1px solid rgba(139,26,26,0.4); color:#e08080; }
+  .btn-wound:hover { background:rgba(139,26,26,0.35); }
+  .btn-heal { background:rgba(94,122,96,0.15); border:1px solid rgba(94,122,96,0.35); color:var(--GRN); }
+  .btn-heal:hover { background:rgba(94,122,96,0.3); }
+  .fortune-pip { width:24px; height:24px; border-radius:50%; border:1.5px solid rgba(184,146,42,0.5); cursor:pointer; transition:all 0.15s; background:transparent; }
+  .fortune-pip.active { background:var(--GLD); box-shadow:0 0 5px rgba(184,146,42,0.4); border-color:var(--GLD); }
+
+  .money-row { display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap; margin-top:0.25rem; }
+  .money-item { display:flex; flex-direction:column; align-items:center; gap:0.1rem; }
+  .money-val { font-family:'Cinzel',serif; font-size:1.4rem; color:var(--GLD); }
+  .money-label { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); }
+  .money-btns { display:flex; gap:0.2rem; margin-top:0.2rem; }
+  .money-btn { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); color:var(--SUB); cursor:pointer; font-size:0.7rem; width:20px; height:20px; border-radius:1px; transition:all 0.15s; display:flex; align-items:center; justify-content:center; }
+  .money-btn:hover { color:var(--GLD); border-color:rgba(184,146,42,0.3); }
+
+  .skill-list { list-style:none; }
+  .skill-list li { display:flex; align-items:center; padding:0.28rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.86rem; gap:0.4rem; }
+  .skill-list li:last-child { border-bottom:none; }
+  .skill-name { color:var(--parchment-dark); flex:1; }
+  .skill-aug { width:38px; }
+  .skill-aug .editable-num { width:38px; font-size:0.82rem; color:var(--VIO2); border-bottom-color:rgba(138,172,204,0.15); }
+  .skill-total { font-family:'Cinzel',serif; color:var(--GLD); font-size:0.9rem; font-weight:600; min-width:28px; text-align:right; }
+
+  .talent-list { list-style:none; }
+  .talent-list li { padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.87rem; display:flex; align-items:flex-start; gap:0.5rem; }
+  .talent-list li:last-child { border-bottom:none; }
+  .talent-content { flex:1; }
+  .talent-name { color:var(--VIO2); font-weight:600; }
+  .talent-desc { color:var(--SUB); font-size:0.8rem; font-style:italic; display:block; margin-top:0.1rem; }
+  .talent-del { color:rgba(139,26,26,0.5); cursor:pointer; font-size:0.75rem; flex-shrink:0; padding:0.1rem 0.2rem; transition:color 0.15s; }
+  .talent-del:hover { color:#e08080; }
+  .talent-form { display:none; background:rgba(74,90,122,0.06); border:1px solid rgba(138,172,204,0.2); border-radius:2px; padding:0.6rem; margin-top:0.5rem; gap:0.4rem; flex-direction:column; }
+  .talent-form.visible { display:flex; }
+
+  .armor-table { width:100%; border-collapse:collapse; font-size:0.82rem; margin-bottom:0.75rem; }
+  .armor-table th { text-align:left; color:var(--SUB); font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.2rem 0.4rem 0.4rem; font-weight:400; border-bottom:1px solid rgba(255,255,255,0.05); }
+  .armor-table td { padding:0.25rem 0.4rem; border-bottom:1px solid rgba(255,255,255,0.03); color:var(--parchment-dark); vertical-align:middle; }
+  .armor-pa-input { font-family:'Cinzel',serif; color:var(--GLD); font-weight:600; text-align:center; background:transparent; border:none; border-bottom:1px solid rgba(184,146,42,0.15); width:36px; font-size:0.9rem; padding:0.05rem 0; }
+  .armor-pa-input:focus { outline:none; border-bottom-color:var(--GLD); }
+
+  .weapon-item { padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.04); display:flex; align-items:flex-start; gap:0.5rem; }
+  .weapon-item:last-child { border-bottom:none; }
+  .weapon-content { flex:1; }
+  .weapon-name { color:var(--parchment); font-size:0.9rem; font-weight:600; }
+  .weapon-stats { display:flex; gap:0.75rem; margin-top:0.2rem; flex-wrap:wrap; }
+  .weapon-stat { font-size:0.72rem; }
+  .weapon-stat-label { color:var(--SUB); }
+  .weapon-stat-val { color:var(--GLD); font-family:'Cinzel',serif; }
+  .weapon-del { color:rgba(139,26,26,0.4); cursor:pointer; font-size:0.75rem; flex-shrink:0; padding:0.1rem 0.2rem; transition:color 0.15s; }
+  .weapon-del:hover { color:#e08080; }
+  .weapon-form { display:none; background:rgba(184,146,42,0.04); border:1px solid rgba(184,146,42,0.15); border-radius:2px; padding:0.65rem; margin-top:0.5rem; flex-direction:column; gap:0.4rem; }
+  .weapon-form.visible { display:flex; }
+  .weapon-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.4rem; }
+
+  .inv-item { display:flex; align-items:center; padding:0.28rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.85rem; gap:0.4rem; }
+  .inv-item:last-child { border-bottom:none; }
+  .inv-name { color:var(--parchment-dark); flex:1; }
+  .inv-detail { font-size:0.72rem; color:var(--SUB); font-style:italic; white-space:nowrap; }
+  .inv-del { color:rgba(139,26,26,0.4); cursor:pointer; font-size:0.72rem; flex-shrink:0; transition:color 0.15s; }
+  .inv-del:hover { color:#e08080; }
+  .inv-form { display:none; background:rgba(94,122,96,0.05); border:1px solid rgba(94,122,96,0.15); border-radius:2px; padding:0.6rem; margin-top:0.5rem; flex-direction:column; gap:0.35rem; }
+  .inv-form.visible { display:flex; }
+
+  .xp-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; text-align:center; margin-bottom:0.9rem; }
+  .xp-box { background:rgba(74,90,122,0.08); border:1px solid rgba(138,172,204,0.15); border-radius:2px; padding:0.5rem; }
+  .xp-label { font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--VIO2); display:block; margin-bottom:0.2rem; opacity:0.8; }
+  .xp-val-input { font-family:'Cinzel',serif; font-size:1.2rem; color:var(--parchment); background:transparent; border:none; border-bottom:1px solid rgba(138,172,204,0.2); text-align:center; width:70px; }
+  .xp-val-input:focus { outline:none; border-bottom-color:var(--VIO2); }
+
+  .ambition-label { font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--VIO); margin-bottom:0.2rem; display:block; opacity:0.9; }
+  .trait-block { font-size:0.86rem; line-height:1.55; color:var(--parchment-dark); margin-bottom:0.5rem; }
+  .trait-line { font-size:0.85rem; line-height:1.6; color:var(--parchment-dark); padding:0.1rem 0; }
+  .trait-line.plus { color:var(--GRN); }
+  .trait-line.minus { color:#c07060; }
+
+  .cet-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; }
+  .cet-box { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:0.5rem 0.6rem; }
+  .cet-label { font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.35rem; display:block; font-family:'Cinzel',serif; }
+  .cet-input { width:100%; background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.85rem; padding:0.2rem 0; resize:none; min-height:48px; line-height:1.4; }
+  .cet-input:focus { outline:none; border-bottom-color:var(--VIO2); }
+  .cet-input::placeholder { color:rgba(74,85,102,0.5); font-style:italic; }
+
+  .notes-area { width:100%; background:rgba(7,8,12,0.5); border:1px solid rgba(255,255,255,0.07); border-radius:2px; color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.65rem; resize:vertical; min-height:70px; line-height:1.5; }
+  .notes-area:focus { outline:none; border-color:rgba(138,172,204,0.3); }
+  .btn-save { background:rgba(74,90,122,0.12); border:1px solid rgba(138,172,204,0.3); color:var(--VIO2); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.35rem 0.75rem; border-radius:2px; cursor:pointer; margin-top:0.5rem; transition:background 0.15s; }
+  .btn-save:hover { background:rgba(74,90,122,0.24); }
+  .save-confirm { font-size:0.78rem; color:var(--GRN); margin-left:0.75rem; opacity:0; transition:opacity 0.5s; }
+
+  .histo { font-size:0.87rem; line-height:1.7; color:var(--parchment-dark); }
+  .histo p { margin-bottom:0.65rem; }
+  .histo p:last-child { margin-bottom:0; }
+
+  .pip { width:26px; height:26px; border-radius:3px; border:1.5px solid rgba(184,146,42,0.35); cursor:pointer; transition:all 0.15s; background:transparent; display:flex; align-items:center; justify-content:center; color:rgba(184,146,42,0.2); }
+  .pip.on { background:rgba(184,146,42,0.12); border-color:var(--GLD); color:var(--GLD); box-shadow:0 0 4px rgba(184,146,42,0.25); }
+  .pip svg { pointer-events:none; }
+
+  .armor-piece { padding:0.45rem 0; border-bottom:1px solid rgba(255,255,255,0.04); display:flex; align-items:flex-start; gap:0.5rem; }
+  .armor-piece:last-child { border-bottom:none; }
+  .armor-piece-content { flex:1; }
+  .armor-piece-name { color:var(--parchment); font-size:0.88rem; font-weight:600; }
+  .armor-piece-stats { display:flex; gap:0.6rem; margin-top:0.15rem; flex-wrap:wrap; }
+  .astat { font-size:0.72rem; }
+  .astat-l { color:var(--SUB); }
+  .astat-v { color:var(--GLD); font-family:'Cinzel',serif; }
+
+  .io-bar { display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; padding:0.6rem 0.9rem; background:rgba(36,41,47,0.6); border:1px solid rgba(255,255,255,0.07); border-radius:2px; margin-bottom:0.5rem; }
+  .io-btn { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.32rem 0.9rem; border-radius:2px; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .io-btn-export { background:rgba(36,160,96,0.15); border:1px solid rgba(36,160,96,0.4); color:#4caf82; }
+  .io-btn-export:hover { background:rgba(36,160,96,0.28); }
+  .io-btn-import { background:rgba(184,146,42,0.1); border:1px solid rgba(184,146,42,0.35); color:var(--GLD); }
+  .io-btn-import:hover { background:rgba(184,146,42,0.22); }
+  .io-status { font-size:0.75rem; font-style:italic; color:var(--SUB); flex:1; }
+  .io-status.ok { color:#4caf82; }
+  .io-status.err { color:#e05050; }
+
+  .form-panel { display:none; border:1px solid rgba(138,172,204,0.2); border-radius:2px; padding:0.65rem; margin-top:0.5rem; flex-direction:column; gap:0.4rem; background:rgba(74,90,122,0.06); }
+  .form-panel.visible { display:flex; }
+
+  .sort-form-input { background:rgba(74,90,122,0.07); border:1px solid rgba(138,172,204,0.2); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.3rem 0.5rem; border-radius:1px; width:100%; }
+  .sort-form-input:focus { outline:none; border-color:var(--VIO2); }
+  .sort-form-actions { display:flex; gap:0.5rem; margin-top:0.3rem; }
+  .btn-add { font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.35rem 0.75rem; border-radius:2px; cursor:pointer; transition:all 0.15s; display:inline-flex; align-items:center; gap:0.3rem; }
+  .btn-add-vio { background:rgba(74,90,122,0.12); border:1px solid rgba(138,172,204,0.4); color:var(--VIO2); }
+  .btn-add-vio:hover { background:rgba(74,90,122,0.25); }
+  .btn-add-gld { background:rgba(184,146,42,0.08); border:1px solid rgba(184,146,42,0.3); color:var(--GLD); }
+  .btn-add-gld:hover { background:rgba(184,146,42,0.18); }
+  .btn-cancel { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); color:var(--SUB); font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.3rem 0.6rem; border-radius:2px; cursor:pointer; }
+
+  .editable-field { cursor:pointer; border-bottom:1px dashed transparent; transition:border-color 0.15s; display:inline-block; min-width:20px; }
+  .editable-field:hover { border-bottom-color:rgba(255,255,255,0.2); }
+  .editable-field:focus { outline:none; border-bottom:1px solid var(--GLD); background:rgba(184,146,42,0.06); border-radius:1px; }
+  .editable-field-area { cursor:pointer; border-bottom:1px dashed transparent; transition:border-color 0.15s; display:inline-block; min-width:60px; width:100%; background:transparent; color:inherit; font-family:inherit; font-size:inherit; font-style:inherit; resize:none; min-height:1.4em; }
+  .editable-field-area:hover { border-bottom-color:rgba(255,255,255,0.2); }
+  .editable-field-area:focus { outline:none; border-bottom:1px solid var(--GLD); background:rgba(184,146,42,0.04); border-radius:1px; }
+
+
+  /* ── CABINET D'ENQUETE ── */
+  .ce-card { background:rgba(7,8,12,0.74); border:1px solid rgba(138,172,204,0.22); border-radius:2px; padding:1.1rem; grid-column:1/-1; }
+  .ce-cote-bar { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.9rem; flex-wrap:wrap; }
+  .ce-cote-pips { display:flex; gap:3px; }
+  .ce-cote-pip { width:22px; height:10px; border-radius:1px; border:1px solid rgba(138,172,204,0.18); background:transparent; cursor:pointer; transition:all 0.15s; }
+  .ce-cote-pip.on.tier1 { background:rgba(138,172,204,0.45); border-color:rgba(138,172,204,0.7); }
+  .ce-cote-pip.on.tier2 { background:rgba(184,146,42,0.55); border-color:rgba(184,146,42,0.8); }
+  .ce-cote-pip.on.tier3 { background:rgba(224,96,48,0.65); border-color:rgba(224,96,48,0.9); box-shadow:0 0 4px rgba(224,96,48,0.3); }
+  .ce-cote-label { font-family:'Cinzel',serif; font-size:0.72rem; font-weight:600; }
+  .ce-cote-label.tier1 { color:rgba(138,172,204,0.9); }
+  .ce-cote-label.tier2 { color:var(--GLD); }
+  .ce-cote-label.tier3 { color:#e06030; }
+  .ce-cote-desc { font-size:0.75rem; font-style:italic; color:var(--SUB); flex:1; min-width:160px; }
+  .ce-stats { display:flex; gap:0.65rem; flex-wrap:wrap; margin-left:auto; }
+  .ce-stat-box { background:rgba(74,90,122,0.08); border:1px solid rgba(138,172,204,0.12); border-radius:2px; padding:0.35rem 0.6rem; text-align:center; }
+  .ce-stat-val { font-family:'Cinzel',serif; font-size:1.1rem; color:var(--VIO2); display:block; }
+  .ce-stat-label { font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); }
+  .ce-tabs { display:flex; gap:0.3rem; margin-bottom:0.85rem; flex-wrap:wrap; }
+  .ce-tab { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.14em; text-transform:uppercase; padding:0.28rem 0.72rem; border-radius:1px; cursor:pointer; transition:all 0.15s; border:1px solid rgba(255,255,255,0.07); background:transparent; color:var(--SUB); }
+  .ce-tab.active { border-color:rgba(138,172,204,0.45); color:var(--VIO2); background:rgba(74,90,122,0.1); }
+  .ce-panel { display:none; }
+  .ce-panel.active { display:block; }
+  .dossier-item { border:1px solid rgba(138,172,204,0.13); border-radius:2px; margin-bottom:0.6rem; overflow:hidden; transition:border-color 0.2s; }
+  .dossier-item:hover { border-color:rgba(138,172,204,0.3); }
+  .dossier-item.ouvert  { border-left:3px solid rgba(138,172,204,0.6); }
+  .dossier-item.traque  { border-left:3px solid rgba(232,160,64,0.7); }
+  .dossier-item.clos    { border-left:3px solid rgba(94,160,80,0.6); opacity:0.65; }
+  .dossier-item.echoue  { border-left:3px solid rgba(139,26,26,0.5); opacity:0.55; }
+  .dossier-header { display:flex; align-items:center; gap:0.55rem; padding:0.55rem 0.75rem; cursor:pointer; background:rgba(74,90,122,0.04); flex-wrap:wrap; }
+  .dossier-nom { font-family:'Cinzel',serif; font-size:0.85rem; font-weight:600; color:var(--parchment); flex:1; min-width:90px; }
+  .dossier-prime-val { font-family:'Cinzel',serif; font-size:0.95rem; color:var(--GLD); white-space:nowrap; }
+  .dossier-prime-base { font-size:0.65rem; color:var(--SUB); }
+  .dossier-statut-badge { font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.1rem 0.38rem; border-radius:1px; border:1px solid; white-space:nowrap; cursor:pointer; transition:all 0.15s; }
+  .dossier-statut-badge.ouvert { border-color:rgba(138,172,204,0.45); color:#8aaccc; background:rgba(74,90,122,0.08); }
+  .dossier-statut-badge.traque { border-color:rgba(232,160,64,0.5); color:#e8a040; background:rgba(232,160,64,0.08); }
+  .dossier-statut-badge.clos   { border-color:rgba(94,160,80,0.5);  color:#8ab870; background:rgba(94,160,80,0.08); }
+  .dossier-statut-badge.echoue { border-color:rgba(139,26,26,0.4);  color:#c07070; background:rgba(139,26,26,0.07); }
+  .dossier-expand { font-size:0.65rem; color:var(--SUB); transition:transform 0.15s; flex-shrink:0; }
+  .dossier-item.open .dossier-expand { transform:rotate(180deg); }
+  .dossier-body { display:none; padding:0.65rem 0.8rem; border-top:1px solid rgba(138,172,204,0.07); }
+  .dossier-item.open .dossier-body { display:block; }
+  .dossier-completude { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.65rem; flex-wrap:wrap; }
+  .dossier-comp-label { font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--SUB); white-space:nowrap; }
+  .dossier-comp-pips { display:flex; gap:3px; }
+  .dossier-comp-pip { width:16px; height:9px; border-radius:1px; border:1px solid rgba(138,172,204,0.18); background:transparent; cursor:pointer; transition:all 0.15s; }
+  .dossier-comp-pip.on { background:rgba(138,172,204,0.5); border-color:rgba(138,172,204,0.75); }
+  .dossier-comp-effet { font-size:0.74rem; font-style:italic; color:var(--SUB); flex:1; }
+  .dossier-comp-effet.bon { color:#8ab870; }
+  .dossier-section { margin-bottom:0.6rem; }
+  .dossier-section-title { font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--VIO2); opacity:0.75; margin-bottom:0.28rem; display:block; }
+  .dossier-field { width:100%; background:rgba(74,90,122,0.06); border:1px solid rgba(138,172,204,0.12); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.84rem; padding:0.3rem 0.5rem; border-radius:1px; resize:vertical; min-height:46px; line-height:1.45; }
+  .dossier-field:focus { outline:none; border-color:rgba(138,172,204,0.4); }
+  .prime-modifs { margin-bottom:0.6rem; }
+  .prime-modif-row { display:flex; align-items:center; gap:0.5rem; padding:0.25rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.82rem; }
+  .prime-modif-row:last-child { border-bottom:none; }
+  .prime-modif-label { color:var(--parchment-dark); flex:1; font-size:0.8rem; }
+  .prime-modif-val { font-family:'Cinzel',serif; font-size:0.85rem; white-space:nowrap; }
+  .prime-modif-val.plus { color:#8ab870; }
+  .prime-modif-val.minus { color:#c07070; }
+  .prime-total-row { display:flex; align-items:baseline; gap:0.5rem; margin-top:0.5rem; padding-top:0.4rem; border-top:1px solid rgba(138,172,204,0.12); }
+  .prime-total-label { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--SUB); }
+  .prime-total-val { font-family:'Cinzel',serif; font-size:1.4rem; color:var(--GLD); }
+  .dossier-actions { display:flex; gap:0.35rem; flex-wrap:wrap; padding-top:0.45rem; border-top:1px solid rgba(255,255,255,0.04); margin-top:0.5rem; }
+  .d-btn { font-family:'Cinzel',serif; font-size:0.57rem; letter-spacing:0.08em; text-transform:uppercase; padding:0.22rem 0.48rem; border-radius:1px; cursor:pointer; transition:all 0.15s; }
+  .d-btn-blue  { background:rgba(74,90,122,0.1);  border:1px solid rgba(138,172,204,0.28); color:var(--VIO2); }
+  .d-btn-blue:hover  { background:rgba(74,90,122,0.2); }
+  .d-btn-gold  { background:rgba(184,146,42,0.08); border:1px solid rgba(184,146,42,0.28); color:var(--GLD); }
+  .d-btn-gold:hover  { background:rgba(184,146,42,0.18); }
+  .d-btn-green { background:rgba(94,160,80,0.08);  border:1px solid rgba(94,160,80,0.28);  color:#8ab870; }
+  .d-btn-green:hover { background:rgba(94,160,80,0.18); }
+  .d-btn-red   { background:transparent; border:1px solid rgba(139,26,26,0.2); color:rgba(192,112,112,0.6); }
+  .d-btn-red:hover   { background:rgba(139,26,26,0.12); color:#e08080; }
+  .indic-item { border:1px solid rgba(138,172,204,0.12); border-radius:2px; margin-bottom:0.45rem; overflow:hidden; transition:border-color 0.2s; }
+  .indic-item:hover { border-color:rgba(138,172,204,0.28); }
+  .indic-item.actif   { border-left:3px solid rgba(138,172,204,0.55); }
+  .indic-item.douteux { border-left:3px solid rgba(232,160,64,0.55); }
+  .indic-item.grille  { border-left:3px solid rgba(139,26,26,0.45); opacity:0.55; }
+  .indic-header { display:flex; align-items:center; gap:0.5rem; padding:0.48rem 0.7rem; cursor:pointer; background:rgba(74,90,122,0.04); flex-wrap:wrap; }
+  .indic-nom { font-family:'Cinzel',serif; font-size:0.8rem; font-weight:600; color:var(--parchment); flex:1; }
+  .indic-spec { font-size:0.73rem; color:var(--SUB); font-style:italic; }
+  .indic-fiab { display:flex; gap:3px; }
+  .indic-fiab-pip { width:10px; height:10px; border-radius:50%; border:1.5px solid rgba(138,172,204,0.25); background:transparent; cursor:pointer; transition:all 0.15s; }
+  .indic-fiab-pip.on { background:rgba(138,172,204,0.65); border-color:var(--VIO2); }
+  .indic-fiab-pip.on.hi { background:rgba(184,146,42,0.8); border-color:var(--GLD); }
+  .indic-statut-badge { font-size:0.56rem; letter-spacing:0.09em; text-transform:uppercase; padding:0.08rem 0.3rem; border-radius:1px; border:1px solid; white-space:nowrap; cursor:pointer; transition:all 0.15s; }
+  .indic-statut-badge.actif   { border-color:rgba(138,172,204,0.4); color:#8aaccc; background:rgba(74,90,122,0.07); }
+  .indic-statut-badge.douteux { border-color:rgba(232,160,64,0.4); color:#e8a040; background:rgba(232,160,64,0.07); }
+  .indic-statut-badge.grille  { border-color:rgba(139,26,26,0.4);  color:#c07070; background:rgba(139,26,26,0.06); }
+  .indic-expand { font-size:0.6rem; color:var(--SUB); transition:transform 0.15s; flex-shrink:0; }
+  .indic-item.open .indic-expand { transform:rotate(180deg); }
+  .indic-body { display:none; padding:0.5rem 0.7rem; border-top:1px solid rgba(138,172,204,0.06); font-size:0.82rem; color:var(--parchment-dark); }
+  .indic-item.open .indic-body { display:block; }
+  .indic-bonus { font-size:0.75rem; color:#8ab870; font-style:italic; margin-bottom:0.4rem; }
+  .indic-log { list-style:none; margin-bottom:0.4rem; }
+  .indic-log li { font-size:0.74rem; color:var(--SUB); padding:0.14rem 0; border-bottom:1px solid rgba(255,255,255,0.03); display:flex; gap:0.4rem; }
+  .indic-log li:last-child { border-bottom:none; }
+  .indic-log-date { color:rgba(138,172,204,0.5); font-family:'Cinzel',serif; font-size:0.59rem; white-space:nowrap; flex-shrink:0; }
+  .indic-log-del { color:rgba(139,26,26,0.35); cursor:pointer; font-size:0.63rem; margin-left:auto; flex-shrink:0; transition:color 0.15s; }
+  .indic-log-del:hover { color:#e08080; }
+  .indic-actions { display:flex; gap:0.3rem; flex-wrap:wrap; padding-top:0.38rem; border-top:1px solid rgba(255,255,255,0.04); }
+  .ce-form { display:none; margin-top:0.5rem; background:rgba(74,90,122,0.06); border:1px solid rgba(138,172,204,0.16); border-radius:2px; padding:0.65rem; flex-direction:column; gap:0.38rem; }
+  .ce-form.visible { display:flex; }
+  .ce-form input, .ce-form textarea, .ce-form select { background:rgba(74,90,122,0.08); border:1px solid rgba(138,172,204,0.18); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.86rem; padding:0.26rem 0.42rem; border-radius:1px; width:100%; }
+  .ce-form input:focus, .ce-form textarea:focus, .ce-form select:focus { outline:none; border-color:var(--VIO2); }
+  .ce-form textarea { resize:vertical; min-height:50px; }
+  .ce-form-row { display:grid; grid-template-columns:1fr 1fr; gap:0.38rem; }
+  .ce-form-label { font-size:0.57rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--VIO2); opacity:0.8; display:block; margin-bottom:0.1rem; }
+
+  /* ── CABINET EXTENSIONS ── */
+  /* Minuterie */
+  .dossier-timer { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.55rem; flex-wrap:wrap; }
+  .dossier-timer-label { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); font-family:'Cinzel',serif; white-space:nowrap; }
+  .dossier-timer-val { font-family:'Cinzel',serif; font-size:1.1rem; font-weight:700; }
+  .dossier-timer-val.ok   { color:var(--GLD); }
+  .dossier-timer-val.warn { color:#e8a040; }
+  .dossier-timer-val.late { color:#e05050; }
+  .dossier-timer-note { font-size:0.72rem; font-style:italic; color:var(--SUB); flex:1; }
+  .dossier-timer-note.late { color:#c07060; }
+  .timer-btns { display:flex; gap:0.3rem; }
+
+  /* Journal de session */
+  .dossier-journal { margin-bottom:0.6rem; }
+  .dossier-journal-title { font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--VIO2); opacity:0.75; margin-bottom:0.28rem; display:block; }
+  .journal-entry { display:flex; gap:0.4rem; padding:0.25rem 0; border-bottom:1px solid rgba(138,172,204,0.06); font-size:0.8rem; align-items:baseline; }
+  .journal-entry:last-child { border-bottom:none; }
+  .journal-entry-date { font-family:'Cinzel',serif; font-size:0.6rem; color:rgba(138,172,204,0.55); white-space:nowrap; flex-shrink:0; }
+  .journal-entry-text { color:var(--parchment-dark); flex:1; line-height:1.45; }
+  .journal-entry-del { color:rgba(139,26,26,0.35); cursor:pointer; font-size:0.65rem; flex-shrink:0; transition:color 0.15s; }
+  .journal-entry-del:hover { color:#e08080; }
+  .journal-input { display:none; flex-direction:column; gap:0.28rem; margin-top:0.3rem; }
+  .journal-input.visible { display:flex; }
+  .journal-input input, .journal-input textarea { background:rgba(74,90,122,0.08); border:1px solid rgba(138,172,204,0.16); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.83rem; padding:0.22rem 0.38rem; border-radius:1px; width:100%; }
+  .journal-input textarea { resize:vertical; min-height:44px; }
+  .journal-input input:focus, .journal-input textarea:focus { outline:none; border-color:var(--VIO2); }
+
+  /* Lien Indic-Dossier */
+  .indic-dossiers-linked { display:flex; gap:0.3rem; flex-wrap:wrap; margin-top:0.3rem; margin-bottom:0.35rem; }
+  .indic-dossier-tag { font-size:0.6rem; letter-spacing:0.08em; text-transform:uppercase; padding:0.1rem 0.35rem; border:1px solid rgba(138,172,204,0.3); border-radius:1px; color:#8aaccc; background:rgba(74,90,122,0.08); cursor:pointer; transition:all 0.15s; }
+  .indic-dossier-tag:hover { background:rgba(74,90,122,0.18); }
+  .indic-link-form { display:none; gap:0.3rem; align-items:center; margin-top:0.25rem; }
+  .indic-link-form.visible { display:flex; }
+  .indic-link-form select { background:rgba(74,90,122,0.08); border:1px solid rgba(138,172,204,0.18); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.83rem; padding:0.22rem 0.38rem; border-radius:1px; flex:1; }
+  .indic-link-form select:focus { outline:none; border-color:var(--VIO2); }
+
+  /* Commanditaires */
+  .cmd-item { border:1px solid rgba(138,172,204,0.12); border-radius:2px; margin-bottom:0.45rem; overflow:hidden; transition:border-color 0.2s; }
+  .cmd-item:hover { border-color:rgba(138,172,204,0.28); }
+  .cmd-header { display:flex; align-items:center; gap:0.55rem; padding:0.48rem 0.7rem; cursor:pointer; background:rgba(74,90,122,0.04); flex-wrap:wrap; }
+  .cmd-nom { font-family:'Cinzel',serif; font-size:0.8rem; font-weight:600; color:var(--parchment); flex:1; }
+  .cmd-satis-pips { display:flex; gap:3px; }
+  .cmd-satis-pip { width:12px; height:12px; border-radius:2px; border:1.5px solid rgba(138,172,204,0.22); background:transparent; cursor:pointer; transition:all 0.15s; }
+  .cmd-satis-pip.on.low  { background:rgba(192,80,60,0.6);  border-color:#c05040; }
+  .cmd-satis-pip.on.mid  { background:rgba(184,146,42,0.6); border-color:var(--GLD); }
+  .cmd-satis-pip.on.high { background:rgba(94,160,80,0.7);  border-color:#6ab860; }
+  .cmd-primes-val { font-family:'Cinzel',serif; font-size:0.85rem; color:var(--GLD); white-space:nowrap; }
+  .cmd-expand { font-size:0.62rem; color:var(--SUB); transition:transform 0.15s; flex-shrink:0; }
+  .cmd-item.open .cmd-expand { transform:rotate(180deg); }
+  .cmd-body { display:none; padding:0.5rem 0.7rem; border-top:1px solid rgba(138,172,204,0.07); font-size:0.82rem; color:var(--parchment-dark); }
+  .cmd-item.open .cmd-body { display:block; }
+  .cmd-bonus-box { background:rgba(74,90,122,0.07); border:1px solid rgba(138,172,204,0.12); border-radius:2px; padding:0.4rem 0.6rem; margin-bottom:0.45rem; font-size:0.78rem; }
+  .cmd-bonus-label { font-family:'Cinzel',serif; font-size:0.57rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--VIO2); display:block; margin-bottom:0.15rem; }
+  .cmd-bonus-text { color:var(--parchment-dark); font-style:italic; }
+  .cmd-actions { display:flex; gap:0.3rem; flex-wrap:wrap; padding-top:0.38rem; border-top:1px solid rgba(255,255,255,0.04); margin-top:0.4rem; }
+
+  /* Bonus Cote panel */
+  .cote-bonus-panel { background:rgba(184,146,42,0.06); border:1px solid rgba(184,146,42,0.18); border-radius:2px; padding:0.6rem 0.75rem; margin-bottom:0.85rem; }
+  .cote-bonus-title { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--GLD); margin-bottom:0.4rem; display:block; }
+  .cote-bonus-row { display:flex; align-items:center; gap:0.6rem; padding:0.2rem 0; font-size:0.78rem; }
+  .cote-bonus-palier { font-family:'Cinzel',serif; font-size:0.62rem; color:var(--SUB); white-space:nowrap; min-width:90px; }
+  .cote-bonus-desc { color:var(--parchment-dark); flex:1; }
+  .cote-bonus-active { color:#8ab870; font-weight:600; }
+  .cote-bonus-inactive { opacity:0.45; }
+
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html">← Accueil</a>
+  <span class="nav-sep">·</span>
+  <span class="nav-current">Cade</span>
+</nav>
+
+<div class="layout">
+
+  <!-- EXPORT / IMPORT -->
+  <div class="io-bar full">
+    <button class="io-btn io-btn-export" onclick="exportJSON()">↓ Exporter sauvegarde</button>
+    <button class="io-btn io-btn-import" onclick="document.getElementById('import-input').click()">↑ Importer sauvegarde</button>
+    <input type="file" id="import-input" accept=".json" style="display:none" onchange="importJSON(this)" />
+    <span class="io-status" id="io-status"></span>
+  </div>
+
+  <!-- HEADER -->
+  <div class="perso-header">
+    <div class="perso-avatar">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 48" width="32" height="32" fill="none">
+        <!-- Mire / cible stylisée Chasseuse de Prime -->
+        <circle cx="20" cy="22" r="14" stroke="#4a5a7a" stroke-width="1.2" fill="none" opacity="0.4"/>
+        <circle cx="20" cy="22" r="9" stroke="#8aaccc" stroke-width="1.5" fill="none" opacity="0.7"/>
+        <circle cx="20" cy="22" r="4" stroke="#B8922A" stroke-width="1.8" fill="none" opacity="0.9"/>
+        <circle cx="20" cy="22" r="1.5" fill="#B8922A" opacity="0.9"/>
+        <!-- Croix de visée -->
+        <line x1="20" y1="6" x2="20" y2="14" stroke="#8aaccc" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+        <line x1="20" y1="30" x2="20" y2="38" stroke="#8aaccc" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+        <line x1="4"  y1="22" x2="12" y2="22" stroke="#8aaccc" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+        <line x1="28" y1="22" x2="36" y2="22" stroke="#8aaccc" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+        <!-- Cicatrice — petite ligne -->
+        <line x1="17" y1="43" x2="23" y2="44" stroke="#B8922A" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+      </svg>
+    </div>
+    <div class="perso-info">
+      <h1>Cade Mitchell</h1>
+      <div class="sub">Chasseuse de Prime (Haut Elfe) · Itinérante · 1 Chasseur</div>
+      <div class="player">Yelena · Haut Elfe · Âge 160 · Argent 1 · Féminin</div>
+    </div>
+    <div class="perso-meta">
+      <div>Taille 1m92 · Poids 85 kg</div>
+      <div>Mi-longs noirs corbeau · Yeux ambrés</div>
+      <div style="color:var(--VIO2);font-size:0.75rem;font-style:normal;">Cicatrice légère lèvre inférieure</div>
+    </div>
+  </div>
+
+
+  <!-- CARACTÉRISTIQUES -->
+  <div class="card blue full">
+    <div class="card-title vio">Caractéristiques</div>
+    <div class="stats-grid" id="stats-grid"></div>
+    <div style="font-size:0.7rem;color:var(--SUB);margin-top:0.6rem;font-style:italic;">Init = valeur de départ · Avancé = points dépensés · Total = calculé automatiquement</div>
+  </div>
+
+
+  <!-- ÉTAT & RESSOURCES -->
+  <div class="card blue">
+    <div class="card-title red">État & Ressources</div>
+    <div class="res-grid">
+      <div class="res-box">
+        <span class="res-label">Blessures</span>
+        <span class="res-val" id="wounds-cur">14</span>
+        <span class="res-sub">/ <input type="number" id="w-max-input" value="14" min="1" max="99" onchange="updateWoundsMax(this.value)" style="background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.12);color:var(--SUB);font-family:'Cinzel',serif;font-size:0.7rem;width:28px;text-align:center;padding:0;cursor:pointer;" /> max</span>
+        <div class="wounds-ctrl">
+          <button class="btn-small btn-wound" onclick="changeWound(-1)">−</button>
+          <button class="btn-small btn-heal" onclick="changeWound(1)">+</button>
+        </div>
+      </div>
+      <div class="res-box">
+        <span class="res-label">Mouvement</span>
+        <span class="res-val">5</span>
+        <span class="res-sub">cases / tour</span>
+      </div>
+    </div>
+    <div style="margin-bottom:0.6rem;">
+      <div class="card-title" style="color:var(--GLD);margin-bottom:0.4rem;font-size:0.62rem;">Destin & Chance</div>
+      <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Destin</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--GLD);">1</span>
+          <div style="display:flex;gap:0.3rem;" id="chance-pips"></div>
+        </div>
+        <div style="color:var(--SUB);font-size:1rem;">→</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Chance</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--parchment);" id="chance-val">1</span>
+          <div style="display:flex;gap:0.3rem;flex-wrap:wrap;max-width:200px;" id="chance-track"></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:0.75rem;">
+      <div class="card-title" style="color:var(--VIO2);margin-bottom:0.4rem;font-size:0.62rem;">Résilience & Détermination</div>
+      <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Résilience</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--VIO2);">1</span>
+        </div>
+        <div style="color:var(--SUB);font-size:1rem;">→</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Détermination</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--parchment);" id="determ-val">1</span>
+          <div style="display:flex;gap:0.3rem;flex-wrap:wrap;max-width:200px;" id="determ-pips"></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card-title" style="margin-bottom:0.4rem;font-size:0.62rem;">Monnaie <span style="font-weight:400;opacity:0.5;font-family:'Crimson Text',serif;text-transform:none;letter-spacing:0;font-size:0.7rem;">1 Co = 20 Pa · 1 Pa = 12 Sc</span></div>
+      <div class="money-row">
+        <div class="money-item">
+          <span class="money-val" id="money-or">1</span>
+          <span class="money-label">CO</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('or',-1)" title="−1 Co">−</button>
+            <button class="money-btn" onclick="chMoney('or',1)"  title="+1 Co">+</button>
+          </div>
+        </div>
+        <div class="money-item">
+          <span class="money-val" id="money-argent">825</span>
+          <span class="money-label">PA</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('argent',-1)"  title="−1 Pa">−</button>
+            <button class="money-btn" onclick="chMoney('argent',1)"   title="+1 Pa">+</button>
+          </div>
+        </div>
+        <div class="money-item">
+          <span class="money-val" id="money-cuivre">45</span>
+          <span class="money-label">SC</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('cuivre',-1)"  title="−1 Sc">−</button>
+            <button class="money-btn" onclick="chMoney('cuivre',1)"   title="+1 Sc">+</button>
+          </div>
+        </div>
+      </div>
+      <div id="money-convert-msg" style="font-size:0.68rem;font-style:italic;color:var(--GLD);margin-top:0.35rem;min-height:0.9rem;opacity:0;transition:opacity 0.4s;"></div>
+    </div>
+  </div>
+
+
+  <!-- CORRUPTION -->
+  <div class="card">
+    <div class="card-title red">Corruption · Stress · Mutations</div>
+    <div class="cet-grid">
+      <div class="cet-box"><span class="cet-label">Corruption</span><textarea class="cet-input" id="cet-corruption" placeholder="0"></textarea></div>
+      <div class="cet-box"><span class="cet-label">Stress</span><textarea class="cet-input" id="cet-mutations" placeholder="0"></textarea></div>
+      <div class="cet-box"><span class="cet-label">États actifs</span><textarea class="cet-input" id="cet-etats" placeholder="Sonné, Exténué…"></textarea></div>
+    </div>
+  </div>
+
+
+  <!-- COMPÉTENCES DE BASE -->
+  <div class="card">
+    <div class="card-title gld">Compétences de base</div>
+    <ul class="skill-list" id="skills-base-list"></ul>
+  </div>
+
+
+  <!-- COMPÉTENCES AVANCÉES -->
+  <div class="card">
+    <div class="card-title vio">Compétences avancées</div>
+    <ul class="skill-list" id="skills-adv-list"></ul>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-add-vio" onclick="toggleAdvForm()">+ Ajouter</button>
+      <div class="talent-form" id="adv-form">
+        <input class="sort-form-input" id="adv-name" placeholder="Nom de la compétence" />
+        <input class="sort-form-input" id="adv-car" placeholder="Car. (Int, FM…)" />
+        <input class="sort-form-input" id="adv-aug" placeholder="Aug." type="number" style="width:80px;" />
+        <div class="sort-form-actions">
+          <button class="btn-add btn-add-vio" onclick="addAdvSkill()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleAdvForm()">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- TALENTS -->
+  <div class="card">
+    <div class="card-title vio">Talents & Capacités</div>
+    <ul class="talent-list" id="talent-list"></ul>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-add-vio" onclick="toggleTalentForm()">+ Ajouter</button>
+      <div class="talent-form" id="talent-form">
+        <input class="sort-form-input" id="talent-name-new" placeholder="Nom du talent" />
+        <input class="sort-form-input" id="talent-desc-new" placeholder="Description" />
+        <div class="sort-form-actions">
+          <button class="btn-add btn-add-vio" onclick="addTalent()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleTalentForm()">Annuler</button>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:0.75rem;padding-top:0.6rem;border-top:1px solid rgba(255,255,255,0.05);">
+      <div class="card-title" style="color:var(--SUB);margin-bottom:0.5rem;font-size:0.62rem;">Traits raciaux &amp; capacités spéciales</div>
+      <ul style="list-style:none;font-size:0.83rem;line-height:1.9;color:var(--parchment-dark);">
+        <li>· <strong style="color:var(--parchment);">Physionomiste</strong> : identifie et mémorise facilement un visage, une démarche, une morphologie, même déguisé en. +10 Perception dans ces cas-là.</li>
+        <li>· <strong style="color:var(--parchment);">Sixième sens</strong> : le MJ peut vous prévenir que vous êtes observé, ou que vous êtes en danger (après Test Intuition réussi), ignore Surprise sur Test Intuition réussi.</li>
+        <li>· <strong style="color:var(--parchment);">Perspicace</strong> : +5 Int.</li>
+        <li>· <strong style="color:var(--parchment);">Sens aiguisé (vue)</strong> : vous permet de repérer ce qui échappe à d'autres. Vous pouvez effectuer des Tests de Perception pour détecter des détails normalement imperceptibles.</li>
+        <li>· <strong style="color:var(--parchment);">Vision nocturne</strong> : permet de voir dans la pénombre à 20m et d'étendre la distance d'illumination effective de toutes les sources de lumière de 20m.</li>
+      </ul>
+    </div>
+  </div>
+
+
+  <!-- ARMURE -->
+  <div class="card">
+    <div class="card-title gld" style="margin-bottom:0.4rem;font-size:0.62rem;">Pièces d'armure portées</div>
+    <div id="armor-pieces-list"></div>
+    <div style="margin-top:0.3rem;margin-bottom:0.9rem;">
+      <button class="btn-add btn-add-gld" onclick="toggleForm('armor-piece-form')">+ Ajouter une pièce</button>
+      <div class="form-panel" id="armor-piece-form">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;">
+          <input class="sort-form-input" id="ap-name" placeholder="Nom (Veste de cuir…)" style="grid-column:1/-1;" />
+          <input class="sort-form-input" id="ap-pa"   placeholder="PA — ex: 1" type="number" />
+          <input class="sort-form-input" id="ap-enc"  placeholder="ENC — ex: 0" type="number" />
+          <input class="sort-form-input" id="ap-pen"  placeholder="Pénalité (−1 Ag…)" />
+          <input class="sort-form-input" id="ap-attr" placeholder="Attributs" />
+        </div>
+        <div style="display:flex;gap:0.4rem;margin-top:0.3rem;">
+          <button class="btn-add btn-add-gld" onclick="addArmorPiece()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleForm('armor-piece-form')">Annuler</button>
+        </div>
+      </div>
+    </div>
+    <div class="card-title gld" style="margin-top:0.3rem;">Armure par localisation</div>
+    <table class="armor-table">
+      <thead><tr><th>Localisation</th><th>PA</th><th>Loc.</th></tr></thead>
+      <tbody id="armor-body"></tbody>
+    </table>
+    <div class="card-title gld" style="margin-top:0.75rem;margin-bottom:0.5rem;">Armes</div>
+    <div id="weapons-list"></div>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-add-gld" onclick="toggleWeaponForm()">+ Ajouter une arme</button>
+      <div class="weapon-form" id="weapon-form">
+        <div class="weapon-form-grid">
+          <input class="sort-form-input" id="wep-name" placeholder="Nom" />
+          <input class="sort-form-input" id="wep-all" placeholder="Allonge" />
+          <input class="sort-form-input" id="wep-deg" placeholder="Dégâts (BF+4…)" />
+          <input class="sort-form-input" id="wep-enc" placeholder="ENC — ex: 0" />
+          <input class="sort-form-input" id="wep-attr" placeholder="Attributs" style="grid-column:1/-1;" />
+        </div>
+        <div class="sort-form-actions">
+          <button class="btn-add btn-add-gld" onclick="addWeapon()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleWeaponForm()">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- INVENTAIRE -->
+  <div class="card">
+    <div class="card-title grn">Inventaire</div>
+    <div id="inv-list"></div>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-add-gld" style="border-color:rgba(94,122,96,0.35);color:var(--GRN);background:rgba(94,122,96,0.07);" onclick="toggleInvForm()">+ Ajouter un objet</button>
+      <div class="inv-form" id="inv-form">
+        <input class="sort-form-input" id="inv-name-new" placeholder="Nom de l'objet" />
+        <input class="sort-form-input" id="inv-detail-new" placeholder="Emplacement / Note" />
+        <input class="sort-form-input" id="inv-enc-new" placeholder="ENC — ex: 0" type="number" style="width:80px;" />
+        <div class="sort-form-actions">
+          <button class="btn-add btn-add-gld" style="border-color:rgba(94,122,96,0.35);color:var(--GRN);" onclick="addInvItem()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleInvForm()">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CABINET D'ENQUETE -->
+<!-- CABINET D'ENQUETE -->
+  <div class="ce-card">
+    <div class="card-title vio" style="margin-bottom:0.45rem;">Le Cabinet d'Enquete
+      <span style="font-size:0.62rem;color:var(--SUB);font-style:italic;font-family:'Crimson Text',serif;text-transform:none;letter-spacing:0;margin-left:0.5rem;">mecanique exclusive : Cade Mitchell</span>
+    </div>
+    <div style="font-size:0.75rem;color:var(--SUB);font-style:italic;margin-bottom:0.85rem;line-height:1.55;">
+      Cade ne chasse pas — elle instruit. Chaque <strong style="color:var(--parchment-dark);">Dossier</strong> s'etoffe session apres session. Plus il est complet, plus la prise est propre et la prime elevee. Le <strong style="color:var(--GLD);">Reseau d'Indics</strong> alimente chaque enquete. La <strong style="color:var(--VIO2);">Cote</strong> reflete sa valeur sur le marche.
+    </div>
+    <div class="ce-cote-bar">
+      <div>
+        <div style="font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--SUB);margin-bottom:0.3rem;">Cote sur le marche</div>
+        <div class="ce-cote-pips" id="ce-cote-pips"></div>
+      </div>
+      <div>
+        <div class="ce-cote-label tier1" id="ce-cote-label">Inconnue</div>
+        <div class="ce-cote-desc" id="ce-cote-desc">Aucune prise. La reputation se construit.</div>
+      </div>
+      <div class="ce-stats">
+        <div class="ce-stat-box"><span class="ce-stat-val" id="ce-nb-dossiers">0</span><span class="ce-stat-label">Dossiers</span></div>
+        <div class="ce-stat-box"><span class="ce-stat-val" id="ce-nb-indics">0</span><span class="ce-stat-label">Indics actifs</span></div>
+        <div class="ce-stat-box"><span class="ce-stat-val" id="ce-primes-total">0</span><span class="ce-stat-label">CO encaisses</span></div>
+      </div>
+    </div>
+    <div class="ce-tabs">
+      <button class="ce-tab active" onclick="ceTab('dossiers')">Dossiers actifs</button>
+      <button class="ce-tab" id="ce-tab-archives" onclick="ceTab('archives')">Archives</button>
+      <button class="ce-tab" id="ce-tab-indics" onclick="ceTab('indics')">Reseau d'Indics</button>
+      <button class="ce-tab" id="ce-tab-cmd" onclick="ceTab('cmd')">Commanditaires</button>
+      <button class="ce-tab" id="ce-tab-cote" onclick="ceTab('cote')">Bonus de Cote</button>
+    </div>
+    <div class="ce-panel active" id="ce-panel-dossiers">
+      <div id="ce-dossiers-list"></div>
+      <button class="btn-add btn-add-vio" style="margin-top:0.4rem;" onclick="ceToggleForm('ce-form-dossier')">+ Nouveau dossier</button>
+      <div class="ce-form" id="ce-form-dossier">
+        <div><span class="ce-form-label">Nom de la cible</span><input id="ce-d-nom" placeholder="Ex: Aldric Voss" /></div>
+        <div class="ce-form-row">
+          <div><span class="ce-form-label">Prime de base (CO)</span><input id="ce-d-base" type="number" min="0" placeholder="Ex: 15" /></div>
+          <div><span class="ce-form-label">Commanditaire</span><input id="ce-d-cmd" placeholder="Ex: Marchands d'Averheim" /></div>
+        </div>
+        <div><span class="ce-form-label">Condition</span>
+          <select id="ce-d-cond">
+            <option value="vivant">Vivant de preference</option>
+            <option value="mort">Mort accepte</option>
+            <option value="indifferent">Indifferent</option>
+          </select>
+        </div>
+        <div><span class="ce-form-label">Description initiale</span><textarea id="ce-d-desc" placeholder="Crimes, description, derniere position connue..."></textarea></div>
+        <div class="sort-form-actions">
+          <button class="btn-add btn-add-vio" onclick="ceAddDossier()">Ouvrir le dossier</button>
+          <button class="btn-cancel" onclick="ceToggleForm('ce-form-dossier')">Annuler</button>
+        </div>
+      </div>
+    </div>
+    <div class="ce-panel" id="ce-panel-archives">
+      <div id="ce-archives-list"></div>
+      <div style="font-size:0.78rem;color:var(--SUB);font-style:italic;margin-top:0.3rem;">Dossiers clos et echecs. La memoire du cabinet.</div>
+    </div>
+    <div class="ce-panel" id="ce-panel-indics">
+      <div style="font-size:0.75rem;color:var(--SUB);font-style:italic;margin-bottom:0.65rem;line-height:1.5;">Chaque indic alimente un dossier specifique. Fiabilite 1-5. Lier un indic a un dossier lui confere son bonus automatiquement.</div>
+      <div id="ce-indics-list"></div>
+      <button class="btn-add btn-add-vio" style="margin-top:0.4rem;" onclick="ceToggleForm('ce-form-indic')">+ Nouvel indic</button>
+      <div class="ce-form" id="ce-form-indic">
+        <div><span class="ce-form-label">Nom / Alias</span><input id="ce-i-nom" placeholder="Brenn le passeur..." /></div>
+        <div class="ce-form-row">
+          <div><span class="ce-form-label">Specialite</span><input id="ce-i-spec" placeholder="Routes nord, tavernes..." /></div>
+          <div><span class="ce-form-label">Bonus</span><input id="ce-i-bonus" placeholder="+10 Pistage..." /></div>
+        </div>
+        <div><span class="ce-form-label">Note initiale</span><textarea id="ce-i-note" placeholder="Comment Cade l'a trouve..."></textarea></div>
+        <div class="sort-form-actions">
+          <button class="btn-add btn-add-vio" onclick="ceAddIndic()">Ajouter</button>
+          <button class="btn-cancel" onclick="ceToggleForm('ce-form-indic')">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- XP & AMBITIONS -->
+  <div class="card full">
+    <div class="card-title vio">Expérience & Ambitions</div>
+    <div class="xp-row">
+      <div class="xp-box"><span class="xp-label">Actuelle</span><input class="xp-val-input" id="xp-actuelle" type="number" value="60" onchange="saveAll()" /></div>
+      <div class="xp-box"><span class="xp-label">Dépensée</span><input class="xp-val-input" id="xp-depensee" type="number" value="0" onchange="saveAll()" /></div>
+      <div class="xp-box"><span class="xp-label">Totale</span><input class="xp-val-input" id="xp-totale" type="number" value="0" onchange="saveAll()" /></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:0.75rem;">
+      <div>
+        <span class="ambition-label">Ambition courte</span>
+        <div class="trait-block">Objectif immédiat…</div>
+        <span class="ambition-label" style="margin-top:0.5rem;">Motivation</span>
+        <div class="trait-block">Prouver que la preuve que c'était possible existe — au-delà des eaux, un monde différent, ouvert.</div>
+      </div>
+      <div>
+        <span class="ambition-label">Ambition longue</span>
+        <div class="trait-block">Objectif de vie…</div>
+        <span class="ambition-label" style="margin-top:0.5rem;">Psychologie</span>
+        <div class="trait-block" style="font-style:italic;color:var(--SUB);">Peurs, folies, phobies, manies…</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div>
+        <div class="trait-line plus">+ Attentive, idéaliste, versatile, déterminée.</div>
+        <div class="trait-line plus">+ Instruite, curieuse, performeuse.</div>
+        <div class="trait-line plus">+ Physionomiste — mémorise visages et allures, atout de chasseuse.</div>
+        <div class="trait-line plus">+ Sixième sens — instinct de survie aiguisé.</div>
+        <div class="trait-line plus">+ Ouverte aux autres cultures, cherche à comprendre avant de juger.</div>
+      </div>
+      <div>
+        <div class="trait-line minus">− Idéalisme pouvant la rendre vulnérable à la déception.</div>
+        <div class="trait-line minus">− Itinérante par nécessité autant que par choix — peu d'attaches stables.</div>
+        <div class="trait-line minus">− Prime sur Aldric Voss : fil personnel qui peut interférer avec d'autres missions.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- HISTORIQUE -->
+  <div class="card full">
+    <div class="card-title vio">Historique</div>
+    <div class="histo">
+      <p>Née au sud d'Ulthuan, dans une ville portuaire où le sel et la musique se mêlent naturellement. Son père gère la logistique d'un port : un homme de chiffres et de marées. Sa mère est musicienne et chanteuse, une présence lumineuse dont la voix a bercé l'enfance de Cade et lui a appris que la beauté mérite d'être protégée. Elle a hérité des deux : capable de calculer un cap dans une tempête et de s'arrêter net devant un coucher de soleil sur l'eau.</p>
+      <p>Elle savait naviguer. Elle connaissait la mer, ses humeurs, ses lois silencieuses. Mais les routes ulthuaniennes tournaient en rond : les mêmes côtes, les mêmes ports, le même horizon familier. Elle voulait plus, et ne savait pas encore comment le formuler.</p>
+      <p>Puis un homme est venu. Un capitaine humain, vrai marin de métier, dont l'équipage était intégralement Haut Elfe. Ce détail l'a frappée plus que tout : pas l'homme lui-même, mais ce qu'il représentait — la preuve que c'était possible. Qu'au-delà des eaux existait un monde différent, ouvert, où les cultures se croisaient sans s'annuler, où une elfe pouvait voguer vers autre chose que ce qu'on lui avait tracé.</p>
+      <p style="color:var(--VIO2);font-style:italic;">Elle a idéalisé. C'est important de le dire : elle le sait elle-même.</p>
+    </div>
+  </div>
+
+
+  <!-- NOTES SESSION -->
+  <div class="card full">
+    <div class="card-title">Notes de session</div>
+    <div style="font-size:0.82rem;color:var(--SUB);font-style:italic;margin-bottom:0.5rem;line-height:1.5;">Prime active : Aldric Voss — ancien sergent milice Averheim, extorsion, bande itinérante routes secondaires. Vivant préféré. Décote si mort.</div>
+    <textarea class="notes-area" id="session-notes" rows="4" placeholder="Contacts, informations importantes, rappels…"></textarea>
+    <button class="btn-save" onclick="saveAll()">Sauvegarder</button>
+    <span class="save-confirm" id="save-confirm">✓ Sauvegardé</span>
+  </div>
+
+</div>
+
+<script>
+// ══════ DONNÉES INITIALES ══════
+
+const STATS_DEF = [
+  { key:'cc',  label:'CC',  init:44, avance:0 },
+  { key:'ct',  label:'CT',  init:44, avance:0 },
+  { key:'f',   label:'F',   init:30, avance:5 },
+  { key:'e',   label:'End', init:30, avance:5 },
+  { key:'ini', label:'Ini', init:45, avance:0 },
+  { key:'ag',  label:'Ag',  init:42, avance:0 },
+  { key:'dex', label:'Dex', init:34, avance:0 },
+  { key:'int', label:'Int', init:39, avance:5 },
+  { key:'fm',  label:'FM',  init:41, avance:0 },
+  { key:'soc', label:'Soc', init:29, avance:0 },
+];
+
+const SKILLS_BASE_DEF = [
+  { name:'Art',                    car:'Dex', aug:0,  base:34 },
+  { name:'Athlétisme',             car:'Ag',  aug:0,  base:42 },
+  { name:'Calme',                  car:'FM',  aug:5,  base:41 },
+  { name:'Charme',                 car:'Soc', aug:5,  base:29 },
+  { name:'Commandement',           car:'Soc', aug:0,  base:29 },
+  { name:'Conduite',               car:'Ag',  aug:0,  base:42 },
+  { name:'Corps à Corps (Base)',   car:'CC',  aug:11, base:44 },
+  { name:'Discrétion',             car:'Ag',  aug:0,  base:42 },
+  { name:'Dressage',               car:'FM',  aug:0,  base:41 },
+  { name:'Escalade',               car:'F',   aug:0,  base:35 },
+  { name:'Esquive',                car:'Ag',  aug:0,  base:42 },
+  { name:'Intimidation',           car:'F',   aug:0,  base:35 },
+  { name:'Intuition',              car:'Ini', aug:5,  base:45 },
+  { name:'Jeu',                    car:'Int', aug:0,  base:44 },
+  { name:'Manipulation',           car:'Soc', aug:0,  base:29 },
+  { name:'Marchandage',            car:'Soc', aug:5,  base:29 },
+  { name:'Monter',                 car:'Ag',  aug:0,  base:42 },
+  { name:'Navigation',             car:'Ini', aug:0,  base:45 },
+  { name:'Perception',             car:'Ini', aug:10, base:45 },
+  { name:'Ragot',                  car:'Soc', aug:5,  base:29 },
+  { name:'Ramer',                  car:'F',   aug:0,  base:35 },
+  { name:'Représentation',         car:'Soc', aug:0,  base:29 },
+  { name:'Résistance à l\'alcool', car:'End', aug:0,  base:35 },
+  { name:'Résistance',             car:'End', aug:0,  base:35 },
+  { name:'Survie en extérieur',    car:'Int', aug:3,  base:44 },
+];
+
+const SKILLS_ADV_DEF = [
+  { name:'Langue (Eltharin)',   car:'Int', aug:5, carVal:44 },
+  { name:'Projectiles (arc)',   car:'CT',  aug:3, carVal:44 },
+  { name:'Natation',            car:'F',   aug:3, carVal:35 },
+  { name:'Voile',               car:'Ag',  aug:3, carVal:42 },
+  { name:'Subornation',         car:'?',   aug:6, carVal:45 },
+];
+
+const TALENTS_DEF = [
+  { name:'Affable', desc:'+5 Soc.' },
+];
+
+const ARMOR_LOCS = [
+  { loc:'Tête',       range:'01-09', pa:0 },
+  { loc:'Bras droit', range:'10-24', pa:1 },
+  { loc:'Bras gauche',range:'25-44', pa:1 },
+  { loc:'Corps',      range:'45-79', pa:1 },
+  { loc:'Jambe dr.',  range:'80-89', pa:0 },
+  { loc:'Jambe gau.', range:'90-00', pa:0 },
+];
+
+const ARMOR_PIECES_DEF = [
+  { name:'Veste de cuir',    pa:1, enc:0, pen:'-1 Ag', attr:'Résistante, Lourde…' },
+  { name:'Cotte de mailles', pa:0, enc:0, pen:'-1 Ag', attr:'Résistante, Lourde…' },
+];
+
+const WEAPONS_DEF = [
+  { name:'Arme Simple (épée)', all:'Moyenne',     deg:'BF+4', enc:0, attr:'' },
+  { name:'Dague',              all:'Très courte',  deg:'BF+2', enc:0, attr:'' },
+];
+
+const INV_DEF = [
+  { name:'Sac à dos',         detail:'Dos',              enc:0 },
+  { name:'Bourse',            detail:'Ceinture',         enc:0 },
+  { name:'Vêtements',         detail:'Sur soi et sac à dos', enc:0 },
+  { name:'Cape',              detail:'Sur soi et sac à dos', enc:0 },
+  { name:'Couverture',        detail:'Sac à dos',        enc:0 },
+  { name:'Boîte à amadou',    detail:'Sac à dos',        enc:0 },
+  { name:'Corde 10m',         detail:'Sac à dos',        enc:0 },
+  { name:'Rations (1 jour)',  detail:'Sac à dos',        enc:0 },
+];
+
+// ══════ STATE ══════
+let state = {
+  wounds: 14, woundsMax: 14,
+  chance: 1, determ: 1,
+  money: { or:1, argent:825, cuivre:45 },
+  notes: '', cet: { corruption:'', mutations:'', etats:'' },
+  xp: { actuelle:60, depensee:0, totale:0 },
+  stats: {},
+  skillsBase: JSON.parse(JSON.stringify(SKILLS_BASE_DEF)),
+  skillsAdv: JSON.parse(JSON.stringify(SKILLS_ADV_DEF)),
+  talents: JSON.parse(JSON.stringify(TALENTS_DEF)),
+  weapons: JSON.parse(JSON.stringify(WEAPONS_DEF)),
+  inventory: JSON.parse(JSON.stringify(INV_DEF)),
+  armor: JSON.parse(JSON.stringify(ARMOR_LOCS)),
+  armorPieces: JSON.parse(JSON.stringify(ARMOR_PIECES_DEF)),
+};
+
+STATS_DEF.forEach(s => { state.stats[s.key] = { init:s.init, avance:s.avance }; });
+
+function getStatTotal(key) {
+  const s = state.stats[key];
+  return (parseInt(s.init)||0) + (parseInt(s.avance)||0);
+}
+
+// ══════ LOAD / SAVE ══════
+function load() {
+  const raw = localStorage.getItem('cade_v1');
+  if (raw) try {
+    const saved = JSON.parse(raw);
+    ['wounds','woundsMax','chance','determ','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
+    if(saved.money)      Object.assign(state.money, saved.money);
+    if(saved.cet)        Object.assign(state.cet, saved.cet);
+    if(saved.xp)         Object.assign(state.xp, saved.xp);
+    if(saved.stats)       Object.assign(state.stats, saved.stats);
+    if(saved.skillsBase)  state.skillsBase  = saved.skillsBase;
+    if(saved.skillsAdv)   state.skillsAdv   = saved.skillsAdv;
+    if(saved.talents)     state.talents     = saved.talents;
+    if(saved.weapons)     state.weapons     = saved.weapons;
+    if(saved.inventory)   state.inventory   = saved.inventory;
+    if(saved.armor)       state.armor       = saved.armor;
+    if(saved.armorPieces) state.armorPieces = saved.armorPieces;
+  } catch(e) {}
+  renderAll();
+}
+function save() { localStorage.setItem('cade_v1', JSON.stringify(state)); }
+function saveAll() {
+  state.notes = document.getElementById('session-notes').value;
+  if(!state.cet) state.cet={};
+  ['corruption','mutations','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) state.cet[k]=el.value; });
+  state.xp.actuelle = parseInt(document.getElementById('xp-actuelle').value)||0;
+  state.xp.depensee = parseInt(document.getElementById('xp-depensee').value)||0;
+  state.xp.totale   = parseInt(document.getElementById('xp-totale').value)||0;
+  save();
+  const c=document.getElementById('save-confirm');
+  c.style.opacity='1'; setTimeout(()=>c.style.opacity='0',2000);
+}
+
+function renderAll() {
+  renderStats(); renderSkillsBase(); renderSkillsAdv(); renderTalents();
+  renderArmor(); renderArmorPieces(); renderWeapons(); renderInventory();
+  renderChance(); renderDeterm();
+  document.getElementById('wounds-cur').textContent = state.wounds;
+  const wmi=document.getElementById('w-max-input'); if(wmi) wmi.value=state.woundsMax||14;
+  updateWoundColor();
+  ['or','argent','cuivre'].forEach(k => document.getElementById('money-'+k).textContent=state.money[k]||0);
+  document.getElementById('session-notes').value = state.notes||'';
+  ['corruption','mutations','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) el.value=(state.cet&&state.cet[k])||''; });
+  document.getElementById('xp-actuelle').value = state.xp.actuelle||60;
+  document.getElementById('xp-depensee').value = state.xp.depensee||0;
+  document.getElementById('xp-totale').value   = state.xp.totale||0;
+}
+
+// ══════ STATS ══════
+function renderStats() {
+  const g=document.getElementById('stats-grid'); g.innerHTML='';
+  STATS_DEF.forEach(def => {
+    const s=state.stats[def.key];
+    const total=(parseInt(s.init)||0)+(parseInt(s.avance)||0);
+    const bf=Math.floor(total/10);
+    const div=document.createElement('div'); div.className='stat-box';
+    div.innerHTML=`
+      <span class="stat-label">${def.label}</span>
+      <span class="stat-total" id="stat-total-${def.key}">${total}</span>
+      <span class="stat-bonus">B:${bf}</span>
+      <div class="stat-edit-row">
+        <span style="font-size:0.62rem;color:var(--SUB);opacity:0.55;">${s.init}</span>
+        <span class="plus">+</span>
+        <input class="editable-num" style="width:34px;font-size:0.78rem;color:var(--VIO2);border-bottom-color:rgba(138,172,204,0.15);" type="number" value="${s.avance}" onchange="updateStat('${def.key}',this.value)" />
+      </div>`;
+    g.appendChild(div);
+  });
+}
+function updateStat(key,val) {
+  state.stats[key].avance=parseInt(val)||0;
+  const total=getStatTotal(key); const bf=Math.floor(total/10);
+  const el=document.getElementById('stat-total-'+key);
+  if(el){ el.textContent=total; el.nextElementSibling.textContent='B:'+bf; }
+  save();
+}
+
+// ══════ WOUNDS ══════
+function updateWoundsMax(val) { state.woundsMax=Math.max(1,parseInt(val)||1); document.getElementById('w-max-input').value=state.woundsMax; save(); }
+function changeWound(d) { state.wounds=Math.max(0,Math.min(state.woundsMax,state.wounds+d)); document.getElementById('wounds-cur').textContent=state.wounds; updateWoundColor(); save(); }
+function updateWoundColor() {
+  const el=document.getElementById('wounds-cur'); const p=state.wounds/state.woundsMax;
+  el.style.color=p>0.6?'var(--parchment)':p>0.3?'#e8a040':'#e05050';
+}
+
+// ══════ MONNAIE ══════
+// Taux : 1 Co = 20 Pa | 1 Pa = 12 Sc
+function chMoney(k, d) {
+  var m = state.money;
+  if (!m.or)     m.or     = 0;
+  if (!m.argent) m.argent = 0;
+  if (!m.cuivre) m.cuivre = 0;
+
+  m[k] = (m[k] || 0) + d;
+
+  var msg = '';
+
+  // Sc → Pa automatique (chaque 12 Sc = 1 Pa)
+  if (m.cuivre >= 12) {
+    var gain = Math.floor(m.cuivre / 12);
+    m.cuivre -= gain * 12;
+    m.argent += gain;
+    msg += '+' + gain + ' Pa ';
+  }
+  // Pa → Co automatique (chaque 20 Pa = 1 Co)
+  if (m.argent >= 20) {
+    var gain2 = Math.floor(m.argent / 20);
+    m.argent -= gain2 * 20;
+    m.or += gain2;
+    msg += '+' + gain2 + ' Co';
+  }
+  // Déficit Sc : casse un Pa
+  if (m.cuivre < 0) {
+    var need = Math.ceil(-m.cuivre / 12);
+    if (m.argent >= need) {
+      m.argent -= need;
+      m.cuivre += need * 12;
+      msg += '−' + need + ' Pa→Sc ';
+    } else { m.cuivre = 0; }
+  }
+  // Déficit Pa : casse un Co
+  if (m.argent < 0) {
+    var need2 = Math.ceil(-m.argent / 20);
+    if (m.or >= need2) {
+      m.or -= need2;
+      m.argent += need2 * 20;
+      msg += '−' + need2 + ' Co→Pa';
+    } else { m.argent = 0; }
+  }
+  m.or     = Math.max(0, m.or);
+  m.argent = Math.max(0, m.argent);
+  m.cuivre = Math.max(0, m.cuivre);
+
+  document.getElementById('money-or').textContent     = m.or;
+  document.getElementById('money-argent').textContent = m.argent;
+  document.getElementById('money-cuivre').textContent = m.cuivre;
+
+  var msgEl = document.getElementById('money-convert-msg');
+  if (msgEl && msg.trim()) {
+    msgEl.textContent = '⇄ ' + msg.trim();
+    msgEl.style.opacity = '1';
+    clearTimeout(msgEl._t);
+    msgEl._t = setTimeout(function(){ msgEl.style.opacity='0'; }, 2500);
+  }
+  save();
+}
+
+// ══════ CHANCE / DETERM ══════
+const CLOVER_ICON=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="16" height="16"><g transform="translate(90,90)"><path d="M 0 30 Q 10 52 18 66" fill="none" stroke="#2d6b1a" stroke-width="9" stroke-linecap="round"/><path d="M 0 0 C -18 -4,-58 -10,-68 -28 C -76 -44,-58 -58,-38 -50 C -22 -44,-8 -30,0 -12 C 2 -8,2 -4,0 0 Z" fill="#3a8c1e" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><path d="M 0 0 C 18 -4,58 -10,68 -28 C 76 -44,58 -58,38 -50 C 22 -44,8 -30,0 -12 C -2 -8,-2 -4,0 0 Z" fill="#3a8c1e" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><path d="M 0 0 C -18 4,-58 10,-68 28 C -76 44,-58 58,-38 50 C -22 44,-8 30,0 12 C 2 8,2 4,0 0 Z" fill="#4aac28" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><path d="M 0 0 C 18 4,58 10,68 28 C 76 44,58 58,38 50 C 22 44,8 30,0 12 C -2 8,-2 4,0 0 Z" fill="#4aac28" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><circle cx="0" cy="0" r="7" fill="#2d6b1a"/></g></svg>`;
+const FLAME_ICON=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="14" height="16"><g transform="translate(50,62)"><path d="M 0,-55 C 2,-45 14,-40 18,-30 L 26,-44 C 28,-33 38,-26 32,-14 L 46,-22 C 46,-11 50,-2 34,5 L 50,1 C 50,13 46,2 42,22 C 32,34 14,43 0,45 C -14,43 -32,34 -42,22 C -46,2 -50,13 -50,1 L -34,5 C -50,-2 -46,-11 -46,-22 L -32,-14 C -38,-26 -28,-33 -26,-44 L -18,-30 C -14,-40 -2,-45 0,-55 Z" fill="#f0922a"/></g></svg>`;
+function makePipsIcon(id,cur,max,fn,icon) {
+  const c=document.getElementById(id); if(!c) return; c.innerHTML='';
+  for(let i=0;i<max;i++){
+    const pip=document.createElement('div'); pip.className='pip'+(i<cur?' on':'');
+    if(icon) pip.innerHTML=icon;
+    pip.onclick=()=>fn(i<cur?i:i+1);
+    c.appendChild(pip);
+  }
+}
+function renderChance() { makePipsIcon('chance-track',state.chance,1,v=>{state.chance=v;save();renderChance();},CLOVER_ICON); }
+function renderDeterm() { makePipsIcon('determ-pips',state.determ,1,v=>{state.determ=v;save();renderDeterm();},FLAME_ICON); }
+
+// ══════ COMPÉTENCES BASE ══════
+function renderSkillsBase() {
+  const ul=document.getElementById('skills-base-list'); ul.innerHTML='';
+  state.skillsBase.forEach((sk,i)=>{
+    const total=(parseInt(sk.base)||0)+(parseInt(sk.aug)||0);
+    const li=document.createElement('li');
+    li.innerHTML=`
+      <span class="skill-name">${sk.name} <span style="color:var(--SUB);font-size:0.7rem;">(${sk.car})</span></span>
+      <div class="skill-aug"><input class="editable-num" type="number" value="${sk.aug||0}" style="width:38px;font-size:0.8rem;color:var(--VIO2);border-bottom-color:rgba(138,172,204,0.12);" onchange="updateSkillBaseAug(${i},this.value)" /></div>
+      <span class="skill-total" id="sk-base-total-${i}">${total}</span>`;
+    ul.appendChild(li);
+  });
+}
+function updateSkillBaseAug(idx,val) {
+  state.skillsBase[idx].aug=parseInt(val)||0;
+  const total=(state.skillsBase[idx].base||0)+state.skillsBase[idx].aug;
+  const el=document.getElementById('sk-base-total-'+idx); if(el) el.textContent=total;
+  save();
+}
+
+// ══════ COMPÉTENCES AVANCÉES ══════
+function renderSkillsAdv() {
+  const ul=document.getElementById('skills-adv-list'); ul.innerHTML='';
+  state.skillsAdv.forEach((sk,i)=>{
+    const total=(parseInt(sk.carVal)||0)+(parseInt(sk.aug)||0);
+    const li=document.createElement('li');
+    li.innerHTML=`
+      <span class="skill-name">${sk.name} <span style="color:var(--SUB);font-size:0.7rem;">(${sk.car})</span></span>
+      <div class="skill-aug"><input class="editable-num" type="number" value="${sk.aug||0}" style="width:38px;font-size:0.8rem;color:var(--VIO2);border-bottom-color:rgba(138,172,204,0.12);" onchange="updateSkillAdv(${i},this.value)" /></div>
+      <span class="skill-total" id="sk-adv-total-${i}">${total}</span>
+      <span class="inv-del" onclick="deleteAdvSkill(${i})" title="Supprimer">✕</span>`;
+    ul.appendChild(li);
+  });
+  applyAdvSkillEditable();
+}
+function updateSkillAdv(idx,val) { state.skillsAdv[idx].aug=parseInt(val)||0; renderSkillsAdv(); save(); }
+function deleteAdvSkill(idx) { if(confirm('Supprimer ?')){ state.skillsAdv.splice(idx,1); renderSkillsAdv(); save(); } }
+function toggleAdvForm() { document.getElementById('adv-form').classList.toggle('visible'); }
+function addAdvSkill() {
+  const name=document.getElementById('adv-name').value.trim(); if(!name) return;
+  state.skillsAdv.push({name,car:document.getElementById('adv-car').value.trim()||'?',aug:parseInt(document.getElementById('adv-aug').value)||0,carVal:0});
+  document.getElementById('adv-name').value=''; document.getElementById('adv-aug').value='0';
+  renderSkillsAdv(); save(); toggleAdvForm();
+}
+
+// ══════ TALENTS ══════
+function renderTalents() {
+  const ul=document.getElementById('talent-list'); ul.innerHTML='';
+  state.talents.forEach((t,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML=`<div class="talent-content"><span class="talent-name">${t.name}</span><span class="talent-desc">${t.desc}</span></div><span class="talent-del" onclick="deleteTalent(${i})">✕</span>`;
+    ul.appendChild(li);
+  });
+  applyTalentEditable();
+}
+function deleteTalent(idx) { if(confirm('Supprimer ?')){ state.talents.splice(idx,1); renderTalents(); save(); } }
+function toggleTalentForm() { document.getElementById('talent-form').classList.toggle('visible'); }
+function addTalent() {
+  const name=document.getElementById('talent-name-new').value.trim(); if(!name) return;
+  state.talents.push({name,desc:document.getElementById('talent-desc-new').value.trim()});
+  document.getElementById('talent-name-new').value=''; document.getElementById('talent-desc-new').value='';
+  renderTalents(); save(); toggleTalentForm();
+}
+
+// ══════ ARMURE TABLE ══════
+function renderArmor() {
+  const tbody=document.getElementById('armor-body'); tbody.innerHTML='';
+  state.armor.forEach((a,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="color:var(--parchment-dark);">${a.loc}</td><td><input class="armor-pa-input" type="number" value="${a.pa||0}" onchange="updateArmorPA(${i},this.value)" /></td><td style="color:var(--SUB);font-size:0.75rem;">${a.range}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+function updateArmorPA(idx,val) { state.armor[idx].pa=parseInt(val)||0; save(); }
+
+// ══════ PIÈCES D'ARMURE ══════
+function renderArmorPieces() {
+  const c=document.getElementById('armor-pieces-list'); c.innerHTML='';
+  if(!state.armorPieces) state.armorPieces=[];
+  state.armorPieces.forEach((ap,i)=>{
+    const div=document.createElement('div'); div.className='armor-piece';
+    div.innerHTML=`
+      <div class="armor-piece-content">
+        <div class="armor-piece-name">${ap.name}</div>
+        <div class="armor-piece-stats">
+          <span class="astat"><span class="astat-l">PA </span><span class="astat-v">${ap.pa}</span></span>
+          ${ap.pen?'<span class="astat"><span class="astat-l">Pén. </span><span class="astat-v">${ap.pen}</span></span>':''}
+          ${ap.attr?'<span class="astat"><span class="astat-l">Attr. </span><span class="astat-v">${ap.attr}</span></span>':''}
+        </div>
+      </div>
+      <span class="inv-del" onclick="deleteArmorPiece(${i})">✕</span>`;
+    c.appendChild(div);
+  });
+  applyArmorPieceEditable();
+}
+function deleteArmorPiece(idx) { if(confirm('Retirer ?')){ state.armorPieces.splice(idx,1); renderArmorPieces(); save(); } }
+function addArmorPiece() {
+  if(!state.armorPieces) state.armorPieces=[];
+  const name=document.getElementById('ap-name').value.trim(); if(!name) return;
+  state.armorPieces.push({name,pa:parseInt(document.getElementById('ap-pa').value)||0,enc:parseInt(document.getElementById('ap-enc').value)||0,pen:document.getElementById('ap-pen').value.trim(),attr:document.getElementById('ap-attr').value.trim()});
+  ['ap-name','ap-pen','ap-attr'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ap-pa').value=''; document.getElementById('ap-enc').value='';
+  renderArmorPieces(); save(); toggleForm('armor-piece-form');
+}
+
+// ══════ ARMES ══════
+function renderWeapons() {
+  const c=document.getElementById('weapons-list'); c.innerHTML='';
+  state.weapons.forEach((w,i)=>{
+    const div=document.createElement('div'); div.className='weapon-item';
+    div.innerHTML=`
+      <div class="weapon-content">
+        <div class="weapon-name">${w.name}</div>
+        <div class="weapon-stats">
+          <span class="weapon-stat"><span class="weapon-stat-label">All. </span><span class="weapon-stat-val">${w.all}</span></span>
+          <span class="weapon-stat"><span class="weapon-stat-label">Dég. </span><span class="weapon-stat-val">${w.deg}</span></span>
+          ${w.attr?'<span class="weapon-stat"><span class="weapon-stat-label">Attr. </span><span class="weapon-stat-val">${w.attr}</span></span>':''}
+        </div>
+      </div>
+      <span class="weapon-del" onclick="deleteWeapon(${i})">✕</span>`;
+    c.appendChild(div);
+  });
+  applyWeaponEditable();
+}
+function deleteWeapon(idx) { if(confirm('Supprimer ?')){ state.weapons.splice(idx,1); renderWeapons(); save(); } }
+function toggleWeaponForm() { document.getElementById('weapon-form').classList.toggle('visible'); }
+function addWeapon() {
+  const name=document.getElementById('wep-name').value.trim(); if(!name) return;
+  state.weapons.push({name,all:document.getElementById('wep-all').value.trim()||'—',deg:document.getElementById('wep-deg').value.trim()||'—',enc:parseInt(document.getElementById('wep-enc').value)||0,attr:document.getElementById('wep-attr').value.trim()});
+  ['wep-name','wep-all','wep-deg','wep-enc','wep-attr'].forEach(id=>document.getElementById(id).value='');
+  renderWeapons(); save(); toggleWeaponForm();
+}
+
+// ══════ INVENTAIRE ══════
+function renderInventory() {
+  const c=document.getElementById('inv-list'); c.innerHTML='';
+  state.inventory.forEach((item,i)=>{
+    const div=document.createElement('div'); div.className='inv-item';
+    div.innerHTML=`<span class="inv-name">${item.name}</span>${item.enc?'<span style="font-size:0.68rem;color:var(--SUB);">ENC:${item.enc}</span>':''}<span class="inv-detail">${item.detail||''}</span><span class="inv-del" onclick="deleteInvItem(${i})">✕</span>`;
+    c.appendChild(div);
+  });
+  applyInventoryEditable();
+}
+function deleteInvItem(idx) { state.inventory.splice(idx,1); renderInventory(); save(); }
+function toggleInvForm() { document.getElementById('inv-form').classList.toggle('visible'); }
+function addInvItem() {
+  const name=document.getElementById('inv-name-new').value.trim(); if(!name) return;
+  state.inventory.push({name,detail:document.getElementById('inv-detail-new').value.trim(),enc:parseInt(document.getElementById('inv-enc-new').value)||0});
+  ['inv-name-new','inv-detail-new','inv-enc-new'].forEach(id=>document.getElementById(id).value='');
+  renderInventory(); save(); toggleInvForm();
+}
+
+// ══════ UTILITAIRES ══════
+function toggleForm(id) { document.getElementById(id).classList.toggle('visible'); }
+
+// ══════ EXPORT / IMPORT ══════
+function ioStatus(msg,cls) { const el=document.getElementById('io-status'); if(!el) return; el.textContent=msg; el.className='io-status'+(cls?' '+cls:''); }
+function exportJSON() {
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='cade.json'; a.click();
+  ioStatus('✓ Exporté','ok'); setTimeout(()=>ioStatus('',''),3000);
+}
+function importJSON(input) {
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try {
+      const saved=JSON.parse(e.target.result);
+      ['wounds','woundsMax','chance','determ','notes'].forEach(k=>{if(saved[k]!==undefined) state[k]=saved[k];});
+      if(saved.money) Object.assign(state.money,saved.money);
+      if(saved.cet) Object.assign(state.cet,saved.cet);
+      if(saved.xp) Object.assign(state.xp,saved.xp);
+      if(saved.stats) Object.assign(state.stats,saved.stats);
+      if(saved.skillsBase) state.skillsBase=saved.skillsBase;
+      if(saved.skillsAdv) state.skillsAdv=saved.skillsAdv;
+      if(saved.talents) state.talents=saved.talents;
+      if(saved.weapons) state.weapons=saved.weapons;
+      if(saved.inventory) state.inventory=saved.inventory;
+      if(saved.armor) state.armor=saved.armor;
+      if(saved.armorPieces) state.armorPieces=saved.armorPieces;
+      save(); renderAll();
+      ioStatus('✓ Importé','ok'); setTimeout(()=>ioStatus('',''),3000);
+    } catch(err){ ioStatus('Erreur : '+err.message,'err'); }
+  };
+  reader.readAsText(file); input.value='';
+}
+
+// ══════ ÉDITION INLINE ══════
+function makeEditable(el,onSave,opts) {
+  opts=opts||{}; const isArea=opts.multiline||false;
+  el.title='Double-cliquer pour modifier'; el.style.cursor='pointer';
+  el.addEventListener('dblclick',function(e){
+    e.stopPropagation(); const current=el.textContent;
+    const tag=isArea?'textarea':'input'; const inp=document.createElement(tag);
+    inp.value=current; inp.className=isArea?'editable-field-area':'editable-field';
+    if(isArea){inp.rows=2;inp.style.width='100%';}
+    inp.style.fontSize=window.getComputedStyle(el).fontSize;
+    inp.style.color=window.getComputedStyle(el).color;
+    inp.style.fontFamily=window.getComputedStyle(el).fontFamily;
+    inp.style.fontWeight=window.getComputedStyle(el).fontWeight;
+    el.replaceWith(inp); inp.focus(); inp.select();
+    function commit(){ const val=inp.value.trim()||current; el.textContent=val; inp.replaceWith(el); onSave(val); }
+    inp.addEventListener('blur',commit);
+    inp.addEventListener('keydown',function(e){ if(e.key==='Enter'&&!isArea){e.preventDefault();commit();} if(e.key==='Escape'){inp.value=current;commit();} });
+  });
+}
+function applyWeaponEditable() {
+  document.querySelectorAll('.weapon-item').forEach((item,i)=>{
+    const nameEl=item.querySelector('.weapon-name');
+    if(nameEl&&!nameEl.dataset.editable){ nameEl.dataset.editable='1'; makeEditable(nameEl,val=>{if(state.weapons[i]){state.weapons[i].name=val;save();}}); }
+  });
+}
+function applyArmorPieceEditable() {
+  document.querySelectorAll('.armor-piece').forEach((item,i)=>{
+    const nameEl=item.querySelector('.armor-piece-name');
+    if(nameEl&&!nameEl.dataset.editable){ nameEl.dataset.editable='1'; makeEditable(nameEl,val=>{if(state.armorPieces[i]){state.armorPieces[i].name=val;save();}}); }
+  });
+}
+function applyTalentEditable() {
+  document.querySelectorAll('.talent-list li').forEach((li,i)=>{
+    const nameEl=li.querySelector('.talent-name'); const descEl=li.querySelector('.talent-desc');
+    if(nameEl&&!nameEl.dataset.editable){ nameEl.dataset.editable='1'; makeEditable(nameEl,val=>{if(state.talents[i]){state.talents[i].name=val;save();}}); }
+    if(descEl&&!descEl.dataset.editable){ descEl.dataset.editable='1'; makeEditable(descEl,val=>{if(state.talents[i]){state.talents[i].desc=val;save();}},{multiline:false}); }
+  });
+}
+function applyInventoryEditable() {
+  document.querySelectorAll('#inv-list .inv-item').forEach((item,i)=>{
+    const nameEl=item.querySelector('.inv-name'); const detailEl=item.querySelector('.inv-detail');
+    if(nameEl&&!nameEl.dataset.editable){ nameEl.dataset.editable='1'; makeEditable(nameEl,val=>{if(state.inventory[i]){state.inventory[i].name=val;save();}}); }
+    if(detailEl&&!detailEl.dataset.editable){ detailEl.dataset.editable='1'; makeEditable(detailEl,val=>{if(state.inventory[i]){state.inventory[i].detail=val;save();}}); }
+  });
+}
+function applyAdvSkillEditable() {
+  document.querySelectorAll('#skills-adv-list li').forEach((li,i)=>{
+    const nameEl=li.querySelector('.skill-name');
+    if(nameEl&&!nameEl.dataset.editable){ nameEl.dataset.editable='1'; makeEditable(nameEl,val=>{ if(state.skillsAdv[i]){ state.skillsAdv[i].name=val.replace(/\s*\([^)]*\)\s*$/,'').trim(); renderSkillsAdv(); save(); } }); }
+  });
+}
+
+// ══════ EVENT LISTENERS ══════
+['session-notes','cet-corruption','cet-mutations','cet-etats'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el){ el.addEventListener('blur',saveAll); el.addEventListener('input',saveAll); }
+});
+window.addEventListener('beforeunload',saveAll);
+
+
+
+// ══════ CABINET D'ENQUETE ══════
+var ceData = { cote:0, dossiers:[], indics:[], commanditaires:[], primesTotal:0 };
+
+var COTE_TIERS = [
+  { max:0,  tier:'tier1', label:'Inconnue',   desc:'Aucune prise. La reputation se construit.' },
+  { max:2,  tier:'tier1', label:'Debutante',  desc:'Quelques prises. Les commanditaires commencent a noter le nom.' },
+  { max:4,  tier:'tier1', label:'Connue',     desc:'Reputation locale etablie. Primes de qualite moyenne accessibles.' },
+  { max:6,  tier:'tier2', label:'Respectee',  desc:'Guildes et marchands importants font appel en priorite. Primes negociables.' },
+  { max:8,  tier:'tier2', label:'Redoutee',   desc:'Les cibles savent qui est sur leur piste. Primes elevees disponibles.' },
+  { max:10, tier:'tier3', label:'Legendaire', desc:'Une seule de cette stature en Averland. Les primes arrivent avant la demande.' },
+];
+
+var COTE_BONUS = [
+  { palier:0,  desc:'Aucun bonus. Cade est inconnue du milieu.' },
+  { palier:2,  desc:'Acces aux primes de base. Les courtiers acceptent de la recevoir.' },
+  { palier:4,  desc:'+5% automatique sur toute prime negociee. Les commanditaires locaux la contactent directement.' },
+  { palier:6,  desc:'+10% automatique. Acces aux primes "reservees" (cibles dangereuses, affaires discretes). Jet de Charme facilite pour negocier.' },
+  { palier:8,  desc:'+15% automatique. Commanditaires de la noblesse et des guildes majeures. Informations exclusives sur certaines cibles.' },
+  { palier:10, desc:'+20% automatique. Primes uniques. Cade peut fixer ses propres conditions. Les commanditaires viennent a elle.' },
+];
+
+var TIMER_SEUILS = [3, 5]; // sessions avant warn / late
+var COMP_BONUS = [0, 0, 0, 0.1, 0.25, 0.4, 0.6];
+var COMP_EFFETS = [
+  '',
+  'Traque de base. Prime de base uniquement.',
+  'Quelques informations. Prime de base.',
+  'Dossier correct. Negociation mineure possible (+10%).',
+  'Dossier solide. Avantage Pistage. Negociation facilitee (+25%).',
+  'Dossier complet. Prise propre quasi garantie. Prime majoree (+40%).',
+  'Dossier exhaustif. Cade arrive preparee. Prime maximale (+60%). Bonus Cote a la cloture.',
+];
+
+function coteTier(val) {
+  for(var i=COTE_TIERS.length-1; i>=0; i--) if(val>COTE_TIERS[i].max) return COTE_TIERS[i];
+  return COTE_TIERS[0];
+}
+function coteBonus(val) {
+  var b = 0;
+  for(var i=0; i<COTE_BONUS.length; i++) if(val>=COTE_BONUS[i].palier) b=i;
+  return b;
+}
+function coteBonusPct(val) { var p=[0,0,0,5,10,15,20]; return p[Math.min(val,p.length-1)]; }
+
+function calcPrime(d) {
+  var base = parseInt(d.base)||0;
+  var total = base;
+  var notes = [];
+  var comp = d.completude||0;
+  var cb = Math.round(base*(COMP_BONUS[Math.min(comp,COMP_BONUS.length-1)]));
+  if(cb>0){ total+=cb; notes.push({label:'Dossier (completude '+comp+'/6)',val:'+'+cb+' CO',cls:'plus'}); }
+  // Bonus Cote automatique
+  var cpct = coteBonusPct(ceData.cote);
+  if(cpct>0){ var cb2=Math.round(base*cpct/100); total+=cb2; notes.push({label:'Bonus Cote ('+cpct+'%)',val:'+'+cb2+' CO',cls:'plus'}); }
+  var modifs=d.modifs||[];
+  for(var m=0;m<modifs.length;m++){ total+=modifs[m].val; notes.push({label:modifs[m].label,val:(modifs[m].val>=0?'+':'')+modifs[m].val+' CO',cls:modifs[m].val>=0?'plus':'minus'}); }
+  if(d.cond==='vivant'&&d.priseMort){ var dec=Math.round(base*0.35); total-=dec; notes.push({label:'Decote (mort au lieu de vivant)',val:'-'+dec+' CO',cls:'minus'}); }
+  // Pénalite de delai
+  var sess = d.sessions||0; var maxSess = d.maxSessions||5;
+  if(sess>maxSess){ var pen=Math.round(base*0.1*(sess-maxSess)); total-=pen; notes.push({label:'Penalite delai ('+sess+' sessions)',val:'-'+pen+' CO',cls:'minus'}); }
+  return { total:Math.max(0,total), notes:notes };
+}
+
+function ceLoad() {
+  var raw=localStorage.getItem('cade_ce_v1');
+  if(raw){ try{
+    var d=JSON.parse(raw);
+    if(d.cote!==undefined) ceData.cote=d.cote;
+    if(d.dossiers) ceData.dossiers=d.dossiers;
+    if(d.indics) ceData.indics=d.indics;
+    if(d.commanditaires) ceData.commanditaires=d.commanditaires;
+    if(d.primesTotal) ceData.primesTotal=d.primesTotal;
+  }catch(e){} }
+  ceRender();
+}
+function ceSave(){ localStorage.setItem('cade_ce_v1',JSON.stringify(ceData)); }
+function ceRender(){ ceRenderCote(); ceRenderDossiers(); ceRenderIndics(); ceRenderCmd(); ceRenderCoteBonus(); ceRenderStats(); }
+
+// ── COTE ──────────────────────────────────────────────────────────────
+function ceRenderCote() {
+  var pips=document.getElementById('ce-cote-pips'); if(!pips) return;
+  pips.innerHTML='';
+  for(var i=0;i<10;i++){
+    var pip=document.createElement('div');
+    var cls='ce-cote-pip';
+    if(i<ceData.cote){ cls+=' on'; if(i<4) cls+=' tier1'; else if(i<7) cls+=' tier2'; else cls+=' tier3'; }
+    pip.className=cls; pip.title='Cote '+(i+1);
+    (function(idx){ pip.onclick=function(){ ceData.cote=(idx<ceData.cote)?idx:(idx+1); ceSave(); ceRenderCote(); ceRenderDossiers(); ceRenderCoteBonus(); }; })(i);
+    pips.appendChild(pip);
+  }
+  var t=coteTier(ceData.cote);
+  var lbl=document.getElementById('ce-cote-label');
+  var desc=document.getElementById('ce-cote-desc');
+  if(lbl){ lbl.textContent=t.label; lbl.className='ce-cote-label '+t.tier; }
+  if(desc) desc.textContent=t.desc;
+}
+
+function ceRenderCoteBonus() {
+  var c=document.getElementById('ce-cote-bonus-list'); if(!c) return;
+  c.innerHTML='';
+  for(var i=0;i<COTE_BONUS.length;i++){
+    var b=COTE_BONUS[i];
+    var active=ceData.cote>=b.palier;
+    var div=document.createElement('div');
+    div.className='cote-bonus-row '+(active?'':'cote-bonus-inactive');
+    div.innerHTML='<span class="cote-bonus-palier '+(active?'cote-bonus-active':'')+'">Cote '+(b.palier===0?'0':''+b.palier+'+')+'</span>'
+      +'<span class="cote-bonus-desc">'+b.desc+'</span>';
+    c.appendChild(div);
+  }
+}
+
+function ceRenderStats() {
+  var actifs=0;
+  for(var i=0;i<ceData.dossiers.length;i++){ var s=ceData.dossiers[i].statut; if(s!=='clos'&&s!=='echoue') actifs++; }
+  var indics=0;
+  for(var i=0;i<ceData.indics.length;i++){ if(ceData.indics[i].statut==='actif') indics++; }
+  document.getElementById('ce-nb-dossiers').textContent=actifs;
+  document.getElementById('ce-nb-indics').textContent=indics;
+  document.getElementById('ce-primes-total').textContent=ceData.primesTotal||0;
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────
+function ceTab(name) {
+  var tabs=document.querySelectorAll('.ce-tab');
+  var panels=document.querySelectorAll('.ce-panel');
+  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove('active');
+  for(var i=0;i<panels.length;i++) panels[i].classList.remove('active');
+  if(name==='dossiers') tabs[0].classList.add('active');
+  else{ var b=document.getElementById('ce-tab-'+name); if(b) b.classList.add('active'); }
+  var p=document.getElementById('ce-panel-'+name); if(p) p.classList.add('active');
+}
+function ceToggleForm(id){ document.getElementById(id).classList.toggle('visible'); }
+function ceToggleModifForm(idx){ var el=document.getElementById('ce-modif-form-'+idx); if(el) el.style.display=(el.style.display==='flex')?'none':'flex'; }
+
+// ── DOSSIERS ──────────────────────────────────────────────────────────
+function ceRenderDossiers() {
+  var actifs=[],archives=[];
+  for(var i=0;i<ceData.dossiers.length;i++){
+    var s=ceData.dossiers[i].statut;
+    if(s==='clos'||s==='echoue') archives.push(i); else actifs.push(i);
+  }
+  ceRenderDossierList('ce-dossiers-list',actifs,false);
+  ceRenderDossierList('ce-archives-list',archives,true);
+}
+
+function timerCls(sess,max){ if(sess<=max) return 'ok'; if(sess<=max+2) return 'warn'; return 'late'; }
+function timerNote(sess,max){
+  if(sess<=max) return 'Dans les delais ('+(max-sess)+' session(s) restante(s)).';
+  if(sess===max+1) return "Delai depasse d'1 session. Penalite -10% de prime.";
+  return "Delai depasse de "+(sess-max)+" sessions. Penalite -"+(10*(sess-max))+"% de prime.";
+}
+
+function ceRenderDossierList(containerId,indices,isArchive) {
+  var c=document.getElementById(containerId); if(!c) return;
+  c.innerHTML='';
+  if(!indices.length){
+    c.innerHTML='<div style="font-size:0.82rem;color:var(--SUB);font-style:italic;padding:0.3rem 0;">'+(isArchive?'Aucune archive.':'Aucun dossier ouvert.')+'</div>';
+    return;
+  }
+  for(var ii=0;ii<indices.length;ii++){
+    var realIdx=indices[ii];
+    var d=ceData.dossiers[realIdx];
+    var prime=calcPrime(d);
+    var comp=d.completude||0;
+    var statut=d.statut||'ouvert';
+    var statutLbl=statut==='traque'?'En traque':statut==='clos'?'Clos':statut==='echoue'?'Echoue':'Ouvert';
+    var sess=d.sessions||0;
+    var maxSess=d.maxSessions||5;
+    var tcls=timerCls(sess,maxSess);
+
+    // Pips completude
+    var compHtml='';
+    for(var p=0;p<6;p++) compHtml+='<div class="dossier-comp-pip'+(p<comp?' on':'')+'" onclick="ceSetComp('+realIdx+','+(p+1)+');event.stopPropagation();" title="Completude '+(p+1)+'/6"></div>';
+
+    // Indics lies
+    var indicsLies=[];
+    for(var k=0;k<ceData.indics.length;k++){
+      var linked=ceData.indics[k].dossiers||[];
+      for(var l=0;l<linked.length;l++) if(linked[l]===realIdx) indicsLies.push(ceData.indics[k].nom||'?');
+    }
+
+    // Modificateurs
+    var modifsHtml='';
+    if(prime.notes.length){
+      modifsHtml='<div class="prime-modifs">';
+      for(var n=0;n<prime.notes.length;n++) modifsHtml+='<div class="prime-modif-row"><span class="prime-modif-label">'+prime.notes[n].label+'</span><span class="prime-modif-val '+prime.notes[n].cls+'">'+prime.notes[n].val+'</span></div>';
+      modifsHtml+='</div>';
+    }
+
+    // Journal
+    var journal=d.journal||[];
+    var journalHtml='';
+    if(journal.length){
+      for(var j=0;j<journal.length;j++) journalHtml+='<div class="journal-entry"><span class="journal-entry-date">'+(journal[j].date||'?')+'</span><span class="journal-entry-text">'+journal[j].text+'</span><span class="journal-entry-del" onclick="ceDelJournalEntry('+realIdx+','+j+');event.stopPropagation();">x</span></div>';
+    }
+
+    var div=document.createElement('div');
+    div.className='dossier-item '+statut;
+
+    var html='<div class="dossier-header" onclick="this.parentElement.classList.toggle(\"open\")">';
+    html+='<span class="dossier-nom">'+d.nom+'</span>';
+    html+='<div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.1rem;">';
+    html+='<span class="dossier-prime-val">'+prime.total+' CO</span>';
+    html+='<span class="dossier-prime-base">base : '+(d.base||0)+' CO</span></div>';
+    html+='<span class="dossier-statut-badge '+statut+'" onclick="ceCycleStatut('+realIdx+');event.stopPropagation();">'+statutLbl+'</span>';
+    html+='<span class="dossier-expand">&#9662;</span></div>';
+    html+='<div class="dossier-body">';
+
+    // Minuterie
+    html+='<div class="dossier-timer">';
+    html+='<span class="dossier-timer-label">Traque</span>';
+    html+='<span class="dossier-timer-val '+tcls+'">'+sess+' / '+maxSess+' sess.</span>';
+    html+='<span class="dossier-timer-note'+(tcls==='late'?' late':'')+'">'+timerNote(sess,maxSess)+'</span>';
+    html+='<div class="timer-btns">';
+    html+='<button class="d-btn d-btn-blue" onclick="ceTimerTick('+realIdx+',1);event.stopPropagation();">+1</button>';
+    html+='<button class="d-btn d-btn-gold" onclick="ceTimerTick('+realIdx+',-1);event.stopPropagation();">-1</button>';
+    html+='<button class="d-btn d-btn-blue" onclick="ceTimerSetMax('+realIdx+');event.stopPropagation();">Delai...</button>';
+    html+='</div></div>';
+
+    // Completude
+    html+='<div class="dossier-completude"><span class="dossier-comp-label">Completude</span>';
+    html+='<div class="dossier-comp-pips">'+compHtml+'</div>';
+    html+='<span class="dossier-comp-effet'+(comp>=3?' bon':'')+'">'+COMP_EFFETS[Math.min(comp,6)]+'</span></div>';
+
+    if(d.cmd) html+='<div style="font-size:0.75rem;color:var(--SUB);margin-bottom:0.5rem;">Commanditaire : <strong style="color:var(--parchment-dark);">'+d.cmd+'</strong> &nbsp;&#183;&nbsp; Condition : '+(d.cond||'?')+'</div>';
+
+    // Indics lies
+    if(indicsLies.length){
+      html+='<div style="font-size:0.72rem;color:#8aaccc;margin-bottom:0.5rem;">Indics lies : ';
+      for(var k=0;k<indicsLies.length;k++) html+='<span style="background:rgba(74,90,122,0.12);border:1px solid rgba(138,172,204,0.25);border-radius:1px;padding:0.05rem 0.3rem;margin-right:0.3rem;">'+indicsLies[k]+'</span>';
+      html+='</div>';
+    }
+
+    // Champs libres
+    html+='<div class="dossier-section"><span class="dossier-section-title">Informations sur la cible</span>';
+    html+='<textarea class="dossier-field" placeholder="Physique, habitudes, complices..." onchange="ceSaveField('+realIdx+',\"desc\",this.value)" onblur="ceSaveField('+realIdx+',\"desc\",this.value)">'+(d.desc||'')+'</textarea></div>';
+    html+='<div class="dossier-section"><span class="dossier-section-title">Derniere position connue</span>';
+    html+='<textarea class="dossier-field" style="min-height:36px;" placeholder="Lieu, date, source..." onchange="ceSaveField('+realIdx+',\"position\",this.value)" onblur="ceSaveField('+realIdx+',\"position\",this.value)">'+(d.position||'')+'</textarea></div>';
+    html+='<div class="dossier-section"><span class="dossier-section-title">Vulnerabilites identifiees</span>';
+    html+='<textarea class="dossier-field" style="min-height:36px;" placeholder="Alcool, dettes, famille..." onchange="ceSaveField('+realIdx+',\"vulns\",this.value)" onblur="ceSaveField('+realIdx+',\"vulns\",this.value)">'+(d.vulns||'')+'</textarea></div>';
+
+    // Journal de session
+    html+='<div class="dossier-journal"><span class="dossier-journal-title">Journal de session</span>';
+    html+=journalHtml;
+    html+='<div class="journal-input" id="ce-journal-'+realIdx+'">';
+    html+='<input id="ce-j-date-'+realIdx+'" placeholder="Session / Lieu" style="background:rgba(74,90,122,0.08);border:1px solid rgba(138,172,204,0.16);color:var(--parchment);font-family:Crimson Text,serif;font-size:0.83rem;padding:0.22rem 0.38rem;border-radius:1px;width:100%;" />';
+    html+='<textarea id="ce-j-text-'+realIdx+'" placeholder="Ce que Cade a appris ou fait ce jour..." style="background:rgba(74,90,122,0.08);border:1px solid rgba(138,172,204,0.16);color:var(--parchment);font-family:Crimson Text,serif;font-size:0.83rem;padding:0.22rem 0.38rem;border-radius:1px;width:100%;resize:vertical;min-height:44px;"></textarea>';
+    html+='<div style="display:flex;gap:0.3rem;">';
+    html+='<button class="d-btn d-btn-blue" onclick="ceAddJournalEntry('+realIdx+')">Enregistrer</button>';
+    html+='<button class="btn-cancel" onclick="ceHideJournal('+realIdx+')">Annuler</button>';
+    html+='</div></div>';
+    html+='<button class="d-btn d-btn-blue" style="margin-top:0.3rem;" onclick="ceShowJournal('+realIdx+')">+ Entree journal</button>';
+    html+='</div>';
+
+    // Modificateurs
+    html+='<div style="margin-bottom:0.6rem;"><span class="dossier-section-title">Modificateurs de prime</span>';
+    html+=modifsHtml;
+    html+='<div style="display:none;gap:0.3rem;flex-wrap:wrap;" id="ce-modif-form-'+realIdx+'">';
+    html+='<input id="ce-m-label-'+realIdx+'" class="sort-form-input" style="flex:2;" placeholder="Motif..." />';
+    html+='<input id="ce-m-val-'+realIdx+'" class="sort-form-input" style="width:70px;" type="number" placeholder="+5" />';
+    html+='<button class="d-btn d-btn-gold" onclick="ceAddModif('+realIdx+')">+</button></div>';
+    html+='<button class="d-btn d-btn-blue" style="margin-top:0.3rem;" onclick="ceToggleModifForm('+realIdx+')">+ Modificateur</button>';
+    if(d.cond==='vivant') html+=' <label style="font-size:0.72rem;color:var(--SUB);cursor:pointer;"><input type="checkbox" '+(d.priseMort?'checked':'')+' onchange="ceSaveField('+realIdx+',\"priseMort\",this.checked)" style="margin-right:0.25rem;width:auto;" />Prise morte (-35%)</label>';
+    html+='</div>';
+
+    html+='<div class="prime-total-row"><span class="prime-total-label">Prime estimee</span>';
+    html+='<span class="prime-total-val">'+prime.total+' CO</span></div>';
+
+    html+='<div class="dossier-actions">';
+    html+='<button class="d-btn d-btn-blue" onclick="ceCycleStatut('+realIdx+')">Avancer statut</button>';
+    if(statut!=='clos'&&statut!=='echoue'){
+      html+='<button class="d-btn d-btn-green" onclick="ceCloseDossier('+realIdx+',true)">Clore (succes)</button>';
+      html+='<button class="d-btn d-btn-red" onclick="ceCloseDossier('+realIdx+',false)">Echec</button>';
+    }
+    html+='<button class="d-btn d-btn-red" onclick="ceDelDossier('+realIdx+')">Suppr.</button></div>';
+    html+='</div>';
+    div.innerHTML=html;
+    c.appendChild(div);
+  }
+}
+
+function ceSaveField(idx,field,val){ if(ceData.dossiers[idx]){ ceData.dossiers[idx][field]=val; ceSave(); } }
+function ceSetComp(idx,val){ if(ceData.dossiers[idx]){ ceData.dossiers[idx].completude=(ceData.dossiers[idx].completude||0)===val?val-1:val; ceSave(); ceRenderDossiers(); } }
+function ceCycleStatut(idx){ var cycle=['ouvert','traque']; var s=ceData.dossiers[idx].statut||'ouvert'; ceData.dossiers[idx].statut=cycle[(cycle.indexOf(s)+1)%cycle.length]; ceSave(); ceRenderDossiers(); ceRenderStats(); }
+function ceTimerTick(idx,d){ ceData.dossiers[idx].sessions=Math.max(0,(ceData.dossiers[idx].sessions||0)+d); ceSave(); ceRenderDossiers(); }
+function ceTimerSetMax(idx){ var v=prompt('Delai maximum en sessions (actuel: '+(ceData.dossiers[idx].maxSessions||5)+'):'); if(v!==null&&!isNaN(parseInt(v))){ ceData.dossiers[idx].maxSessions=Math.max(1,parseInt(v)); ceSave(); ceRenderDossiers(); } }
+function ceAddModif(idx){ var label=document.getElementById('ce-m-label-'+idx).value.trim(); var val=parseInt(document.getElementById('ce-m-val-'+idx).value)||0; if(!label) return; if(!ceData.dossiers[idx].modifs) ceData.dossiers[idx].modifs=[]; ceData.dossiers[idx].modifs.push({label:label,val:val}); document.getElementById('ce-m-label-'+idx).value=''; document.getElementById('ce-m-val-'+idx).value=''; ceSave(); ceRenderDossiers(); }
+function ceCloseDossier(idx,succes){
+  var d=ceData.dossiers[idx]; d.statut=succes?'clos':'echoue';
+  if(succes){
+    var prime=calcPrime(d); ceData.primesTotal=(ceData.primesTotal||0)+prime.total;
+    if((d.completude||0)>=6&&ceData.cote<10) ceData.cote=Math.min(10,ceData.cote+1);
+    else if(prime.total>10&&ceData.cote<10) ceData.cote=Math.min(10,ceData.cote+1);
+    // Maj satisfaction commanditaire
+    if(d.cmdIdx!==undefined&&ceData.commanditaires[d.cmdIdx]){
+      ceData.commanditaires[d.cmdIdx].satis=Math.min(5,(ceData.commanditaires[d.cmdIdx].satis||3)+1);
+      ceData.commanditaires[d.cmdIdx].primesTotal=(ceData.commanditaires[d.cmdIdx].primesTotal||0)+prime.total;
+    }
+  } else {
+    if(d.cmdIdx!==undefined&&ceData.commanditaires[d.cmdIdx])
+      ceData.commanditaires[d.cmdIdx].satis=Math.max(1,(ceData.commanditaires[d.cmdIdx].satis||3)-1);
+  }
+  ceSave(); ceRender();
+}
+function ceDelDossier(idx){ if(confirm('Supprimer ce dossier ?')){ ceData.dossiers.splice(idx,1); ceSave(); ceRender(); } }
+function ceAddDossier(){
+  var nom=document.getElementById('ce-d-nom').value.trim(); if(!nom) return;
+  var cmdNom=document.getElementById('ce-d-cmd').value.trim();
+  var cmdIdx=-1;
+  for(var i=0;i<ceData.commanditaires.length;i++) if(ceData.commanditaires[i].nom===cmdNom){ cmdIdx=i; break; }
+  ceData.dossiers.push({
+    nom:nom, base:parseInt(document.getElementById('ce-d-base').value)||0,
+    cmd:cmdNom, cmdIdx:cmdIdx>=0?cmdIdx:undefined,
+    cond:document.getElementById('ce-d-cond').value,
+    desc:document.getElementById('ce-d-desc').value.trim(),
+    statut:'ouvert', completude:0, modifs:[], position:'', vulns:'', priseMort:false,
+    sessions:0, maxSessions:5, journal:[],
+  });
+  var ids=['ce-d-nom','ce-d-base','ce-d-cmd','ce-d-desc'];
+  for(var i=0;i<ids.length;i++) document.getElementById(ids[i]).value='';
+  ceSave(); ceRenderDossiers(); ceRenderStats(); ceToggleForm('ce-form-dossier');
+}
+
+// Journal
+function ceShowJournal(idx){ var el=document.getElementById('ce-journal-'+idx); if(el) el.classList.add('visible'); }
+function ceHideJournal(idx){ var el=document.getElementById('ce-journal-'+idx); if(el) el.classList.remove('visible'); }
+function ceAddJournalEntry(idx){
+  var date=document.getElementById('ce-j-date-'+idx).value.trim();
+  var text=document.getElementById('ce-j-text-'+idx).value.trim();
+  if(!text) return;
+  if(!ceData.dossiers[idx].journal) ceData.dossiers[idx].journal=[];
+  ceData.dossiers[idx].journal.push({date:date||'Session',text:text});
+  // Chaque entree journal monte la completude de 0.5 (arrondie, max 6)
+  var cur=ceData.dossiers[idx].completude||0;
+  if(cur<6) ceData.dossiers[idx].completude=Math.min(6,cur+1);
+  document.getElementById('ce-j-date-'+idx).value='';
+  document.getElementById('ce-j-text-'+idx).value='';
+  ceSave(); ceRenderDossiers();
+}
+function ceDelJournalEntry(dIdx,jIdx){ ceData.dossiers[dIdx].journal.splice(jIdx,1); ceSave(); ceRenderDossiers(); }
+
+// ── INDICS ────────────────────────────────────────────────────────────
+function ceRenderIndics(){
+  var c=document.getElementById('ce-indics-list'); if(!c) return;
+  c.innerHTML='';
+  if(!ceData.indics.length){ c.innerHTML='<div style="font-size:0.82rem;color:var(--SUB);font-style:italic;padding:0.3rem 0;">Aucun indic. Le reseau reste a construire.</div>'; return; }
+  for(var ii=0;ii<ceData.indics.length;ii++){
+    var ind=ceData.indics[ii];
+    var fiab=ind.fiab||1;
+    var statut=ind.statut||'actif';
+    var statutLbl=statut==='grille'?'Grille':statut==='douteux'?'Douteux':'Actif';
+    var pipHtml='';
+    for(var p=0;p<5;p++){ var on=p<fiab; var hi=on&&p>=3; pipHtml+='<div class="indic-fiab-pip'+(on?' on':'')+(hi?' hi':'')+'" onclick="ceSetIndicFiab('+ii+','+(p+1)+');event.stopPropagation();" title="Fiabilite '+(p+1)+'"></div>'; }
+    var log=ind.log||[];
+    var logHtml='';
+    if(log.length){ logHtml='<ul class="indic-log">'; for(var li=0;li<log.length;li++) logHtml+='<li><span class="indic-log-date">'+(log[li].date||'?')+'</span><span>'+log[li].note+'</span><span class="indic-log-del" onclick="ceDelIndicLog('+ii+','+li+');event.stopPropagation();">x</span></li>'; logHtml+='</ul>'; }
+    // Dossiers lies
+    var linked=ind.dossiers||[];
+    var linkedHtml='';
+    if(linked.length){
+      linkedHtml='<div class="indic-dossiers-linked">';
+      for(var l=0;l<linked.length;l++){
+        var d2=ceData.dossiers[linked[l]];
+        if(d2) linkedHtml+='<span class="indic-dossier-tag">'+d2.nom+'</span>';
+      }
+      linkedHtml+='</div>';
+    }
+    // Options dossiers pour le select
+    var dossiersOptions='<option value="">-- Choisir --</option>';
+    for(var di=0;di<ceData.dossiers.length;di++){
+      var ds=ceData.dossiers[di];
+      if(ds.statut!=='clos'&&ds.statut!=='echoue') dossiersOptions+='<option value="'+di+'">'+ds.nom+'</option>';
+    }
+
+    var div=document.createElement('div'); div.className='indic-item '+statut;
+    var html='<div class="indic-header" onclick="this.parentElement.classList.toggle(\"open\")">';
+    html+='<span class="indic-nom">'+(ind.nom||'?')+'</span>';
+    if(ind.spec) html+='<span class="indic-spec">'+ind.spec+'</span>';
+    html+='<div class="indic-fiab">'+pipHtml+'</div>';
+    html+='<span class="indic-statut-badge '+statut+'" onclick="ceIndicCycleStatut('+ii+');event.stopPropagation();">'+statutLbl+'</span>';
+    html+='<span class="indic-expand">&#9662;</span></div>';
+    html+='<div class="indic-body">';
+    if(ind.bonus) html+='<div class="indic-bonus">'+ind.bonus+'</div>';
+    if(ind.note) html+='<div style="margin-bottom:0.4rem;font-style:italic;">'+ind.note+'</div>';
+    html+=linkedHtml;
+    html+='<div class="indic-link-form" id="ce-ind-link-'+ii+'">';
+    html+='<select id="ce-ind-link-sel-'+ii+'">'+dossiersOptions+'</select>';
+    html+='<button class="d-btn d-btn-blue" onclick="ceLinkIndicDossier('+ii+')">Lier</button>';
+    html+='<button class="btn-cancel" onclick="ceHideIndicLink('+ii+')">x</button></div>';
+    html+=logHtml;
+    html+='<div style="display:none;flex-direction:column;gap:0.28rem;margin-bottom:0.35rem;" id="ce-ind-log-'+ii+'">';
+    html+='<input id="ce-ind-log-date-'+ii+'" placeholder="Quand" style="background:rgba(74,90,122,0.08);border:1px solid rgba(138,172,204,0.16);color:var(--parchment);font-family:Crimson Text,serif;font-size:0.83rem;padding:0.22rem 0.38rem;border-radius:1px;width:100%;" />';
+    html+='<input id="ce-ind-log-note-'+ii+'" placeholder="Information fournie..." style="background:rgba(74,90,122,0.08);border:1px solid rgba(138,172,204,0.16);color:var(--parchment);font-family:Crimson Text,serif;font-size:0.83rem;padding:0.22rem 0.38rem;border-radius:1px;width:100%;" />';
+    html+='<div style="display:flex;gap:0.3rem;">';
+    html+='<button class="d-btn d-btn-blue" onclick="ceAddIndicLog('+ii+')">Enregistrer</button>';
+    html+='<button class="btn-cancel" onclick="ceHideIndicLog('+ii+')">Annuler</button>';
+    html+='</div></div>';
+    html+='<div class="indic-actions">';
+    html+='<button class="d-btn d-btn-blue" onclick="ceToggleIndicLog('+ii+');event.stopPropagation();">+ Log</button>';
+    html+='<button class="d-btn d-btn-blue" onclick="ceShowIndicLink('+ii+')">+ Lier dossier</button>';
+    html+='<button class="d-btn d-btn-gold" onclick="ceSetIndicFiab('+ii+',Math.min(5,(ceData.indics['+ii+'].fiab||1)+1));event.stopPropagation();">Fiab. +</button>';
+    html+='<button class="d-btn d-btn-blue" onclick="ceSetIndicFiab('+ii+',Math.max(1,(ceData.indics['+ii+'].fiab||1)-1));event.stopPropagation();">Fiab. -</button>';
+    html+='<button class="d-btn d-btn-blue" onclick="ceIndicCycleStatut('+ii+')">Statut</button>';
+    html+='<button class="d-btn d-btn-red" onclick="ceDelIndic('+ii+')">Suppr.</button></div></div>';
+    div.innerHTML=html; c.appendChild(div);
+  }
+}
+function ceSetIndicFiab(idx,val){ ceData.indics[idx].fiab=Math.max(1,Math.min(5,val)); ceSave(); ceRenderIndics(); }
+function ceIndicCycleStatut(idx){ var c=['actif','douteux','grille']; var s=ceData.indics[idx].statut||'actif'; ceData.indics[idx].statut=c[(c.indexOf(s)+1)%3]; ceSave(); ceRenderIndics(); ceRenderStats(); }
+function ceAddIndicLog(idx){ var date=document.getElementById('ce-ind-log-date-'+idx).value.trim(); var note=document.getElementById('ce-ind-log-note-'+idx).value.trim(); if(!note) return; if(!ceData.indics[idx].log) ceData.indics[idx].log=[]; ceData.indics[idx].log.push({date:date||'Session',note:note}); document.getElementById('ce-ind-log-date-'+idx).value=''; document.getElementById('ce-ind-log-note-'+idx).value=''; ceSave(); ceRenderIndics(); }
+function ceDelIndicLog(ctIdx,logIdx){ ceData.indics[ctIdx].log.splice(logIdx,1); ceSave(); ceRenderIndics(); }
+function ceDelIndic(idx){ if(confirm('Supprimer ?')){ ceData.indics.splice(idx,1); ceSave(); ceRender(); } }
+function ceToggleIndicLog(idx){ var el=document.getElementById('ce-ind-log-'+idx); if(el) el.style.display=(el.style.display==='flex')?'none':'flex'; }
+function ceHideIndicLog(idx){ var el=document.getElementById('ce-ind-log-'+idx); if(el) el.style.display='none'; }
+function ceShowIndicLink(idx){ var el=document.getElementById('ce-ind-link-'+idx); if(el) el.classList.add('visible'); }
+function ceHideIndicLink(idx){ var el=document.getElementById('ce-ind-link-'+idx); if(el) el.classList.remove('visible'); }
+function ceLinkIndicDossier(idx){
+  var sel=document.getElementById('ce-ind-link-sel-'+idx); if(!sel||sel.value==='') return;
+  var dIdx=parseInt(sel.value);
+  if(!ceData.indics[idx].dossiers) ceData.indics[idx].dossiers=[];
+  if(ceData.indics[idx].dossiers.indexOf(dIdx)===-1) ceData.indics[idx].dossiers.push(dIdx);
+  ceHideIndicLink(idx); ceSave(); ceRenderIndics(); ceRenderDossiers();
+}
+function ceAddIndic(){
+  var nom=document.getElementById('ce-i-nom').value.trim(); if(!nom) return;
+  ceData.indics.push({nom:nom,spec:document.getElementById('ce-i-spec').value.trim(),bonus:document.getElementById('ce-i-bonus').value.trim(),note:document.getElementById('ce-i-note').value.trim(),fiab:1,statut:'actif',log:[],dossiers:[]});
+  var ids=['ce-i-nom','ce-i-spec','ce-i-bonus','ce-i-note'];
+  for(var i=0;i<ids.length;i++) document.getElementById(ids[i]).value='';
+  ceSave(); ceRenderIndics(); ceRenderStats(); ceToggleForm('ce-form-indic');
+}
+
+// ── COMMANDITAIRES ───────────────────────────────────────────────────
+function ceRenderCmd(){
+  var c=document.getElementById('ce-cmd-list'); if(!c) return;
+  c.innerHTML='';
+  if(!ceData.commanditaires||!ceData.commanditaires.length){ c.innerHTML='<div style="font-size:0.82rem;color:var(--SUB);font-style:italic;padding:0.3rem 0;">Aucun commanditaire enregistre.</div>'; return; }
+  for(var i=0;i<ceData.commanditaires.length;i++){
+    var cmd=ceData.commanditaires[i];
+    var satis=cmd.satis||3;
+    var pipHtml='';
+    for(var p=0;p<5;p++){ var on=p<satis; var cls=on?(p<2?'low':p<4?'mid':'high'):''; pipHtml+='<div class="cmd-satis-pip'+(on?' on '+cls:'')+'" onclick="ceCmdSetSatis('+i+','+(p+1)+');event.stopPropagation();" title="Satisfaction '+(p+1)+'"></div>'; }
+    var typeLbl=cmd.type==='guilde'?'Guilde':cmd.type==='noblesse'?'Noblesse':cmd.type==='milice'?'Milice':cmd.type==='autre'?'Autre':'Marchand';
+    // Bonus selon satisfaction
+    var bonusDesc='';
+    if(satis>=5) bonusDesc='+15% sur les primes de ce commanditaire. Acces prioritaire a ses missives.';
+    else if(satis>=4) bonusDesc='+10% sur les primes. Informations complementaires fournies.';
+    else if(satis>=3) bonusDesc='Relation neutre. Primes au tarif normal.';
+    else if(satis>=2) bonusDesc='Relation tendue. -5% sur les primes. Verification des resultats exigee.';
+    else bonusDesc='Relation rompue. Refus probable de nouvelles primes.';
+
+    var div=document.createElement('div'); div.className='cmd-item';
+    var html='<div class="cmd-header" onclick="this.parentElement.classList.toggle(\"open\")">';
+    html+='<span class="cmd-nom">'+(cmd.nom||'?')+'</span>';
+    html+='<span style="font-size:0.65rem;color:var(--SUB);font-style:italic;">'+typeLbl+'</span>';
+    html+='<div class="cmd-satis-pips">'+pipHtml+'</div>';
+    if(cmd.primesTotal) html+='<span class="cmd-primes-val">'+cmd.primesTotal+' CO</span>';
+    html+='<span class="cmd-expand">&#9662;</span></div>';
+    html+='<div class="cmd-body">';
+    html+='<div class="cmd-bonus-box"><span class="cmd-bonus-label">Effet de la relation</span><span class="cmd-bonus-text">'+bonusDesc+'</span></div>';
+    if(cmd.note) html+='<div style="font-style:italic;margin-bottom:0.45rem;font-size:0.82rem;">'+cmd.note+'</div>';
+    html+='<div class="cmd-actions">';
+    html+='<button class="d-btn d-btn-blue" onclick="ceCmdSetSatis('+i+',Math.min(5,(ceData.commanditaires['+i+'].satis||3)+1))">Satis. +</button>';
+    html+='<button class="d-btn d-btn-gold" onclick="ceCmdSetSatis('+i+',Math.max(1,(ceData.commanditaires['+i+'].satis||3)-1))">Satis. -</button>';
+    html+='<button class="d-btn d-btn-red" onclick="ceDelCmd('+i+')">Suppr.</button>';
+    html+='</div></div>';
+    div.innerHTML=html; c.appendChild(div);
+  }
+}
+function ceCmdSetSatis(idx,val){ if(!ceData.commanditaires[idx]) return; ceData.commanditaires[idx].satis=Math.max(1,Math.min(5,val)); ceSave(); ceRenderCmd(); }
+function ceDelCmd(idx){ if(confirm('Supprimer ?')){ ceData.commanditaires.splice(idx,1); ceSave(); ceRenderCmd(); } }
+function ceAddCmd(){
+  var nom=document.getElementById('ce-cmd-nom').value.trim(); if(!nom) return;
+  ceData.commanditaires.push({nom:nom,type:document.getElementById('ce-cmd-type').value,satis:parseInt(document.getElementById('ce-cmd-satis').value)||3,note:document.getElementById('ce-cmd-note').value.trim(),primesTotal:0});
+  var ids=['ce-cmd-nom','ce-cmd-note']; for(var i=0;i<ids.length;i++) document.getElementById(ids[i]).value='';
+  ceSave(); ceRenderCmd(); ceToggleForm('ce-form-cmd');
+}
+
+// Appel initial Cabinet
+ceLoad();
+
+load();
+</script>
+</body>
+</html>
