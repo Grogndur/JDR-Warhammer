@@ -373,13 +373,14 @@
       </div>
     </div>
     <div>
-      <div class="card-title" style="margin-bottom:0.4rem;font-size:0.62rem;">Monnaie</div>
+      <div class="card-title" style="margin-bottom:0.4rem;font-size:0.62rem;">Monnaie <span style="font-weight:400;opacity:0.5;font-family:'Crimson Text',serif;text-transform:none;letter-spacing:0;font-size:0.7rem;">1 Co = 20 Pa · 1 Pa = 12 Sc</span></div>
       <div class="money-row">
         <div class="money-item"><span class="money-val" id="m-or">10</span><span class="money-label">CO</span><div class="money-btns"><button class="money-btn" onclick="chMoney('or',-1)">−</button><button class="money-btn" onclick="chMoney('or',1)">+</button></div></div>
         <div class="money-item"><span class="money-val" id="m-argent">3</span><span class="money-label">PA</span><div class="money-btns"><button class="money-btn" onclick="chMoney('argent',-1)">−</button><button class="money-btn" onclick="chMoney('argent',1)">+</button></div></div>
         <div class="money-item"><span class="money-val" id="m-cuivre">0</span><span class="money-label">SC</span><div class="money-btns"><button class="money-btn" onclick="chMoney('cuivre',-1)">−</button><button class="money-btn" onclick="chMoney('cuivre',1)">+</button></div></div>
       </div>
     </div>
+      <div id="m-convert-msg" style="font-size:0.68rem;font-style:italic;color:var(--GLD);margin-top:0.35rem;min-height:0.9rem;opacity:0;transition:opacity 0.4s;"></div>
   </div>
 
 
@@ -882,9 +883,24 @@ function updateWoundsMax(val) {
   save();
 }
 // ══════ MONNAIE ══════
-function chMoney(k,d) {
-  state.money[k]=Math.max(0,(state.money[k]||0)+d);
-  document.getElementById('m-'+k).textContent=state.money[k]; save();
+function chMoney(k, d) {
+  var m = state.money;
+  if (!m.or)     m.or     = 0;
+  if (!m.argent) m.argent = 0;
+  if (!m.cuivre) m.cuivre = 0;
+  m[k] = (m[k] || 0) + d;
+  var msg = '';
+  if (m.cuivre >= 12) { var gain = Math.floor(m.cuivre / 12); m.cuivre -= gain * 12; m.argent += gain; msg += '+' + gain + ' Pa '; }
+  if (m.argent >= 20) { var gain2 = Math.floor(m.argent / 20); m.argent -= gain2 * 20; m.or += gain2; msg += '+' + gain2 + ' Co'; }
+  if (m.cuivre < 0) { var need = Math.ceil(-m.cuivre / 12); if (m.argent >= need) { m.argent -= need; m.cuivre += need * 12; msg += '−' + need + ' Pa→Sc '; } else { m.cuivre = 0; } }
+  if (m.argent < 0) { var need2 = Math.ceil(-m.argent / 20); if (m.or >= need2) { m.or -= need2; m.argent += need2 * 20; msg += '−' + need2 + ' Co→Pa'; } else { m.argent = 0; } }
+  m.or = Math.max(0, m.or); m.argent = Math.max(0, m.argent); m.cuivre = Math.max(0, m.cuivre);
+  document.getElementById('m-or').textContent = m.or;
+  document.getElementById('m-argent').textContent = m.argent;
+  document.getElementById('m-cuivre').textContent = m.cuivre;
+  var msgEl = document.getElementById('m-convert-msg');
+  if (msgEl && msg.trim()) { msgEl.textContent = '⇄ ' + msg.trim(); msgEl.style.opacity = '1'; clearTimeout(msgEl._t); msgEl._t = setTimeout(function(){ msgEl.style.opacity='0'; }, 2500); }
+  save();
 }
 
 // ══════ CHANCE / DETERM ══════
