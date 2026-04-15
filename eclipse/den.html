@@ -261,6 +261,31 @@
   .renown-stat-val { font-family:'Cinzel',serif; font-size:1.1rem; color:var(--parchment); display:block; }
   .renown-stat-lbl { font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); }
 
+  /* Rang & Momentum */
+  .glory-row { display:flex; gap:0.8rem; align-items:stretch; margin-bottom:0.8rem; flex-wrap:wrap; }
+  .glory-rank-box { flex:1; min-width:180px; background:rgba(184,146,42,0.06); border:1px solid rgba(184,146,42,0.18);
+    border-radius:2px; padding:0.6rem 0.8rem; }
+  .glory-rank-title { font-family:'Cinzel',serif; font-size:0.9rem; color:var(--GLD); }
+  .glory-rank-sub { font-size:0.7rem; color:var(--SUB); font-style:italic; margin-top:0.15rem; }
+  .glory-progress { height:4px; background:rgba(255,255,255,0.06); border-radius:2px; margin-top:0.4rem; overflow:hidden; }
+  .glory-progress-fill { height:100%; background:var(--GLD); border-radius:2px; transition:width 0.4s; }
+  .momentum-box { min-width:120px; background:rgba(94,128,79,0.06); border:1px solid rgba(94,128,79,0.18);
+    border-radius:2px; padding:0.6rem 0.8rem; text-align:center; }
+  .momentum-box.hot { border-color:rgba(184,146,42,0.4); background:rgba(184,146,42,0.08); }
+  .momentum-val { font-family:'Cinzel',serif; font-size:1.6rem; line-height:1; }
+  .momentum-label { font-size:0.55rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--SUB); margin-top:0.2rem; }
+  .momentum-flames { display:flex; gap:0.15rem; justify-content:center; margin-top:0.3rem; }
+  .momentum-flame { font-size:0.7rem; opacity:0.15; }
+  .momentum-flame.on { opacity:1; }
+  .bonus-list { margin-top:0.5rem; padding:0.5rem 0.7rem; background:rgba(255,255,255,0.02);
+    border:1px solid rgba(255,255,255,0.05); border-radius:2px; }
+  .bonus-item { display:flex; align-items:center; gap:0.4rem; font-size:0.78rem; padding:0.15rem 0;
+    color:var(--parchment-dark); }
+  .bonus-tag { font-family:'Cinzel',serif; font-size:0.65rem; padding:0.1rem 0.35rem; border-radius:1px;
+    letter-spacing:0.05em; white-space:nowrap; }
+  .bonus-tag.rank { background:rgba(184,146,42,0.12); color:var(--GLD); border:1px solid rgba(184,146,42,0.25); }
+  .bonus-tag.momentum { background:rgba(94,128,79,0.12); color:var(--acc2); border:1px solid rgba(94,128,79,0.25); }
+
   /* Prestige épées */
   .prestige-swords { display:inline-flex; gap:0.15rem; }
   .prestige-sword { color:rgba(184,146,42,0.2); font-size:0.85rem; }
@@ -590,6 +615,11 @@
       </div>
       <div class="renown-stats" id="renown-stats"></div>
     </div>
+    <div class="glory-row">
+      <div class="glory-rank-box" id="glory-rank-box"></div>
+      <div class="momentum-box" id="momentum-box"></div>
+    </div>
+    <div class="bonus-list" id="bonus-list"></div>
 
     <!-- Tabs -->
     <div class="arena-tabs">
@@ -1331,21 +1361,80 @@ function buildBracket(size) {
 const TYPE_LABELS = { melee:'Mêlée', duel:'Duel', archery:'Tir à l\'arc', mixed:'Mixte' };
 
 // ── Renommée calculation ──
+// ── Glory Ranks ──
+const GLORY_RANKS = [
+  { min:0,   name:'Inconnue',           desc:'Aucune réputation dans les arènes', bonuses:[] },
+  { min:10,  name:'Novice',             desc:'Un nom qui commence à circuler', bonuses:[
+    { type:'rank', text:'+5 Charme / Intimidation (région du tournoi)' }
+  ]},
+  { min:30,  name:'Lame reconnue',      desc:'Les parieurs la connaissent', bonuses:[
+    { type:'rank', text:'+10 Charme / Intimidation (régional)' },
+    { type:'rank', text:'+10% gains de bourse en tournoi' }
+  ]},
+  { min:60,  name:'Championne',         desc:'Sa réputation traverse les provinces', bonuses:[
+    { type:'rank', text:'+15 Charme / Intimidation (tout l\'Empire)' },
+    { type:'rank', text:'+20% gains de bourse' },
+    { type:'rank', text:'Statut social +1 (cités d\'arène)' }
+  ]},
+  { min:100, name:'Terreur des arènes', desc:'Son nom seul fait hésiter', bonuses:[
+    { type:'rank', text:'+20 Charme / Intimidation' },
+    { type:'rank', text:'+30% gains de bourse' },
+    { type:'rank', text:'Statut social +1 partout' },
+    { type:'rank', text:'Adversaires : -10 Calme face à Den' }
+  ]},
+  { min:150, name:'Légende vivante',    desc:'Les bardes chantent ses exploits', bonuses:[
+    { type:'rank', text:'+25 Charme / Intimidation' },
+    { type:'rank', text:'+50% gains de bourse' },
+    { type:'rank', text:'Statut social +2' },
+    { type:'rank', text:'Adversaires : -10 Calme face à Den' },
+    { type:'rank', text:'Mécènes et sponsors potentiels' }
+  ]}
+];
+
+// ── Momentum bonuses ──
+const MOMENTUM_TIERS = [
+  { min:0, bonuses:[] },
+  { min:1, bonuses:[{ type:'momentum', text:'+5 Intimidation (momentum)' }] },
+  { min:3, bonuses:[{ type:'momentum', text:'+10 Intimidation (momentum)' }, { type:'momentum', text:'+5 Charme (momentum)' }] },
+  { min:5, bonuses:[{ type:'momentum', text:'+15 Intimidation (momentum)' }, { type:'momentum', text:'+10 Charme (momentum)' }, { type:'momentum', text:'Adversaires : -5 Calme (momentum)' }] },
+  { min:7, bonuses:[{ type:'momentum', text:'+20 Intimidation (momentum)' }, { type:'momentum', text:'+15 Charme (momentum)' }, { type:'momentum', text:'Adversaires : -10 Calme (momentum)' }] }
+];
+
+function getGloryRank(total) {
+  let rank = GLORY_RANKS[0];
+  for (let i = GLORY_RANKS.length - 1; i >= 0; i--) {
+    if (total >= GLORY_RANKS[i].min) { rank = GLORY_RANKS[i]; break; }
+  }
+  const idx = GLORY_RANKS.indexOf(rank);
+  const next = idx < GLORY_RANKS.length - 1 ? GLORY_RANKS[idx + 1] : null;
+  return { rank, next, idx };
+}
+
+function getMomentumTier(momentum) {
+  let tier = MOMENTUM_TIERS[0];
+  for (let i = MOMENTUM_TIERS.length - 1; i >= 0; i--) {
+    if (momentum >= MOMENTUM_TIERS[i].min) { tier = MOMENTUM_TIERS[i]; break; }
+  }
+  return tier;
+}
+
 function calcRenown() {
-  if (!state.arena || !state.arena.tourneys) return { total:0, wins:0, losses:0, tourneys:0, bestStreak:0 };
+  if (!state.arena || !state.arena.tourneys) return { total:0, wins:0, losses:0, tourneys:0, bestStreak:0, momentum:0 };
   let total = 0, wins = 0, losses = 0;
-  // For streak: count individual combats won/lost by Den across all finished tourneys chronologically
-  let streak = 0, bestStreak = 0;
+  let streak = 0, bestStreak = 0, momentum = 0;
   const finished = state.arena.tourneys.filter(t => t.status === 'finished');
   finished.forEach(t => {
     const p = t.placement || (t.bracket.length + 1);
-    if (p === 1) { total += t.prestige * 10; wins++; }
-    else { losses++;
-      if (p === 2) total += t.prestige * 6;
-      else if (p <= 4) total += t.prestige * 3;
-      else total += t.prestige * 1;
-    }
-    // Walk bracket rounds to count Den's individual match wins/losses
+    // Gains
+    if (p === 1)      total += t.prestige * 10;
+    else if (p === 2) total += t.prestige * 4;  // +6 -2 = net 4
+    else if (p <= 4)  total += 0;               // +3 -3 = net 0
+    else              total -= t.prestige * 3;  // +1 -4 = net -3
+
+    if (p === 1) wins++;
+    else losses++;
+
+    // Walk bracket for individual match streak & momentum
     for (let r = 0; r < t.bracket.length; r++) {
       for (let m = 0; m < t.bracket[r].length; m++) {
         const match = t.bracket[r][m];
@@ -1356,14 +1445,17 @@ function calcRenown() {
         if (!denInMatch) continue;
         if (winner.includes("den")) {
           streak++;
+          momentum++;
           bestStreak = Math.max(bestStreak, streak);
         } else {
           streak = 0;
+          momentum = 0;
         }
       }
     }
   });
-  return { total, wins, losses, tourneys: finished.length, bestStreak };
+  total = Math.max(0, total);
+  return { total, wins, losses, tourneys: finished.length, bestStreak, momentum };
 }
 
 function renderRenown() {
@@ -1377,6 +1469,52 @@ function renderRenown() {
     <div class="renown-stat"><span class="renown-stat-val">${r.wins + r.losses > 0 ? Math.round(r.wins / (r.wins + r.losses) * 100) : 0}%</span><span class="renown-stat-lbl">Ratio</span></div>
     <div class="renown-stat"><span class="renown-stat-val">${r.bestStreak}</span><span class="renown-stat-lbl">Série max</span></div>
   `;
+
+  // Glory rank
+  const g = getGloryRank(r.total);
+  const rankBox = document.getElementById('glory-rank-box');
+  let progressHTML = '';
+  if (g.next) {
+    const pct = Math.min(100, Math.round((r.total - g.rank.min) / (g.next.min - g.rank.min) * 100));
+    progressHTML = `<div class="glory-progress"><div class="glory-progress-fill" style="width:${pct}%"></div></div>
+      <div style="font-size:0.6rem;color:var(--SUB);margin-top:0.2rem;">${r.total} / ${g.next.min} → ${g.next.name}</div>`;
+  } else {
+    progressHTML = '<div style="font-size:0.6rem;color:var(--GLD);margin-top:0.2rem;">Rang maximum atteint</div>';
+  }
+  rankBox.innerHTML = `
+    <div style="font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--SUB);margin-bottom:0.15rem;">Rang de Gloire</div>
+    <div class="glory-rank-title">${g.rank.name}</div>
+    <div class="glory-rank-sub">${g.rank.desc}</div>
+    ${progressHTML}
+  `;
+
+  // Momentum
+  const momBox = document.getElementById('momentum-box');
+  const momColor = r.momentum >= 7 ? 'var(--GLD)' : r.momentum >= 3 ? 'var(--acc2)' : 'var(--parchment)';
+  const isHot = r.momentum >= 5;
+  momBox.className = 'momentum-box' + (isHot ? ' hot' : '');
+  let flamesHTML = '<div class="momentum-flames">';
+  for (let i = 0; i < 7; i++) {
+    flamesHTML += '<span class="momentum-flame' + (i < r.momentum ? ' on' : '') + '">🔥</span>';
+  }
+  flamesHTML += '</div>';
+  momBox.innerHTML = `
+    <div class="momentum-label">Momentum</div>
+    <div class="momentum-val" style="color:${momColor};">${r.momentum}</div>
+    ${flamesHTML}
+    <div style="font-size:0.58rem;color:var(--SUB);margin-top:0.2rem;font-style:italic;">${r.momentum === 0 ? 'Inactif' : r.momentum < 3 ? 'En montée' : r.momentum < 5 ? 'Lancée' : r.momentum < 7 ? 'En feu' : 'Imparable'}</div>
+  `;
+
+  // Bonus list
+  const bonusList = document.getElementById('bonus-list');
+  const momTier = getMomentumTier(r.momentum);
+  const allBonuses = [...g.rank.bonuses, ...momTier.bonuses];
+  if (allBonuses.length === 0) {
+    bonusList.innerHTML = '<div style="font-size:0.78rem;color:var(--SUB);font-style:italic;">Aucun bonus actif.</div>';
+  } else {
+    bonusList.innerHTML = '<div style="font-size:0.55rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--SUB);margin-bottom:0.35rem;font-family:\'Cinzel\',serif;">Bonus actifs</div>' +
+      allBonuses.map(b => `<div class="bonus-item"><span class="bonus-tag ${b.type}">${b.type === 'rank' ? 'Rang' : 'Mom.'}</span> ${b.text}</div>`).join('');
+  }
 }
 
 // ── Historique ──
@@ -1396,14 +1534,20 @@ function renderTourneyHistory() {
     const plc = t.placement;
     const plcClass = plc === 1 ? 'gold' : plc === 2 ? 'silver' : plc === 3 ? 'bronze' : 'other';
     const plcText = t.status === 'active' ? '▶' : plc === 1 ? '🏆' : '#' + plc;
-    const renPts = t.status === 'finished' ? (plc === 1 ? t.prestige * 10 : plc === 2 ? t.prestige * 6 : plc <= 4 ? t.prestige * 3 : t.prestige * 1) : '—';
+    let renPts = '—';
+    if (t.status === 'finished') {
+      if (plc === 1) renPts = '+' + (t.prestige * 10);
+      else if (plc === 2) renPts = '+' + (t.prestige * 4);
+      else if (plc <= 4) renPts = '±0';
+      else renPts = '-' + (t.prestige * 3);
+    }
     div.innerHTML = `
       <span class="tourney-placement ${plcClass}">${plcText}</span>
       <div class="tourney-info">
         <div class="tourney-name">${t.name}</div>
         <div class="tourney-meta">${t.lieu} · ${t.date} · ${TYPE_LABELS[t.type] || t.type} · ${t.size} participants · ${prestigeHTML(t.prestige)}</div>
       </div>
-      <span class="tourney-renown-gain">${t.status === 'finished' ? '+' + renPts : 'En cours'}</span>
+      <span class="tourney-renown-gain" style="color:${t.status === 'finished' && renPts.startsWith('-') ? '#c07060' : 'var(--GLD)'};">${t.status === 'finished' ? renPts : 'En cours'}</span>
     `;
     div.onclick = () => {
       state.arena.activeTourneyId = t.id;
