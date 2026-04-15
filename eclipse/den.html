@@ -239,6 +239,115 @@
   .armor-piece-name:hover .edit-hint,
   .talent-name:hover .edit-hint,
   .inv-name:hover .edit-hint { opacity: 0.5; }
+
+  /* ══════ TOURNOIS — ARÈNE ══════ */
+  .arena-section { border-color: rgba(184,146,42,0.25); }
+  .arena-tabs { display:flex; gap:0.3rem; margin-bottom:1rem; flex-wrap:wrap; }
+  .arena-tab { font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase;
+    padding:0.35rem 0.7rem; border-radius:2px; cursor:pointer; transition:all 0.15s;
+    background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); color:var(--SUB); }
+  .arena-tab:hover { border-color:rgba(184,146,42,0.3); color:var(--GLD); }
+  .arena-tab.active { background:rgba(184,146,42,0.12); border-color:rgba(184,146,42,0.4); color:var(--GLD); }
+  .arena-panel { display:none; }
+  .arena-panel.visible { display:block; }
+
+  /* Renommée */
+  .renown-bar { display:flex; align-items:center; gap:1rem; margin-bottom:1rem; padding:0.6rem 0.8rem;
+    background:rgba(184,146,42,0.06); border:1px solid rgba(184,146,42,0.15); border-radius:2px; flex-wrap:wrap; }
+  .renown-score { font-family:'Cinzel',serif; font-size:1.8rem; color:var(--GLD); line-height:1; }
+  .renown-label { font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--SUB); }
+  .renown-stats { display:flex; gap:1rem; flex-wrap:wrap; }
+  .renown-stat { text-align:center; }
+  .renown-stat-val { font-family:'Cinzel',serif; font-size:1.1rem; color:var(--parchment); display:block; }
+  .renown-stat-lbl { font-size:0.55rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); }
+
+  /* Prestige épées */
+  .prestige-swords { display:inline-flex; gap:0.15rem; }
+  .prestige-sword { color:rgba(184,146,42,0.2); font-size:0.85rem; }
+  .prestige-sword.on { color:var(--GLD); text-shadow:0 0 4px rgba(184,146,42,0.3); }
+
+  /* Liste tournois */
+  .tourney-list-item { display:flex; align-items:center; gap:0.6rem; padding:0.55rem 0.4rem;
+    border-bottom:1px solid rgba(255,255,255,0.04); cursor:pointer; transition:background 0.12s; }
+  .tourney-list-item:hover { background:rgba(184,146,42,0.05); }
+  .tourney-list-item:last-child { border-bottom:none; }
+  .tourney-placement { font-family:'Cinzel',serif; font-size:1rem; min-width:28px; text-align:center; }
+  .tourney-placement.gold { color:var(--GLD); }
+  .tourney-placement.silver { color:#a0a0b0; }
+  .tourney-placement.bronze { color:#b0785a; }
+  .tourney-placement.other { color:var(--SUB); }
+  .tourney-info { flex:1; }
+  .tourney-name { color:var(--parchment); font-size:0.88rem; font-weight:600; }
+  .tourney-meta { font-size:0.72rem; color:var(--SUB); font-style:italic; }
+  .tourney-renown-gain { font-family:'Cinzel',serif; font-size:0.8rem; color:var(--GLD); white-space:nowrap; }
+
+  /* Bracket */
+  .bracket-container { overflow-x:auto; padding:0.5rem 0; }
+  .bracket { display:flex; align-items:center; gap:0; min-width:fit-content; }
+  .bracket-round { display:flex; flex-direction:column; justify-content:center; gap:0; position:relative; }
+  .bracket-match { display:flex; flex-direction:column; position:relative; margin:0.3rem 0; }
+  .bracket-slot { display:flex; align-items:center; gap:0.3rem; padding:0.3rem 0.5rem;
+    background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
+    min-width:120px; font-size:0.78rem; color:var(--parchment-dark); cursor:pointer; transition:all 0.12s; }
+  .bracket-slot:first-child { border-radius:2px 2px 0 0; border-bottom:1px solid rgba(184,146,42,0.2); }
+  .bracket-slot:last-child { border-radius:0 0 2px 2px; }
+  .bracket-slot:hover { border-color:rgba(184,146,42,0.35); }
+  .bracket-slot.winner { background:rgba(94,128,79,0.12); border-color:rgba(94,128,79,0.3); color:var(--acc2); }
+  .bracket-slot.loser { opacity:0.45; }
+  .bracket-slot.den { font-weight:600; color:var(--acc2); }
+  .bracket-slot.empty { color:var(--SUB); font-style:italic; opacity:0.5; }
+  .bracket-name { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .bracket-win-btn { width:20px; height:20px; display:flex; align-items:center; justify-content:center;
+    font-size:0.7rem; color:var(--SUB); opacity:0.3; cursor:pointer; border-radius:2px;
+    border:1px solid transparent; transition:all 0.12s; flex-shrink:0; }
+  .bracket-win-btn:hover { opacity:1; color:var(--GRN); border-color:rgba(94,128,79,0.3); background:rgba(94,128,79,0.1); }
+  .bracket-win-btn.active { opacity:1; color:var(--GRN); background:rgba(94,128,79,0.15); border-color:rgba(94,128,79,0.4); }
+  .bracket-connector { width:20px; position:relative; }
+  .bracket-round-label { font-family:'Cinzel',serif; font-size:0.55rem; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--SUB); text-align:center; margin-bottom:0.4rem; }
+
+  /* Formulaire tournoi */
+  .tourney-form { background:rgba(184,146,42,0.04); border:1px solid rgba(184,146,42,0.15);
+    border-radius:2px; padding:0.8rem; margin-top:0.5rem; }
+  .tourney-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
+  @media(max-width:500px){ .tourney-form-grid { grid-template-columns:1fr; } }
+  .tourney-form-full { grid-column:1/-1; }
+  .tf-input { background:rgba(184,146,42,0.06); border:1px solid rgba(184,146,42,0.2); color:var(--parchment);
+    font-family:'Crimson Text',serif; font-size:0.85rem; padding:0.35rem 0.5rem; border-radius:1px; width:100%; }
+  .tf-input:focus { outline:none; border-color:var(--GLD); }
+  .tf-input::placeholder { color:rgba(85,85,102,0.5); font-style:italic; }
+  .tf-label { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB);
+    margin-bottom:0.2rem; display:block; font-family:'Cinzel',serif; }
+  .tf-select { background:rgba(184,146,42,0.06); border:1px solid rgba(184,146,42,0.2); color:var(--parchment);
+    font-family:'Crimson Text',serif; font-size:0.85rem; padding:0.35rem 0.5rem; border-radius:1px; width:100%;
+    appearance:none; cursor:pointer; }
+  .tf-select:focus { outline:none; border-color:var(--GLD); }
+  .tf-select option { background:var(--ink); color:var(--parchment); }
+
+  /* Match detail */
+  .match-detail { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);
+    border-radius:2px; padding:0.7rem; margin-top:0.5rem; }
+  .match-detail-header { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem; }
+  .match-detail-vs { font-family:'Cinzel',serif; font-size:0.7rem; color:var(--SUB); }
+  .match-notes-input { width:100%; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);
+    color:var(--parchment-dark); font-family:'Crimson Text',serif; font-size:0.82rem;
+    padding:0.4rem; border-radius:1px; resize:vertical; min-height:40px; }
+  .match-notes-input:focus { outline:none; border-color:rgba(94,128,79,0.3); }
+
+  /* IO bar style needed for arena */
+  .io-bar { display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; padding:0.4rem 0; }
+  .io-btn { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase;
+    padding:0.3rem 0.65rem; border-radius:2px; cursor:pointer; transition:all 0.15s; }
+  .io-btn-export { background:rgba(94,128,79,0.1); border:1px solid rgba(94,128,79,0.3); color:var(--acc2); }
+  .io-btn-export:hover { background:rgba(94,128,79,0.2); }
+  .io-btn-import { background:rgba(184,146,42,0.08); border:1px solid rgba(184,146,42,0.25); color:var(--GLD); }
+  .io-btn-import:hover { background:rgba(184,146,42,0.16); }
+  .io-status { font-size:0.72rem; font-style:italic; color:var(--SUB); }
+  .io-status.ok { color:var(--GRN); }
+  .io-status.err { color:#e05050; }
+
+  .del-btn { color:rgba(139,26,26,0.4); cursor:pointer; font-size:0.75rem; flex-shrink:0; transition:color 0.15s; }
+  .del-btn:hover { color:#e08080; }
 </style>
 </head>
 <body>
@@ -469,6 +578,92 @@
   </div>
 
 
+  <!-- ══════ ARÈNE & TOURNOIS ══════ -->
+  <div class="card full arena-section">
+    <div class="card-title gld">⚔ Arène & Tournois</div>
+
+    <!-- Renommée globale -->
+    <div class="renown-bar" id="renown-bar">
+      <div>
+        <span class="renown-label">Renommée</span>
+        <span class="renown-score" id="renown-total">0</span>
+      </div>
+      <div class="renown-stats" id="renown-stats"></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="arena-tabs">
+      <div class="arena-tab active" onclick="arenaTab('tourneys')">Historique</div>
+      <div class="arena-tab" onclick="arenaTab('bracket')">Tournoi actif</div>
+      <div class="arena-tab" onclick="arenaTab('create')">+ Nouveau</div>
+    </div>
+
+    <!-- Panel : Historique -->
+    <div class="arena-panel visible" id="arena-panel-tourneys">
+      <div id="tourney-history-list">
+        <div style="font-size:0.82rem;color:var(--SUB);font-style:italic;">Aucun tournoi enregistré.</div>
+      </div>
+    </div>
+
+    <!-- Panel : Tournoi actif (bracket) -->
+    <div class="arena-panel" id="arena-panel-bracket">
+      <div id="active-tourney-header"></div>
+      <div class="bracket-container" id="bracket-container">
+        <div style="font-size:0.82rem;color:var(--SUB);font-style:italic;">Aucun tournoi actif. Crée un nouveau tournoi.</div>
+      </div>
+      <div id="match-detail-panel"></div>
+    </div>
+
+    <!-- Panel : Création -->
+    <div class="arena-panel" id="arena-panel-create">
+      <div class="tourney-form">
+        <div class="tourney-form-grid">
+          <div class="tourney-form-full">
+            <span class="tf-label">Nom du tournoi</span>
+            <input class="tf-input" id="tf-name" placeholder="Le Grand Tournoi de Nuln…" />
+          </div>
+          <div>
+            <span class="tf-label">Lieu</span>
+            <input class="tf-input" id="tf-lieu" placeholder="Nuln, Arène des Lames…" />
+          </div>
+          <div>
+            <span class="tf-label">Date (en jeu)</span>
+            <input class="tf-input" id="tf-date" placeholder="32 Jahrdrung 2512…" />
+          </div>
+          <div>
+            <span class="tf-label">Type</span>
+            <select class="tf-select" id="tf-type">
+              <option value="melee">Mêlée</option>
+              <option value="duel">Duel</option>
+              <option value="archery">Tir à l'arc</option>
+              <option value="mixed">Mixte</option>
+            </select>
+          </div>
+          <div>
+            <span class="tf-label">Participants</span>
+            <select class="tf-select" id="tf-size">
+              <option value="4">4</option>
+              <option value="8" selected>8</option>
+              <option value="16">16</option>
+            </select>
+          </div>
+          <div>
+            <span class="tf-label">Prestige</span>
+            <div style="display:flex;gap:0.3rem;margin-top:0.25rem;" id="tf-prestige-picker"></div>
+          </div>
+          <div class="tourney-form-full">
+            <span class="tf-label">Récompenses</span>
+            <input class="tf-input" id="tf-reward" placeholder="50 Co, Épée de maître, Titre…" />
+          </div>
+        </div>
+        <div style="display:flex;gap:0.5rem;margin-top:0.7rem;">
+          <button class="btn-add btn-gld" onclick="createTourney()">Créer le tournoi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <!-- XP & AMBITIONS -->
   <div class="card full">
     <div class="card-title vio">Expérience & Ambitions</div>
@@ -530,6 +725,7 @@
     <button class="btn-save" onclick="saveAll()">Sauvegarder</button>
     <span class="save-confirm" id="save-confirm">✓ Sauvegardé</span>
   </div>
+
 
 </div>
 
@@ -631,6 +827,7 @@ let state = {
   inventory:  JSON.parse(JSON.stringify(INV_DEF)),
   armor:      JSON.parse(JSON.stringify(ARMOR_LOCS)),
   armorPieces: [],
+  arena: { tourneys: [], activeTourneyId: null },
 };
 
 STATS_DEF.forEach(s => { state.stats[s.key] = { init:s.init, avance:s.avance }; });
@@ -657,6 +854,7 @@ function load() {
     if (saved.inventory)   state.inventory    = saved.inventory;
     if (saved.armor)       state.armor        = saved.armor;
     if (saved.armorPieces) state.armorPieces  = saved.armorPieces;
+    if (saved.arena)       state.arena        = saved.arena;
   } catch(e) {}
   renderAll();
 }
@@ -696,6 +894,7 @@ function renderAll() {
   document.getElementById('xp-actuelle').value = state.xp.actuelle||0;
   document.getElementById('xp-depensee').value = state.xp.depensee||100;
   document.getElementById('xp-totale').value   = state.xp.totale||0;
+  initArena();
 }
 
 // ══════ STATS ══════
@@ -1024,6 +1223,7 @@ function importJSON(input) {
       if(saved.inventory) state.inventory=saved.inventory;
       if(saved.armor) state.armor=saved.armor;
       if(saved.armorPieces) state.armorPieces=saved.armorPieces;
+      if(saved.arena) state.arena=saved.arena;
       save(); renderAll();
       ioStatus('✓ Importé', 'ok'); setTimeout(()=>ioStatus('',''),3000);
     } catch(err) { ioStatus('Erreur : ' + err.message, 'err'); }
@@ -1033,6 +1233,486 @@ function importJSON(input) {
 }
 
 
+
+
+// ══════ ARÈNE & TOURNOIS ══════
+
+// Init arena state
+if (!state.arena) state.arena = { tourneys: [], activeTourneyId: null };
+
+function arenaSave() { save(); }
+
+// ── Tabs ──
+function arenaTab(tab) {
+  document.querySelectorAll('.arena-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.arena-panel').forEach(p => p.classList.remove('visible'));
+  const tabs = { tourneys:0, bracket:1, create:2 };
+  document.querySelectorAll('.arena-tab')[tabs[tab]].classList.add('active');
+  document.getElementById('arena-panel-' + tab).classList.add('visible');
+  if (tab === 'tourneys') renderTourneyHistory();
+  if (tab === 'bracket') renderActiveBracket();
+  if (tab === 'create') initPrestigePicker();
+}
+
+// ── Prestige picker (création) ──
+let tfPrestige = 1;
+function initPrestigePicker() {
+  const c = document.getElementById('tf-prestige-picker');
+  if (!c) return;
+  c.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const sw = document.createElement('span');
+    sw.className = 'prestige-sword' + (i <= tfPrestige ? ' on' : '');
+    sw.textContent = '⚔';
+    sw.style.cursor = 'pointer';
+    sw.style.fontSize = '1.1rem';
+    sw.onclick = () => { tfPrestige = i; initPrestigePicker(); };
+    c.appendChild(sw);
+  }
+}
+
+// ── Prestige display ──
+function prestigeHTML(level) {
+  let h = '<span class="prestige-swords">';
+  for (let i = 1; i <= 5; i++) h += '<span class="prestige-sword' + (i <= level ? ' on' : '') + '">⚔</span>';
+  return h + '</span>';
+}
+
+// ── Créer un tournoi ──
+function createTourney() {
+  const name = document.getElementById('tf-name').value.trim();
+  if (!name) return;
+  const size = parseInt(document.getElementById('tf-size').value);
+  const tourney = {
+    id: Date.now().toString(36),
+    name: name,
+    lieu: document.getElementById('tf-lieu').value.trim() || '—',
+    date: document.getElementById('tf-date').value.trim() || '—',
+    type: document.getElementById('tf-type').value,
+    size: size,
+    prestige: tfPrestige,
+    reward: document.getElementById('tf-reward').value.trim() || '—',
+    status: 'active', // active | finished
+    placement: null,
+    bracket: buildBracket(size),
+    matchNotes: {}
+  };
+  if (!state.arena) state.arena = { tourneys: [], activeTourneyId: null };
+  state.arena.tourneys.push(tourney);
+  state.arena.activeTourneyId = tourney.id;
+  arenaSave();
+  // Reset form
+  ['tf-name','tf-lieu','tf-date','tf-reward'].forEach(id => document.getElementById(id).value = '');
+  tfPrestige = 1;
+  arenaTab('bracket');
+}
+
+// ── Build bracket ──
+function buildBracket(size) {
+  // bracket[roundIndex][matchIndex] = { slots: [name, name], winner: null (0 or 1) }
+  const rounds = Math.log2(size);
+  const bracket = [];
+  for (let r = 0; r < rounds; r++) {
+    const matchCount = size / Math.pow(2, r + 1);
+    const round = [];
+    for (let m = 0; m < matchCount; m++) {
+      if (r === 0) {
+        round.push({ slots: [m === 0 ? "Den'l Endri" : '', ''], winner: null });
+      } else {
+        round.push({ slots: ['', ''], winner: null });
+      }
+    }
+    bracket.push(round);
+  }
+  return bracket;
+}
+
+// ── Type labels ──
+const TYPE_LABELS = { melee:'Mêlée', duel:'Duel', archery:'Tir à l\'arc', mixed:'Mixte' };
+
+// ── Renommée calculation ──
+function calcRenown() {
+  if (!state.arena || !state.arena.tourneys) return { total:0, wins:0, losses:0, tourneys:0, bestStreak:0 };
+  let total = 0, wins = 0, losses = 0;
+  // For streak: count individual combats won/lost by Den across all finished tourneys chronologically
+  let streak = 0, bestStreak = 0;
+  const finished = state.arena.tourneys.filter(t => t.status === 'finished');
+  finished.forEach(t => {
+    const p = t.placement || (t.bracket.length + 1);
+    if (p === 1) { total += t.prestige * 10; wins++; }
+    else { losses++;
+      if (p === 2) total += t.prestige * 6;
+      else if (p <= 4) total += t.prestige * 3;
+      else total += t.prestige * 1;
+    }
+    // Walk bracket rounds to count Den's individual match wins/losses
+    for (let r = 0; r < t.bracket.length; r++) {
+      for (let m = 0; m < t.bracket[r].length; m++) {
+        const match = t.bracket[r][m];
+        if (match.winner === null) continue;
+        const winner = (match.slots[match.winner] || '').toLowerCase();
+        const loser = (match.slots[1 - match.winner] || '').toLowerCase();
+        const denInMatch = winner.includes("den") || loser.includes("den");
+        if (!denInMatch) continue;
+        if (winner.includes("den")) {
+          streak++;
+          bestStreak = Math.max(bestStreak, streak);
+        } else {
+          streak = 0;
+        }
+      }
+    }
+  });
+  return { total, wins, losses, tourneys: finished.length, bestStreak };
+}
+
+function renderRenown() {
+  const r = calcRenown();
+  document.getElementById('renown-total').textContent = r.total;
+  const statsEl = document.getElementById('renown-stats');
+  statsEl.innerHTML = `
+    <div class="renown-stat"><span class="renown-stat-val">${r.tourneys}</span><span class="renown-stat-lbl">Tournois</span></div>
+    <div class="renown-stat"><span class="renown-stat-val" style="color:var(--GRN);">${r.wins}</span><span class="renown-stat-lbl">Victoires</span></div>
+    <div class="renown-stat"><span class="renown-stat-val" style="color:#c07060;">${r.losses}</span><span class="renown-stat-lbl">Défaites</span></div>
+    <div class="renown-stat"><span class="renown-stat-val">${r.wins + r.losses > 0 ? Math.round(r.wins / (r.wins + r.losses) * 100) : 0}%</span><span class="renown-stat-lbl">Ratio</span></div>
+    <div class="renown-stat"><span class="renown-stat-val">${r.bestStreak}</span><span class="renown-stat-lbl">Série max</span></div>
+  `;
+}
+
+// ── Historique ──
+function renderTourneyHistory() {
+  renderRenown();
+  const c = document.getElementById('tourney-history-list');
+  if (!state.arena || !state.arena.tourneys || state.arena.tourneys.length === 0) {
+    c.innerHTML = '<div style="font-size:0.82rem;color:var(--SUB);font-style:italic;">Aucun tournoi enregistré.</div>';
+    return;
+  }
+  c.innerHTML = '';
+  // Show most recent first
+  const sorted = [...state.arena.tourneys].reverse();
+  sorted.forEach(t => {
+    const div = document.createElement('div');
+    div.className = 'tourney-list-item';
+    const plc = t.placement;
+    const plcClass = plc === 1 ? 'gold' : plc === 2 ? 'silver' : plc === 3 ? 'bronze' : 'other';
+    const plcText = t.status === 'active' ? '▶' : plc === 1 ? '🏆' : '#' + plc;
+    const renPts = t.status === 'finished' ? (plc === 1 ? t.prestige * 10 : plc === 2 ? t.prestige * 6 : plc <= 4 ? t.prestige * 3 : t.prestige * 1) : '—';
+    div.innerHTML = `
+      <span class="tourney-placement ${plcClass}">${plcText}</span>
+      <div class="tourney-info">
+        <div class="tourney-name">${t.name}</div>
+        <div class="tourney-meta">${t.lieu} · ${t.date} · ${TYPE_LABELS[t.type] || t.type} · ${t.size} participants · ${prestigeHTML(t.prestige)}</div>
+      </div>
+      <span class="tourney-renown-gain">${t.status === 'finished' ? '+' + renPts : 'En cours'}</span>
+    `;
+    div.onclick = () => {
+      state.arena.activeTourneyId = t.id;
+      arenaSave();
+      arenaTab('bracket');
+    };
+    c.appendChild(div);
+  });
+}
+
+// ── Active Bracket ──
+function getActiveTourney() {
+  if (!state.arena || !state.arena.activeTourneyId) return null;
+  return state.arena.tourneys.find(t => t.id === state.arena.activeTourneyId) || null;
+}
+
+function renderActiveBracket() {
+  renderRenown();
+  const t = getActiveTourney();
+  const headerEl = document.getElementById('active-tourney-header');
+  const bracketEl = document.getElementById('bracket-container');
+  const detailEl = document.getElementById('match-detail-panel');
+  detailEl.innerHTML = '';
+
+  if (!t) {
+    headerEl.innerHTML = '';
+    bracketEl.innerHTML = '<div style="font-size:0.82rem;color:var(--SUB);font-style:italic;">Aucun tournoi actif. Crée un nouveau tournoi.</div>';
+    return;
+  }
+
+  // Header
+  headerEl.innerHTML = `
+    <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:0.8rem;flex-wrap:wrap;">
+      <div style="flex:1;">
+        <div style="font-family:'Cinzel',serif;font-size:1.05rem;color:var(--parchment);">${t.name}</div>
+        <div style="font-size:0.75rem;color:var(--SUB);font-style:italic;">${t.lieu} · ${t.date} · ${TYPE_LABELS[t.type] || t.type} · ${prestigeHTML(t.prestige)}</div>
+        <div style="font-size:0.75rem;color:var(--GLD);margin-top:0.15rem;">Récompenses : ${t.reward}</div>
+      </div>
+      ${t.status === 'active' ? '<button class="btn-add btn-gld" onclick="finishTourney()" style="white-space:nowrap;">Terminer le tournoi</button>' : '<span style="font-family:\'Cinzel\',serif;font-size:0.65rem;letter-spacing:0.1em;color:var(--SUB);text-transform:uppercase;">Terminé</span>'}
+      <span class="del-btn" onclick="deleteTourney()" title="Supprimer ce tournoi" style="font-size:0.9rem;">✕</span>
+    </div>
+  `;
+
+  // Build bracket visual
+  const rounds = t.bracket.length;
+  const roundLabels = [];
+  if (rounds >= 4) roundLabels.push('1/' + Math.pow(2, rounds - 1));
+  if (rounds >= 3) roundLabels.push('Quarts');
+  if (rounds >= 2) roundLabels.push('Demis');
+  roundLabels.push('Finale');
+  while (roundLabels.length < rounds) roundLabels.unshift('Tour ' + (roundLabels.length + 1));
+
+  const isActive = t.status === 'active';
+
+  let html = '<div class="bracket">';
+  for (let r = 0; r < rounds; r++) {
+    const round = t.bracket[r];
+    html += '<div class="bracket-round">';
+    html += '<div class="bracket-round-label">' + roundLabels[r] + '</div>';
+    for (let m = 0; m < round.length; m++) {
+      const match = round[m];
+      const topMargin = r === 0 ? 0 : (Math.pow(2, r) - 1) * 18;
+      html += '<div class="bracket-match" style="margin:' + topMargin + 'px 0;">';
+      for (let s = 0; s < 2; s++) {
+        const name = match.slots[s] || '';
+        const isDen = name.toLowerCase().includes("den'l") || name.toLowerCase().includes("den\u2019l");
+        const isWinner = match.winner === s;
+        const isLoser = match.winner !== null && match.winner !== s;
+        const isEmpty = !name;
+        let cls = 'bracket-slot';
+        if (isDen) cls += ' den';
+        if (isWinner) cls += ' winner';
+        if (isLoser) cls += ' loser';
+        if (isEmpty) cls += ' empty';
+        const dataAttr = 'data-r="'+r+'" data-m="'+m+'" data-s="'+s+'"';
+
+        html += '<div class="' + cls + '" ' + dataAttr + '>';
+        // Nom (cliquable pour éditer)
+        html += '<span class="bracket-name" ' + dataAttr + ' style="flex:1;cursor:pointer;" title="Cliquer pour éditer">' + (name || '· · ·') + '</span>';
+        // Bouton victoire (seulement si le slot a un nom et tournoi actif)
+        if (name && isActive) {
+          const winCls = isWinner ? 'bracket-win-btn active' : 'bracket-win-btn';
+          html += '<span class="' + winCls + '" ' + dataAttr + ' title="Marquer vainqueur">✓</span>';
+        }
+        html += '</div>';
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+    if (r < rounds - 1) {
+      html += '<div class="bracket-connector"></div>';
+    }
+  }
+  html += '</div>';
+  bracketEl.innerHTML = html;
+
+  // Attach event handlers via delegation
+  bracketEl.addEventListener('click', function(e) {
+    const winBtn = e.target.closest('.bracket-win-btn');
+    const nameEl = e.target.closest('.bracket-name');
+    if (winBtn) {
+      e.stopPropagation();
+      const r = parseInt(winBtn.dataset.r);
+      const m = parseInt(winBtn.dataset.m);
+      const s = parseInt(winBtn.dataset.s);
+      toggleWinner(r, m, s);
+      return;
+    }
+    if (nameEl) {
+      e.stopPropagation();
+      const r = parseInt(nameEl.dataset.r);
+      const m = parseInt(nameEl.dataset.m);
+      const s = parseInt(nameEl.dataset.s);
+      editBracketSlot(r, m, s, nameEl);
+      return;
+    }
+  }, { once: true });
+  // Re-attach on each render by using a persistent delegated handler
+  bracketEl._handler = true;
+}
+
+// Use persistent delegation — attach once
+(function() {
+  let attached = false;
+  const origRender = renderActiveBracket;
+  renderActiveBracket = function() {
+    origRender();
+    const bracketEl = document.getElementById('bracket-container');
+    if (bracketEl && !bracketEl._delegated) {
+      bracketEl._delegated = true;
+      bracketEl.addEventListener('click', function(e) {
+        const winBtn = e.target.closest('.bracket-win-btn');
+        const nameEl = e.target.closest('.bracket-name');
+        if (winBtn) {
+          e.stopPropagation();
+          toggleWinner(parseInt(winBtn.dataset.r), parseInt(winBtn.dataset.m), parseInt(winBtn.dataset.s));
+          return;
+        }
+        if (nameEl) {
+          e.stopPropagation();
+          editBracketSlot(parseInt(nameEl.dataset.r), parseInt(nameEl.dataset.m), parseInt(nameEl.dataset.s), nameEl);
+          return;
+        }
+      });
+    }
+  };
+})();
+
+// ── Toggle winner ──
+function toggleWinner(r, m, s) {
+  const t = getActiveTourney();
+  if (!t || t.status === 'finished') return;
+  const match = t.bracket[r][m];
+  if (match.winner === s) {
+    match.winner = null;
+    clearPropagation(t, r, m);
+  } else {
+    match.winner = s;
+    propagateWinner(t, r, m);
+  }
+  arenaSave();
+  renderActiveBracket();
+}
+
+// ── Bracket interactions ──
+
+function propagateWinner(t, r, m) {
+  const match = t.bracket[r][m];
+  if (match.winner === null) return;
+  const winnerName = match.slots[match.winner];
+  const nextRound = r + 1;
+  if (nextRound >= t.bracket.length) return;
+  const nextMatch = Math.floor(m / 2);
+  const nextSlot = m % 2;
+  if (t.bracket[nextRound] && t.bracket[nextRound][nextMatch]) {
+    t.bracket[nextRound][nextMatch].slots[nextSlot] = winnerName;
+  }
+}
+
+function clearPropagation(t, r, m) {
+  const nextRound = r + 1;
+  if (nextRound >= t.bracket.length) return;
+  const nextMatch = Math.floor(m / 2);
+  const nextSlot = m % 2;
+  if (t.bracket[nextRound] && t.bracket[nextRound][nextMatch]) {
+    t.bracket[nextRound][nextMatch].slots[nextSlot] = '';
+    t.bracket[nextRound][nextMatch].winner = null;
+    // Recursively clear
+    clearPropagation(t, nextRound, nextMatch);
+  }
+}
+
+function editBracketSlot(r, m, s, el) {
+  const t = getActiveTourney();
+  if (!t) return;
+  // Allow editing even on finished tourneys? No, block it.
+  if (t.status === 'finished') return;
+  const match = t.bracket[r][m];
+  const current = match.slots[s] || '';
+
+  // Prevent re-entry if already editing
+  if (el.querySelector('input')) return;
+
+  const inp = document.createElement('input');
+  inp.type = 'text';
+  inp.value = current;
+  inp.className = 'tf-input';
+  inp.style.cssText = 'font-size:0.78rem;padding:0.15rem 0.35rem;min-width:90px;width:100%;';
+  
+  // Store original text, replace content
+  const origText = el.textContent;
+  el.textContent = '';
+  el.appendChild(inp);
+  inp.focus();
+  inp.select();
+
+  let committed = false;
+  function commit() {
+    if (committed) return;
+    committed = true;
+    const val = inp.value.trim();
+    match.slots[s] = val;
+    // If winner was set and name changed, re-propagate
+    if (match.winner !== null) {
+      propagateWinner(t, r, m);
+    }
+    arenaSave();
+    renderActiveBracket();
+  }
+  inp.addEventListener('blur', commit);
+  inp.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); inp.blur(); }
+    if (e.key === 'Escape') { committed = true; renderActiveBracket(); }
+  });
+}
+
+// ── Placement calculation ──
+function calcPlacement(t) {
+  // Find Den's furthest round
+  const denName = "Den'l Endri";
+  let lastRoundWon = -1;
+  for (let r = 0; r < t.bracket.length; r++) {
+    for (let m = 0; m < t.bracket[r].length; m++) {
+      const match = t.bracket[r][m];
+      if (match.winner !== null) {
+        const winner = match.slots[match.winner];
+        const loser = match.slots[1 - match.winner];
+        if (winner && winner.toLowerCase().includes("den")) lastRoundWon = r;
+        if (loser && loser.toLowerCase().includes("den")) {
+          // Den lost at round r → placement depends on round
+          const remaining = t.bracket.length - r;
+          if (remaining === 1) return 2; // lost finale
+          if (remaining === 2) return 3; // lost demi
+          return t.size / Math.pow(2, r) + 1; // approximate
+        }
+      }
+    }
+  }
+  // Check if Den won the final
+  const finalRound = t.bracket[t.bracket.length - 1];
+  if (finalRound && finalRound[0] && finalRound[0].winner !== null) {
+    const winner = finalRound[0].slots[finalRound[0].winner];
+    if (winner && winner.toLowerCase().includes("den")) return 1;
+  }
+  // Still in tournament or no matches
+  return null;
+}
+
+// ── Finish tourney ──
+function finishTourney() {
+  const tid = state.arena.activeTourneyId;
+  if (!tid) return;
+  const t = state.arena.tourneys.find(x => x.id === tid);
+  if (!t) return;
+  const placement = calcPlacement(t);
+  if (placement === null) {
+    if (!confirm("Le bracket n'est pas complètement rempli. Terminer quand même ? Den sera classée selon sa dernière victoire.")) return;
+  }
+  t.status = 'finished';
+  t.placement = placement || (t.size);
+  // Clear active tourney BEFORE switching tab
+  state.arena.activeTourneyId = null;
+  save();
+  // Clear bracket display immediately
+  document.getElementById('active-tourney-header').innerHTML = '';
+  document.getElementById('bracket-container').innerHTML = '<div style="font-size:0.82rem;color:var(--SUB);font-style:italic;">Tournoi terminé. Consulte l\'historique.</div>';
+  document.getElementById('match-detail-panel').innerHTML = '';
+  // Switch to historique
+  setTimeout(function() { arenaTab('tourneys'); }, 50);
+}
+
+// ── Delete tourney ──
+function deleteTourney() {
+  const t = getActiveTourney();
+  if (!t) return;
+  if (!confirm('Supprimer "' + t.name + '" ? Cette action est irréversible.')) return;
+  state.arena.tourneys = state.arena.tourneys.filter(x => x.id !== t.id);
+  if (state.arena.activeTourneyId === t.id) state.arena.activeTourneyId = null;
+  arenaSave();
+  arenaTab('tourneys');
+}
+
+// ── Init on load ──
+function initArena() {
+  if (!state.arena) state.arena = { tourneys: [], activeTourneyId: null };
+  renderRenown();
+  renderTourneyHistory();
+  initPrestigePicker();
+}
 
 
 // ══════ ÉDITION INLINE UNIVERSELLE ══════
