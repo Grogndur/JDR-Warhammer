@@ -318,6 +318,23 @@
   .bracket-slot:last-child { border-radius:0 0 2px 2px; }
   .bracket-slot:hover { border-color:rgba(184,146,42,0.35); }
   .bracket-slot.winner { background:rgba(94,128,79,0.12); border-color:rgba(94,128,79,0.3); color:var(--acc2); }
+  .bracket-slot.champion { background:rgba(184,146,42,0.1); border:2px solid var(--GLD); color:var(--GLD); box-shadow:0 0 8px rgba(184,146,42,0.25), inset 0 0 6px rgba(184,146,42,0.08); }
+
+  /* Podium */
+  .podium { display:flex; flex-direction:column; gap:0.3rem; min-width:140px; }
+  .podium-entry { display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; padding:0.25rem 0.4rem;
+    border-radius:2px; background:rgba(255,255,255,0.02); }
+  .podium-medal { font-family:'Cinzel',serif; font-size:0.85rem; font-weight:700; min-width:20px; text-align:center; }
+  .podium-medal.gold { color:var(--GLD); }
+  .podium-medal.silver { color:#a0a8b8; }
+  .podium-medal.bronze { color:#c08050; }
+  .podium-name { color:var(--parchment-dark); font-size:0.8rem; }
+  .podium-name.den { color:var(--acc2); font-weight:600; }
+
+  /* Petite finale */
+  .petite-finale-block { margin-top:0.5rem; padding-top:0.5rem; border-top:1px solid rgba(255,255,255,0.05); }
+  .petite-finale-label { font-family:'Cinzel',serif; font-size:0.55rem; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--SUB); margin-bottom:0.3rem; }
   .bracket-slot.loser { opacity:0.45; }
   .bracket-slot.den { font-weight:600; color:var(--acc2); }
   .bracket-slot.empty { color:var(--SUB); font-style:italic; opacity:0.5; }
@@ -1325,6 +1342,7 @@ function createTourney() {
     status: 'active', // active | finished
     placement: null,
     bracket: buildBracket(size),
+    petiteFinale: { slots: ['', ''], winner: null },
     matchNotes: {}
   };
   if (!state.arena) state.arena = { tourneys: [], activeTourneyId: null };
@@ -1578,16 +1596,25 @@ function renderActiveBracket() {
     return;
   }
 
-  // Header
+  // Ensure petiteFinale exists (for tourneys created before this feature)
+  if (!t.petiteFinale) { t.petiteFinale = { slots: ['', ''], winner: null }; }
+
+  // Header + Podium
+  const podiumHTML = buildPodiumHTML(t);
   headerEl.innerHTML = `
-    <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:0.8rem;flex-wrap:wrap;">
+    <div style="display:flex;align-items:flex-start;gap:0.7rem;margin-bottom:0.8rem;flex-wrap:wrap;">
       <div style="flex:1;">
         <div style="font-family:'Cinzel',serif;font-size:1.05rem;color:var(--parchment);">${t.name}</div>
         <div style="font-size:0.75rem;color:var(--SUB);font-style:italic;">${t.lieu} · ${t.date} · ${TYPE_LABELS[t.type] || t.type} · ${prestigeHTML(t.prestige)}</div>
         <div style="font-size:0.75rem;color:var(--GLD);margin-top:0.15rem;">Récompenses : ${t.reward}</div>
       </div>
-      ${t.status === 'active' ? '<button class="btn-add btn-gld" onclick="finishTourney()" style="white-space:nowrap;">Terminer le tournoi</button>' : '<span style="font-family:\'Cinzel\',serif;font-size:0.65rem;letter-spacing:0.1em;color:var(--SUB);text-transform:uppercase;">Terminé</span>'}
-      <span class="del-btn" onclick="deleteTourney()" title="Supprimer ce tournoi" style="font-size:0.9rem;">✕</span>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;">
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          ${t.status === 'active' ? '<button class="btn-add btn-gld" onclick="finishTourney()" style="white-space:nowrap;">Terminer le tournoi</button>' : '<span style="font-family:\'Cinzel\',serif;font-size:0.65rem;letter-spacing:0.1em;color:var(--SUB);text-transform:uppercase;">Terminé</span>'}
+          <span class="del-btn" onclick="deleteTourney()" title="Supprimer ce tournoi" style="font-size:0.9rem;">✕</span>
+        </div>
+        ${podiumHTML}
+      </div>
     </div>
   `;
 
@@ -1620,6 +1647,7 @@ function renderActiveBracket() {
         let cls = 'bracket-slot';
         if (isDen) cls += ' den';
         if (isWinner) cls += ' winner';
+        if (isWinner && r === rounds - 1) cls += ' champion';
         if (isLoser) cls += ' loser';
         if (isEmpty) cls += ' empty';
         const dataAttr = 'data-r="'+r+'" data-m="'+m+'" data-s="'+s+'"';
@@ -1641,7 +1669,43 @@ function renderActiveBracket() {
       html += '<div class="bracket-connector"></div>';
     }
   }
+
+  // Petite finale — inject into a new column aligned with finale
+  if (t.petiteFinale && rounds >= 2) {
+    const pf = t.petiteFinale;
+    // Add a spacer + petite finale column
+    html += '<div class="bracket-round" style="margin-left:20px;">';
+    html += '<div class="bracket-round-label" style="visibility:hidden;">.</div>';
+    // Push down to align below finale
+    const finaleOffset = rounds >= 2 ? (Math.pow(2, rounds - 1) - 1) * 18 : 0;
+    html += '<div style="margin-top:' + (finaleOffset + 70) + 'px;">';
+    html += '<div class="petite-finale-label">Petite finale · 3e place</div>';
+    html += '<div class="bracket-match">';
+    for (let s = 0; s < 2; s++) {
+      const name = pf.slots[s] || '';
+      const isDen = name.toLowerCase().includes("den'l") || name.toLowerCase().includes("den\u2019l");
+      const isWinner = pf.winner === s;
+      const isLoser = pf.winner !== null && pf.winner !== s;
+      const isEmpty = !name;
+      let cls = 'bracket-slot';
+      if (isDen) cls += ' den';
+      if (isWinner) cls += ' winner';
+      if (isLoser) cls += ' loser';
+      if (isEmpty) cls += ' empty';
+      const dataAttr = 'data-r="pf" data-m="0" data-s="' + s + '"';
+      html += '<div class="' + cls + '" ' + dataAttr + '>';
+      html += '<span class="bracket-name" ' + dataAttr + ' style="flex:1;cursor:pointer;" title="Cliquer pour éditer">' + (name || '· · ·') + '</span>';
+      if (name && isActive) {
+        const winCls = isWinner ? 'bracket-win-btn active' : 'bracket-win-btn';
+        html += '<span class="' + winCls + '" ' + dataAttr + ' title="Marquer vainqueur">✓</span>';
+      }
+      html += '</div>';
+    }
+    html += '</div></div></div>';
+  }
+
   html += '</div>';
+
   bracketEl.innerHTML = html;
 
   // Attach event handlers via delegation
@@ -1650,18 +1714,14 @@ function renderActiveBracket() {
     const nameEl = e.target.closest('.bracket-name');
     if (winBtn) {
       e.stopPropagation();
-      const r = parseInt(winBtn.dataset.r);
-      const m = parseInt(winBtn.dataset.m);
-      const s = parseInt(winBtn.dataset.s);
-      toggleWinner(r, m, s);
+      if (winBtn.dataset.r === 'pf') { togglePFWinner(parseInt(winBtn.dataset.s)); }
+      else { toggleWinner(parseInt(winBtn.dataset.r), parseInt(winBtn.dataset.m), parseInt(winBtn.dataset.s)); }
       return;
     }
     if (nameEl) {
       e.stopPropagation();
-      const r = parseInt(nameEl.dataset.r);
-      const m = parseInt(nameEl.dataset.m);
-      const s = parseInt(nameEl.dataset.s);
-      editBracketSlot(r, m, s, nameEl);
+      if (nameEl.dataset.r === 'pf') { editPFSlot(parseInt(nameEl.dataset.s), nameEl); }
+      else { editBracketSlot(parseInt(nameEl.dataset.r), parseInt(nameEl.dataset.m), parseInt(nameEl.dataset.s), nameEl); }
       return;
     }
   }, { once: true });
@@ -1683,12 +1743,14 @@ function renderActiveBracket() {
         const nameEl = e.target.closest('.bracket-name');
         if (winBtn) {
           e.stopPropagation();
-          toggleWinner(parseInt(winBtn.dataset.r), parseInt(winBtn.dataset.m), parseInt(winBtn.dataset.s));
+          if (winBtn.dataset.r === 'pf') { togglePFWinner(parseInt(winBtn.dataset.s)); }
+          else { toggleWinner(parseInt(winBtn.dataset.r), parseInt(winBtn.dataset.m), parseInt(winBtn.dataset.s)); }
           return;
         }
         if (nameEl) {
           e.stopPropagation();
-          editBracketSlot(parseInt(nameEl.dataset.r), parseInt(nameEl.dataset.m), parseInt(nameEl.dataset.s), nameEl);
+          if (nameEl.dataset.r === 'pf') { editPFSlot(parseInt(nameEl.dataset.s), nameEl); }
+          else { editBracketSlot(parseInt(nameEl.dataset.r), parseInt(nameEl.dataset.m), parseInt(nameEl.dataset.s), nameEl); }
           return;
         }
       });
@@ -1718,12 +1780,17 @@ function propagateWinner(t, r, m) {
   const match = t.bracket[r][m];
   if (match.winner === null) return;
   const winnerName = match.slots[match.winner];
+  const loserName = match.slots[1 - match.winner];
   const nextRound = r + 1;
   if (nextRound >= t.bracket.length) return;
   const nextMatch = Math.floor(m / 2);
   const nextSlot = m % 2;
   if (t.bracket[nextRound] && t.bracket[nextRound][nextMatch]) {
     t.bracket[nextRound][nextMatch].slots[nextSlot] = winnerName;
+  }
+  // If this is a semi-final (round before last), propagate loser to petite finale
+  if (nextRound === t.bracket.length - 1 && t.petiteFinale) {
+    t.petiteFinale.slots[m % 2] = loserName || '';
   }
 }
 
@@ -1737,6 +1804,11 @@ function clearPropagation(t, r, m) {
     t.bracket[nextRound][nextMatch].winner = null;
     // Recursively clear
     clearPropagation(t, nextRound, nextMatch);
+  }
+  // If clearing a semi-final result, also clear petite finale slot
+  if (nextRound === t.bracket.length - 1 && t.petiteFinale) {
+    t.petiteFinale.slots[m % 2] = '';
+    t.petiteFinale.winner = null;
   }
 }
 
@@ -1782,6 +1854,68 @@ function editBracketSlot(r, m, s, el) {
     if (e.key === 'Enter') { e.preventDefault(); inp.blur(); }
     if (e.key === 'Escape') { committed = true; renderActiveBracket(); }
   });
+}
+
+// ── Petite finale interactions ──
+function togglePFWinner(s) {
+  const t = getActiveTourney();
+  if (!t || t.status === 'finished' || !t.petiteFinale) return;
+  if (t.petiteFinale.winner === s) { t.petiteFinale.winner = null; }
+  else { t.petiteFinale.winner = s; }
+  arenaSave();
+  renderActiveBracket();
+}
+
+function editPFSlot(s, el) {
+  const t = getActiveTourney();
+  if (!t || t.status === 'finished' || !t.petiteFinale) return;
+  if (el.querySelector('input')) return;
+  const current = t.petiteFinale.slots[s] || '';
+  const inp = document.createElement('input');
+  inp.type = 'text'; inp.value = current;
+  inp.className = 'tf-input';
+  inp.style.cssText = 'font-size:0.78rem;padding:0.15rem 0.35rem;min-width:90px;width:100%;';
+  el.textContent = ''; el.appendChild(inp);
+  inp.focus(); inp.select();
+  let committed = false;
+  function commit() {
+    if (committed) return; committed = true;
+    t.petiteFinale.slots[s] = inp.value.trim();
+    arenaSave(); renderActiveBracket();
+  }
+  inp.addEventListener('blur', commit);
+  inp.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); inp.blur(); }
+    if (e.key === 'Escape') { committed = true; renderActiveBracket(); }
+  });
+}
+
+// ── Podium ──
+function buildPodiumHTML(t) {
+  const rounds = t.bracket.length;
+  const finale = t.bracket[rounds - 1] ? t.bracket[rounds - 1][0] : null;
+  let first = '', second = '', third = '';
+
+  // 1er et 2e : vainqueur et perdant de la finale
+  if (finale && finale.winner !== null) {
+    first = finale.slots[finale.winner] || '';
+    second = finale.slots[1 - finale.winner] || '';
+  }
+  // 3e : vainqueur de la petite finale
+  if (t.petiteFinale && t.petiteFinale.winner !== null) {
+    third = t.petiteFinale.slots[t.petiteFinale.winner] || '';
+  }
+
+  if (!first && !second && !third) return '';
+
+  function nameClass(n) { return (n.toLowerCase().includes("den'l") || n.toLowerCase().includes("den\u2019l")) ? 'podium-name den' : 'podium-name'; }
+
+  let html = '<div class="podium">';
+  if (first) html += '<div class="podium-entry"><span class="podium-medal gold">1</span><span class="' + nameClass(first) + '">' + first + '</span></div>';
+  if (second) html += '<div class="podium-entry"><span class="podium-medal silver">2</span><span class="' + nameClass(second) + '">' + second + '</span></div>';
+  if (third) html += '<div class="podium-entry"><span class="podium-medal bronze">3</span><span class="' + nameClass(third) + '">' + third + '</span></div>';
+  html += '</div>';
+  return html;
 }
 
 // ── Placement calculation ──
