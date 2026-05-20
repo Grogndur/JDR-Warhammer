@@ -761,9 +761,9 @@
           <li><strong>Éruption de chaleur.</strong> Le sol s'embrase autour d'Ephraïm. Une zone d'1 mètre de rayon devient brûlante : quiconque y reste ou y entre subit 1 Blessure par round (feu). L'effet dure 3 rounds.</li>
           <li><strong>Chaîne de flamme.</strong> Le sort se propage. Une seconde cible adjacente à la première (à 2 mètres ou moins) subit les mêmes dégâts que la cible principale.</li>
           <li><strong>Sort amplifié spontanément.</strong> Le sort en cours gagne en puissance brute mais perd en portée. Ses dégâts sont augmentés du Bonus de Force Mentale (BFM) d'Ephraïm, mais sa portée est divisée par deux.</li>
-          <li><strong>Voix d'Aqshy.</strong> Le Vent du Feu murmure à l'oreille d'Ephraïm et lance lui-même un sort qu'il connaît (au choix d'Ephraïm, parmi ceux de son grimoire). Aucun test d'Incantation ni de Focalisation requis : le sort se déclenche directement, sans coût de Focalisation. <em>Une fois par scène.</em></li>
+          <li><strong>Voix d'Aqshy.</strong> Le Vent du Feu murmure à l'oreille d'Ephraïm et lance lui-même un sort qu'il connaît (au choix d'Ephraïm, parmi ceux de son grimoire). Aucun test d'Incantation ni de Focalisation requis, aucun coût de Focalisation, et le sort ne consomme pas l'action d'Ephraïm pour ce round. <strong>En contrepartie, les dégâts du sort sont divisés par 2</strong> (en Embrasement 5, le x2 passif et le /2 s'annulent, ramenant les dégâts au niveau d'un sort normal). Les autres effets du sort restent normaux : portée, durée, effets secondaires, états appliqués.</li>
           <li><strong>Surge pur.</strong> Le sort en cours est lancé avec un effet maximal : tous les dégâts variables sont considérés au résultat maximum (un 1d10 devient 10, un 1d6 devient 6, etc.). Après résolution du sort, l'axe descend automatiquement de 2 vers la Glaciation.</li>
-          <li><strong>Bascule totale.</strong> Le Feu déborde puis se rétracte violemment. Le sort en cours est lancé à puissance double (tous les dégâts x2, durées x2, portées x2). Après résolution : l'axe passe directement de l'Embrasement actuel à Glaciation 3.</li>
+          <li><strong>Bascule totale.</strong> Submergé par les Vents d'Aqshy. Le sort en cours est résolu normalement (avec le x2 passif d'Embrasement 5 qui s'applique déjà). <strong>Le prochain sort lancé par Ephraïm est une réussite automatique</strong> (pas de jet d'Incantation requis) et bénéficie de <strong>+BFM dégâts</strong> bonus. Après résolution du sort de Bascule, l'axe revient à l'équilibre (0).</li>
         </ol>
         <button class="axe-btn axe-btn-feu" style="margin-top:0.4rem;" onclick="effetRoll('feu')">Lancer 1d10</button>
         <div class="effet-result feu" id="result-feu"></div>
@@ -1474,8 +1474,8 @@ const FEU_STATES = [
     meca:"Sort automatiquement amplifié (portée et dégâts x1.5). 1 chance sur 2 de toucher une cible adjacente non voulue.",
     risque:"Effets passifs seulement. Pas de jet de table." },
   { title:"Embrasement 5", mecaCls:"feu",
-    meca:"Puissance absolue. Risque de bascule vers Glaciation 3 sur échec.",
-    risque:"Jet d'effet d'Embrasement obligatoire après chaque sort lancé. Danger pour les alliés proches." },
+    meca:"Puissance absolue. Les effets de tous les sorts d'Ephraïm sont doublés (dégâts, durées, portées : x2).",
+    risque:"Jet d'effet d'Embrasement obligatoire après chaque sort lancé. Si Bascule totale tombe (10), l'apothéose : sort en cours x2 + prochain sort en réussite automatique avec +BFM dégâts, puis retour à l'équilibre." },
 ];
 
 const EQUIL_STATE = {
@@ -1704,9 +1704,9 @@ function effetRoll(type) {
     sceauData.axe = Math.max(-5, sceauData.axe - 2);
     sceauSave(); renderAxe(); renderSeuilTable();
   }
-  // Feu n=10 (Bascule totale) : axe passe directement à -3 (Glaciation 3)
+  // Feu n=10 (Bascule totale) : axe revient à l'équilibre (0)
   if(type==='feu' && n===10){
-    sceauData.axe = -3;
+    sceauData.axe = 0;
     sceauSave(); renderAxe(); renderSeuilTable();
   }
   // Glace n=10 (Rupture inverse) : axe remis à 0
