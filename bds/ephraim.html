@@ -309,12 +309,22 @@
   .affinite-result-name { font-family:'Cinzel',serif; font-size:0.9rem; color:var(--parchment); font-weight:600; margin-bottom:0.3rem; }
   .affinite-result-desc { font-size:0.82rem; color:var(--parchment-dark); font-style:italic; line-height:1.5; }
   .affinite-result-dice { font-family:'Cinzel',serif; font-size:0.7rem; color:var(--GLD); margin-bottom:0.35rem; letter-spacing:0.1em; }
-  .affinite-result.success { border-color:rgba(120,180,140,0.4); background:rgba(60,120,80,0.08); }
-  .affinite-result.success .affinite-result-name { color:rgba(160,220,180,0.95); }
-  .affinite-result.fail-feu { border-color:rgba(224,80,48,0.45); background:rgba(138,42,10,0.1); }
-  .affinite-result.fail-feu .affinite-result-name { color:#e06030; }
-  .affinite-result.fail-glace { border-color:rgba(138,172,204,0.45); background:rgba(74,90,122,0.1); }
-  .affinite-result.fail-glace .affinite-result-name { color:rgba(138,172,204,0.95); }
+
+  /* Intensité Feu (mode Crit) : du tiède au brasier */
+  .affinite-result.feu-1 { border-color:rgba(232,140,80,0.35); background:rgba(138,42,10,0.05); }
+  .affinite-result.feu-1 .affinite-result-name { color:#e8a070; }
+  .affinite-result.feu-2 { border-color:rgba(224,96,48,0.55); background:rgba(138,42,10,0.13); }
+  .affinite-result.feu-2 .affinite-result-name { color:#e06030; }
+  .affinite-result.feu-3 { border-color:rgba(232,50,20,0.85); background:rgba(160,20,10,0.22); box-shadow:0 0 12px rgba(232,50,20,0.18) inset; }
+  .affinite-result.feu-3 .affinite-result-name { color:#ff5028; text-shadow:0 0 6px rgba(232,50,20,0.4); }
+
+  /* Intensité Glace (mode Mald) : du givre à la nova */
+  .affinite-result.glace-1 { border-color:rgba(160,190,215,0.35); background:rgba(74,90,122,0.05); }
+  .affinite-result.glace-1 .affinite-result-name { color:#a8c4dc; }
+  .affinite-result.glace-2 { border-color:rgba(110,160,210,0.55); background:rgba(60,90,140,0.13); }
+  .affinite-result.glace-2 .affinite-result-name { color:#7ab0d8; }
+  .affinite-result.glace-3 { border-color:rgba(60,130,220,0.85); background:rgba(30,60,140,0.22); box-shadow:0 0 12px rgba(60,130,220,0.22) inset; }
+  .affinite-result.glace-3 .affinite-result-name { color:#4090e0; text-shadow:0 0 6px rgba(60,130,220,0.4); }
 
   /* Icones SVG flocon et flamme */
   .icon-svg { display:inline-block; vertical-align:middle; }
@@ -690,15 +700,14 @@
       </div>
 
       <!-- ════ JET D'AFFINITÉ ════ -->
-      <div class="jet-seuil-info" id="jet-seuil-info">Position actuelle : <strong>Équilibre</strong> &middot; Seuil de base : <strong>10</strong> (50/50)</div>
       <div class="jet-mode-row">
         <button class="jet-mode-btn jet-mode-mald" onclick="axeJetAffinite('mald')">
           <svg class="icon-svg icon-flocon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg>
-          Sur Maladresse <span class="jet-mode-bias">(+25% Glace)</span>
+          Sur Maladresse
         </button>
         <button class="jet-mode-btn jet-mode-crit" onclick="axeJetAffinite('crit')">
           <svg class="icon-svg icon-flamme" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c-0.5 3-2.5 5-4 7c-1.5 2-2 4-2 6c0 3.3 2.7 6 6 6s6-2.7 6-6c0-1.5-0.4-2.8-1.1-4c-0.7 1-1.6 1.6-2.4 1.6c1-2.6 0.5-5.4-2.5-10.6z"/></svg>
-          Sur Critique <span class="jet-mode-bias">(+25% Feu)</span>
+          Sur Critique
         </button>
       </div>
 
@@ -726,15 +735,15 @@
       <div class="effet-panel glace" id="table-glace">
         <div class="effet-panel-title">Effets de Glaciation (1d10) — actifs uniquement au Degré 5</div>
         <ol>
-          <li><strong>Givre sur les mains.</strong> Les mains d'Ephraïm sont engourdies par le froid. Son prochain sort nécessitant un contact physique ou un geste précis subit -10 à l'Incantation.</li>
-          <li><strong>Souffle visible et audible.</strong> Sa respiration produit une buée blanche et un bruit grave perceptible à plusieurs mètres. -10 à Discrétion pendant 1 scène.</li>
           <li><strong>Compression maîtrisée.</strong> La Glyphe enserre les Vents avec précision. Le prochain sort, même raté, ne déclenchera pas d'Incantation Imparfaite (le double sur échec sera traité comme un simple échec).</li>
-          <li><strong>Onde de froid.</strong> Une vague de froid s'échappe d'Ephraïm. La cible la plus proche dans un rayon de 2 mètres subit 1 Blessure (dégâts de froid, ignore les armures légères de PA 1).</li>
-          <li><strong>Ralentissement.</strong> Le corps d'Ephraïm devient lourd, raide. Il perd 1 point de Mouvement (M) jusqu'à la fin du combat.</li>
           <li><strong>Glyphe résonante.</strong> La Glyphe agit comme un tampon contre l'Aethyr. Le prochain sort d'Ephraïm ignore les éventuelles pénalités externes (vent, distractions, blessures légères).</li>
-          <li><strong>Paralysie partielle.</strong> Ses doigts se figent un instant. Test d'Agilité (DR standard) ou Ephraïm laisse échapper ce qu'il tient en main (arme, bâton, parchemin...).</li>
-          <li><strong>Éclat de givre.</strong> Un fragment de glace jaillit involontairement de la Glyphe. Il file vers une cible aléatoire dans un rayon de 3 mètres (alliés inclus) et inflige 1 Blessure.</li>
           <li><strong>Préservation.</strong> Le froid durcit la peau d'Ephraïm. La prochaine Blessure qu'il subirait est réduite de 1 point (minimum 0). Effet à usage unique, jusqu'à la fin de la scène.</li>
+          <li><strong>Souffle visible et audible.</strong> Sa respiration produit une buée blanche et un bruit grave perceptible à plusieurs mètres. -10 à Discrétion pendant 1 scène.</li>
+          <li><strong>Givre sur les mains.</strong> Les mains d'Ephraïm sont engourdies par le froid. Son prochain sort nécessitant un contact physique ou un geste précis subit -10 à l'Incantation.</li>
+          <li><strong>Onde de froid.</strong> Une vague de froid s'échappe d'Ephraïm. La cible la plus proche dans un rayon de 2 mètres subit 1 Blessure (dégâts de froid, ignore les armures légères de PA 1).</li>
+          <li><strong>Éclat de givre.</strong> Un fragment de glace jaillit involontairement de la Glyphe. Il file vers une cible aléatoire dans un rayon de 3 mètres (alliés inclus) et inflige 1 Blessure.</li>
+          <li><strong>Ralentissement.</strong> Le corps d'Ephraïm devient lourd, raide. Il perd 1 point de Mouvement (M) jusqu'à la fin du combat.</li>
+          <li><strong>Paralysie partielle.</strong> Ses doigts se figent un instant. Test d'Agilité (DR standard) ou Ephraïm laisse échapper ce qu'il tient en main (arme, bâton, parchemin...).</li>
           <li><strong>Rupture inverse.</strong> La compression de la Glyphe cède brutalement : pic de Glaciation visible (cheveux blancs un instant, halo de givre autour de lui) puis effondrement. <em>Effet mécanique :</em> l'axe est immédiatement remis à 0. <em>Effet narratif :</em> les témoins doivent réussir un test de Sang-Froid (DR standard) ou subir l'état <em>Effrayé</em> 1.</li>
         </ol>
         <button class="axe-btn axe-btn-glace" style="margin-top:0.4rem;" onclick="effetRoll('glace')">Lancer 1d10</button>
@@ -745,15 +754,15 @@
       <div class="effet-panel feu" id="table-feu">
         <div class="effet-panel-title">Effets d'Embrasement (1d10) — actifs uniquement au Degré 5</div>
         <ol>
+          <li><strong>Embrasement d'objet.</strong> Un objet inflammable porté ou tenu par Ephraïm prend feu (vêtement, parchemin, manche d'arme...). Test d'Agilité (DR standard) pour l'éteindre ou s'en débarrasser sans Blessure. Échec : 1 Blessure + objet détruit.</li>
+          <li><strong>Mirage de chaleur.</strong> L'air autour d'Ephraïm se trouble, déformé par la chaleur. Les attaquants ont du mal à le viser : -10 à la CC et CT contre lui pendant ce round.</li>
           <li><strong>Regard brûlant.</strong> Les yeux d'Ephraïm rougeoient comme des braises. L'adversaire au contact ce round doit réussir un test de Sang-Froid (DR standard) ou subir l'état <em>Effrayé</em> 1.</li>
-          <li><strong>Sort amplifié spontanément.</strong> Le sort en cours gagne en puissance brute mais perd en portée. Ses dégâts sont augmentés du Bonus de Force Mentale (BFM) d'Ephraïm, mais sa portée est divisée par deux.</li>
+          <li><strong>Explosion de pression.</strong> Une onde de souffle se propage autour d'Ephraïm (cône de 3 mètres dans la direction de son choix). Toutes les créatures dans le cône reculent d'1 mètre. Pas de dégâts.</li>
           <li><strong>Éruption de chaleur.</strong> Le sol s'embrase autour d'Ephraïm. Une zone d'1 mètre de rayon devient brûlante : quiconque y reste ou y entre subit 1 Blessure par round (feu). L'effet dure 3 rounds.</li>
           <li><strong>Chaîne de flamme.</strong> Le sort se propage. Une seconde cible adjacente à la première (à 2 mètres ou moins) subit les mêmes dégâts que la cible principale.</li>
-          <li><strong>Embrasement d'objet.</strong> Un objet inflammable porté ou tenu par Ephraïm prend feu (vêtement, parchemin, manche d'arme...). Test d'Agilité (DR standard) pour l'éteindre ou s'en débarrasser sans Blessure. Échec : 1 Blessure + objet détruit.</li>
-          <li><strong>Surge pur.</strong> Le sort en cours est lancé avec un effet maximal : tous les dégâts variables sont considérés au résultat maximum (un 1d10 devient 10, un 1d6 devient 6, etc.). Après résolution du sort, l'axe descend automatiquement de 2 vers la Glaciation.</li>
-          <li><strong>Mirage de chaleur.</strong> L'air autour d'Ephraïm se trouble, déformé par la chaleur. Les attaquants ont du mal à le viser : -10 à la CC et CT contre lui pendant ce round.</li>
-          <li><strong>Explosion de pression.</strong> Une onde de souffle se propage autour d'Ephraïm (cône de 3 mètres dans la direction de son choix). Toutes les créatures dans le cône reculent d'1 mètre. Pas de dégâts.</li>
+          <li><strong>Sort amplifié spontanément.</strong> Le sort en cours gagne en puissance brute mais perd en portée. Ses dégâts sont augmentés du Bonus de Force Mentale (BFM) d'Ephraïm, mais sa portée est divisée par deux.</li>
           <li><strong>Voix d'Aqshy.</strong> Le Vent du Feu murmure à l'oreille d'Ephraïm et lance lui-même un sort qu'il connaît (au choix d'Ephraïm, parmi ceux de son grimoire). Aucun test d'Incantation ni de Focalisation requis : le sort se déclenche directement, sans coût de Focalisation. <em>Une fois par scène.</em></li>
+          <li><strong>Surge pur.</strong> Le sort en cours est lancé avec un effet maximal : tous les dégâts variables sont considérés au résultat maximum (un 1d10 devient 10, un 1d6 devient 6, etc.). Après résolution du sort, l'axe descend automatiquement de 2 vers la Glaciation.</li>
           <li><strong>Bascule totale.</strong> Le Feu déborde puis se rétracte violemment. Le sort en cours est lancé à puissance double (tous les dégâts x2, durées x2, portées x2). Après résolution : l'axe passe directement de l'Embrasement actuel à Glaciation 3.</li>
         </ol>
         <button class="axe-btn axe-btn-feu" style="margin-top:0.4rem;" onclick="effetRoll('feu')">Lancer 1d10</button>
@@ -1475,65 +1484,76 @@ const EQUIL_STATE = {
   risque:""
 };
 
-// ── TABLE D'AFFINITÉ DE LA GLYPHE (1d20) ──────────────────────────
-// ════ SEUIL DE RÉUSSITE DU JET D'AFFINITÉ (selon position sur l'axe) ════
-// La cle = position sur l'axe (-5 a +5)
-// La valeur = seuil a egaler ou depasser sur un d20 pour "garder le controle"
-// Plus la polarite est extreme, plus l'element dominant tend a s'imposer
-const SEUIL_AFFINITE = {
-  '-5': 19, '-4': 17, '-3': 15, '-2': 13, '-1': 11,
-   '0': 10,
-   '1': 11,  '2': 13,  '3': 15,  '4': 17,  '5': 19
-};
-
-// ════ RÉSULTATS DU JET D'AFFINITÉ selon le mode et la réussite ════
-// crit = double sur succès en magie (sort amplifié), biais +5 vers Feu
-// mald = double sur échec en magie (sort échoue / foca interrompue), biais +5 vers Glace
+// ════ RÉSULTATS DU JET D'AFFINITÉ — paliers d'intensité (1d20) ════
+// Plus le résultat est haut, plus la Glyphe s'exprime fort. Pas de notion d'échec :
+// c'est toujours une manifestation, simplement plus ou moins marquée.
+//
+// CRIT (mode Feu) — au minimum 1 effet du Critique garanti :
+//   1-9    : palier 1 — axe +1 Feu — 1 effet du Critique au choix
+//   10-17  : palier 2 — axe +2 Feu — 2 effets du Critique au choix
+//   18-20  : palier 3 — axe +3 Feu — les 3 effets du Critique (Incantation Critique
+//                                    + Puissance Totale + Force Inéluctable)
+//
+// MALD (mode Glace) — l'incident de base reste celui du tableau officiel ; la Glyphe
+// rajoute une saveur croissante. Pas de "récompense" comme côté Crit.
+//   1-9    : palier 1 — axe +1 Glace — -1 dégât (Feu) sur le prochain sort
+//                                    — narratif léger (givre subtil)
+//   10-17  : palier 2 — axe +2 Glace — -2 dégâts (Feu) sur le prochain sort
+//                                    — narratif marqué (vapeur froide, mains gelées)
+//   18-20  : palier 3 — axe +3 Glace — -3 dégâts (Feu) sur les sorts du round suivant
+//                                    — narratif intense (halo de givre, voix qui résonne)
+//   = 20 EXACTEMENT : Nova de Glace en plus du palier 3
+//                     — AoE 3m de diamètre centrée sur Ephraïm (lui-même immunisé)
+//                     — 4 dégâts de glace
+//                     — ralentit le Mouvement de moitié pendant 1 round
 const AFFINITE_RESULTS = {
   crit: {
-    success: {
-      palier: "Réussite — Maîtrise préservée",
-      name: "Le Critique reste dans l'élément du sort",
-      desc: "La puissance débordante du Critique s'exprime dans la saveur du sort lancé. Appliquer les effets de Critique (3 effets au choix : Incantation Critique, Puissance Totale, Force Inéluctable). L'axe glisse de +1 vers la polarité du sort lancé."
+    1: {
+      palier: "Palier 1 — Étincelle",
+      name: "La Glyphe s'enflamme légèrement",
+      desc: "La puissance du Critique s'exprime, mesurée. Ephraïm choisit 1 effet de Critique au choix parmi : Incantation Critique, Puissance Totale, Force Inéluctable. L'axe glisse de +1 vers l'Embrasement."
     },
-    fail: {
-      palier: "Échec — Le Feu déborde",
-      name: "L'Embrasement s'invite dans le Critique",
-      desc: "La puissance du Critique échappe partiellement à Ephraïm et tire vers le Feu. Les effets de Critique s'appliquent (3 effets au choix), mais avec une saveur clairement Embrasement : flammes plus vives, chaleur excessive, éclats incandescents, étincelles erratiques. L'axe glisse de +2 vers l'Embrasement."
+    2: {
+      palier: "Palier 2 — Brasier",
+      name: "Le Feu déborde clairement",
+      desc: "La Glyphe résonne fort. Ephraïm choisit 2 effets de Critique parmi : Incantation Critique, Puissance Totale, Force Inéluctable. Saveur Embrasement visible : flammes plus vives, chaleur marquée, yeux qui rougeoient. L'axe glisse de +2 vers l'Embrasement."
+    },
+    3: {
+      palier: "Palier 3 — Conflagration",
+      name: "La Glyphe explose en faveur du Feu",
+      desc: "Ephraïm bénéficie des 3 effets de Critique simultanément : Incantation Critique (Blessure Critique si dégâts), Puissance Totale (sort indissipable par jet de DR), et Force Inéluctable (sort indissipable tout court). Saveur Embrasement totale : étincelles incandescentes, onde de chaleur perceptible à plusieurs mètres. L'axe glisse de +3 vers l'Embrasement."
     }
   },
   mald: {
-    success: {
-      palier: "Réussite — Échec maîtrisé",
-      name: "La Maladresse reste dans l'élément du sort",
-      desc: "Le sort échoue (ou la Focalisation est interrompue) avec la saveur du sort tenté. Appliquer le jet sur le tableau d'Incantations Imparfaites (Mineures en Incantation et en Focalisation Critique, Majeures en Focalisation Maladresse). L'axe glisse de +1 vers la polarité du sort tenté."
+    1: {
+      palier: "Palier 1 — Frisson",
+      name: "La Glace effleure l'incident",
+      desc: "Appliquer normalement l'incident sur le tableau officiel (Mineures ou Majeures selon le contexte). En plus : Ephraïm subit <strong>-1 dégât de Feu sur son prochain sort lancé</strong>. Narratif léger : un fin givre éphémère sur ses doigts, son souffle se condense brièvement. L'axe glisse de +1 vers la Glaciation."
     },
-    fail: {
-      palier: "Échec — La Glace s'engouffre",
-      name: "La Glaciation s'invite dans la Maladresse",
-      desc: "L'échec est aggravé par un tiraillement vers la Glace : givre soudain, mains gelées, souffle visible, sol verglacé, ralentissement. Appliquer le tableau d'Incantations Imparfaites avec une lecture froide (effets de glace au lieu de feu si pertinent). L'axe glisse de +2 vers la Glaciation."
+    2: {
+      palier: "Palier 2 — Givre",
+      name: "La Glace marque l'incident",
+      desc: "Appliquer normalement l'incident sur le tableau officiel. En plus : Ephraïm subit <strong>-2 dégâts de Feu sur son prochain sort lancé</strong>. Narratif marqué : ses mains se gèlent brièvement, une vapeur froide s'échappe du sol autour de lui, sa voix prend un timbre plus grave et lointain. L'axe glisse de +2 vers la Glaciation."
+    },
+    3: {
+      palier: "Palier 3 — Glaciation profonde",
+      name: "La Glace s'engouffre dans l'incident",
+      desc: "Appliquer normalement l'incident sur le tableau officiel. En plus : Ephraïm subit <strong>-3 dégâts de Feu sur tous ses sorts du round suivant</strong>. Narratif intense : halo de givre persistant autour de lui, sol verglacé sur 1m, voix qui résonne comme dans une crypte, lèvres bleuies. L'axe glisse de +3 vers la Glaciation."
+    },
+    // Cas spécial : 20 exact → tout le palier 3 + Nova de Glace
+    nova: {
+      palier: "Nova de Glace ! (d20 = 20)",
+      name: "La Glyphe explose en faveur de la Glace",
+      desc: "Tous les effets du Palier 3 s'appliquent (-3 dégâts de Feu sur les sorts du round suivant, narratif intense). EN PLUS, une <strong>Nova de Glace</strong> jaillit d'Ephraïm : zone d'effet de 3 mètres de diamètre centrée sur lui (Ephraïm est immunisé, sa Glyphe le protège). Toutes les autres créatures dans la zone subissent <strong>4 dégâts de glace</strong> (ignore les armures de PA 1) et voient leur <strong>Mouvement réduit de moitié pendant 1 round</strong>. L'axe glisse de +3 vers la Glaciation."
     }
   }
 };
 
-function getSeuil(axe) {
-  return SEUIL_AFFINITE[String(axe)] || 10;
-}
-
-// Biais du mode de jet : ajustement du seuil de base selon Crit ou Maladresse
-// crit -> -5 sur le seuil = 25% plus facile d'echouer cote Feu (donc 25% chances en plus d'aller vers Feu)
-// mald -> -5 sur le seuil = 25% plus facile d'echouer cote Glace (donc 25% chances en plus d'aller vers Glace)
-// Note : "facile d'echouer" ici signifie "plus de chances que le mode pousse l'axe dans sa direction"
-function getSeuilWithBias(axe, mode) {
-  const base = getSeuil(axe);
-  if(mode === 'crit') {
-    // Crit favorise Feu : on rend la reussite plus difficile (seuil +5)
-    return Math.max(1, Math.min(20, base + 5));
-  } else if(mode === 'mald') {
-    // Mald favorise Glace : on rend la reussite plus difficile (seuil +5)
-    return Math.max(1, Math.min(20, base + 5));
-  }
-  return base;
+// ════ Détermine le palier d'intensité selon le résultat du d20 ════
+function getPalier(n) {
+  if(n <= 9)  return 1;
+  if(n <= 17) return 2;
+  return 3; // 18-20
 }
 
 function getPolarite(axe) {
@@ -1543,89 +1563,50 @@ function getPolarite(axe) {
 }
 
 function renderSeuilTable() {
-  const cont = document.getElementById('seuil-table');
-  if(!cont) return;
-  const axe = sceauData.axe;
-  let html = '';
-  // Ligne 1 : positions sur l'axe
-  for(let i=-5; i<=5; i++){
-    const cls = i<0 ? 'glace' : (i>0 ? 'feu' : 'equil');
-    const current = (i===axe) ? ' current' : '';
-    const label = i>0 ? ('+'+i) : String(i);
-    html += '<div class="trigger-seuil-cell axe '+cls+current+'">'+label+'</div>';
-  }
-  // Ligne 2 : seuils de base
-  for(let i=-5; i<=5; i++){
-    const current = (i===axe) ? ' current' : '';
-    html += '<div class="trigger-seuil-cell seuil'+current+'">'+getSeuil(i)+'</div>';
-  }
-  cont.innerHTML = html;
-
-  // Info compacte du seuil actuel (base)
-  const infoEl = document.getElementById('jet-seuil-info');
-  if(infoEl){
-    let etat;
-    if(axe === 0) etat = 'Équilibre';
-    else if(axe < 0) etat = 'Glaciation '+Math.abs(axe);
-    else etat = 'Embrasement '+axe;
-    const seuilBase = getSeuil(axe);
-    const seuilCrit = getSeuilWithBias(axe, 'crit');
-    const seuilMald = getSeuilWithBias(axe, 'mald');
-    const probaCrit = Math.round(((21 - seuilCrit) / 20) * 100);
-    const probaMald = Math.round(((21 - seuilMald) / 20) * 100);
-    infoEl.innerHTML = 'Position : <strong>'+etat+'</strong> &middot; Seuil de base <strong>'+seuilBase+'+</strong> &middot; '
-      +'<span style="color:rgba(138,172,204,0.95);">Mald : '+seuilMald+'+ ('+probaMald+'%)</span> &middot; '
-      +'<span style="color:#e06030;">Crit : '+seuilCrit+'+ ('+probaCrit+'%)</span>';
-  }
+  // L'élément d'info affiché ici a été retiré de la fiche : cette fonction
+  // est conservée vide pour ne pas casser les appels existants (sceauRender,
+  // axeJetAffinite, effetRoll).
 }
 
 function axeJetAffinite(mode) {
   const n = Math.ceil(Math.random()*20);
-  const axe = sceauData.axe;
-  const seuil = getSeuilWithBias(axe, mode);
-  const success = (n >= seuil);
-  const res = AFFINITE_RESULTS[mode][success ? 'success' : 'fail'];
+  const palier = getPalier(n);
+
+  // Récupération du résultat (cas spécial : Nova si Mald et n=20)
+  let res;
+  if(mode === 'mald' && n === 20) {
+    res = AFFINITE_RESULTS.mald.nova;
+  } else {
+    res = AFFINITE_RESULTS[mode][palier];
+  }
 
   const el = document.getElementById('affinite-result');
   if(!el || !res) return;
 
-  // Determiner la classe visuelle
-  let cls = 'affinite-result visible ';
-  if(success){
-    cls += 'success';
-  } else {
-    // Echec : la bascule depend du mode
-    // Crit echec -> Feu deborde, Mald echec -> Glace s'engouffre
-    if(mode === 'crit') cls += 'fail-feu';
-    else cls += 'fail-glace';
-  }
-  el.className = cls;
+  // Classe visuelle : intensité par palier (feu-1/2/3 ou glace-1/2/3)
+  const couleurClass = (mode === 'crit') ? ('feu-'+palier) : ('glace-'+palier);
+  el.className = 'affinite-result visible ' + couleurClass;
 
-  const modeLabel = (mode === 'crit') ? 'Critique (biais Feu)' : 'Maladresse (biais Glace)';
-  document.getElementById('affinite-dice').innerHTML = 'd20 = <strong>'+n+'</strong> / seuil '+seuil+' &middot; '+modeLabel;
+  const modeLabel = (mode === 'crit') ? 'Critique (Feu)' : 'Maladresse (Glace)';
+  const palierLabel = 'Palier ' + palier + (mode === 'mald' && n === 20 ? ' + Nova' : '');
+  document.getElementById('affinite-dice').innerHTML =
+    'd20 = <strong>'+n+'</strong> &middot; '+palierLabel+' &middot; '+modeLabel;
   document.getElementById('affinite-palier').textContent = res.palier;
   document.getElementById('affinite-name').textContent = res.name;
-  document.getElementById('affinite-desc').textContent = res.desc;
+  document.getElementById('affinite-desc').innerHTML = res.desc;
 
-  // ════ APPLICATION AUTOMATIQUE DU DÉCALAGE D'AXE ════
-  // Crit succès : +1 vers Feu (la Critique reste maîtrisée mais pousse au Feu)
-  // Crit échec  : +2 vers Feu (l'Embrasement déborde)
-  // Mald succès : +1 vers Glace (la Maladresse reste maîtrisée mais pousse à la Glace)
-  // Mald échec  : +2 vers Glace (la Glaciation s'engouffre)
-  let delta = 0;
-  if(mode === 'crit') delta = success ? 1 : 2;       // Feu = positif
-  else                delta = success ? -1 : -2;     // Glace = négatif
-
+  // ════ APPLICATION AUTOMATIQUE DU DÉPLACEMENT D'AXE ════
+  // Palier 1 → ±1 ; Palier 2 → ±2 ; Palier 3 (et Nova) → ±3
+  const delta = (mode === 'crit' ? palier : -palier);
   const ancien = sceauData.axe;
   sceauData.axe = Math.max(-5, Math.min(5, sceauData.axe + delta));
   const applique = sceauData.axe - ancien;
 
-  // Flash visuel sur la cellule courante de la table des seuils
+  // Flash visuel : indicateur du déplacement d'axe
   if(applique !== 0){
     sceauSave();
     renderAxe();
     renderSeuilTable();
-    // Petit indicateur visuel du déplacement dans le résultat
     const flash = document.createElement('div');
     const sens     = applique > 0 ? 'Embrasement' : 'Glaciation';
     const couleur  = applique > 0 ? '#e06030' : 'rgba(138,172,204,0.95)';
@@ -1633,7 +1614,6 @@ function axeJetAffinite(mode) {
     const border   = applique > 0 ? 'rgba(224,96,48,0.4)' : 'rgba(138,172,204,0.4)';
     flash.style.cssText = 'font-family:Cinzel,serif;font-size:0.62rem;letter-spacing:0.1em;margin-top:0.45rem;padding:0.3rem 0.45rem;border-radius:1px;text-align:center;color:'+couleur+';background:'+bg+';border:1px solid '+border+';';
     flash.textContent = 'Axe déplacé : '+(applique>0?'+':'')+applique+' vers '+sens.toLowerCase()+' (position : '+(sceauData.axe>0?'+':'')+sceauData.axe+')';
-    // Retirer un éventuel flash précédent
     const ancienFlash = el.querySelector('.axe-flash');
     if(ancienFlash) ancienFlash.remove();
     flash.classList.add('axe-flash');
@@ -1719,17 +1699,17 @@ function effetRoll(type) {
     el.className = 'effet-result '+type+' visible';
   }
   // ════ APPLICATION AUTOMATIQUE DES EFFETS QUI MODIFIENT L'AXE ════
-  // Feu n=6 (Surge pur) : axe descend de 2 vers la Glaciation
-  if(type==='feu' && n===6){
+  // Feu n=9 (Surge pur) : axe descend de 2 vers la Glaciation
+  if(type==='feu' && n===9){
     sceauData.axe = Math.max(-5, sceauData.axe - 2);
     sceauSave(); renderAxe(); renderSeuilTable();
   }
-  // Feu n=10 (Bascule totale) : axe passe directement a -3 (Glaciation 3)
+  // Feu n=10 (Bascule totale) : axe passe directement à -3 (Glaciation 3)
   if(type==='feu' && n===10){
     sceauData.axe = -3;
     sceauSave(); renderAxe(); renderSeuilTable();
   }
-  // Glace n=10 (Rupture inverse) : axe remis a 0
+  // Glace n=10 (Rupture inverse) : axe remis à 0
   if(type==='glace' && n===10){
     sceauData.axe = 0;
     sceauSave(); renderAxe(); renderSeuilTable();
