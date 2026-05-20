@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kevan Dolseicht — Répurgateur</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:#09080c; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
+    --GLD:#B8922A; --VIO:#4a3a1a; --VIO2:#a07830; --GRN:#5a6040; --SUB:#5a5040;
+    --FIRE:#d96a2c; --FIRE-DEEP:#7a2a10;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--ink); color:var(--parchment); font-family:'Crimson Text',serif; min-height:100vh; }
+  body::before { content:''; position:fixed; inset:0;
+    background: radial-gradient(ellipse at 30% 0%, rgba(122,42,16,0.10) 0%, transparent 55%),
+                radial-gradient(ellipse at 70% 100%, rgba(74,58,26,0.08) 0%, transparent 50%);
+    pointer-events:none; z-index:0; }
+
+  nav { position:sticky; top:0; z-index:100; background:rgba(9,8,12,0.93); backdrop-filter:blur(8px); border-bottom:1px solid rgba(160,120,48,0.2); padding:0.6rem 1.5rem; display:flex; align-items:center; gap:1rem; }
+  nav a { color:var(--SUB); text-decoration:none; font-size:0.82rem; font-style:italic; transition:color 0.2s; }
+  nav a:hover { color:var(--GLD); }
+  .nav-current { color:var(--VIO2) !important; font-style:normal; font-family:'Cinzel',serif; font-size:0.82rem; }
+  .nav-sep { color:var(--SUB); opacity:0.3; }
+
+  .layout { position:relative; z-index:1; max-width:1050px; margin:0 auto; padding:1.5rem 1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media(max-width:700px){ .layout { grid-template-columns:1fr; } }
+
+  .perso-header { grid-column:1/-1; display:flex; align-items:flex-end; gap:1.5rem; padding-bottom:1.25rem; border-bottom:1px solid rgba(160,120,48,0.18); flex-wrap:wrap; }
+  .perso-avatar { width:58px; height:58px; border-radius:2px; background:linear-gradient(135deg,rgba(122,42,16,0.3),rgba(74,58,26,0.25)); border:1px solid rgba(160,120,48,0.38); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .perso-info h1 { font-family:'Cinzel',serif; font-size:2rem; font-weight:700; line-height:1; letter-spacing:0.05em; }
+  .perso-info .sub { font-style:italic; color:var(--VIO2); font-size:0.95rem; margin-top:0.2rem; }
+  .perso-info .player { color:var(--SUB); font-size:0.78rem; margin-top:0.15rem; letter-spacing:0.05em; }
+  .perso-meta { margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:0.3rem; font-size:0.8rem; color:var(--SUB); font-style:italic; }
+
+  .card { background:rgba(9,8,12,0.65); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:1.1rem; }
+  .card.rte { border-color:rgba(160,120,48,0.18); }
+  .card-title { font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.9rem; display:flex; align-items:center; gap:0.5rem; }
+  .card-title::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.05); }
+  .card-title.gld { color:var(--GLD); }
+  .card-title.vio { color:var(--VIO2); }
+  .card-title.grn { color:var(--GRN); }
+  .card-title.red { color:#c0392b; }
+  .card-title.fire { color:var(--FIRE); }
+  .full { grid-column:1/-1; }
+
+  .editable { background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.1rem 0.2rem; width:100%; transition:border-color 0.15s; }
+  .editable:focus { outline:none; border-bottom-color:var(--VIO2); }
+  .editable-num { background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--GLD); font-family:'Cinzel',serif; font-size:0.95rem; font-weight:600; text-align:center; width:44px; padding:0.1rem 0; transition:border-color 0.15s; }
+  .editable-num:focus { outline:none; border-bottom-color:var(--GLD); }
+
+  .stats-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:0.45rem; }
+  @media(max-width:500px){ .stats-grid { grid-template-columns:repeat(3,1fr); } }
+  .stat-box { background:rgba(74,58,26,0.07); border:1px solid rgba(74,58,26,0.15); border-radius:2px; padding:0.45rem 0.3rem; text-align:center; }
+  .stat-label { font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); display:block; margin-bottom:0.2rem; }
+  .stat-total { font-family:'Cinzel',serif; font-size:1.3rem; font-weight:700; color:var(--VIO2); display:block; margin-top:0.1rem; }
+  .stat-bonus { font-size:0.6rem; color:var(--SUB); display:block; margin-top:0.05rem; }
+  .stat-edit-row { display:flex; gap:0.25rem; justify-content:center; align-items:center; margin-top:0.3rem; }
+  .stat-edit-row .editable-num { font-size:0.78rem; width:34px; color:var(--parchment-dark); border-bottom-color:rgba(255,255,255,0.06); }
+  .stat-edit-row .plus { color:var(--VIO2); font-size:0.65rem; }
+
+  .res-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.75rem; }
+  .res-box { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:0.6rem; text-align:center; }
+  .res-label { font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.3rem; display:block; }
+  .res-val { font-family:'Cinzel',serif; font-size:1.5rem; line-height:1; display:block; }
+  .res-sub { font-size:0.7rem; color:var(--SUB); margin-top:0.1rem; display:block; }
+  .wounds-ctrl { display:flex; align-items:center; gap:0.5rem; justify-content:center; margin-top:0.5rem; }
+  .btn-small { width:30px; height:30px; border-radius:2px; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+  .btn-wound { background:rgba(139,26,26,0.2); border:1px solid rgba(139,26,26,0.4); color:#e08080; }
+  .btn-wound:hover { background:rgba(139,26,26,0.35); }
+  .btn-heal { background:rgba(90,96,64,0.15); border:1px solid rgba(90,96,64,0.35); color:var(--GRN); }
+  .btn-heal:hover { background:rgba(90,96,64,0.3); }
+  .fortune-pip { width:24px; height:24px; border-radius:50%; border:1.5px solid rgba(184,146,42,0.5); cursor:pointer; transition:all 0.15s; background:transparent; }
+  .fortune-pip.active { background:var(--GLD); box-shadow:0 0 5px rgba(184,146,42,0.4); border-color:var(--GLD); }
+
+  .money-row { display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap; margin-top:0.25rem; }
+  .money-item { display:flex; flex-direction:column; align-items:center; gap:0.1rem; }
+  .money-val { font-family:'Cinzel',serif; font-size:1.4rem; color:var(--GLD); }
+  .money-label { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); }
+  .money-btns { display:flex; gap:0.2rem; margin-top:0.2rem; }
+  .money-btn { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); color:var(--SUB); cursor:pointer; font-size:0.7rem; width:20px; height:20px; border-radius:1px; transition:all 0.15s; display:flex; align-items:center; justify-content:center; }
+  .money-btn:hover { color:var(--GLD); border-color:rgba(184,146,42,0.3); }
+
+  .skill-list { list-style:none; }
+  .skill-list li { display:flex; align-items:center; padding:0.28rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.86rem; gap:0.4rem; }
+  .skill-list li:last-child { border-bottom:none; }
+  .skill-name { color:var(--parchment-dark); flex:1; }
+  .skill-aug .editable-num { width:38px; font-size:0.82rem; color:var(--VIO2); border-bottom-color:rgba(160,120,48,0.15); }
+  .skill-total { font-family:'Cinzel',serif; color:var(--GLD); font-size:0.9rem; font-weight:600; min-width:28px; text-align:right; }
+
+  .talent-list { list-style:none; }
+  .talent-list li { padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.87rem; display:flex; align-items:flex-start; gap:0.5rem; }
+  .talent-list li:last-child { border-bottom:none; }
+  .talent-content { flex:1; }
+  .talent-name { color:var(--VIO2); font-weight:600; }
+  .talent-desc { color:var(--SUB); font-size:0.8rem; font-style:italic; display:block; margin-top:0.1rem; }
+  .talent-del { color:rgba(139,26,26,0.5); cursor:pointer; font-size:0.75rem; flex-shrink:0; padding:0.1rem 0.2rem; transition:color 0.15s; }
+  .talent-del:hover { color:#e08080; }
+  .talent-form { display:none; background:rgba(160,120,48,0.06); border:1px solid rgba(160,120,48,0.2); border-radius:2px; padding:0.6rem; margin-top:0.5rem; gap:0.4rem; flex-direction:column; }
+  .talent-form.visible { display:flex; }
+
+  .armor-table { width:100%; border-collapse:collapse; font-size:0.82rem; margin-bottom:0.75rem; }
+  .armor-table th { text-align:left; color:var(--SUB); font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.2rem 0.4rem 0.4rem; font-weight:400; border-bottom:1px solid rgba(255,255,255,0.05); }
+  .armor-table td { padding:0.25rem 0.4rem; border-bottom:1px solid rgba(255,255,255,0.03); color:var(--parchment-dark); vertical-align:middle; }
+  .armor-pa-input { font-family:'Cinzel',serif; color:var(--GLD); font-weight:600; text-align:center; background:transparent; border:none; border-bottom:1px solid rgba(184,146,42,0.15); width:36px; font-size:0.9rem; padding:0.05rem 0; }
+  .armor-pa-input:focus { outline:none; border-bottom-color:var(--GLD); }
+
+  .weapon-item { padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.04); display:flex; align-items:flex-start; gap:0.5rem; }
+  .weapon-item:last-child { border-bottom:none; }
+  .weapon-content { flex:1; }
+  .weapon-name { color:var(--parchment); font-size:0.9rem; font-weight:600; }
+  .weapon-stats { display:flex; gap:0.75rem; margin-top:0.2rem; flex-wrap:wrap; }
+  .weapon-stat { font-size:0.72rem; }
+  .weapon-stat-label { color:var(--SUB); }
+  .weapon-stat-val { color:var(--GLD); font-family:'Cinzel',serif; }
+  .weapon-del { color:rgba(139,26,26,0.4); cursor:pointer; font-size:0.75rem; flex-shrink:0; padding:0.1rem 0.2rem; transition:color 0.15s; }
+  .weapon-del:hover { color:#e08080; }
+  .weapon-form { display:none; background:rgba(184,146,42,0.04); border:1px solid rgba(184,146,42,0.15); border-radius:2px; padding:0.65rem; margin-top:0.5rem; flex-direction:column; gap:0.4rem; }
+  .weapon-form.visible { display:flex; }
+  .weapon-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.4rem; }
+
+  .inv-item { display:flex; align-items:center; padding:0.28rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.85rem; gap:0.4rem; }
+  .inv-item:last-child { border-bottom:none; }
+  .inv-name { color:var(--parchment-dark); flex:1; }
+  .inv-detail { font-size:0.72rem; color:var(--SUB); font-style:italic; white-space:nowrap; }
+  .inv-del { color:rgba(139,26,26,0.4); cursor:pointer; font-size:0.72rem; flex-shrink:0; transition:color 0.15s; }
+  .inv-del:hover { color:#e08080; }
+  .inv-form { display:none; background:rgba(90,96,64,0.05); border:1px solid rgba(90,96,64,0.15); border-radius:2px; padding:0.6rem; margin-top:0.5rem; flex-direction:column; gap:0.35rem; }
+  .inv-form.visible { display:flex; }
+
+  .xp-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; text-align:center; margin-bottom:0.9rem; }
+  .xp-box { background:rgba(160,120,48,0.07); border:1px solid rgba(160,120,48,0.15); border-radius:2px; padding:0.5rem; }
+  .xp-label { font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--VIO2); display:block; margin-bottom:0.2rem; opacity:0.8; }
+  .xp-val-input { font-family:'Cinzel',serif; font-size:1.2rem; color:var(--parchment); background:transparent; border:none; border-bottom:1px solid rgba(160,120,48,0.2); text-align:center; width:70px; }
+  .xp-val-input:focus { outline:none; border-bottom-color:var(--VIO2); }
+
+  .ambition-label { font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--VIO); margin-bottom:0.2rem; display:block; opacity:0.9; }
+  .trait-block { font-size:0.86rem; line-height:1.55; color:var(--parchment-dark); margin-bottom:0.5rem; }
+  .trait-line { font-size:0.85rem; line-height:1.6; color:var(--parchment-dark); padding:0.1rem 0; }
+  .trait-line.plus { color:#8a9060; }
+  .trait-line.minus { color:#c07060; }
+
+  .cet-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; }
+  .cet-box { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:0.5rem 0.6rem; }
+  .cet-label { font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.35rem; display:block; font-family:'Cinzel',serif; }
+  .cet-input { width:100%; background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.85rem; padding:0.2rem 0; resize:none; min-height:48px; line-height:1.4; }
+  .cet-input:focus { outline:none; border-bottom-color:var(--VIO2); }
+
+  .notes-area { width:100%; background:rgba(9,8,12,0.5); border:1px solid rgba(255,255,255,0.07); border-radius:2px; color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.65rem; resize:vertical; min-height:70px; line-height:1.5; }
+  .notes-area:focus { outline:none; border-color:rgba(160,120,48,0.3); }
+  .btn-save { background:rgba(160,120,48,0.12); border:1px solid rgba(160,120,48,0.35); color:var(--VIO2); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.35rem 0.75rem; border-radius:2px; cursor:pointer; margin-top:0.5rem; transition:background 0.15s; }
+  .btn-save:hover { background:rgba(160,120,48,0.22); }
+  .save-confirm { font-size:0.78rem; color:var(--GRN); margin-left:0.75rem; opacity:0; transition:opacity 0.5s; }
+
+  .histo { font-size:0.87rem; line-height:1.7; color:var(--parchment-dark); }
+  .histo p { margin-bottom:0.65rem; }
+  .histo p:last-child { margin-bottom:0; }
+
+  .pip { width:26px; height:26px; border-radius:3px; border:1.5px solid rgba(184,146,42,0.35); cursor:pointer; transition:all 0.15s; background:transparent; display:flex; align-items:center; justify-content:center; color:rgba(184,146,42,0.2); }
+  .pip.on { background:rgba(184,146,42,0.12); border-color:var(--GLD); color:var(--GLD); box-shadow:0 0 4px rgba(184,146,42,0.25); }
+  .pip svg { pointer-events:none; }
+
+  .armor-piece { padding:0.45rem 0; border-bottom:1px solid rgba(255,255,255,0.04); display:flex; align-items:flex-start; gap:0.5rem; }
+  .armor-piece:last-child { border-bottom:none; }
+  .armor-piece-content { flex:1; }
+  .armor-piece-name { color:var(--parchment); font-size:0.88rem; font-weight:600; }
+  .armor-piece-stats { display:flex; gap:0.6rem; margin-top:0.15rem; flex-wrap:wrap; }
+  .astat { font-size:0.72rem; }
+  .astat-l { color:var(--SUB); }
+  .astat-v { color:var(--GLD); font-family:'Cinzel',serif; }
+
+  .io-bar { display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; padding:0.6rem 0.9rem; background:rgba(36,41,47,0.6); border:1px solid rgba(255,255,255,0.07); border-radius:2px; margin-bottom:0.5rem; }
+  .io-btn { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.32rem 0.9rem; border-radius:2px; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .io-btn-export { background:rgba(36,160,96,0.15); border:1px solid rgba(36,160,96,0.4); color:#4caf82; }
+  .io-btn-export:hover { background:rgba(36,160,96,0.28); }
+  .io-btn-import { background:rgba(184,146,42,0.1); border:1px solid rgba(184,146,42,0.35); color:var(--GLD); }
+  .io-btn-import:hover { background:rgba(184,146,42,0.22); }
+  .io-status { font-size:0.75rem; font-style:italic; color:var(--SUB); flex:1; }
+  .io-status.ok { color:#4caf82; }
+  .io-status.err { color:#e05050; }
+
+  .form-panel { display:none; border:1px solid rgba(160,120,48,0.2); border-radius:2px; padding:0.65rem; margin-top:0.5rem; flex-direction:column; gap:0.4rem; background:rgba(160,120,48,0.05); }
+  .form-panel.visible { display:flex; }
+  .sort-form-input { background:rgba(160,120,48,0.07); border:1px solid rgba(160,120,48,0.2); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.3rem 0.5rem; border-radius:1px; width:100%; }
+  .sort-form-input:focus { outline:none; border-color:var(--VIO2); }
+  .sort-form-actions { display:flex; gap:0.5rem; margin-top:0.3rem; }
+  .btn-add { font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.35rem 0.75rem; border-radius:2px; cursor:pointer; transition:all 0.15s; display:inline-flex; align-items:center; gap:0.3rem; }
+  .btn-add-vio { background:rgba(160,120,48,0.1); border:1px solid rgba(160,120,48,0.4); color:var(--VIO2); }
+  .btn-add-vio:hover { background:rgba(160,120,48,0.22); }
+  .btn-add-gld { background:rgba(184,146,42,0.08); border:1px solid rgba(184,146,42,0.3); color:var(--GLD); }
+  .btn-add-gld:hover { background:rgba(184,146,42,0.18); }
+  .btn-add-fire { background:rgba(217,106,44,0.08); border:1px solid rgba(217,106,44,0.35); color:var(--FIRE); }
+  .btn-add-fire:hover { background:rgba(217,106,44,0.18); }
+  .btn-cancel { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); color:var(--SUB); font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.3rem 0.6rem; border-radius:2px; cursor:pointer; }
+
+  .editable-field { cursor:pointer; border-bottom:1px dashed transparent; transition:border-color 0.15s; display:inline-block; min-width:20px; }
+  .editable-field:hover { border-bottom-color:rgba(255,255,255,0.2); }
+  .editable-field:focus { outline:none; border-bottom:1px solid var(--GLD); background:rgba(184,146,42,0.06); border-radius:1px; }
+  .editable-field-area { cursor:pointer; border-bottom:1px dashed transparent; transition:border-color 0.15s; display:inline-block; min-width:60px; width:100%; background:transparent; color:inherit; font-family:inherit; font-size:inherit; font-style:inherit; resize:none; min-height:1.4em; }
+  .editable-field-area:hover { border-bottom-color:rgba(255,255,255,0.2); }
+  .editable-field-area:focus { outline:none; border-bottom:1px solid var(--GLD); background:rgba(184,146,42,0.04); border-radius:1px; }
+
+  /* ══ DOCTRINE DU FEU JUSTE ══ */
+  .df-card { background:rgba(9,8,12,0.78); border:1px solid rgba(217,106,44,0.28); border-radius:2px; padding:1.1rem; grid-column:1/-1; }
+
+  .df-tabs { display:flex; gap:0.3rem; margin-bottom:0.9rem; flex-wrap:wrap; }
+  .df-tab { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; padding:0.28rem 0.75rem; border-radius:1px; cursor:pointer; transition:all 0.15s; border:1px solid rgba(255,255,255,0.07); background:transparent; color:var(--SUB); }
+  .df-tab.active { border-color:rgba(217,106,44,0.5); color:var(--FIRE); background:rgba(217,106,44,0.08); }
+  .df-panel { display:none; }
+  .df-panel.active { display:block; }
+
+  .df-stats { display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:0.85rem; }
+  .df-stat-box { background:rgba(217,106,44,0.07); border:1px solid rgba(217,106,44,0.15); border-radius:2px; padding:0.4rem 0.7rem; text-align:center; }
+  .df-stat-val { font-family:'Cinzel',serif; font-size:1.2rem; color:var(--FIRE); display:block; }
+  .df-stat-label { font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); }
+
+  /* ── GRIMOIRE DE JUGEMENTS ── */
+  .jug-intro { font-size:0.75rem; color:var(--SUB); font-style:italic; margin-bottom:0.7rem; line-height:1.55; }
+  .jug-intro strong { color:var(--FIRE); font-style:normal; }
+  .jug-item { border:1px solid rgba(255,255,255,0.06); border-radius:2px; margin-bottom:0.45rem; overflow:hidden; transition:border-color 0.18s; }
+  .jug-item.epargne   { border-left:3px solid rgba(94,160,80,0.5); }
+  .jug-item.purge     { border-left:3px solid rgba(192,80,60,0.55); }
+  .jug-item.ignore    { border-left:3px solid rgba(160,120,48,0.45); }
+  .jug-item.delegue   { border-left:3px solid rgba(74,90,122,0.45); }
+  .jug-item.epuise    { opacity:0.45; }
+  .jug-header { display:flex; align-items:center; gap:0.5rem; padding:0.45rem 0.65rem; cursor:pointer; flex-wrap:wrap; }
+  .jug-titre { font-family:'Cinzel',serif; font-size:0.82rem; font-weight:600; color:var(--parchment); flex:1; min-width:80px; }
+  .jug-type-badge { font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.08rem 0.32rem; border-radius:1px; border:1px solid; white-space:nowrap; }
+  .jug-type-badge.epargne   { border-color:rgba(94,160,80,0.4); color:#8ab870; background:rgba(94,160,80,0.06); }
+  .jug-type-badge.purge     { border-color:rgba(192,80,60,0.45); color:#c07060; background:rgba(192,80,60,0.07); }
+  .jug-type-badge.ignore    { border-color:rgba(160,120,48,0.45); color:var(--VIO2); background:rgba(160,120,48,0.07); }
+  .jug-type-badge.delegue   { border-color:rgba(74,90,122,0.4); color:#8aaccc; background:rgba(74,90,122,0.06); }
+  .jug-session { font-family:'Cinzel',serif; font-size:0.6rem; color:rgba(184,146,42,0.6); white-space:nowrap; }
+  .jug-expand { font-size:0.6rem; color:var(--SUB); transition:transform 0.15s; }
+  .jug-item.open .jug-expand { transform:rotate(180deg); }
+  .jug-body { display:none; padding:0.5rem 0.7rem; border-top:1px solid rgba(255,255,255,0.04); font-size:0.82rem; color:var(--parchment-dark); line-height:1.5; }
+  .jug-item.open .jug-body { display:block; }
+  .jug-desc { margin-bottom:0.4rem; }
+  .jug-precedent { background:rgba(217,106,44,0.06); border-left:2px solid rgba(217,106,44,0.4); padding:0.35rem 0.55rem; font-style:italic; font-size:0.78rem; color:var(--parchment); margin-bottom:0.4rem; border-radius:1px; }
+  .jug-actions { display:flex; gap:0.32rem; flex-wrap:wrap; margin-top:0.4rem; padding-top:0.35rem; border-top:1px solid rgba(255,255,255,0.04); }
+  .jug-btn { font-family:'Cinzel',serif; font-size:0.57rem; letter-spacing:0.08em; text-transform:uppercase; padding:0.2rem 0.42rem; border-radius:1px; cursor:pointer; transition:all 0.15s; }
+  .jug-btn-invoke { background:rgba(217,106,44,0.08); border:1px solid rgba(217,106,44,0.3); color:var(--FIRE); }
+  .jug-btn-invoke:hover { background:rgba(217,106,44,0.18); }
+  .jug-btn-restore { background:rgba(94,160,80,0.06); border:1px solid rgba(94,160,80,0.25); color:#8ab870; }
+  .jug-btn-restore:hover { background:rgba(94,160,80,0.16); }
+  .jug-btn-del { background:transparent; border:1px solid rgba(139,26,26,0.14); color:rgba(192,112,112,0.5); }
+  .jug-btn-del:hover { background:rgba(139,26,26,0.1); color:#e08080; }
+  .jug-empty { font-size:0.82rem; color:var(--SUB); font-style:italic; padding:0.3rem 0; }
+
+  /* ── ORDRE DE MARCHE ── */
+  .om-intro { font-size:0.75rem; color:var(--SUB); font-style:italic; margin-bottom:0.7rem; line-height:1.55; }
+  .om-intro strong { color:var(--FIRE); font-style:normal; }
+  .om-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-bottom:0.7rem; }
+  @media(max-width:600px){ .om-grid { grid-template-columns:1fr; } }
+  .om-role { border:1px solid rgba(217,106,44,0.18); border-radius:2px; padding:0.55rem 0.7rem; background:rgba(217,106,44,0.04); transition:border-color 0.2s; }
+  .om-role.assigned { border-color:rgba(217,106,44,0.5); background:rgba(217,106,44,0.09); }
+  .om-role-title { font-family:'Cinzel',serif; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--FIRE); margin-bottom:0.25rem; }
+  .om-role-effect { font-size:0.74rem; color:var(--SUB); font-style:italic; margin-bottom:0.4rem; line-height:1.45; }
+  .om-role-assignee { display:flex; align-items:center; gap:0.4rem; }
+  .om-role-assignee select { flex:1; background:rgba(9,8,12,0.5); border:1px solid rgba(217,106,44,0.2); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.82rem; padding:0.22rem 0.4rem; border-radius:1px; }
+  .om-role-assignee select:focus { outline:none; border-color:var(--FIRE); }
+  .om-deploy-box { background:rgba(217,106,44,0.06); border:1px solid rgba(217,106,44,0.22); border-radius:2px; padding:0.7rem 0.85rem; margin-top:0.4rem; }
+  .om-deploy-title { font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--FIRE); margin-bottom:0.45rem; }
+  .om-deploy-used { font-size:0.75rem; color:#c07070; font-style:italic; padding:0.3rem 0; }
+  .om-deploy-log { list-style:none; margin-top:0.5rem; }
+  .om-deploy-log li { font-size:0.77rem; color:var(--parchment-dark); padding:0.3rem 0; border-bottom:1px solid rgba(255,255,255,0.04); display:flex; gap:0.5rem; align-items:baseline; }
+  .om-deploy-log li:last-child { border-bottom:none; }
+  .om-deploy-log-sess { font-family:'Cinzel',serif; font-size:0.6rem; color:rgba(217,106,44,0.6); white-space:nowrap; flex-shrink:0; }
+  .om-deploy-log-del { color:rgba(139,26,26,0.35); cursor:pointer; font-size:0.65rem; flex-shrink:0; transition:color 0.15s; margin-left:auto; }
+  .om-deploy-log-del:hover { color:#e08080; }
+
+  /* Formulaires */
+  .df-form { display:none; margin-top:0.5rem; background:rgba(217,106,44,0.06); border:1px solid rgba(217,106,44,0.2); border-radius:2px; padding:0.65rem; flex-direction:column; gap:0.38rem; }
+  .df-form.visible { display:flex; }
+  .df-form input, .df-form textarea, .df-form select { background:rgba(217,106,44,0.06); border:1px solid rgba(217,106,44,0.2); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.86rem; padding:0.26rem 0.42rem; border-radius:1px; width:100%; }
+  .df-form input:focus, .df-form textarea:focus, .df-form select:focus { outline:none; border-color:var(--FIRE); }
+  .df-form textarea { resize:vertical; min-height:52px; }
+  .df-form-row { display:grid; grid-template-columns:1fr 1fr; gap:0.38rem; }
+  .df-form-label { font-size:0.57rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--FIRE); opacity:0.85; display:block; margin-bottom:0.1rem; }
+  .df-form-actions { display:flex; gap:0.4rem; margin-top:0.1rem; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html">&#8592; Accueil</a>
+  <span class="nav-sep">&#183;</span>
+  <span class="nav-current">Kevan</span>
+</nav>
+
+<div class="layout">
+
+  <div class="io-bar full">
+    <button class="io-btn io-btn-export" onclick="exportJSON()">&#8595; Exporter sauvegarde</button>
+    <button class="io-btn io-btn-import" onclick="document.getElementById('import-input').click()">&#8593; Importer sauvegarde</button>
+    <input type="file" id="import-input" accept=".json" style="display:none" onchange="importJSON(this)" />
+    <span class="io-status" id="io-status"></span>
+  </div>
+
+  <div class="perso-header">
+    <div class="perso-avatar">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 48" width="32" height="32" fill="none">
+        <!-- Marteau Sigmarite stylise + flamme -->
+        <path d="M 20 6 C 21 14 26 16 28 20 L 32 16 C 32 22 35 24 30 28 L 36 26 C 36 31 32 30 30 36 C 26 39 22 41 20 41 C 18 41 14 39 10 36 C 8 30 4 31 4 26 L 10 28 C 5 24 8 22 8 16 L 12 20 C 14 16 19 14 20 6 Z" fill="#d96a2c" opacity="0.55"/>
+        <!-- Manche de marteau -->
+        <line x1="20" y1="14" x2="20" y2="34" stroke="#B8922A" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
+        <!-- Tete de marteau -->
+        <rect x="13" y="22" width="14" height="6" rx="0.5" fill="#a07830" stroke="#7a2a10" stroke-width="0.8" opacity="0.9"/>
+        <line x1="20" y1="22" x2="20" y2="28" stroke="#7a2a10" stroke-width="0.7" opacity="0.6"/>
+        <!-- Croix sigmarite legere -->
+        <line x1="20" y1="8" x2="20" y2="14" stroke="#d4c8a8" stroke-width="0.8" opacity="0.7"/>
+        <line x1="17" y1="11" x2="23" y2="11" stroke="#d4c8a8" stroke-width="0.8" opacity="0.7"/>
+      </svg>
+    </div>
+    <div class="perso-info">
+      <h1>Kevan Dolseicht</h1>
+      <div class="sub">Repurgateur (Humain) &middot; Itinerant &middot; 1 Interrogateur</div>
+      <div class="player">Seb (Zeke) &middot; Humain &middot; Age 17 &middot; Argent 1 &middot; Masculin</div>
+    </div>
+    <div class="perso-meta">
+      <div>Taille 1m85 &middot; Poids 80 kg</div>
+      <div>Chatain clair / blond courts, imberbe</div>
+      <div style="color:var(--FIRE);font-size:0.75rem;font-style:normal;">Marrons clairs, fin mais athletique</div>
+    </div>
+  </div>
+
+
+  <div class="card rte full">
+    <div class="card-title vio">Caracteristiques</div>
+    <div class="stats-grid" id="stats-grid"></div>
+    <div style="font-size:0.7rem;color:var(--SUB);margin-top:0.6rem;font-style:italic;">Init = valeur de depart &middot; Avance = points depenses &middot; Total = calcule automatiquement</div>
+  </div>
+
+
+  <div class="card rte">
+    <div class="card-title red">Etat &amp; Ressources</div>
+    <div class="res-grid">
+      <div class="res-box">
+        <span class="res-label">Blessures</span>
+        <span class="res-val" id="wounds-cur">14</span>
+        <span class="res-sub">/ <input type="number" id="w-max-input" value="14" min="1" max="99" onchange="updateWoundsMax(this.value)" style="background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.12);color:var(--SUB);font-family:'Cinzel',serif;font-size:0.7rem;width:28px;text-align:center;padding:0;cursor:pointer;" /> max</span>
+        <div class="wounds-ctrl">
+          <button class="btn-small btn-wound" onclick="changeWound(-1)">&#8722;</button>
+          <button class="btn-small btn-heal" onclick="changeWound(1)">+</button>
+        </div>
+      </div>
+      <div class="res-box">
+        <span class="res-label">Mouvement</span>
+        <span class="res-val">4</span>
+        <span class="res-sub">cases / tour</span>
+      </div>
+    </div>
+    <div style="margin-bottom:0.6rem;">
+      <div class="card-title" style="color:var(--GLD);margin-bottom:0.4rem;font-size:0.62rem;">Destin &amp; Chance</div>
+      <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Destin</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--GLD);">3</span>
+        </div>
+        <div style="color:var(--SUB);font-size:1rem;">&#8594;</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Chance</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--parchment);" id="chance-val">3</span>
+          <div style="display:flex;gap:0.3rem;" id="chance-track"></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:0.75rem;">
+      <div class="card-title" style="color:var(--VIO2);margin-bottom:0.4rem;font-size:0.62rem;">Resilience &amp; Determination</div>
+      <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Resilience</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--VIO2);">3</span>
+        </div>
+        <div style="color:var(--SUB);font-size:1rem;">&#8594;</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
+          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Determination</span>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--parchment);" id="determ-val">3</span>
+          <div style="display:flex;gap:0.3rem;" id="determ-pips"></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card-title" style="margin-bottom:0.4rem;font-size:0.62rem;">Monnaie <span style="font-weight:400;opacity:0.5;font-family:'Crimson Text',serif;text-transform:none;letter-spacing:0;font-size:0.7rem;">1 Co = 20 Pa &middot; 1 Pa = 12 Sc</span></div>
+      <div class="money-row">
+        <div class="money-item">
+          <span class="money-val" id="money-or">0</span>
+          <span class="money-label">CO</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('or',-1)" title="-1 Co">&#8722;</button>
+            <button class="money-btn" onclick="chMoney('or',1)"  title="+1 Co">+</button>
+          </div>
+        </div>
+        <div class="money-item">
+          <span class="money-val" id="money-argent">10</span>
+          <span class="money-label">PA</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('argent',-1)" title="-1 Pa">&#8722;</button>
+            <button class="money-btn" onclick="chMoney('argent',1)"  title="+1 Pa">+</button>
+          </div>
+        </div>
+        <div class="money-item">
+          <span class="money-val" id="money-cuivre">0</span>
+          <span class="money-label">SC</span>
+          <div class="money-btns">
+            <button class="money-btn" onclick="chMoney('cuivre',-1)" title="-1 Sc">&#8722;</button>
+            <button class="money-btn" onclick="chMoney('cuivre',1)"  title="+1 Sc">+</button>
+          </div>
+        </div>
+      </div>
+      <div id="money-convert-msg" style="font-size:0.68rem;font-style:italic;color:var(--GLD);margin-top:0.35rem;min-height:0.9rem;opacity:0;transition:opacity 0.4s;"></div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-title red">Corruption &middot; Mutations &middot; Etats</div>
+    <div class="cet-grid">
+      <div class="cet-box"><span class="cet-label">Corruption</span><textarea class="cet-input" id="cet-corruption" placeholder="0"></textarea></div>
+      <div class="cet-box"><span class="cet-label">Mutations</span><textarea class="cet-input" id="cet-mutations" placeholder="0"></textarea></div>
+      <div class="cet-box"><span class="cet-label">Etats actifs</span><textarea class="cet-input" id="cet-etats" placeholder="Sonne, Extenue..."></textarea></div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-title gld">Competences de base</div>
+    <ul class="skill-list" id="skills-base-list"></ul>
+  </div>
+
+
+  <div class="card">
+    <div class="card-title vio">Competences avancees</div>
+    <ul class="skill-list" id="skills-adv-list"></ul>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-add-vio" onclick="toggleAdvForm()">+ Ajouter</button>
+      <div class="talent-form" id="adv-form">
+        <input class="sort-form-input" id="adv-name" placeholder="Nom de la competence" />
+        <input class="sort-form-input" id="adv-car" placeholder="Car. (CT, Soc...)" />
+        <input class="sort-form-input" id="adv-aug" placeholder="Aug." type="number" style="width:80px;" />
+        <div class="sort-form-actions">
+          <button class="btn-add btn-add-vio" onclick="addAdvSkill()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleAdvForm()">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-title vio">Talents &amp; Capacites</div>
+    <ul class="talent-list" id="talent-list"></ul>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-add-vio" onclick="toggleTalentForm()">+ Ajouter</button>
+      <div class="talent-form" id="talent-form">
+        <input class="sort-form-input" id="talent-name-new" placeholder="Nom du talent" />
+        <input class="sort-form-input" id="talent-desc-new" placeholder="Description" />
+        <div class="sort-form-actions">
+          <button class="btn-add btn-add-vio" onclick="addTalent()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleTalentForm()">Annuler</button>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:0.75rem;padding-top:0.6rem;border-top:1px solid rgba(255,255,255,0.05);">
+      <div class="card-title" style="color:var(--SUB);margin-bottom:0.5rem;font-size:0.62rem;">Traits raciaux &amp; capacites speciales</div>
+      <ul style="list-style:none;font-size:0.83rem;line-height:1.9;color:var(--parchment-dark);">
+        <li>&middot; <strong style="color:var(--parchment);">Instinct de bourreau</strong> : detecte les failles physiques (vieille blessure, armure mal ajustee) sur test d'Int. +1 DR sur cette cible au combat, dure 1 round (lui et allies s'il le communique).</li>
+        <li>&middot; <strong style="color:var(--parchment);">Perspicace</strong> : +5 Int.</li>
+        <li>&middot; <strong style="color:var(--parchment);">Destinee</strong> : s'il meurt, ce personnage offre 50% de son Experience totale au nouveau personnage cree.</li>
+        <li>&middot; <strong style="color:var(--parchment);">Noblesse</strong> : toujours considere d'un plus haut Statut que les autres, sauf si Noble egalement. Doit etre vetu de facon appropriee.</li>
+        <li>&middot; <strong style="color:var(--parchment);">Lire / Ecrire</strong> : sait lire et ecrire, toute langue parlee.</li>
+        <li>&middot; <strong style="color:var(--parchment);">Guerrier ne</strong> : +5 CC.</li>
+      </ul>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-title gld" style="margin-bottom:0.4rem;font-size:0.62rem;">Pieces d'armure portees</div>
+    <div id="armor-pieces-list"></div>
+    <div style="margin-top:0.3rem;margin-bottom:0.9rem;">
+      <button class="btn-add btn-add-gld" onclick="toggleForm('armor-piece-form')">+ Ajouter une piece</button>
+      <div class="form-panel" id="armor-piece-form">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;">
+          <input class="sort-form-input" id="ap-name" placeholder="Nom" style="grid-column:1/-1;" />
+          <input class="sort-form-input" id="ap-pa"   placeholder="PA" type="number" />
+          <input class="sort-form-input" id="ap-enc"  placeholder="ENC" type="number" />
+          <input class="sort-form-input" id="ap-pen"  placeholder="Penalite (-1 Ag...)" />
+          <input class="sort-form-input" id="ap-attr" placeholder="Attributs" />
+        </div>
+        <div style="display:flex;gap:0.4rem;margin-top:0.3rem;">
+          <button class="btn-add btn-add-gld" onclick="addArmorPiece()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleForm('armor-piece-form')">Annuler</button>
+        </div>
+      </div>
+    </div>
+    <div class="card-title gld" style="margin-top:0.3rem;">Armure par localisation</div>
+    <table class="armor-table">
+      <thead><tr><th>Localisation</th><th>PA</th><th>Loc.</th></tr></thead>
+      <tbody id="armor-body"></tbody>
+    </table>
+    <div class="card-title gld" style="margin-top:0.75rem;margin-bottom:0.5rem;">Armes</div>
+    <div id="weapons-list"></div>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-add-gld" onclick="toggleWeaponForm()">+ Ajouter une arme</button>
+      <div class="weapon-form" id="weapon-form">
+        <div class="weapon-form-grid">
+          <input class="sort-form-input" id="wep-name" placeholder="Nom" />
+          <input class="sort-form-input" id="wep-all" placeholder="Allonge" />
+          <input class="sort-form-input" id="wep-deg" placeholder="Degats" />
+          <input class="sort-form-input" id="wep-enc" placeholder="ENC" />
+          <input class="sort-form-input" id="wep-attr" placeholder="Attributs" style="grid-column:1/-1;" />
+        </div>
+        <div class="sort-form-actions">
+          <button class="btn-add btn-add-gld" onclick="addWeapon()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleWeaponForm()">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <div class="card-title grn">Inventaire</div>
+    <div id="inv-list"></div>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-add-gld" style="border-color:rgba(90,96,64,0.35);color:var(--GRN);background:rgba(90,96,64,0.07);" onclick="toggleInvForm()">+ Ajouter un objet</button>
+      <div class="inv-form" id="inv-form">
+        <input class="sort-form-input" id="inv-name-new" placeholder="Nom de l'objet" />
+        <input class="sort-form-input" id="inv-detail-new" placeholder="Emplacement / Note" />
+        <input class="sort-form-input" id="inv-enc-new" placeholder="ENC" type="number" style="width:80px;" />
+        <div class="sort-form-actions">
+          <button class="btn-add btn-add-gld" style="border-color:rgba(90,96,64,0.35);color:var(--GRN);" onclick="addInvItem()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleInvForm()">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- DOCTRINE DU FEU JUSTE -->
+  <div class="df-card">
+    <div class="card-title fire" style="margin-bottom:0.5rem;">La Doctrine du Feu Juste
+      <span style="font-size:0.62rem;color:var(--SUB);font-style:italic;font-family:'Crimson Text',serif;text-transform:none;letter-spacing:0;margin-left:0.5rem;">mecanique exclusive : Kevan Dolseicht</span>
+    </div>
+    <div style="font-size:0.75rem;color:var(--SUB);font-style:italic;margin-bottom:0.8rem;line-height:1.55;">
+      Deux disciplines entrelacees : la <strong style="color:var(--FIRE);">jurisprudence personnelle</strong> qui se construit jugement apres jugement, et l'<strong style="color:var(--FIRE);">art tactique</strong> du commandement avant un affrontement prepare.
+    </div>
+
+    <!-- STATS GLOBALES -->
+    <div class="df-stats">
+      <div class="df-stat-box"><span class="df-stat-val" id="df-nb-jug">0</span><span class="df-stat-label">Jugements</span></div>
+      <div class="df-stat-box"><span class="df-stat-val" id="df-nb-act">0</span><span class="df-stat-label">Disponibles</span></div>
+      <div class="df-stat-box"><span class="df-stat-val" id="df-nb-deploy">0</span><span class="df-stat-label">Deploiements</span></div>
+    </div>
+
+    <!-- TABS -->
+    <div class="df-tabs">
+      <button class="df-tab active" onclick="dfTab('jug')">Grimoire de Jugements</button>
+      <button class="df-tab" id="df-tab-om" onclick="dfTab('om')">Ordre de Marche</button>
+    </div>
+
+    <!-- PANEL GRIMOIRE DE JUGEMENTS -->
+    <div class="df-panel active" id="df-panel-jug">
+      <div class="jug-intro">
+        Chaque decision morale tranchee — <strong>epargner</strong>, <strong>purger</strong>, <strong>ignorer</strong>, <strong>deleguer</strong> — pose un precedent. Une fois note, ce precedent peut etre <strong>invoque une fois</strong> pour gagner un bonus contextuel sur un jet similaire (Sigmar reconnait sa propre logique). Mais si Kevan agit en contradiction directe avec un de ses precedents, le MJ peut le retourner contre lui : malus, perte de Reputation, friction interieure. La jurisprudence est vivante. Elle te juge autant que tu juges.
+      </div>
+      <div id="jug-list"></div>
+      <button class="btn-add btn-add-fire" style="margin-top:0.4rem;" onclick="dfToggleForm('df-form-jug')">+ Nouveau jugement</button>
+      <div class="df-form" id="df-form-jug">
+        <div>
+          <span class="df-form-label">Titre / Affaire</span>
+          <input id="jug-titre" placeholder="Ex: Le colporteur de Hochsleben, La sorciere des bois..." />
+        </div>
+        <div class="df-form-row">
+          <div>
+            <span class="df-form-label">Type de jugement</span>
+            <select id="jug-type">
+              <option value="epargne">Epargner</option>
+              <option value="purge">Purger</option>
+              <option value="ignore">Ignorer</option>
+              <option value="delegue">Deleguer</option>
+            </select>
+          </div>
+          <div>
+            <span class="df-form-label">Session / Date</span>
+            <input id="jug-session" placeholder="Ex: S3, Hochsleben" />
+          </div>
+        </div>
+        <div>
+          <span class="df-form-label">Contexte de la decision</span>
+          <textarea id="jug-desc" placeholder="Les faits, l'accuse, les circonstances..."></textarea>
+        </div>
+        <div>
+          <span class="df-form-label">Precedent etabli (regle ou principe)</span>
+          <textarea id="jug-precedent" placeholder="Ce que Kevan retient pour la suite. Ex: 'On n'execute pas un homme pour une rumeur.'"></textarea>
+        </div>
+        <div class="df-form-actions">
+          <button class="btn-add btn-add-fire" onclick="dfAddJug()">Consigner</button>
+          <button class="btn-cancel" onclick="dfToggleForm('df-form-jug')">Annuler</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL ORDRE DE MARCHE -->
+    <div class="df-panel" id="df-panel-om">
+      <div class="om-intro">
+        Avant un affrontement prepare, Kevan peut designer un <strong>role tactique</strong> a chaque allie. Chaque role donne un petit avantage cible <em>si le joueur joue effectivement ce role</em>. Pas de bonus automatique : la coordination doit etre reelle. <strong>Une fois par session</strong>, Kevan peut deployer son Ordre de Marche en assignant les roles ci-dessous.
+      </div>
+      <div class="om-grid" id="om-roles-grid"></div>
+      <div class="om-deploy-box">
+        <div class="om-deploy-title">Deploiement de l'Ordre &mdash; 1 fois par session</div>
+        <div id="om-deploy-content"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card full">
+    <div class="card-title vio">Experience &amp; Ambitions</div>
+    <div class="xp-row">
+      <div class="xp-box"><span class="xp-label">Actuelle</span><input class="xp-val-input" id="xp-actuelle" type="number" value="0" onchange="saveAll()" /></div>
+      <div class="xp-box"><span class="xp-label">Depensee</span><input class="xp-val-input" id="xp-depensee" type="number" value="0" onchange="saveAll()" /></div>
+      <div class="xp-box"><span class="xp-label">Totale</span><input class="xp-val-input" id="xp-totale" type="number" value="0" onchange="saveAll()" /></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:0.75rem;">
+      <div>
+        <span class="ambition-label">Ambition courte</span>
+        <div class="trait-block">Progresser et apprendre le plus possible (forme d'impatience).</div>
+        <span class="ambition-label" style="margin-top:0.5rem;">Motivation</span>
+        <div class="trait-block">Reconnaissance, briller par ses actes.</div>
+      </div>
+      <div>
+        <span class="ambition-label">Ambition longue</span>
+        <div class="trait-block">Ne plus avoir besoin de se cacher, pouvoir assumer son heritage.</div>
+        <span class="ambition-label" style="margin-top:0.5rem;">Psychologie</span>
+        <div class="trait-block" style="font-style:italic;color:var(--SUB);">Peurs, folies, phobies, manies...</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div>
+        <div class="trait-line plus">+ Immature mais enthousiaste, appetit sincere pour apprendre.</div>
+        <div class="trait-line plus">+ Eduque, instruit, lit/ecrit tout ce qui se met devant lui.</div>
+        <div class="trait-line plus">+ Devot, droit, pieux dans son rapport a Sigmar.</div>
+        <div class="trait-line plus">+ OEil acere : lit les gens comme d'autres lisent les textes.</div>
+      </div>
+      <div>
+        <div class="trait-line minus">- Impatient, ambitieux, parfois excessif dans ses elans.</div>
+        <div class="trait-line minus">- Heritage noble dissimule : ne peut pas l'assumer ouvertement.</div>
+        <div class="trait-line minus">- Cherche l'approbation d'Orgen, qui le sait et s'en sert.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card full">
+    <div class="card-title vio">Historique</div>
+    <div class="histo">
+      <p>La famille Jungfreund tient le Duche de Roche Noire depuis trois generations ; un titre reel, des terres modestes, une reputation intacte mais un pouvoir rogne. Destitues de leurs prerogatives a Ubersreik il y a une quinzaine d'annees, dans des circonstances que le pere n'evoque qu'a demi-mot, les Jungfreund ont appris a tenir leur rang sans en faire etalage. Respectables, pieux, discrets. Une noblesse qui a survecu en se faisant oublier.</p>
+      <p>Kevan est le fils du second mariage. Les deux fils du premier lit ont disparu ; mis a l'abri par leur pere, selon une decision qui n'a jamais ete expliquee aux enfants de la maison. Kevan a grandi avec ce silence comme fond de tableau, sans vraiment en mesurer le poids.</p>
+      <p>Une education soignee, religieuse, serieuse. Les precepteurs se succedaient, la chapelle familiale rythmait les journees, Sigmar etait moins une figure lointaine qu'une presence domestique. Kevan a ete un bon eleve ; pas par discipline imposee, mais par appetit sincere. Il lisait vite, retenait tout, posait des questions qui mettaient ses precepteurs mal a l'aise.</p>
+      <p>Ce qui le distinguait n'etait pas son erudition mais son oeil. Il lisait les gens comme d'autres lisent les textes ; la tension dans une machoire, le poids mal reparti sur une jambe, la micro-hesitation avant un mensonge. Un don qu'il n'avait pas nomme, et que personne autour de lui ne savait quoi en faire.</p>
+      <p>Tiran Orgen est Repurgateur depuis plus longtemps qu'il ne s'en souvient avec plaisir. Un homme de reputation solide, de methodes froides, de convictions absolues ; le genre que ses pairs respectent et que les coupables reconnaissent trop tard. C'est lui que la famille a sollicite, discretement, pour prendre Kevan en charge. Non pas pour en faire un Repurgateur ; ca, c'est venu apres ; mais pour lui apprendre ce que les murs d'une demeure noble ne peuvent pas enseigner. Orgen a accepte. Ses raisons exactes restent floues.</p>
+      <p>Son enseignement n'est pas de la debauche ; ce serait une heresie, et Orgen n'est pas homme a tolerer l'heresie sous son propre toit. Mais il ne censure pas non plus. Kevan verra la boue, le sang, la misere, la lachete ordinaire des hommes, les compromis que la realite impose. Il apprendra a regarder sans detourner les yeux, a juger sans se laisser contaminer, a rester droit dans un monde qui penche. La difference entre un Repurgateur et un fanatique, selon Orgen, c'est que le premier sait exactement ce qu'il brule et pourquoi.</p>
+      <p>Orgen teste autant qu'il forme. Son approbation est rare. Kevan court apres quand meme, et Orgen le sait, et s'en sert.</p>
+      <p>Ses parents savent qu'il est place sous l'autorite d'Orgen. Ils ignorent l'etendue reelle de ce que ca implique ; les routes, les caves, les interrogatoires, les executions sommaires au nom du Sceau. Un intermediaire de confiance gere la correspondance dans les deux sens. Kevan ecrit a ses parents en choisissant chaque mot. Assez de verite pour tenir, assez de flou pour que l'image reste propre.</p>
+      <p style="color:var(--FIRE);font-style:italic;">Il les aime. Il ne veut pas les decevoir. Il veut surtout revenir un jour avec quelque chose de reel a leur montrer.</p>
+    </div>
+  </div>
+
+
+  <div class="card full">
+    <div class="card-title">Notes de session</div>
+    <textarea class="notes-area" id="session-notes" rows="4" placeholder="Observations, pistes, evenements notables..."></textarea>
+    <button class="btn-save" onclick="saveAll()">Sauvegarder</button>
+    <span class="save-confirm" id="save-confirm">Sauvegarde</span>
+  </div>
+
+</div>
+
+<script>
+const STATS_DEF = [
+  { key:'cc',  label:'CC',  init:38, avance:7  },
+  { key:'ct',  label:'CT',  init:27, avance:0  },
+  { key:'f',   label:'F',   init:31, avance:0  },
+  { key:'e',   label:'End', init:37, avance:3  },
+  { key:'ini', label:'Ini', init:30, avance:0  },
+  { key:'ag',  label:'Ag',  init:33, avance:0  },
+  { key:'dex', label:'Dex', init:26, avance:0  },
+  { key:'int', label:'Int', init:36, avance:5  },
+  { key:'fm',  label:'FM',  init:31, avance:5  },
+  { key:'soc', label:'Soc', init:28, avance:0  },
+];
+
+const SKILLS_BASE_DEF = [
+  { name:'Art',                    car:'Dex', aug:0,  base:26 },
+  { name:'Athletisme',             car:'Ag',  aug:0,  base:33 },
+  { name:'Calme',                  car:'FM',  aug:5,  base:36 },
+  { name:'Charme',                 car:'Soc', aug:3,  base:28 },
+  { name:'Commandement',           car:'Soc', aug:5,  base:28 },
+  { name:'Conduite',               car:'Ag',  aug:0,  base:33 },
+  { name:'Corps a Corps (Base)',   car:'CC',  aug:5,  base:45 },
+  { name:'Discretion',             car:'Ag',  aug:0,  base:33 },
+  { name:'Dressage',               car:'FM',  aug:0,  base:36 },
+  { name:'Escalade',               car:'F',   aug:0,  base:31 },
+  { name:'Esquive',                car:'Ag',  aug:0,  base:33 },
+  { name:'Intimidation',           car:'F',   aug:5,  base:31 },
+  { name:'Intuition',              car:'Ini', aug:10, base:30 },
+  { name:'Jeu',                    car:'Int', aug:0,  base:41 },
+  { name:'Manipulation',           car:'Soc', aug:0,  base:28 },
+  { name:'Marchandage',            car:'Soc', aug:0,  base:28 },
+  { name:'Monter',                 car:'Ag',  aug:0,  base:33 },
+  { name:'Navigation',             car:'Ini', aug:0,  base:30 },
+  { name:'Perception',             car:'Ini', aug:5,  base:30 },
+  { name:'Ragot',                  car:'Soc', aug:0,  base:28 },
+  { name:'Ramer',                  car:'F',   aug:0,  base:31 },
+  { name:'Representation',         car:'Soc', aug:0,  base:28 },
+  { name:'Resistance a l\'alcool', car:'End', aug:0,  base:40 },
+  { name:'Resistance',             car:'End', aug:0,  base:40 },
+  { name:'Survie en exterieur',    car:'Int', aug:0,  base:41 },
+];
+
+const SKILLS_ADV_DEF = [
+  { name:'Savoir (Reikland)',      car:'Int', aug:3,  carVal:41 },
+  { name:'Evaluation',             car:'Int', aug:3,  carVal:41 },
+  { name:'Corps a corps (Bagarre)',car:'CC',  aug:5,  carVal:45 },
+  { name:'Guerison',               car:'Int', aug:10, carVal:41 },
+];
+
+const TALENTS_DEF = [
+  { name:'Imperturbable', desc:'+5 FM.' },
+];
+
+const ARMOR_LOCS = [
+  { loc:'Tete',       range:'01-09', pa:0 },
+  { loc:'Bras droit', range:'10-24', pa:1 },
+  { loc:'Bras gauche',range:'25-44', pa:1 },
+  { loc:'Corps',      range:'45-79', pa:1 },
+  { loc:'Jambe dr.',  range:'80-89', pa:0 },
+  { loc:'Jambe gau.', range:'90-00', pa:0 },
+];
+
+const ARMOR_PIECES_DEF = [
+  { name:'Veste de cuir',    pa:1, enc:0, pen:'-1 Ag', attr:'Resistante, Lourde...' },
+  { name:'Cotte de mailles', pa:0, enc:0, pen:'-1 Ag', attr:'Resistante, Lourde...' },
+];
+
+const WEAPONS_DEF = [
+  { name:'Arme simple (epee)', all:'Moyenne',     deg:'BF+4', enc:0, attr:'' },
+  { name:'Dague',              all:'Tres courte', deg:'BF+2', enc:0, attr:'' },
+  { name:'Bouclier',           all:'Tres courte', deg:'BF+2', enc:0, attr:'Protectrice 2, Defensive' },
+  { name:'Arc',                all:'50m',         deg:'BF+3', enc:0, attr:'' },
+];
+
+const INV_DEF = [
+  { name:'Sac a dos',              detail:'Sur soi',                enc:0 },
+  { name:'Bourse',                 detail:'Ceinture',               enc:0 },
+  { name:'Cape a capuche',         detail:'Sur soi',                enc:0 },
+  { name:'Foulard',                detail:'Sur soi',                enc:0 },
+  { name:'Vetements',              detail:'Sur soi et sac a dos',   enc:0 },
+  { name:'Boite a amadou',         detail:'Sac a dos',              enc:0 },
+  { name:'Couverture',             detail:'Sac a dos',              enc:0 },
+  { name:'Instruments de torture', detail:'Sac a dos',              enc:0 },
+  { name:'Rations (1 jour)',       detail:'Sac a dos',              enc:0 },
+];
+
+// === DOCTRINE DU FEU JUSTE ===
+const OM_ROLES_DEF = [
+  { key:'fer',     label:'Fer de Lance',
+    effect:'Engage en premier. +10 a la premiere attaque du combat si le PJ ouvre l\'engagement.' },
+  { key:'flanc',   label:'Flanc',
+    effect:'Contourne ou se positionne sur le cote. +10 a une attaque s\'il flanque effectivement un ennemi engage par un allie.' },
+  { key:'soutien', label:'Soutien',
+    effect:'Reste en seconde ligne, couvre. Peut donner un avantage (Esquive ou Parade) a un allie une fois dans le combat.' },
+  { key:'reserve', label:'Reserve',
+    effect:'Reste en retrait, observe. Au tour ou il intervient enfin, beneficie de +10 (CC ou CT au choix) sur sa premiere action.' },
+];
+
+let state = {
+  wounds:14, woundsMax:14, chance:3, determ:3,
+  money:{ or:0, argent:10, cuivre:0 },
+  notes:'', cet:{ corruption:'', mutations:'', etats:'' },
+  xp:{ actuelle:0, depensee:0, totale:0 },
+  stats:{},
+  skillsBase: JSON.parse(JSON.stringify(SKILLS_BASE_DEF)),
+  skillsAdv:  JSON.parse(JSON.stringify(SKILLS_ADV_DEF)),
+  talents:    JSON.parse(JSON.stringify(TALENTS_DEF)),
+  weapons:    JSON.parse(JSON.stringify(WEAPONS_DEF)),
+  inventory:  JSON.parse(JSON.stringify(INV_DEF)),
+  armor:      JSON.parse(JSON.stringify(ARMOR_LOCS)),
+  armorPieces:JSON.parse(JSON.stringify(ARMOR_PIECES_DEF)),
+};
+
+STATS_DEF.forEach(s=>{ state.stats[s.key]={ init:s.init, avance:s.avance }; });
+function getStatTotal(k){ const s=state.stats[k]; return (parseInt(s.init)||0)+(parseInt(s.avance)||0); }
+
+function load() {
+  const raw=localStorage.getItem('kevan_v1');
+  if(raw) try {
+    const d=JSON.parse(raw);
+    ['wounds','woundsMax','chance','determ','notes'].forEach(k=>{ if(d[k]!==undefined) state[k]=d[k]; });
+    if(d.money) Object.assign(state.money,d.money);
+    if(d.cet)   Object.assign(state.cet,d.cet);
+    if(d.xp)    Object.assign(state.xp,d.xp);
+    if(d.stats)       Object.assign(state.stats,d.stats);
+    if(d.skillsBase)  state.skillsBase  =d.skillsBase;
+    if(d.skillsAdv)   state.skillsAdv   =d.skillsAdv;
+    if(d.talents)     state.talents     =d.talents;
+    if(d.weapons)     state.weapons     =d.weapons;
+    if(d.inventory)   state.inventory   =d.inventory;
+    if(d.armor)       state.armor       =d.armor;
+    if(d.armorPieces) state.armorPieces =d.armorPieces;
+  } catch(e){}
+  renderAll();
+}
+function save() { localStorage.setItem('kevan_v1',JSON.stringify(state)); }
+function saveAll() {
+  state.notes=document.getElementById('session-notes').value;
+  if(!state.cet) state.cet={};
+  ['corruption','mutations','etats'].forEach(k=>{ const el=document.getElementById('cet-'+k); if(el) state.cet[k]=el.value; });
+  state.xp.actuelle=parseInt(document.getElementById('xp-actuelle').value)||0;
+  state.xp.depensee=parseInt(document.getElementById('xp-depensee').value)||0;
+  state.xp.totale  =parseInt(document.getElementById('xp-totale').value)||0;
+  save();
+  const c=document.getElementById('save-confirm'); c.style.opacity='1'; setTimeout(()=>c.style.opacity='0',2000);
+}
+
+function renderAll() {
+  renderStats(); renderSkillsBase(); renderSkillsAdv(); renderTalents();
+  renderArmor(); renderArmorPieces(); renderWeapons(); renderInventory();
+  renderChance(); renderDeterm();
+  document.getElementById('wounds-cur').textContent=state.wounds;
+  const wmi=document.getElementById('w-max-input'); if(wmi) wmi.value=state.woundsMax||14;
+  updateWoundColor();
+  ['or','argent','cuivre'].forEach(k=>document.getElementById('money-'+k).textContent=state.money[k]||0);
+  document.getElementById('session-notes').value=state.notes||'';
+  ['corruption','mutations','etats'].forEach(k=>{ const el=document.getElementById('cet-'+k); if(el) el.value=(state.cet&&state.cet[k])||''; });
+  document.getElementById('xp-actuelle').value=state.xp.actuelle||0;
+  document.getElementById('xp-depensee').value=state.xp.depensee||0;
+  document.getElementById('xp-totale').value  =state.xp.totale||0;
+}
+
+function renderStats() {
+  const g=document.getElementById('stats-grid'); g.innerHTML='';
+  STATS_DEF.forEach(def=>{
+    const s=state.stats[def.key];
+    const total=(parseInt(s.init)||0)+(parseInt(s.avance)||0);
+    const bf=Math.floor(total/10);
+    const div=document.createElement('div'); div.className='stat-box';
+    div.innerHTML='<span class="stat-label">'+def.label+'</span>'
+      +'<span class="stat-total" id="stat-total-'+def.key+'">'+total+'</span>'
+      +'<span class="stat-bonus">B:'+bf+'</span>'
+      +'<div class="stat-edit-row">'
+        +'<span style="font-size:0.62rem;color:var(--SUB);opacity:0.55;">'+s.init+'</span>'
+        +'<span class="plus">+</span>'
+        +'<input class="editable-num" style="width:34px;font-size:0.78rem;color:var(--VIO2);border-bottom-color:rgba(160,120,48,0.15);" type="number" value="'+s.avance+'" onchange="updateStat(\''+def.key+'\',this.value)" />'
+      +'</div>';
+    g.appendChild(div);
+  });
+}
+function updateStat(key,val) { state.stats[key].avance=parseInt(val)||0; const total=getStatTotal(key); const bf=Math.floor(total/10); const el=document.getElementById('stat-total-'+key); if(el){ el.textContent=total; el.nextElementSibling.textContent='B:'+bf; } save(); }
+function updateWoundsMax(val) { state.woundsMax=Math.max(1,parseInt(val)||1); document.getElementById('w-max-input').value=state.woundsMax; save(); }
+function changeWound(d) { state.wounds=Math.max(0,Math.min(state.woundsMax,state.wounds+d)); document.getElementById('wounds-cur').textContent=state.wounds; updateWoundColor(); save(); }
+function updateWoundColor() { const el=document.getElementById('wounds-cur'); const p=state.wounds/state.woundsMax; el.style.color=p>0.6?'var(--parchment)':p>0.3?'#e8a040':'#e05050'; }
+
+// Taux : 1 Co = 20 Pa | 1 Pa = 12 Sc
+function chMoney(k, d) {
+  var m = state.money;
+  if (!m.or)     m.or     = 0;
+  if (!m.argent) m.argent = 0;
+  if (!m.cuivre) m.cuivre = 0;
+  m[k] = (m[k] || 0) + d;
+  var msg = '';
+  if (m.cuivre >= 12) { var gain = Math.floor(m.cuivre / 12); m.cuivre -= gain * 12; m.argent += gain; msg += '+' + gain + ' Pa '; }
+  if (m.argent >= 20) { var gain2 = Math.floor(m.argent / 20); m.argent -= gain2 * 20; m.or += gain2; msg += '+' + gain2 + ' Co'; }
+  if (m.cuivre < 0) { var need = Math.ceil(-m.cuivre / 12); if (m.argent >= need) { m.argent -= need; m.cuivre += need * 12; msg += '-' + need + ' Pa->Sc '; } else { m.cuivre = 0; } }
+  if (m.argent < 0) { var need2 = Math.ceil(-m.argent / 20); if (m.or >= need2) { m.or -= need2; m.argent += need2 * 20; msg += '-' + need2 + ' Co->Pa'; } else { m.argent = 0; } }
+  m.or = Math.max(0, m.or); m.argent = Math.max(0, m.argent); m.cuivre = Math.max(0, m.cuivre);
+  document.getElementById('money-or').textContent = m.or;
+  document.getElementById('money-argent').textContent = m.argent;
+  document.getElementById('money-cuivre').textContent = m.cuivre;
+  var msgEl = document.getElementById('money-convert-msg');
+  if (msgEl && msg.trim()) { msgEl.textContent = '\u21C4 ' + msg.trim(); msgEl.style.opacity = '1'; clearTimeout(msgEl._t); msgEl._t = setTimeout(function(){ msgEl.style.opacity='0'; }, 2500); }
+  save();
+}
+
+const CLOVER='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="16" height="16"><g transform="translate(90,90)"><path d="M 0 30 Q 10 52 18 66" fill="none" stroke="#2d6b1a" stroke-width="9" stroke-linecap="round"/><path d="M 0 0 C -18 -4,-58 -10,-68 -28 C -76 -44,-58 -58,-38 -50 C -22 -44,-8 -30,0 -12 C 2 -8,2 -4,0 0 Z" fill="#3a8c1e" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><path d="M 0 0 C 18 -4,58 -10,68 -28 C 76 -44,58 -58,38 -50 C 22 -44,8 -30,0 -12 C -2 -8,-2 -4,0 0 Z" fill="#3a8c1e" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><path d="M 0 0 C -18 4,-58 10,-68 28 C -76 44,-58 58,-38 50 C -22 44,-8 30,0 12 C 2 8,2 4,0 0 Z" fill="#4aac28" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><path d="M 0 0 C 18 4,58 10,68 28 C 76 44,58 58,38 50 C 22 44,8 30,0 12 C -2 8,-2 4,0 0 Z" fill="#4aac28" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><circle cx="0" cy="0" r="7" fill="#2d6b1a"/></g></svg>';
+const FLAME='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="14" height="16"><g transform="translate(50,62)"><path d="M 0,-55 C 2,-45 14,-40 18,-30 L 26,-44 C 28,-33 38,-26 32,-14 L 46,-22 C 46,-11 50,-2 34,5 L 50,1 C 50,13 46,2 42,22 C 32,34 14,43 0,45 C -14,43 -32,34 -42,22 C -46,2 -50,13 -50,1 L -34,5 C -50,-2 -46,-11 -46,-22 L -32,-14 C -38,-26 -28,-33 -26,-44 L -18,-30 C -14,-40 -2,-45 0,-55 Z" fill="#f0922a"/></g></svg>';
+function makePipsIcon(id,cur,max,fn,icon) { const c=document.getElementById(id); if(!c) return; c.innerHTML=''; for(let i=0;i<max;i++){ const pip=document.createElement('div'); pip.className='pip'+(i<cur?' on':''); if(icon) pip.innerHTML=icon; pip.onclick=()=>fn(i<cur?i:i+1); c.appendChild(pip); } }
+function renderChance() { makePipsIcon('chance-track',state.chance,3,v=>{ state.chance=v; save(); renderChance(); },CLOVER); }
+function renderDeterm() { makePipsIcon('determ-pips',state.determ,3,v=>{ state.determ=v; save(); renderDeterm(); },FLAME); }
+
+function renderSkillsBase() {
+  const ul=document.getElementById('skills-base-list'); ul.innerHTML='';
+  state.skillsBase.forEach((sk,i)=>{
+    const total=(parseInt(sk.base)||0)+(parseInt(sk.aug)||0);
+    const li=document.createElement('li');
+    li.innerHTML='<span class="skill-name">'+sk.name+' <span style="color:var(--SUB);font-size:0.7rem;">('+sk.car+')</span></span>'
+      +'<div class="skill-aug"><input class="editable-num" type="number" value="'+(sk.aug||0)+'" style="width:38px;font-size:0.8rem;color:var(--VIO2);border-bottom-color:rgba(160,120,48,0.12);" onchange="updateSkillBaseAug('+i+',this.value)" /></div>'
+      +'<span class="skill-total" id="sk-base-total-'+i+'">'+total+'</span>';
+    ul.appendChild(li);
+  });
+}
+function updateSkillBaseAug(idx,val) { state.skillsBase[idx].aug=parseInt(val)||0; const total=(state.skillsBase[idx].base||0)+state.skillsBase[idx].aug; const el=document.getElementById('sk-base-total-'+idx); if(el) el.textContent=total; save(); }
+
+function renderSkillsAdv() {
+  const ul=document.getElementById('skills-adv-list'); ul.innerHTML='';
+  state.skillsAdv.forEach((sk,i)=>{
+    const total=(parseInt(sk.carVal)||0)+(parseInt(sk.aug)||0);
+    const li=document.createElement('li');
+    li.innerHTML='<span class="skill-name">'+sk.name+' <span style="color:var(--SUB);font-size:0.7rem;">('+sk.car+')</span></span>'
+      +'<div class="skill-aug"><input class="editable-num" type="number" value="'+(sk.aug||0)+'" style="width:38px;font-size:0.8rem;color:var(--VIO2);border-bottom-color:rgba(160,120,48,0.12);" onchange="updateSkillAdv('+i+',this.value)" /></div>'
+      +'<span class="skill-total" id="sk-adv-total-'+i+'">'+total+'</span>'
+      +'<span class="inv-del" onclick="deleteAdvSkill('+i+')">x</span>';
+    ul.appendChild(li);
+  });
+  applyAdvSkillEditable();
+}
+function updateSkillAdv(idx,val) { state.skillsAdv[idx].aug=parseInt(val)||0; renderSkillsAdv(); save(); }
+function deleteAdvSkill(idx) { if(confirm('Supprimer ?')){ state.skillsAdv.splice(idx,1); renderSkillsAdv(); save(); } }
+function toggleAdvForm() { document.getElementById('adv-form').classList.toggle('visible'); }
+function addAdvSkill() { const name=document.getElementById('adv-name').value.trim(); if(!name) return; state.skillsAdv.push({name,car:document.getElementById('adv-car').value.trim()||'?',aug:parseInt(document.getElementById('adv-aug').value)||0,carVal:0}); document.getElementById('adv-name').value=''; document.getElementById('adv-aug').value='0'; renderSkillsAdv(); save(); toggleAdvForm(); }
+
+function renderTalents() {
+  const ul=document.getElementById('talent-list'); ul.innerHTML='';
+  state.talents.forEach((t,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML='<div class="talent-content"><span class="talent-name">'+t.name+'</span><span class="talent-desc">'+t.desc+'</span></div><span class="talent-del" onclick="deleteTalent('+i+')">x</span>';
+    ul.appendChild(li);
+  });
+  applyTalentEditable();
+}
+function deleteTalent(idx) { if(confirm('Supprimer ?')){ state.talents.splice(idx,1); renderTalents(); save(); } }
+function toggleTalentForm() { document.getElementById('talent-form').classList.toggle('visible'); }
+function addTalent() { const name=document.getElementById('talent-name-new').value.trim(); if(!name) return; state.talents.push({name,desc:document.getElementById('talent-desc-new').value.trim()}); document.getElementById('talent-name-new').value=''; document.getElementById('talent-desc-new').value=''; renderTalents(); save(); toggleTalentForm(); }
+
+function renderArmor() {
+  const tbody=document.getElementById('armor-body'); tbody.innerHTML='';
+  state.armor.forEach((a,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td style="color:var(--parchment-dark);">'+a.loc+'</td>'
+      +'<td><input class="armor-pa-input" type="number" value="'+(a.pa||0)+'" onchange="updateArmorPA('+i+',this.value)" /></td>'
+      +'<td style="color:var(--SUB);font-size:0.75rem;">'+a.range+'</td>';
+    tbody.appendChild(tr);
+  });
+}
+function updateArmorPA(idx,val) { state.armor[idx].pa=parseInt(val)||0; save(); }
+
+function renderArmorPieces() {
+  const c=document.getElementById('armor-pieces-list'); c.innerHTML='';
+  if(!state.armorPieces) state.armorPieces=[];
+  state.armorPieces.forEach((ap,i)=>{
+    const div=document.createElement('div'); div.className='armor-piece';
+    var statsHtml = '<span class="astat"><span class="astat-l">PA </span><span class="astat-v">'+ap.pa+'</span></span>';
+    if(ap.pen)  statsHtml += '<span class="astat"><span class="astat-l">Pen. </span><span class="astat-v">'+ap.pen+'</span></span>';
+    if(ap.attr) statsHtml += '<span class="astat"><span class="astat-l">Attr. </span><span class="astat-v">'+ap.attr+'</span></span>';
+    div.innerHTML='<div class="armor-piece-content">'
+      +'<div class="armor-piece-name">'+ap.name+'</div>'
+      +'<div class="armor-piece-stats">'+statsHtml+'</div>'
+      +'</div>'
+      +'<span class="inv-del" onclick="deleteArmorPiece('+i+')">x</span>';
+    c.appendChild(div);
+  });
+  applyArmorPieceEditable();
+}
+function deleteArmorPiece(idx) { if(confirm('Retirer ?')){ state.armorPieces.splice(idx,1); renderArmorPieces(); save(); } }
+function addArmorPiece() { if(!state.armorPieces) state.armorPieces=[]; const name=document.getElementById('ap-name').value.trim(); if(!name) return; state.armorPieces.push({name,pa:parseInt(document.getElementById('ap-pa').value)||0,enc:parseInt(document.getElementById('ap-enc').value)||0,pen:document.getElementById('ap-pen').value.trim(),attr:document.getElementById('ap-attr').value.trim()}); ['ap-name','ap-pen','ap-attr'].forEach(id=>document.getElementById(id).value=''); document.getElementById('ap-pa').value=''; document.getElementById('ap-enc').value=''; renderArmorPieces(); save(); toggleForm('armor-piece-form'); }
+
+function renderWeapons() {
+  const c=document.getElementById('weapons-list'); c.innerHTML='';
+  state.weapons.forEach((w,i)=>{
+    const div=document.createElement('div'); div.className='weapon-item';
+    var statsHtml = '<span class="weapon-stat"><span class="weapon-stat-label">All. </span><span class="weapon-stat-val">'+w.all+'</span></span>'
+                  + '<span class="weapon-stat"><span class="weapon-stat-label">Deg. </span><span class="weapon-stat-val">'+w.deg+'</span></span>';
+    if(w.attr) statsHtml += '<span class="weapon-stat"><span class="weapon-stat-label">Attr. </span><span class="weapon-stat-val">'+w.attr+'</span></span>';
+    div.innerHTML='<div class="weapon-content">'
+      +'<div class="weapon-name">'+w.name+'</div>'
+      +'<div class="weapon-stats">'+statsHtml+'</div>'
+      +'</div>'
+      +'<span class="weapon-del" onclick="deleteWeapon('+i+')">x</span>';
+    c.appendChild(div);
+  });
+  applyWeaponEditable();
+}
+function deleteWeapon(idx) { if(confirm('Supprimer ?')){ state.weapons.splice(idx,1); renderWeapons(); save(); } }
+function toggleWeaponForm() { document.getElementById('weapon-form').classList.toggle('visible'); }
+function addWeapon() { const name=document.getElementById('wep-name').value.trim(); if(!name) return; state.weapons.push({name,all:document.getElementById('wep-all').value.trim()||'',deg:document.getElementById('wep-deg').value.trim()||'',enc:parseInt(document.getElementById('wep-enc').value)||0,attr:document.getElementById('wep-attr').value.trim()}); ['wep-name','wep-all','wep-deg','wep-enc','wep-attr'].forEach(id=>document.getElementById(id).value=''); renderWeapons(); save(); toggleWeaponForm(); }
+
+function renderInventory() {
+  const ul=document.getElementById('inv-list'); ul.innerHTML='';
+  state.inventory.forEach((item,i)=>{
+    const div=document.createElement('div'); div.className='inv-item';
+    div.innerHTML='<span class="inv-name">'+item.name+'</span>'
+      +(item.enc?'<span style="font-size:0.68rem;color:var(--SUB);">ENC:'+item.enc+'</span>':'')
+      +'<span class="inv-detail">'+(item.detail||'')+'</span>'
+      +'<span class="inv-del" onclick="deleteInvItem('+i+')">x</span>';
+    ul.appendChild(div);
+  });
+  applyInventoryEditable();
+}
+function deleteInvItem(idx) { state.inventory.splice(idx,1); renderInventory(); save(); }
+function toggleInvForm() { document.getElementById('inv-form').classList.toggle('visible'); }
+function addInvItem() { const name=document.getElementById('inv-name-new').value.trim(); if(!name) return; state.inventory.push({name,detail:document.getElementById('inv-detail-new').value.trim(),enc:parseInt(document.getElementById('inv-enc-new').value)||0}); ['inv-name-new','inv-detail-new','inv-enc-new'].forEach(id=>document.getElementById(id).value=''); renderInventory(); save(); toggleInvForm(); }
+
+function toggleForm(id) { document.getElementById(id).classList.toggle('visible'); }
+
+function ioStatus(msg,cls) { const el=document.getElementById('io-status'); if(!el) return; el.textContent=msg; el.className='io-status'+(cls?' '+cls:''); }
+function exportJSON() {
+  const full = { state:state, df:dfData };
+  const blob=new Blob([JSON.stringify(full,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='kevan.json'; a.click();
+  ioStatus('Exporte','ok'); setTimeout(()=>ioStatus('',''),3000);
+}
+function importJSON(input) {
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try {
+      const d=JSON.parse(e.target.result);
+      const src = d.state || d;
+      ['wounds','woundsMax','chance','determ','notes'].forEach(k=>{if(src[k]!==undefined) state[k]=src[k];});
+      if(src.money) Object.assign(state.money,src.money);
+      if(src.cet)   Object.assign(state.cet,src.cet);
+      if(src.xp)    Object.assign(state.xp,src.xp);
+      if(src.stats) Object.assign(state.stats,src.stats);
+      if(src.skillsBase)  state.skillsBase  =src.skillsBase;
+      if(src.skillsAdv)   state.skillsAdv   =src.skillsAdv;
+      if(src.talents)     state.talents     =src.talents;
+      if(src.weapons)     state.weapons     =src.weapons;
+      if(src.inventory)   state.inventory   =src.inventory;
+      if(src.armor)       state.armor       =src.armor;
+      if(src.armorPieces) state.armorPieces =src.armorPieces;
+      if(d.df) {
+        if(d.df.jugements)  dfData.jugements  = d.df.jugements;
+        if(d.df.assignment) dfData.assignment = d.df.assignment;
+        if(d.df.deploy)     dfData.deploy     = d.df.deploy;
+        if(d.df.deployUsed !== undefined) dfData.deployUsed = d.df.deployUsed;
+      }
+      save(); dfSave(); renderAll(); dfRender();
+      ioStatus('Importe','ok'); setTimeout(()=>ioStatus('',''),3000);
+    } catch(err){ ioStatus('Erreur: '+err.message,'err'); }
+  };
+  reader.readAsText(file); input.value='';
+}
+
+function makeEditable(el,onSave,opts) {
+  opts=opts||{}; const isArea=opts.multiline||false;
+  el.title='Double-cliquer pour modifier'; el.style.cursor='pointer';
+  el.addEventListener('dblclick',function(e){
+    e.stopPropagation(); const current=el.textContent;
+    const tag=isArea?'textarea':'input'; const inp=document.createElement(tag);
+    inp.value=current; inp.className=isArea?'editable-field-area':'editable-field';
+    if(isArea){inp.rows=2;inp.style.width='100%';}
+    inp.style.fontSize=window.getComputedStyle(el).fontSize;
+    inp.style.color=window.getComputedStyle(el).color;
+    inp.style.fontFamily=window.getComputedStyle(el).fontFamily;
+    inp.style.fontWeight=window.getComputedStyle(el).fontWeight;
+    el.replaceWith(inp); inp.focus(); inp.select();
+    function commit(){ const val=inp.value.trim()||current; el.textContent=val; inp.replaceWith(el); onSave(val); }
+    inp.addEventListener('blur',commit);
+    inp.addEventListener('keydown',function(e){ if(e.key==='Enter'&&!isArea){e.preventDefault();commit();} if(e.key==='Escape'){inp.value=current;commit();} });
+  });
+}
+function applyWeaponEditable() { document.querySelectorAll('.weapon-item').forEach((item,i)=>{ const nameEl=item.querySelector('.weapon-name'); if(nameEl&&!nameEl.dataset.editable){ nameEl.dataset.editable='1'; makeEditable(nameEl,val=>{if(state.weapons[i]){state.weapons[i].name=val;save();}}); } }); }
+function applyArmorPieceEditable() { document.querySelectorAll('.armor-piece').forEach((item,i)=>{ const nameEl=item.querySelector('.armor-piece-name'); if(nameEl&&!nameEl.dataset.editable){ nameEl.dataset.editable='1'; makeEditable(nameEl,val=>{if(state.armorPieces[i]){state.armorPieces[i].name=val;save();}}); } }); }
+function applyTalentEditable() { document.querySelectorAll('.talent-list li').forEach((li,i)=>{ const nameEl=li.querySelector('.talent-name'); const descEl=li.querySelector('.talent-desc'); if(nameEl&&!nameEl.dataset.editable){ nameEl.dataset.editable='1'; makeEditable(nameEl,val=>{if(state.talents[i]){state.talents[i].name=val;save();}}); } if(descEl&&!descEl.dataset.editable){ descEl.dataset.editable='1'; makeEditable(descEl,val=>{if(state.talents[i]){state.talents[i].desc=val;save();}},{multiline:false}); } }); }
+function applyInventoryEditable() { document.querySelectorAll('#inv-list .inv-item').forEach((item,i)=>{ const nameEl=item.querySelector('.inv-name'); const detailEl=item.querySelector('.inv-detail'); if(nameEl&&!nameEl.dataset.editable){ nameEl.dataset.editable='1'; makeEditable(nameEl,val=>{if(state.inventory[i]){state.inventory[i].name=val;save();}}); } if(detailEl&&!detailEl.dataset.editable){ detailEl.dataset.editable='1'; makeEditable(detailEl,val=>{if(state.inventory[i]){state.inventory[i].detail=val;save();}}); } }); }
+function applyAdvSkillEditable() { document.querySelectorAll('#skills-adv-list li').forEach((li,i)=>{ const nameEl=li.querySelector('.skill-name'); if(nameEl&&!nameEl.dataset.editable){ nameEl.dataset.editable='1'; makeEditable(nameEl,val=>{ if(state.skillsAdv[i]){ state.skillsAdv[i].name=val.replace(/\s*\([^)]*\)\s*$/,'').trim(); renderSkillsAdv(); save(); } }); } }); }
+
+['session-notes','cet-corruption','cet-mutations','cet-etats'].forEach(id=>{ const el=document.getElementById(id); if(el){ el.addEventListener('blur',saveAll); el.addEventListener('input',saveAll); } });
+window.addEventListener('beforeunload',saveAll);
+
+// ══════════════════════════════════════════════════════════════════════
+//                    DOCTRINE DU FEU JUSTE
+// ══════════════════════════════════════════════════════════════════════
+const OM_ALLIES = ['Reiner','Kantagoran','Tryxx','Ephraim','Cade'];
+
+let dfData = {
+  jugements: [],
+  assignment: { fer:'', flanc:'', soutien:'', reserve:'' },
+  deploy: [],
+  deployUsed: false
+};
+
+function dfLoad() {
+  const raw = localStorage.getItem('kevan_df_v1');
+  if(raw) try {
+    const d = JSON.parse(raw);
+    if(d.jugements)  dfData.jugements  = d.jugements;
+    if(d.assignment) dfData.assignment = d.assignment;
+    if(d.deploy)     dfData.deploy     = d.deploy;
+    if(d.deployUsed !== undefined) dfData.deployUsed = d.deployUsed;
+  } catch(e){}
+  dfRender();
+}
+function dfSave() { localStorage.setItem('kevan_df_v1', JSON.stringify(dfData)); }
+function dfRender() { dfRenderJug(); dfRenderOM(); dfRenderDeploy(); dfRenderStats(); }
+function dfToggleForm(id) { document.getElementById(id).classList.toggle('visible'); }
+
+function dfTab(name) {
+  document.querySelectorAll('.df-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.df-panel').forEach(p=>p.classList.remove('active'));
+  if(name==='jug')      document.querySelector('.df-tab').classList.add('active');
+  else if(name==='om')  document.getElementById('df-tab-om').classList.add('active');
+  const panel = document.getElementById('df-panel-'+name);
+  if(panel) panel.classList.add('active');
+}
+
+function dfRenderStats() {
+  document.getElementById('df-nb-jug').textContent    = dfData.jugements.length;
+  document.getElementById('df-nb-act').textContent    = dfData.jugements.filter(j=>!j.epuise).length;
+  document.getElementById('df-nb-deploy').textContent = dfData.deploy.length;
+}
+
+// ── GRIMOIRE DE JUGEMENTS ────────────────────────────────────────────
+function dfRenderJug() {
+  const c = document.getElementById('jug-list'); if(!c) return;
+  c.innerHTML='';
+  if(!dfData.jugements.length) {
+    c.innerHTML='<div class="jug-empty">Aucun jugement consigne. La jurisprudence est vierge.</div>';
+    return;
+  }
+  dfData.jugements.forEach((j,i)=>{
+    const typeLbl = j.type==='epargne'?'Epargne'
+                   :j.type==='purge'?'Purge'
+                   :j.type==='ignore'?'Ignore'
+                   :j.type==='delegue'?'Delegue':'?';
+    const div = document.createElement('div');
+    div.className = 'jug-item ' + (j.type||'epargne') + (j.epuise?' epuise':'');
+    div.innerHTML = '<div class="jug-header" onclick="this.parentElement.classList.toggle(\'open\')">'
+      + '<span class="jug-titre">' + (j.titre||'?')
+      + (j.epuise?' <span style="font-size:0.6rem;color:var(--SUB);border:1px solid rgba(160,120,48,0.3);padding:0.02rem 0.28rem;border-radius:1px;margin-left:0.25rem;">INVOQUE</span>':'')
+      + '</span>'
+      + '<span class="jug-type-badge ' + (j.type||'epargne') + '">' + typeLbl + '</span>'
+      + (j.session?'<span class="jug-session">' + j.session + '</span>':'')
+      + '<span class="jug-expand">&#9662;</span>'
+      + '</div>'
+      + '<div class="jug-body">'
+      + (j.desc?'<div class="jug-desc">' + j.desc + '</div>':'')
+      + (j.precedent?'<div class="jug-precedent">' + j.precedent + '</div>':'')
+      + '<div class="jug-actions">'
+      + (j.epuise
+          ? '<button class="jug-btn jug-btn-restore" onclick="dfRestoreJug(' + i + ')">Restaurer</button>'
+          : '<button class="jug-btn jug-btn-invoke" onclick="dfInvokeJug(' + i + ')">Invoquer le precedent</button>')
+      + '<button class="jug-btn jug-btn-del" onclick="dfDelJug(' + i + ')">Suppr.</button>'
+      + '</div>'
+      + '</div>';
+    c.appendChild(div);
+  });
+}
+function dfAddJug() {
+  const titre = document.getElementById('jug-titre').value.trim();
+  if(!titre) return;
+  dfData.jugements.push({
+    titre:titre,
+    type:document.getElementById('jug-type').value,
+    session:document.getElementById('jug-session').value.trim(),
+    desc:document.getElementById('jug-desc').value.trim(),
+    precedent:document.getElementById('jug-precedent').value.trim(),
+    epuise:false
+  });
+  ['jug-titre','jug-session','jug-desc','jug-precedent'].forEach(id=>document.getElementById(id).value='');
+  dfSave(); dfRenderJug(); dfRenderStats(); dfToggleForm('df-form-jug');
+}
+function dfInvokeJug(idx) { if(confirm('Invoquer ce precedent ? (utilisable une fois)')){ dfData.jugements[idx].epuise=true; dfSave(); dfRenderJug(); dfRenderStats(); } }
+function dfRestoreJug(idx) { if(confirm('Restaurer ce precedent ?')){ dfData.jugements[idx].epuise=false; dfSave(); dfRenderJug(); dfRenderStats(); } }
+function dfDelJug(idx) { if(confirm('Supprimer ce jugement ?')){ dfData.jugements.splice(idx,1); dfSave(); dfRenderJug(); dfRenderStats(); } }
+
+// ── ORDRE DE MARCHE ──────────────────────────────────────────────────
+function dfRenderOM() {
+  const g = document.getElementById('om-roles-grid'); if(!g) return;
+  g.innerHTML='';
+  OM_ROLES_DEF.forEach(r=>{
+    const assigned = dfData.assignment[r.key] || '';
+    const div = document.createElement('div');
+    div.className = 'om-role' + (assigned?' assigned':'');
+    var opts = '<option value="">- Aucun -</option>';
+    OM_ALLIES.forEach(a=>{ opts += '<option value="'+a+'"'+(a===assigned?' selected':'')+'>'+a+'</option>'; });
+    div.innerHTML = '<div class="om-role-title">'+r.label+'</div>'
+      + '<div class="om-role-effect">'+r.effect+'</div>'
+      + '<div class="om-role-assignee">'
+      + '<select onchange="dfSetRole(\''+r.key+'\',this.value)">'+opts+'</select>'
+      + '</div>';
+    g.appendChild(div);
+  });
+}
+function dfSetRole(key,val) { dfData.assignment[key]=val; dfSave(); dfRenderOM(); }
+
+function dfRenderDeploy() {
+  const el = document.getElementById('om-deploy-content'); if(!el) return;
+  if(dfData.deployUsed) {
+    const last = dfData.deploy.length ? dfData.deploy[dfData.deploy.length-1] : null;
+    var html = '<div class="om-deploy-used">Deja deploye cette session.' + (last?' Dernier deploiement : <em>'+(last.session||'?')+'</em>':'') + '</div>'
+      + '<button class="jug-btn jug-btn-invoke" style="margin-top:0.3rem;" onclick="dfResetDeploy()">Nouvelle session (reinitialiser)</button>';
+    if(dfData.deploy.length) {
+      html += '<ul class="om-deploy-log">';
+      dfData.deploy.slice().reverse().forEach((d,i)=>{
+        const realIdx = dfData.deploy.length-1-i;
+        var rolesTxt = '';
+        ['fer','flanc','soutien','reserve'].forEach(k=>{
+          if(d.assignment && d.assignment[k]) {
+            const lbl = OM_ROLES_DEF.find(r=>r.key===k).label;
+            rolesTxt += (rolesTxt?' &middot; ':'') + '<strong>'+lbl+'</strong>: '+d.assignment[k];
+          }
+        });
+        html += '<li><span class="om-deploy-log-sess">'+(d.session||'?')+'</span>'
+          + '<span>'+(d.contexte?d.contexte+'<br>':'')+rolesTxt+'</span>'
+          + '<span class="om-deploy-log-del" onclick="dfDelDeploy('+realIdx+')">x</span></li>';
+      });
+      html += '</ul>';
+    }
+    el.innerHTML = html;
+  } else {
+    var html2 = '<div style="font-size:0.75rem;color:var(--SUB);font-style:italic;margin-bottom:0.5rem;">Assigne les roles ci-dessus, puis valide le deploiement pour cette session.</div>'
+      + '<div class="df-form" style="display:flex;">'
+      + '<div><span class="df-form-label">Session / Moment</span><input id="om-d-session" placeholder="Ex: S4, embuscade du gue" /></div>'
+      + '<div><span class="df-form-label">Contexte (optionnel)</span><textarea id="om-d-contexte" placeholder="L\'affrontement prepare, le terrain, l\'objectif..."></textarea></div>'
+      + '<div style="display:flex;gap:0.4rem;margin-top:0.1rem;">'
+      + '<button class="btn-add btn-add-fire" onclick="dfUseDeploy()">Valider le deploiement</button>'
+      + '</div>'
+      + '</div>';
+    el.innerHTML = html2;
+  }
+}
+function dfUseDeploy() {
+  const session = document.getElementById('om-d-session').value.trim();
+  const contexte = document.getElementById('om-d-contexte').value.trim();
+  if(!session) { alert('Indique au moins une session ou un moment.'); return; }
+  dfData.deploy.push({
+    session:session,
+    contexte:contexte,
+    assignment: Object.assign({}, dfData.assignment)
+  });
+  dfData.deployUsed = true;
+  dfSave(); dfRenderDeploy(); dfRenderStats();
+}
+function dfResetDeploy() { dfData.deployUsed = false; dfSave(); dfRenderDeploy(); }
+function dfDelDeploy(idx) { dfData.deploy.splice(idx,1); dfSave(); dfRenderDeploy(); dfRenderStats(); }
+
+// Appel initial
+dfLoad();
+load();
+</script>
+</body>
+</html>
