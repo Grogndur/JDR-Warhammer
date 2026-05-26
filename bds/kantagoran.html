@@ -276,6 +276,68 @@
   .livre-count { font-size:0.65rem; color:var(--SUB); font-style:italic; margin-bottom:0.5rem; }
   .livre-empty { font-size:0.82rem; color:var(--SUB); font-style:italic; padding:0.4rem 0; }
   .livre-badge-leg { display:inline-block; font-size:0.55rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--GLD); border:1px solid rgba(184,146,42,0.4); padding:0.05rem 0.3rem; border-radius:1px; margin-left:0.35rem; vertical-align:middle; }
+
+  /* ══ L'ŒIL ET LE SOUFFLE ══ */
+  .visee-card { background:rgba(8,8,12,0.7); border:1px solid rgba(74,122,58,0.25); border-radius:2px; padding:1.1rem; grid-column:1/-1; }
+  .visee-epigraph { font-size:0.78rem; color:var(--SUB); font-style:italic; font-family:"Crimson Text",serif; margin-bottom:0.9rem; line-height:1.5; border-left:2px solid rgba(74,122,58,0.3); padding-left:0.6rem; }
+  .visee-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media (max-width:760px) { .visee-grid { grid-template-columns:1fr; } }
+  .visee-block { background:rgba(74,122,58,0.04); border:1px solid rgba(74,122,58,0.13); border-radius:2px; padding:0.8rem; }
+  .visee-block-title { font-family:"Cinzel",serif; font-size:0.66rem; letter-spacing:0.13em; text-transform:uppercase; color:var(--VIO2); margin-bottom:0.2rem; }
+  .visee-block-sub { font-size:0.7rem; color:var(--SUB); font-style:italic; line-height:1.45; margin-bottom:0.65rem; }
+  /* Souffle — jauge */
+  .souffle-row { display:flex; align-items:center; gap:0.7rem; margin-bottom:0.55rem; }
+  .souffle-pips { display:flex; gap:0.4rem; }
+  .souffle-pip { width:26px; height:26px; border-radius:50%; border:1px solid rgba(74,122,58,0.4); background:rgba(8,8,12,0.6); transition:all 0.2s; position:relative; }
+  .souffle-pip.lit { background:radial-gradient(circle at 38% 35%, var(--VIO2), var(--VIO)); border-color:var(--VIO2); box-shadow:0 0 8px rgba(122,184,104,0.5); }
+  .souffle-pip.flash { animation:souffleFlash 0.5s ease; }
+  @keyframes souffleFlash { 0%{box-shadow:0 0 0 rgba(122,184,104,0);} 50%{box-shadow:0 0 16px 4px rgba(122,184,104,0.9);} 100%{box-shadow:0 0 8px rgba(122,184,104,0.5);} }
+  .souffle-ctrl { display:flex; gap:0.35rem; }
+  .souffle-btn { width:28px; height:28px; border-radius:2px; font-size:1.05rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; background:rgba(94,128,79,0.15); border:1px solid rgba(94,128,79,0.35); color:var(--VIO2); }
+  .souffle-btn:hover { background:rgba(94,128,79,0.32); }
+  .souffle-uses { font-size:0.72rem; color:var(--parchment-dark); line-height:1.6; }
+  .souffle-uses b { color:var(--VIO2); font-weight:600; }
+  /* Marques de chasse */
+  .marque-slot { display:flex; align-items:flex-start; gap:0.5rem; padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .marque-slot:last-of-type { border-bottom:none; }
+  .marque-dot { width:13px; height:13px; flex-shrink:0; margin-top:0.2rem; border-radius:50%; border:1px solid rgba(184,146,42,0.5); }
+  .marque-dot.active { background:radial-gradient(circle at 38% 35%, #d8b84a, var(--GLD)); box-shadow:0 0 7px rgba(184,146,42,0.55); }
+  .marque-fields { flex:1; display:flex; flex-direction:column; gap:0.25rem; }
+  .marque-name, .marque-faille { background:rgba(74,122,58,0.06); border:1px solid rgba(74,122,58,0.16); color:var(--parchment); font-family:"Crimson Text",serif; padding:0.22rem 0.45rem; border-radius:1px; width:100%; }
+  .marque-name { font-size:0.84rem; font-weight:600; }
+  .marque-faille { font-size:0.78rem; font-style:italic; color:var(--parchment-dark); }
+  .marque-name:focus, .marque-faille:focus { outline:none; border-color:rgba(74,122,58,0.5); }
+  .marque-clear { color:rgba(139,26,26,0.45); cursor:pointer; font-size:0.74rem; flex-shrink:0; padding:0.1rem 0.2rem; transition:color 0.15s; }
+  .marque-clear:hover { color:#e08080; }
+  /* Listes génériques (postes / carquois) */
+  .visee-list-empty { font-size:0.78rem; color:var(--SUB); font-style:italic; padding:0.35rem 0; }
+  .poste-entry { display:flex; align-items:flex-start; gap:0.5rem; padding:0.38rem 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:0.82rem; }
+  .poste-entry:last-child { border-bottom:none; }
+  .poste-entry-body { flex:1; }
+  .poste-entry-name { color:var(--parchment); font-weight:600; font-family:"Cinzel",serif; font-size:0.78rem; }
+  .poste-entry-desc { color:var(--parchment-dark); font-size:0.76rem; font-style:italic; margin-top:0.08rem; line-height:1.4; }
+  .visee-del { color:rgba(139,26,26,0.4); cursor:pointer; font-size:0.72rem; flex-shrink:0; transition:color 0.15s; padding:0.1rem; }
+  .visee-del:hover { color:#e08080; }
+  /* Carquois */
+  .carquois-row { display:flex; align-items:center; gap:0.5rem; padding:0.36rem 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .carquois-row:last-of-type { border-bottom:none; }
+  .carquois-info { flex:1; }
+  .carquois-name { color:var(--parchment); font-weight:600; font-family:"Cinzel",serif; font-size:0.76rem; }
+  .carquois-effet { color:var(--parchment-dark); font-size:0.74rem; font-style:italic; line-height:1.35; }
+  .carquois-qty { display:flex; align-items:center; gap:0.3rem; flex-shrink:0; }
+  .carquois-qbtn { width:22px; height:22px; border-radius:2px; font-size:0.9rem; cursor:pointer; display:flex; align-items:center; justify-content:center; background:rgba(94,128,79,0.13); border:1px solid rgba(94,128,79,0.3); color:var(--VIO2); transition:all 0.15s; }
+  .carquois-qbtn:hover { background:rgba(94,128,79,0.3); }
+  .carquois-qval { font-family:"Cinzel",serif; font-size:0.85rem; color:var(--GLD); min-width:22px; text-align:center; }
+  .carquois-qval.zero { color:rgba(102,85,85,0.7); }
+  /* Formulaire d'ajout réutilisé */
+  .visee-add-form { display:none; margin-top:0.55rem; background:rgba(74,122,58,0.05); border:1px solid rgba(74,122,58,0.15); border-radius:2px; padding:0.6rem; flex-direction:column; gap:0.38rem; }
+  .visee-add-form.visible { display:flex; }
+  .visee-add-form input, .visee-add-form textarea { background:rgba(74,122,58,0.07); border:1px solid rgba(74,122,58,0.2); color:var(--parchment); font-family:"Crimson Text",serif; font-size:0.85rem; padding:0.28rem 0.46rem; border-radius:1px; width:100%; }
+  .visee-add-form input:focus, .visee-add-form textarea:focus { outline:none; border-color:rgba(74,122,58,0.5); }
+  .visee-add-form textarea { resize:vertical; min-height:42px; }
+  .visee-add-form .form-row { display:flex; gap:0.4rem; align-items:center; }
+  .visee-add-form .form-row input { flex:1; }
+  .visee-add-form input.qty-input { width:60px; flex:0 0 60px; text-align:center; }
 </style>
 </head>
 <body>
@@ -594,6 +656,79 @@
           <button class="btn-cancel" onclick="livreToggleForm('lieux')">Annuler</button>
         </div>
       </div>
+    </div>
+  </div>
+
+
+  <!-- L'ŒIL ET LE SOUFFLE -->
+  <div class="visee-card">
+    <div class="card-title vio" style="margin-bottom:0.5rem;">L&#x2019;&#x152;il et le Souffle
+      <span style="font-size:0.62rem;color:var(--SUB);font-style:italic;font-family:'Crimson Text',serif;text-transform:none;letter-spacing:0;margin-left:0.5rem;">&#x2014; discipline du tir d&#x2019;&#xE9;lite</span>
+    </div>
+    <div class="visee-epigraph">&#xAB;&#xA0;On ne tire pas une fl&#xE8;che. On la laisse partir.&#xA0;&#xBB; &#x2014; La pr&#xE9;cision n&#x2019;est pas un don&#x202F;: c&#x2019;est de la pr&#xE9;paration, du positionnement et de la patience.</div>
+
+    <div class="visee-grid">
+
+      <!-- SOUFFLE -->
+      <div class="visee-block">
+        <div class="visee-block-title">Le Souffle</div>
+        <div class="visee-block-sub">Gagne 1 Souffle en sacrifiant ton D&#xE9;placement du tour pour te stabiliser et viser (action sur place). Maximum 3. D&#xE9;pense-les pour fiabiliser un tir.</div>
+        <div class="souffle-row">
+          <div class="souffle-pips" id="souffle-pips"></div>
+          <div class="souffle-ctrl">
+            <button class="souffle-btn" onclick="souffleChange(-1)" title="D&#xE9;penser un Souffle">&#x2212;</button>
+            <button class="souffle-btn" onclick="souffleChange(1)" title="Gagner un Souffle">+</button>
+          </div>
+        </div>
+        <div class="souffle-uses">
+          Dépense 1 Souffle pour&#x202F;:<br>
+          &#x2022; <b>Annuler</b> un cran de malus de portée ou de visibilité<br>
+          &#x2022; <b>Ignorer</b> la pénalité de cible en mouvement<br>
+          &#x2022; <b>Relancer</b> le dé de localisation d&#x2019;un tir réussi<br>
+          Dépense 2 Souffles&#x202F;: transformer un succès simple en <b>Critique</b> sur un tir préparé.
+        </div>
+      </div>
+
+      <!-- MARQUES DE CHASSE -->
+      <div class="visee-block">
+        <div class="visee-block-title">Marques de chasse</div>
+        <div class="visee-block-sub">Passe une action à observer une cible pour la marquer (max 2). Contre une cible marquée&#x202F;: +10 au tir tant qu&#x2019;elle reste en vue. Le MJ révèle une faille concrète.</div>
+        <div id="marques-list"></div>
+      </div>
+
+      <!-- POSTES DE TIR -->
+      <div class="visee-block">
+        <div class="visee-block-title">Postes de tir &#x2014; lecture du terrain</div>
+        <div class="visee-block-sub">Carnet des points de tir avantageux repérés. En les déclarant, Kantagoran obtient un bénéfice de positionnement&#x202F;: couvert, surplomb, ligne de retraite.</div>
+        <div id="postes-list"></div>
+        <button class="btn-add btn-add-vio" style="margin-top:0.5rem;" onclick="viseeToggleForm('poste')">+ Noter un poste</button>
+        <div class="visee-add-form" id="form-poste">
+          <input id="poste-name" placeholder="Lieu / repère &#x2014; ex&#x202F;: Crête au-dessus du gué" />
+          <textarea id="poste-desc" placeholder="Bénéfice &#x2014; ex&#x202F;: surplomb (+10 tir), couvert total, deux lignes de retraite"></textarea>
+          <div class="form-row">
+            <button class="btn-add btn-add-vio" onclick="posteAdd()">Ajouter</button>
+            <button class="btn-cancel" onclick="viseeToggleForm('poste')">Annuler</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARQUOIS -->
+      <div class="visee-block">
+        <div class="visee-block-title">Le Carquois &#x2014; flèches spéciales</div>
+        <div class="visee-block-sub">Munitions préparées, en quantité limitée. À usage unique&#x202F;: ajuste le compteur après chaque tir.</div>
+        <div id="carquois-list"></div>
+        <button class="btn-add btn-add-vio" style="margin-top:0.5rem;" onclick="viseeToggleForm('carquois')">+ Ajouter un type de fl&#xE8;che</button>
+        <div class="visee-add-form" id="form-carquois">
+          <input id="carquois-name" placeholder="Type &#x2014; ex&#x202F;: Fl&#xE8;che perce-armure" />
+          <textarea id="carquois-effet" placeholder="Effet &#x2014; ex&#x202F;: ignore 2 points de PA / siffle pour signaler / fumée"></textarea>
+          <div class="form-row">
+            <input class="qty-input" id="carquois-qty" type="number" min="0" value="3" placeholder="Qté" />
+            <button class="btn-add btn-add-vio" onclick="carquoisAdd()">Ajouter</button>
+            <button class="btn-cancel" onclick="viseeToggleForm('carquois')">Annuler</button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -1150,7 +1285,8 @@ function ioStatus(msg, cls) {
   el.className = 'io-status' + (cls ? ' ' + cls : '');
 }
 function exportJSON() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const full = Object.assign({}, state, { _livre: livreData, _visee: viseeData });
+  const blob = new Blob([JSON.stringify(full, null, 2)], {type:'application/json'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = 'kantagoran.json'; a.click();
   ioStatus('✓ Exporté', 'ok'); setTimeout(()=>ioStatus('',''),3000);
@@ -1174,6 +1310,19 @@ function importJSON(input) {
       if(saved.armor) state.armor=saved.armor;
       if(saved.armorPieces) state.armorPieces=saved.armorPieces;
       save(); renderAll();
+      if(saved._livre) {
+        LIVRE_CATS.forEach(c => { if(saved._livre[c]) livreData[c] = saved._livre[c]; });
+        livreSave(); LIVRE_CATS.forEach(c => livreRender(c));
+      }
+      if(saved._visee) {
+        const v = saved._visee;
+        if(typeof v.souffle === "number") viseeData.souffle = Math.max(0, Math.min(3, v.souffle));
+        if(Array.isArray(v.marques) && v.marques.length === 2) viseeData.marques = v.marques;
+        if(Array.isArray(v.postes)) viseeData.postes = v.postes;
+        if(Array.isArray(v.carquois)) viseeData.carquois = v.carquois;
+        viseeSave();
+        viseeRenderSouffle(); viseeRenderMarques(); viseeRenderPostes(); viseeRenderCarquois();
+      }
       ioStatus('✓ Importé', 'ok'); setTimeout(()=>ioStatus('',''),3000);
     } catch(err) { ioStatus('Erreur : ' + err.message, 'err'); }
   };
@@ -1294,6 +1443,187 @@ renderSkillsAdv = function() { _origRenderSkillsAdv(); applyAdvSkillEditable(); 
   if(el){ el.addEventListener('blur', saveAll); el.addEventListener('input', saveAll); }
 });
 window.addEventListener('beforeunload', saveAll);
+
+// ══════ L'ŒIL ET LE SOUFFLE ══════
+let viseeData = {
+  souffle: 0,
+  marques: [ { name:"", faille:"" }, { name:"", faille:"" } ],
+  postes: [],
+  carquois: []
+};
+
+function viseeLoad() {
+  const raw = localStorage.getItem("visee_kant_v1");
+  if(raw) try {
+    const d = JSON.parse(raw);
+    if(typeof d.souffle === "number") viseeData.souffle = Math.max(0, Math.min(3, d.souffle));
+    if(Array.isArray(d.marques) && d.marques.length === 2) viseeData.marques = d.marques;
+    if(Array.isArray(d.postes)) viseeData.postes = d.postes;
+    if(Array.isArray(d.carquois)) viseeData.carquois = d.carquois;
+  } catch(e){}
+  viseeRenderSouffle();
+  viseeRenderMarques();
+  viseeRenderPostes();
+  viseeRenderCarquois();
+}
+function viseeSave() { localStorage.setItem("visee_kant_v1", JSON.stringify(viseeData)); }
+
+// — Souffle —
+function viseeRenderSouffle() {
+  const pips = document.getElementById("souffle-pips");
+  if(!pips) return;
+  pips.innerHTML = "";
+  for(let i=0;i<3;i++) {
+    const p = document.createElement("div");
+    p.className = "souffle-pip" + (i < viseeData.souffle ? " lit" : "");
+    pips.appendChild(p);
+  }
+}
+function souffleChange(delta) {
+  const before = viseeData.souffle;
+  viseeData.souffle = Math.max(0, Math.min(3, viseeData.souffle + delta));
+  viseeSave();
+  viseeRenderSouffle();
+  if(delta > 0 && viseeData.souffle > before) {
+    const pips = document.querySelectorAll("#souffle-pips .souffle-pip");
+    const last = pips[viseeData.souffle - 1];
+    if(last) { last.classList.add("flash"); setTimeout(function(){ last.classList.remove("flash"); }, 500); }
+  }
+}
+
+// — Marques de chasse —
+function viseeRenderMarques() {
+  const list = document.getElementById("marques-list");
+  if(!list) return;
+  list.innerHTML = "";
+  viseeData.marques.forEach(function(m, i) {
+    const active = (m.name || "").trim() !== "";
+    const slot = document.createElement("div");
+    slot.className = "marque-slot";
+    slot.innerHTML =
+      "<div class=\"marque-dot" + (active ? " active" : "") + "\"></div>" +
+      "<div class=\"marque-fields\">" +
+        "<input class=\"marque-name\" placeholder=\"Cible marquée…\" value=\"" + viseeEsc(m.name) + "\" oninput=\"marqueEdit(" + i + ",'name',this.value)\" />" +
+        "<input class=\"marque-faille\" placeholder=\"Faille révélée par le MJ…\" value=\"" + viseeEsc(m.faille) + "\" oninput=\"marqueEdit(" + i + ",'faille',this.value)\" />" +
+      "</div>" +
+      "<span class=\"marque-clear\" onclick=\"marqueClear(" + i + ")\" title=\"Libérer la marque\">✕</span>";
+    list.appendChild(slot);
+  });
+}
+function marqueEdit(i, field, val) {
+  if(!viseeData.marques[i]) return;
+  viseeData.marques[i][field] = val;
+  viseeSave();
+  const dot = document.querySelectorAll("#marques-list .marque-dot")[i];
+  if(dot) dot.classList.toggle("active", (viseeData.marques[i].name || "").trim() !== "");
+}
+function marqueClear(i) {
+  viseeData.marques[i] = { name:"", faille:"" };
+  viseeSave();
+  viseeRenderMarques();
+}
+
+// — Postes de tir —
+function viseeRenderPostes() {
+  const list = document.getElementById("postes-list");
+  if(!list) return;
+  list.innerHTML = "";
+  if(!viseeData.postes.length) {
+    list.innerHTML = "<div class=\"visee-list-empty\">Aucun poste repéré.</div>";
+    return;
+  }
+  viseeData.postes.forEach(function(p, i) {
+    const div = document.createElement("div");
+    div.className = "poste-entry";
+    div.innerHTML =
+      "<div class=\"poste-entry-body\">" +
+        "<div class=\"poste-entry-name\">" + viseeEsc(p.name) + "</div>" +
+        (p.desc ? "<div class=\"poste-entry-desc\">" + viseeEsc(p.desc) + "</div>" : "") +
+      "</div>" +
+      "<span class=\"visee-del\" onclick=\"posteDelete(" + i + ")\" title=\"Supprimer\">✕</span>";
+    list.appendChild(div);
+  });
+}
+function posteAdd() {
+  const nameEl = document.getElementById("poste-name");
+  const descEl = document.getElementById("poste-desc");
+  if(!nameEl || !nameEl.value.trim()) return;
+  viseeData.postes.push({ name:nameEl.value.trim(), desc:descEl ? descEl.value.trim() : "" });
+  nameEl.value = "";
+  if(descEl) descEl.value = "";
+  viseeSave();
+  viseeRenderPostes();
+  viseeToggleForm("poste");
+}
+function posteDelete(i) {
+  if(confirm("Supprimer ce poste de tir ?")) { viseeData.postes.splice(i,1); viseeSave(); viseeRenderPostes(); }
+}
+
+// — Carquois —
+function viseeRenderCarquois() {
+  const list = document.getElementById("carquois-list");
+  if(!list) return;
+  list.innerHTML = "";
+  if(!viseeData.carquois.length) {
+    list.innerHTML = "<div class=\"visee-list-empty\">Carquois standard uniquement.</div>";
+    return;
+  }
+  viseeData.carquois.forEach(function(c, i) {
+    const row = document.createElement("div");
+    row.className = "carquois-row";
+    const qty = c.qty || 0;
+    row.innerHTML =
+      "<div class=\"carquois-info\">" +
+        "<div class=\"carquois-name\">" + viseeEsc(c.name) + "</div>" +
+        (c.effet ? "<div class=\"carquois-effet\">" + viseeEsc(c.effet) + "</div>" : "") +
+      "</div>" +
+      "<div class=\"carquois-qty\">" +
+        "<button class=\"carquois-qbtn\" onclick=\"carquoisQty(" + i + ",-1)\">&#x2212;</button>" +
+        "<span class=\"carquois-qval" + (qty === 0 ? " zero" : "") + "\">" + qty + "</span>" +
+        "<button class=\"carquois-qbtn\" onclick=\"carquoisQty(" + i + ",1)\">+</button>" +
+      "</div>" +
+      "<span class=\"visee-del\" onclick=\"carquoisDelete(" + i + ")\" title=\"Supprimer\">✕</span>";
+    list.appendChild(row);
+  });
+}
+function carquoisAdd() {
+  const nameEl = document.getElementById("carquois-name");
+  const effetEl = document.getElementById("carquois-effet");
+  const qtyEl = document.getElementById("carquois-qty");
+  if(!nameEl || !nameEl.value.trim()) return;
+  viseeData.carquois.push({
+    name: nameEl.value.trim(),
+    effet: effetEl ? effetEl.value.trim() : "",
+    qty: qtyEl ? (parseInt(qtyEl.value) || 0) : 0
+  });
+  nameEl.value = "";
+  if(effetEl) effetEl.value = "";
+  if(qtyEl) qtyEl.value = "3";
+  viseeSave();
+  viseeRenderCarquois();
+  viseeToggleForm("carquois");
+}
+function carquoisQty(i, delta) {
+  if(!viseeData.carquois[i]) return;
+  viseeData.carquois[i].qty = Math.max(0, (viseeData.carquois[i].qty || 0) + delta);
+  viseeSave();
+  viseeRenderCarquois();
+}
+function carquoisDelete(i) {
+  if(confirm("Retirer ce type de flèche ?")) { viseeData.carquois.splice(i,1); viseeSave(); viseeRenderCarquois(); }
+}
+
+// — Commun —
+function viseeToggleForm(kind) {
+  const form = document.getElementById("form-" + kind);
+  if(form) form.classList.toggle("visible");
+}
+function viseeEsc(s) {
+  return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+// Appel initial
+viseeLoad();
 
 // ══════ LIVRE DES PRÉSENCES ══════
 const LIVRE_CATS = ['legendaire','lieux','faune'];
