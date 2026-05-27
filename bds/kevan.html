@@ -364,6 +364,15 @@
   .xp-grid-table tr.cur td { background:rgba(184,146,42,0.16); color:#e8c45a; font-weight:700; }
   .xp-grid-table tr.cur td:first-child { color:#e8c45a; }
   .xp-grid-note { font-size:0.6rem; color:var(--SUB); font-style:italic; margin-top:0.3rem; line-height:1.4; }
+  /* ══ LIGNE CARRIÈRE ÉDITABLE ══ */
+  .career-line { display:flex; align-items:center; gap:0.35rem; flex-wrap:wrap; margin-top:0.15rem; }
+  .career-input { background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.1); color:var(--SUB); font-family:"Crimson Text",serif; font-size:0.85rem; font-style:italic; padding:0.05rem 0.15rem; transition:border-color 0.15s; }
+  .career-input:focus { outline:none; border-bottom-color:rgba(184,146,42,0.6); color:var(--parchment-dark); }
+  .career-input::placeholder { color:rgba(120,110,110,0.5); }
+  .career-input.career-carriere { width:170px; }
+  .career-input.career-num { width:34px; text-align:center; }
+  .career-input.career-echelon { width:150px; }
+  .career-sep { color:var(--SUB); opacity:0.5; }
 </style>
 </head>
 <body>
@@ -399,8 +408,7 @@
     </div>
     <div class="perso-info">
       <h1>Kevan Dolseicht</h1>
-      <div class="sub">Répurgateur (Humain) &middot; Itinérant &middot; 1 Interrogateur</div>
-      <div class="player">Seb (Zeke) &middot; Humain &middot; Âge 17 &middot; Argent 1 &middot; Masculin</div>
+      <div class="career-line"><input class="career-input career-carriere" id="career-carriere" value="Répurgateur" placeholder="Nom de carrière" onchange="careerSave()" /><span class="career-sep">·</span><input class="career-input career-num" id="career-num" value="1" placeholder="N°" onchange="careerSave()" /><span class="career-sep">·</span><input class="career-input career-echelon" id="career-echelon" value="Interrogateur" placeholder="Nom d&#x2019;échelon" onchange="careerSave()" /></div>
     </div>
     <div class="perso-meta">
       <div>Taille 1m85 &middot; Poids 80 kg</div>
@@ -802,6 +810,28 @@
 </div>
 
 <script>
+// ══ LIGNE CARRIÈRE ÉDITABLE ══
+function careerSave() {
+  var d={};
+  ['carriere','num','echelon'].forEach(function(k){
+    var el=document.getElementById('career-'+k);
+    if(el) d[k]=el.value;
+  });
+  localStorage.setItem("career_kevan", JSON.stringify(d));
+}
+function careerLoad() {
+  var raw=localStorage.getItem("career_kevan");
+  if(!raw) return;
+  try {
+    var d=JSON.parse(raw);
+    ['carriere','num','echelon'].forEach(function(k){
+      var el=document.getElementById('career-'+k);
+      if(el && d[k]!==undefined) el.value=d[k];
+    });
+  } catch(e){}
+}
+careerLoad();
+
 // ══ AFFICHAGE PALIERS D'AUGMENTATION (XP) ══
 var XP_GRILLE_CARAC = [25,30,40,50,70,90,120,150,190,230,280,330,390,450];
 var XP_GRILLE_COMP  = [10,15,20,30,40,60,80,110,140,180,220,270,320,380];
