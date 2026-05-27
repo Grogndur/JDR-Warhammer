@@ -80,14 +80,15 @@
   .money-btn { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); color:var(--SUB); cursor:pointer; font-size:0.7rem; width:20px; height:20px; border-radius:1px; transition:all 0.15s; display:flex; align-items:center; justify-content:center; }
   .money-btn:hover { color:var(--GLD); border-color:rgba(184,146,42,0.3); }
 
-  .skill-list { list-style:none; column-count:2; column-gap:1.6rem; }
-  .skill-list li { display:flex; align-items:baseline; padding:0.28rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.82rem; gap:0.5rem; break-inside:avoid; -webkit-column-break-inside:avoid; }
+  .skill-list { list-style:none; column-count:2; column-gap:1.5rem; }
+  .skill-list li { display:flex; align-items:center; padding:0.3rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.8rem; gap:0.4rem; break-inside:avoid; -webkit-column-break-inside:avoid; flex-wrap:wrap; }
   .skill-list li:last-child { border-bottom:none; }
-  .skill-name { color:var(--parchment-dark); flex:0 1 auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .skill-aug { width:30px; flex-shrink:0; }
-  .skill-aug .editable-num { width:30px; font-size:0.8rem; color:var(--VIO2); border-bottom-color:rgba(224,96,48,0.15); text-align:center; }
-  .skill-total { font-family:'Cinzel',serif; color:var(--GLD); font-size:0.88rem; font-weight:600; min-width:24px; text-align:left; flex-shrink:0; }
-  .skill-list li > .xp-badge { margin-left:0; }
+  .skill-name { color:var(--parchment-dark); flex:1 1 0; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .skill-field { display:flex; flex-direction:column; align-items:center; flex-shrink:0; }
+  .skill-field-lbl { font-size:0.44rem; letter-spacing:0.04em; text-transform:uppercase; color:var(--SUB); opacity:0.7; line-height:1; margin-bottom:0.05rem; }
+  .skill-field .editable-num { width:28px; font-size:0.78rem; text-align:center; }
+  .skill-total { font-family:'Cinzel',serif; color:var(--GLD); font-size:0.9rem; font-weight:700; min-width:30px; text-align:right; flex-shrink:0; }
+  .skill-list li > .xp-badge { flex-basis:100%; margin-left:0; }
   @media(max-width:700px){ .skill-list { column-count:1; } }
 
   /* Sorts */
@@ -374,8 +375,18 @@
   .stat-nba-row .nba-bonus { color:#cda64a; }
   .stat-nba-row .nba-aug   { color:var(--VIO2); }
   .stat-nba-sep { height:1px; background:rgba(255,255,255,0.05); margin:0.05rem 0; }
+  /* ══ DESTIN/CHANCE · RÉSILIENCE/DÉTERMINATION ══ */
+  .fortune-row { display:flex; align-items:flex-start; gap:0.8rem; flex-wrap:wrap; }
+  .fortune-cell { display:flex; flex-direction:column; align-items:center; }
+  .fortune-lbl { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); height:1.5em; display:flex; align-items:center; text-align:center; }
+  .fortune-lbl-sub { opacity:0.55; font-size:0.85em; margin-left:0.2em; }
+  .fortune-input { width:54px; text-align:center; font-family:"Cinzel",serif; font-size:1.25rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:3px; padding:0.2rem 0; transition:border-color 0.15s; margin:0.25rem 0; }
+  .fortune-input:focus { outline:none; border-color:rgba(184,146,42,0.55); }
+  .fortune-input.fortune-max { color:var(--GLD); }
+  .fortune-input.fortune-cur { color:var(--parchment); }
+  .fortune-hint { font-size:0.62rem; color:var(--SUB); font-family:"Cinzel",serif; height:1.1em; }
+  .fortune-arrow { color:var(--SUB); font-size:1.1rem; align-self:center; margin-top:0.6rem; }
   /* ══ AFFICHAGE PALIERS D'AUGMENTATION (XP) ══ */
-  .skill-list li { flex-wrap:wrap; }
   .xp-badge { display:inline-flex; align-items:center; gap:0.3rem; font-family:"Cinzel",serif; font-size:0.56rem; letter-spacing:0.02em; padding:0.12rem 0.4rem; border-radius:2px; cursor:pointer; border:1px solid rgba(184,146,42,0.35); background:rgba(184,146,42,0.07); color:var(--SUB); white-space:nowrap; transition:all 0.15s; user-select:none; }
   .xp-badge:hover { background:rgba(184,146,42,0.16); border-color:rgba(184,146,42,0.55); }
   .xp-badge .xp-aug { color:var(--parchment-dark); }
@@ -463,33 +474,34 @@
       </div>
     </div>
     <div style="margin-bottom:0.6rem;">
-      <div class="card-title" style="color:var(--GLD);margin-bottom:0.4rem;font-size:0.62rem;">Destin &amp; Chance</div>
-      <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
-          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Destin</span>
-          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--GLD);">2</span>
-          <div style="display:flex;gap:0.3rem;" id="chance-pips"></div>
+      <div class="card-title" style="color:var(--GLD);margin-bottom:0.4rem;font-size:0.62rem;">Destin & Chance</div>
+      <div class="fortune-row">
+        <div class="fortune-cell">
+          <span class="fortune-lbl">Destin <span class="fortune-lbl-sub">(max)</span></span>
+          <input class="fortune-input fortune-max" type="number" min="0" id="destin-input" value="1" onchange="updateFortune('destin',this.value)" />
+          <span class="fortune-hint">&nbsp;</span>
         </div>
-        <div style="color:var(--SUB);font-size:1rem;">&#8594;</div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
-          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Chance</span>
-          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--parchment);" id="chance-val">2</span>
-          <div style="display:flex;gap:0.3rem;" id="chance-track"></div>
+        <div class="fortune-arrow">&#8594;</div>
+        <div class="fortune-cell">
+          <span class="fortune-lbl">Chance</span>
+          <input class="fortune-input fortune-cur" type="number" min="0" id="chance-input" value="1" onchange="updateFortune('chance',this.value)" />
+          <span class="fortune-hint" id="chance-hint">/ 1</span>
         </div>
       </div>
     </div>
     <div style="margin-bottom:0.75rem;">
       <div class="card-title" style="color:var(--VIO2);margin-bottom:0.4rem;font-size:0.62rem;">Resilience &amp; Determination</div>
-      <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
-          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Resilience</span>
-          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--VIO2);">2</span>
+      <div class="fortune-row">
+        <div class="fortune-cell">
+          <span class="fortune-lbl">Resilience <span class="fortune-lbl-sub">(max)</span></span>
+          <input class="fortune-input fortune-max" type="number" min="0" id="resil-input" value="1" onchange="updateFortune('resil',this.value)" />
+          <span class="fortune-hint">&nbsp;</span>
         </div>
-        <div style="color:var(--SUB);font-size:1rem;">&#8594;</div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
-          <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Determination</span>
-          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--parchment);" id="determ-val">2</span>
-          <div style="display:flex;gap:0.3rem;" id="determ-pips"></div>
+        <div class="fortune-arrow">&#8594;</div>
+        <div class="fortune-cell">
+          <span class="fortune-lbl">Determination</span>
+          <input class="fortune-input fortune-cur" type="number" min="0" id="determ-input" value="1" onchange="updateFortune('determ',this.value)" />
+          <span class="fortune-hint" id="determ-hint">/ 1</span>
         </div>
       </div>
     </div>
@@ -1020,7 +1032,7 @@ const SORTS_DEF = [
 // ══════ STATE ══════
 let state = {
   wounds: 9, woundsMax: 9,
-  chance: 2, determ: 2,
+  destin: 2, chance: 2, resil: 2, determ: 2,
   money: { or:0, argent:4, cuivre:43 },
   notes: '', cet: { corruption:'', mutations:'', etats:'' },
   xp: { actuelle:0, depensee:0, totale:0 },
@@ -1074,7 +1086,7 @@ function load() {
   const raw = localStorage.getItem('ephraim_v1');
   if (raw) try {
     const saved = JSON.parse(raw);
-    ['wounds','woundsMax','chance','determ','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
+    ['wounds','woundsMax','destin','chance','resil','determ','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
     if(saved.money)      Object.assign(state.money, saved.money);
     if(saved.cet)        Object.assign(state.cet, saved.cet);
     if(saved.xp)         Object.assign(state.xp, saved.xp);
@@ -1106,7 +1118,7 @@ function saveAll() {
 function renderAll() {
   renderStats(); renderSkillsBase(); renderSkillsAdv(); renderTalents();
   renderArmor(); renderArmorPieces(); renderWeapons(); renderInventory(); renderSorts();
-  renderChance(); renderDeterm();
+  renderFortune();
   document.getElementById('wounds-cur').textContent = state.wounds;
   const wmi=document.getElementById('w-max-input'); if(wmi) wmi.value=state.woundsMax||9;
   updateWoundColor();
@@ -1219,36 +1231,50 @@ function chMoney(k, d) {
 }
 
 // ══════ CHANCE / DETERM ══════
-const CLOVER_ICON=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="16" height="16"><g transform="translate(90,90)"><path d="M 0 30 Q 10 52 18 66" fill="none" stroke="#2d6b1a" stroke-width="9" stroke-linecap="round"/><path d="M 0 0 C -18 -4,-58 -10,-68 -28 C -76 -44,-58 -58,-38 -50 C -22 -44,-8 -30,0 -12 C 2 -8,2 -4,0 0 Z" fill="#3a8c1e" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><path d="M 0 0 C 18 -4,58 -10,68 -28 C 76 -44,58 -58,38 -50 C 22 -44,8 -30,0 -12 C -2 -8,-2 -4,0 0 Z" fill="#3a8c1e" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><path d="M 0 0 C -18 4,-58 10,-68 28 C -76 44,-58 58,-38 50 C -22 44,-8 30,0 12 C 2 8,2 4,0 0 Z" fill="#4aac28" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><path d="M 0 0 C 18 4,58 10,68 28 C 76 44,58 58,38 50 C 22 44,8 30,0 12 C -2 8,-2 4,0 0 Z" fill="#4aac28" stroke="#1f5210" stroke-width="2.5" stroke-linejoin="round"/><circle cx="0" cy="0" r="7" fill="#2d6b1a"/></g></svg>`;
-const FLAME_ICON=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="14" height="16"><g transform="translate(50,62)"><path d="M 0,-55 C 2,-45 14,-40 18,-30 L 26,-44 C 28,-33 38,-26 32,-14 L 46,-22 C 46,-11 50,-2 34,5 L 50,1 C 50,13 46,2 42,22 C 32,34 14,43 0,45 C -14,43 -32,34 -42,22 C -46,2 -50,13 -50,1 L -34,5 C -50,-2 -46,-11 -46,-22 L -32,-14 C -38,-26 -28,-33 -26,-44 L -18,-30 C -14,-40 -2,-45 0,-55 Z" fill="#f0922a"/></g></svg>`;
-function makePipsIcon(id,cur,max,fn,icon) {
-  const c=document.getElementById(id); if(!c) return; c.innerHTML='';
-  for(let i=0;i<max;i++){
-    const pip=document.createElement('div'); pip.className='pip'+(i<cur?' on':'');
-    if(icon) pip.innerHTML=icon;
-    pip.onclick=()=>fn(i<cur?i:i+1);
-    c.appendChild(pip);
-  }
+// ══════ DESTIN/CHANCE · RÉSILIENCE/DÉTERMINATION ══════
+function renderFortune() {
+  if(state.destin===undefined) state.destin=1;
+  if(state.resil===undefined) state.resil=1;
+  if((parseInt(state.chance)||0) > (parseInt(state.destin)||0)) state.chance=state.destin;
+  if((parseInt(state.determ)||0) > (parseInt(state.resil)||0)) state.determ=state.resil;
+  var set=function(id,v){ var el=document.getElementById(id); if(el) el.value=v; };
+  set('destin-input', parseInt(state.destin)||0);
+  set('chance-input', parseInt(state.chance)||0);
+  set('resil-input',  parseInt(state.resil)||0);
+  set('determ-input', parseInt(state.determ)||0);
+  var ch=document.getElementById('chance-hint'); if(ch) ch.textContent='/ '+(parseInt(state.destin)||0);
+  var dh=document.getElementById('determ-hint'); if(dh) dh.textContent='/ '+(parseInt(state.resil)||0);
 }
-function renderChance() { makePipsIcon('chance-track',state.chance,2,v=>{state.chance=v;save();renderChance();},CLOVER_ICON); }
-function renderDeterm() { makePipsIcon('determ-pips',state.determ,2,v=>{state.determ=v;save();renderDeterm();},FLAME_ICON); }
+function updateFortune(field,val) {
+  var v=Math.max(0,parseInt(val)||0);
+  if(field==='destin') { state.destin=v; if((parseInt(state.chance)||0)>v) state.chance=v; }
+  else if(field==='chance') { state.chance=Math.min(v, parseInt(state.destin)||0); }
+  else if(field==='resil') { state.resil=v; if((parseInt(state.determ)||0)>v) state.determ=v; }
+  else if(field==='determ') { state.determ=Math.min(v, parseInt(state.resil)||0); }
+  save();
+  renderFortune();
+}
 
 // ══════ COMPETENCES BASE ══════
 function renderSkillsBase() {
   const ul=document.getElementById('skills-base-list'); ul.innerHTML='';
   state.skillsBase.forEach((sk,i)=>{
-    const carV=carValeurFromLabel(sk.car); const total=carV+(parseInt(sk.aug)||0);
+    const carV=carValeurFromLabel(sk.car);
+    const bonus=parseInt(sk.bonus)||0;
+    const aug=parseInt(sk.aug)||0;
+    const total=carV+bonus+aug;
     const li=document.createElement('li');
     li.innerHTML=`
       <span class="skill-name">${sk.name} <span style="color:var(--SUB);font-size:0.7rem;">(${sk.car})</span></span>
-      <div class="skill-aug"><input class="editable-num" type="number" value="${sk.aug||0}" style="width:38px;font-size:0.8rem;color:var(--VIO2);border-bottom-color:rgba(224,96,48,0.12);" onchange="updateSkillBaseAug(${i},this.value)" /></div>
+      <div class="skill-field" title="Bonus (Talent, etc.) — ne compte pas dans les augmentations"><span class="skill-field-lbl">Bon.</span><input class="editable-num" type="number" value="${bonus}" style="width:28px;font-size:0.78rem;color:#cda64a;border-bottom-color:rgba(184,146,42,0.2);" onchange="updateSkillBaseField(${i},'bonus',this.value)" /></div>
+      <div class="skill-field" title="Augmentation (payée en XP)"><span class="skill-field-lbl">Aug.</span><input class="editable-num" type="number" value="${aug}" style="width:28px;font-size:0.78rem;color:var(--VIO2);border-bottom-color:rgba(224,96,48,0.2);" onchange="updateSkillBaseField(${i},'aug',this.value)" /></div>
       <span class="skill-total" id="sk-base-total-${i}">${total}</span>
-      <div style="flex-basis:100%;margin-top:0.25rem;">${xpBadgeHtml(sk.aug,'comp','sb-'+i)}</div>`;
+      <div style="flex-basis:100%;margin-top:0.25rem;">${xpBadgeHtml(aug,'comp','sb-'+i)}</div>`;
     ul.appendChild(li);
   });
 }
-function updateSkillBaseAug(idx,val) {
-  state.skillsBase[idx].aug=parseInt(val)||0;
+function updateSkillBaseField(idx,field,val) {
+  state.skillsBase[idx][field]=parseInt(val)||0;
   save();
   renderSkillsBase();
 }
@@ -1257,19 +1283,27 @@ function updateSkillBaseAug(idx,val) {
 function renderSkillsAdv() {
   const ul=document.getElementById('skills-adv-list'); ul.innerHTML='';
   state.skillsAdv.forEach((sk,i)=>{
-    const carV=carValeurFromLabel(sk.car); const total=carV+(parseInt(sk.aug)||0);
+    const carV=carValeurFromLabel(sk.car);
+    const bonus=parseInt(sk.bonus)||0;
+    const aug=parseInt(sk.aug)||0;
+    const total=carV+bonus+aug;
     const li=document.createElement('li');
     li.innerHTML=`
       <span class="skill-name">${sk.name} <span style="color:var(--SUB);font-size:0.7rem;">(${sk.car})</span></span>
-      <div class="skill-aug"><input class="editable-num" type="number" value="${sk.aug||0}" style="width:38px;font-size:0.8rem;color:var(--VIO2);border-bottom-color:rgba(224,96,48,0.12);" onchange="updateSkillAdv(${i},this.value)" /></div>
+      <div class="skill-field" title="Bonus (Talent, etc.) — ne compte pas dans les augmentations"><span class="skill-field-lbl">Bon.</span><input class="editable-num" type="number" value="${bonus}" style="width:28px;font-size:0.78rem;color:#cda64a;border-bottom-color:rgba(184,146,42,0.2);" onchange="updateSkillAdvField(${i},'bonus',this.value)" /></div>
+      <div class="skill-field" title="Augmentation (payée en XP)"><span class="skill-field-lbl">Aug.</span><input class="editable-num" type="number" value="${aug}" style="width:28px;font-size:0.78rem;color:var(--VIO2);border-bottom-color:rgba(224,96,48,0.2);" onchange="updateSkillAdvField(${i},'aug',this.value)" /></div>
       <span class="skill-total" id="sk-adv-total-${i}">${total}</span>
-      <span class="inv-del" onclick="deleteAdvSkill(${i})" title="Supprimer">x</span>
-      <div style="flex-basis:100%;margin-top:0.25rem;">${xpBadgeHtml(sk.aug,'comp','sa-'+i)}</div>`;
+      <span class="inv-del" onclick="deleteAdvSkill(${i})" title="Supprimer">✕</span>
+      <div style="flex-basis:100%;margin-top:0.25rem;">${xpBadgeHtml(aug,'comp','sa-'+i)}</div>`;
     ul.appendChild(li);
   });
   applyAdvSkillEditable();
 }
-function updateSkillAdv(idx,val) { state.skillsAdv[idx].aug=parseInt(val)||0; renderSkillsAdv(); save(); }
+function updateSkillAdvField(idx,field,val) {
+  state.skillsAdv[idx][field]=parseInt(val)||0;
+  renderSkillsAdv();
+  save();
+}
 function deleteAdvSkill(idx) { if(confirm('Supprimer ?')){ state.skillsAdv.splice(idx,1); renderSkillsAdv(); save(); } }
 function toggleAdvForm() { document.getElementById('adv-form').classList.toggle('visible'); }
 function addAdvSkill() {
@@ -1462,7 +1496,7 @@ function importJSON(input) {
   reader.onload=e=>{
     try {
       const saved=JSON.parse(e.target.result);
-      ['wounds','woundsMax','chance','determ','notes'].forEach(k=>{if(saved[k]!==undefined) state[k]=saved[k];});
+      ['wounds','woundsMax','destin','chance','resil','determ','notes'].forEach(k=>{if(saved[k]!==undefined) state[k]=saved[k];});
       if(saved.money) Object.assign(state.money,saved.money);
       if(saved.cet) Object.assign(state.cet,saved.cet);
       if(saved.xp) Object.assign(state.xp,saved.xp);

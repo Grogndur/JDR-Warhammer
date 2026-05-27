@@ -337,16 +337,16 @@
   .stat-nba-row .nba-aug   { color:var(--VIO2); }
   .stat-nba-sep { height:1px; background:rgba(255,255,255,0.05); margin:0.05rem 0; }
   /* ══ DESTIN/CHANCE · RÉSILIENCE/DÉTERMINATION ══ */
-  .fortune-row { display:flex; align-items:flex-end; gap:0.8rem; flex-wrap:wrap; }
-  .fortune-cell { display:flex; flex-direction:column; align-items:center; gap:0.3rem; }
-  .fortune-lbl { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); }
-  .fortune-lbl-sub { opacity:0.55; font-size:0.85em; }
-  .fortune-input { width:54px; text-align:center; font-family:"Cinzel",serif; font-size:1.25rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:3px; padding:0.2rem 0; transition:border-color 0.15s; }
+  .fortune-row { display:flex; align-items:flex-start; gap:0.8rem; flex-wrap:wrap; }
+  .fortune-cell { display:flex; flex-direction:column; align-items:center; }
+  .fortune-lbl { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); height:1.5em; display:flex; align-items:center; text-align:center; }
+  .fortune-lbl-sub { opacity:0.55; font-size:0.85em; margin-left:0.2em; }
+  .fortune-input { width:54px; text-align:center; font-family:"Cinzel",serif; font-size:1.25rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:3px; padding:0.2rem 0; transition:border-color 0.15s; margin:0.25rem 0; }
   .fortune-input:focus { outline:none; border-color:rgba(184,146,42,0.55); }
   .fortune-input.fortune-max { color:var(--GLD); }
   .fortune-input.fortune-cur { color:var(--parchment); }
-  .fortune-hint { font-size:0.62rem; color:var(--SUB); font-family:"Cinzel",serif; }
-  .fortune-arrow { color:var(--SUB); font-size:1.1rem; padding-bottom:0.4rem; }
+  .fortune-hint { font-size:0.62rem; color:var(--SUB); font-family:"Cinzel",serif; height:1.1em; }
+  .fortune-arrow { color:var(--SUB); font-size:1.1rem; align-self:center; margin-top:0.6rem; }
   /* ══ AFFICHAGE PALIERS D'AUGMENTATION (XP) ══ */
   .xp-badge { display:inline-flex; align-items:center; gap:0.3rem; font-family:"Cinzel",serif; font-size:0.56rem; letter-spacing:0.02em; padding:0.12rem 0.4rem; border-radius:2px; cursor:pointer; border:1px solid rgba(184,146,42,0.35); background:rgba(184,146,42,0.07); color:var(--SUB); white-space:nowrap; transition:all 0.15s; user-select:none; }
   .xp-badge:hover { background:rgba(184,146,42,0.16); border-color:rgba(184,146,42,0.55); }
@@ -441,6 +441,7 @@
         <div class="fortune-cell">
           <span class="fortune-lbl">Destin <span class="fortune-lbl-sub">(max)</span></span>
           <input class="fortune-input fortune-max" type="number" min="0" id="destin-input" value="1" onchange="updateFortune('destin',this.value)" />
+          <span class="fortune-hint">&nbsp;</span>
         </div>
         <div class="fortune-arrow">&#8594;</div>
         <div class="fortune-cell">
@@ -456,6 +457,7 @@
         <div class="fortune-cell">
           <span class="fortune-lbl">Résilience <span class="fortune-lbl-sub">(max)</span></span>
           <input class="fortune-input fortune-max" type="number" min="0" id="resil-input" value="1" onchange="updateFortune('resil',this.value)" />
+          <span class="fortune-hint">&nbsp;</span>
         </div>
         <div class="fortune-arrow">&#8594;</div>
         <div class="fortune-cell">
