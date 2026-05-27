@@ -929,6 +929,17 @@ function getStatBonusVal(key) {
   const s = state.stats[key];
   return (parseInt(s.natif)||0) + (parseInt(s.bonus)||0);
 }
+function carKeyFromLabel(label) {
+  if(!label) return null;
+  var map = { 'cc':'cc','ct':'ct','f':'f','end':'e','e':'e','ini':'ini','i':'ini','ag':'ag','dex':'dex','int':'int','fm':'fm','soc':'soc' };
+  return map[String(label).trim().toLowerCase()] || null;
+}
+function carValeurFromLabel(label) {
+  var k = carKeyFromLabel(label);
+  if(!k || !state.stats[k]) return 0;
+  return getStatTotal(k);
+}
+
 
 // ══════ LOAD / SAVE ══════
 function load() {
@@ -1008,7 +1019,7 @@ function updateStat(key,field,val) {
   if(field==='natif') s.natif=v;
   else if(field==='bonusAff') s.bonus=v-(parseInt(s.natif)||0);
   else if(field==='avance') s.avance=v;
-  save(); renderStats();
+  save(); renderStats(); renderSkillsBase(); renderSkillsAdv();
 }
 
 // ══════ WOUNDS ══════
@@ -1060,7 +1071,7 @@ function renderDeterm() { makePipsIcon('determ-pips',state.determ,1,v=>{state.de
 function renderSkillsBase() {
   const ul=document.getElementById('skills-base-list'); ul.innerHTML='';
   state.skillsBase.forEach((sk,i)=>{
-    const total=(parseInt(sk.base)||0)+(parseInt(sk.aug)||0);
+    const carV=carValeurFromLabel(sk.car); const total=carV+(parseInt(sk.aug)||0);
     const li=document.createElement('li');
     li.innerHTML=`
       <span class="skill-name">${sk.name} <span style="color:var(--SUB);font-size:0.7rem;">(${sk.car})</span></span>
@@ -1080,7 +1091,7 @@ function updateSkillBaseAug(idx,val) {
 function renderSkillsAdv() {
   const ul=document.getElementById('skills-adv-list'); ul.innerHTML='';
   state.skillsAdv.forEach((sk,i)=>{
-    const total=(parseInt(sk.carVal)||0)+(parseInt(sk.aug)||0);
+    const carV=carValeurFromLabel(sk.car); const total=carV+(parseInt(sk.aug)||0);
     const li=document.createElement('li');
     li.innerHTML=`
       <span class="skill-name">${sk.name} <span style="color:var(--SUB);font-size:0.7rem;">(${sk.car})</span></span>

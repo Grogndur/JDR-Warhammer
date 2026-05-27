@@ -962,6 +962,17 @@ function mergeStats(saved) {
 }
 function getStatTotal(k){ const s=state.stats[k]; return (parseInt(s.natif)||0)+(parseInt(s.bonus)||0)+(parseInt(s.avance)||0); }
 function getStatBonusVal(k){ const s=state.stats[k]; return (parseInt(s.natif)||0)+(parseInt(s.bonus)||0); }
+function carKeyFromLabel(label) {
+  if(!label) return null;
+  var map = { 'cc':'cc','ct':'ct','f':'f','end':'e','e':'e','ini':'ini','i':'ini','ag':'ag','dex':'dex','int':'int','fm':'fm','soc':'soc' };
+  return map[String(label).trim().toLowerCase()] || null;
+}
+function carValeurFromLabel(label) {
+  var k = carKeyFromLabel(label);
+  if(!k || !state.stats[k]) return 0;
+  return getStatTotal(k);
+}
+
 
 function load() {
   const raw=localStorage.getItem('kevan_v1');
@@ -1034,7 +1045,7 @@ function updateStat(key,field,val) {
   if(field==='natif') s.natif=v;
   else if(field==='bonusAff') s.bonus=v-(parseInt(s.natif)||0);
   else if(field==='avance') s.avance=v;
-  save(); renderStats();
+  save(); renderStats(); renderSkillsBase(); renderSkillsAdv();
 }
 function updateWoundsMax(val) { state.woundsMax=Math.max(1,parseInt(val)||1); document.getElementById('w-max-input').value=state.woundsMax; save(); }
 function changeWound(d) { state.wounds=Math.max(0,Math.min(state.woundsMax,state.wounds+d)); document.getElementById('wounds-cur').textContent=state.wounds; updateWoundColor(); save(); }
@@ -1070,7 +1081,7 @@ function renderDeterm() { makePipsIcon('determ-pips',state.determ,3,v=>{ state.d
 function renderSkillsBase() {
   const ul=document.getElementById('skills-base-list'); ul.innerHTML='';
   state.skillsBase.forEach((sk,i)=>{
-    const total=(parseInt(sk.base)||0)+(parseInt(sk.aug)||0);
+    const carV=carValeurFromLabel(sk.car); const total=carV+(parseInt(sk.aug)||0);
     const li=document.createElement('li');
     li.innerHTML='<span class="skill-name">'+sk.name+' <span style="color:var(--SUB);font-size:0.7rem;">('+sk.car+')</span></span>'
       +'<div class="skill-aug"><input class="editable-num" type="number" value="'+(sk.aug||0)+'" style="width:38px;font-size:0.8rem;color:var(--VIO2);border-bottom-color:rgba(160,120,48,0.12);" onchange="updateSkillBaseAug('+i+',this.value)" /></div>'
@@ -1084,7 +1095,7 @@ function updateSkillBaseAug(idx,val) { state.skillsBase[idx].aug=parseInt(val)||
 function renderSkillsAdv() {
   const ul=document.getElementById('skills-adv-list'); ul.innerHTML='';
   state.skillsAdv.forEach((sk,i)=>{
-    const total=(parseInt(sk.carVal)||0)+(parseInt(sk.aug)||0);
+    const carV=carValeurFromLabel(sk.car); const total=carV+(parseInt(sk.aug)||0);
     const li=document.createElement('li');
     li.innerHTML='<span class="skill-name">'+sk.name+' <span style="color:var(--SUB);font-size:0.7rem;">('+sk.car+')</span></span>'
       +'<div class="skill-aug"><input class="editable-num" type="number" value="'+(sk.aug||0)+'" style="width:38px;font-size:0.8rem;color:var(--VIO2);border-bottom-color:rgba(160,120,48,0.12);" onchange="updateSkillAdv('+i+',this.value)" /></div>'
