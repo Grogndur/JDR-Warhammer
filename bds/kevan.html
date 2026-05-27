@@ -279,6 +279,74 @@
   .df-form-row { display:grid; grid-template-columns:1fr 1fr; gap:0.38rem; }
   .df-form-label { font-size:0.57rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--FIRE); opacity:0.85; display:block; margin-bottom:0.1rem; }
   .df-form-actions { display:flex; gap:0.4rem; margin-top:0.1rem; }
+
+  /* ══ INTERROGATOIRE & POIDS DE L'ÂME ══ */
+  /* Encart explicatif sous le choix de méthode */
+  .interro-incidence { font-size:0.74rem; line-height:1.5; padding:0.42rem 0.55rem; border-radius:2px; border:1px solid; margin-top:0.15rem; transition:all 0.2s; }
+  .interro-incidence b { font-family:"Cinzel",serif; font-size:0.64rem; letter-spacing:0.06em; text-transform:uppercase; }
+  .interro-incidence.m0 { background:rgba(94,160,80,0.07); border-color:rgba(94,160,80,0.3); color:#9ac088; }
+  .interro-incidence.m0 b { color:#8ab870; }
+  .interro-incidence.m1 { background:rgba(160,120,48,0.08); border-color:rgba(160,120,48,0.35); color:#c8b070; }
+  .interro-incidence.m1 b { color:#cda64a; }
+  .interro-incidence.m2 { background:rgba(192,90,50,0.09); border-color:rgba(192,90,50,0.4); color:#d29878; }
+  .interro-incidence.m2 b { color:#d96a2c; }
+  .interro-incidence.m3 { background:rgba(139,26,26,0.12); border-color:rgba(139,26,26,0.5); color:#d98080; }
+  .interro-incidence.m3 b { color:#e05050; }
+  .interro-poids-preview { font-size:0.7rem; font-style:italic; margin-top:0.3rem; color:var(--SUB); }
+  .interro-poids-preview .v { font-family:"Cinzel",serif; font-style:normal; font-weight:700; }
+  /* Badge fiabilité sur les jugements consignés */
+  .jug-fiab-badge { font-size:0.56rem; letter-spacing:0.08em; text-transform:uppercase; padding:0.06rem 0.3rem; border-radius:1px; border:1px solid; white-space:nowrap; }
+  .jug-fiab-badge.net     { border-color:rgba(94,160,80,0.45); color:#8ab870; background:rgba(94,160,80,0.07); }
+  .jug-fiab-badge.entache { border-color:rgba(139,26,26,0.5); color:#e07070; background:rgba(139,26,26,0.09); }
+  .jug-interro-line { font-size:0.76rem; color:var(--parchment-dark); margin-bottom:0.4rem; padding:0.32rem 0.5rem; background:rgba(217,106,44,0.05); border-left:2px solid rgba(217,106,44,0.35); border-radius:1px; line-height:1.5; }
+  .jug-interro-line .lbl { font-family:"Cinzel",serif; font-size:0.58rem; letter-spacing:0.07em; text-transform:uppercase; color:var(--FIRE); opacity:0.8; }
+  .jug-item.entache { border-left-color:rgba(139,26,26,0.6) !important; }
+  .jug-entache-warn { font-size:0.74rem; font-style:italic; color:#d98080; margin-top:0.35rem; }
+  /* Le Poids de l'Âme — jauge */
+  .poids-card { background:rgba(8,8,12,0.55); border:1px solid rgba(139,26,26,0.22); border-radius:2px; padding:0.7rem 0.8rem; margin-bottom:0.85rem; }
+  .poids-head { display:flex; align-items:baseline; justify-content:space-between; gap:0.6rem; flex-wrap:wrap; margin-bottom:0.45rem; }
+  .poids-title { font-family:"Cinzel",serif; font-size:0.64rem; letter-spacing:0.16em; text-transform:uppercase; color:#c0392b; }
+  .poids-seuil { font-family:"Cinzel",serif; font-size:0.66rem; letter-spacing:0.08em; }
+  .poids-seuil.s0 { color:#8ab870; }
+  .poids-seuil.s1 { color:#cda64a; }
+  .poids-seuil.s2 { color:#e05050; }
+  .poids-track { display:flex; gap:3px; margin-bottom:0.4rem; }
+  .poids-cran { flex:1; height:14px; border-radius:1px; border:1px solid rgba(255,255,255,0.08); background:rgba(8,8,12,0.6); cursor:pointer; transition:all 0.15s; }
+  .poids-cran:hover { border-color:rgba(255,255,255,0.25); }
+  .poids-cran.on.t0 { background:rgba(94,160,80,0.55); border-color:rgba(94,160,80,0.7); }
+  .poids-cran.on.t1 { background:rgba(205,166,74,0.55); border-color:rgba(205,166,74,0.7); }
+  .poids-cran.on.t2 { background:rgba(192,57,43,0.6); border-color:rgba(192,57,43,0.8); }
+  .poids-desc { font-size:0.71rem; color:var(--SUB); font-style:italic; line-height:1.5; }
+  .poids-ctrl { display:flex; gap:0.3rem; align-items:center; margin-top:0.4rem; }
+  .poids-btn { font-family:"Cinzel",serif; font-size:0.56rem; letter-spacing:0.07em; text-transform:uppercase; padding:0.2rem 0.5rem; border-radius:1px; cursor:pointer; transition:all 0.15s; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--SUB); }
+  .poids-btn:hover { background:rgba(255,255,255,0.09); color:var(--parchment); }
+  /* Lignes Natif / Bonus / Augmentations dans les stat-box */
+  .stat-nba { margin-top:0.35rem; display:flex; flex-direction:column; gap:0.15rem; }
+  .stat-nba-row { display:flex; align-items:center; justify-content:space-between; gap:0.3rem; }
+  .stat-nba-lbl { font-size:0.5rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--SUB); }
+  .stat-nba-row input.editable-num { width:38px; font-size:0.74rem; text-align:center; }
+  .stat-nba-row .nba-natif { color:var(--parchment-dark); }
+  .stat-nba-row .nba-bonus { color:#cda64a; }
+  .stat-nba-row .nba-aug   { color:var(--VIO2); }
+  .stat-nba-sep { height:1px; background:rgba(255,255,255,0.05); margin:0.05rem 0; }
+  /* ══ AFFICHAGE PALIERS D'AUGMENTATION (XP) ══ */
+  .skill-list li { flex-wrap:wrap; }
+  .xp-badge { display:inline-flex; align-items:center; gap:0.3rem; font-family:"Cinzel",serif; font-size:0.56rem; letter-spacing:0.02em; padding:0.12rem 0.4rem; border-radius:2px; cursor:pointer; border:1px solid rgba(184,146,42,0.35); background:rgba(184,146,42,0.07); color:var(--SUB); white-space:nowrap; transition:all 0.15s; user-select:none; }
+  .xp-badge:hover { background:rgba(184,146,42,0.16); border-color:rgba(184,146,42,0.55); }
+  .xp-badge .xp-aug { color:var(--parchment-dark); }
+  .xp-badge .xp-cost { font-weight:700; color:#e8c45a; background:rgba(184,146,42,0.18); padding:0.02rem 0.3rem; border-radius:2px; }
+  .xp-badge .xp-caret { font-size:0.5rem; opacity:0.6; transition:transform 0.15s; }
+  .xp-badge.open .xp-caret { transform:rotate(180deg); }
+  .xp-grid-pop { display:none; margin-top:0.35rem; background:rgba(8,8,12,0.92); border:1px solid rgba(184,146,42,0.3); border-radius:3px; padding:0.5rem 0.6rem; }
+  .xp-grid-pop.open { display:block; }
+  .xp-grid-pop-title { font-family:"Cinzel",serif; font-size:0.56rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--GLD); margin-bottom:0.35rem; }
+  .xp-grid-table { width:100%; border-collapse:collapse; font-size:0.66rem; }
+  .xp-grid-table th { font-family:"Cinzel",serif; font-size:0.54rem; letter-spacing:0.04em; text-transform:uppercase; color:var(--SUB); padding:0.15rem 0.35rem; border-bottom:1px solid rgba(184,146,42,0.25); text-align:center; }
+  .xp-grid-table td { padding:0.13rem 0.35rem; text-align:center; color:var(--parchment-dark); border-bottom:1px solid rgba(255,255,255,0.035); }
+  .xp-grid-table td:first-child { color:var(--SUB); }
+  .xp-grid-table tr.cur td { background:rgba(184,146,42,0.16); color:#e8c45a; font-weight:700; }
+  .xp-grid-table tr.cur td:first-child { color:#e8c45a; }
+  .xp-grid-note { font-size:0.6rem; color:var(--SUB); font-style:italic; margin-top:0.3rem; line-height:1.4; }
 </style>
 </head>
 <body>
@@ -565,6 +633,21 @@
       <div class="jug-intro">
         Chaque décision morale tranchée — <strong>épargner</strong>, <strong>purger</strong>, <strong>ignorer</strong>, <strong>déléguer</strong> — pose un précédent. Une fois consigné, ce précédent peut être <strong>invoqué une fois</strong> pour gagner un bonus contextuel sur un jet similaire (Sigmar reconnaît sa propre logique). Mais si Kevan agit en contradiction directe avec un de ses précédents, le MJ peut le retourner contre lui : malus, perte de Réputation, friction intérieure. La jurisprudence est vivante. Elle te juge autant que tu juges.
       </div>
+
+      <!-- LE POIDS DE L'ÂME -->
+      <div class="poids-card">
+        <div class="poids-head">
+          <span class="poids-title">Le Poids de l&#x2019;&#xC2;me</span>
+          <span class="poids-seuil" id="poids-seuil"></span>
+        </div>
+        <div class="poids-track" id="poids-track"></div>
+        <div class="poids-desc" id="poids-desc"></div>
+        <div class="poids-ctrl">
+          <span style="font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--SUB);">Ajustement manuel (MJ)&#x202F;:</span>
+          <button class="poids-btn" onclick="poidsAdjust(-1)">&#x2212; All&#xE9;ger</button>
+          <button class="poids-btn" onclick="poidsAdjust(1)">+ Alourdir</button>
+        </div>
+      </div>
       <div id="jug-list"></div>
       <button class="btn-add btn-add-fire" style="margin-top:0.4rem;" onclick="dfToggleForm('df-form-jug')">+ Nouveau jugement</button>
       <div class="df-form" id="df-form-jug">
@@ -591,6 +674,27 @@
           <span class="df-form-label">Contexte de la décision</span>
           <textarea id="jug-desc" placeholder="Les faits, l'accusé, les circonstances..."></textarea>
         </div>
+        <div class="df-form-row">
+          <div>
+            <span class="df-form-label">Méthode d&#x2019;interrogatoire</span>
+            <select id="jug-methode" onchange="interroPreview()">
+              <option value="0">Plaidoyer &#x2014; écoute, persuasion, foi</option>
+              <option value="1">Pression &#x2014; intimidation, autorité</option>
+              <option value="2">Contrainte &#x2014; coercition, privation</option>
+              <option value="3">Question ardente &#x2014; torture</option>
+            </select>
+          </div>
+          <div>
+            <span class="df-form-label">Légitimité du soupçon</span>
+            <select id="jug-legit" onchange="interroPreview()">
+              <option value="0">Avérée &#x2014; preuve, flagrant délit</option>
+              <option value="1">Plausible &#x2014; indices sérieux</option>
+              <option value="2">Ténue &#x2014; rumeur, intuition</option>
+            </select>
+          </div>
+        </div>
+        <div class="interro-incidence m0" id="interro-incidence"></div>
+        <div class="interro-poids-preview" id="interro-poids-preview"></div>
         <div>
           <span class="df-form-label">Précédent établi (règle ou principe)</span>
           <textarea id="jug-precedent" placeholder="Ce que Kevan retient pour la suite. Ex : « On n'exécute pas un homme pour une rumeur. »"></textarea>
@@ -679,17 +783,69 @@
 </div>
 
 <script>
+// ══ AFFICHAGE PALIERS D'AUGMENTATION (XP) ══
+var XP_GRILLE_CARAC = [25,30,40,50,70,90,120,150,190,230,280,330,390,450];
+var XP_GRILLE_COMP  = [10,15,20,30,40,60,80,110,140,180,220,270,320,380];
+// n = nombre d'augmentations déjà faites ; la prochaine est la (n+1)e
+function xpTrancheIdx(prochaineNum) { var idx=Math.floor((prochaineNum-1)/5); if(idx<0) idx=0; return idx; }
+function xpCoutProchaine(n, grille) {
+  var idx = xpTrancheIdx(n+1);
+  if(idx>=grille.length) idx=grille.length-1;
+  return grille[idx];
+}
+function xpOrdinal(num) {
+  if(num===1) return "1re";
+  return num+"e";
+}
+// Construit le HTML du badge + grille dépliable. type = 'carac' ou 'comp'. uid = identifiant unique.
+function xpBadgeHtml(n, type, uid) {
+  n = parseInt(n)||0;
+  var grille = (type==='carac') ? XP_GRILLE_CARAC : XP_GRILLE_COMP;
+  var cout = xpCoutProchaine(n, grille);
+  var prochaine = n+1;
+  var curIdx = xpTrancheIdx(prochaine);
+  if(curIdx>=grille.length) curIdx=grille.length-1;
+  var html = '<span class="xp-badge" id="xpb-'+uid+'" onclick="xpToggleGrid(\''+uid+'\')">'
+    + '<span class="xp-aug">'+n+' aug.</span>'
+    + '<span style="opacity:0.5;">\u00b7</span>'
+    + 'proch. ('+xpOrdinal(prochaine)+')\u202f: <span class="xp-cost">'+cout+' PX</span>'
+    + '<span class="xp-caret">\u25be</span>'
+    + '</span>';
+  // grille dépliable
+  var rows='';
+  for(var i=0;i<grille.length;i++) {
+    var lo = i*5+1, hi = i*5+5;
+    var loTxt = (i===0) ? '0' : lo;
+    var cls = (i===curIdx) ? ' class="cur"' : '';
+    rows += '<tr'+cls+'><td>'+loTxt+'\u2013'+hi+'</td><td>'+grille[i]+' PX</td></tr>';
+  }
+  html += '<div class="xp-grid-pop" id="xpg-'+uid+'">'
+    + '<div class="xp-grid-pop-title">Co\u00fbt par augmentation \u2014 '+(type==='carac'?'caract\u00e9ristiques':'comp\u00e9tences')+'</div>'
+    + '<table class="xp-grid-table"><thead><tr><th>Augmentations</th><th>Co\u00fbt</th></tr></thead><tbody>'
+    + rows
+    + '</tbody></table>'
+    + '<div class="xp-grid-note">La tranche surlign\u00e9e est celle de la prochaine augmentation. Le bonus de cr\u00e9ation (valeur de gauche) ne compte pas comme une augmentation.</div>'
+    + '</div>';
+  return html;
+}
+function xpToggleGrid(uid) {
+  var b=document.getElementById('xpb-'+uid);
+  var g=document.getElementById('xpg-'+uid);
+  if(b) b.classList.toggle('open');
+  if(g) g.classList.toggle('open');
+}
+
 const STATS_DEF = [
-  { key:'cc',  label:'CC',  init:38, avance:7  },
-  { key:'ct',  label:'CT',  init:27, avance:0  },
-  { key:'f',   label:'F',   init:31, avance:0  },
-  { key:'e',   label:'End', init:37, avance:3  },
-  { key:'ini', label:'Ini', init:30, avance:0  },
-  { key:'ag',  label:'Ag',  init:33, avance:0  },
-  { key:'dex', label:'Dex', init:26, avance:0  },
-  { key:'int', label:'Int', init:36, avance:5  },
-  { key:'fm',  label:'FM',  init:31, avance:5  },
-  { key:'soc', label:'Soc', init:28, avance:0  },
+  { key:'cc', label:'CC', natif:38, bonus:5, avance:2 },
+  { key:'ct', label:'CT', natif:27, bonus:0, avance:0 },
+  { key:'f', label:'F', natif:31, bonus:0, avance:0 },
+  { key:'e', label:'End', natif:37, bonus:0, avance:3 },
+  { key:'ini', label:'Ini', natif:30, bonus:0, avance:0 },
+  { key:'ag', label:'Ag', natif:33, bonus:0, avance:0 },
+  { key:'dex', label:'Dex', natif:26, bonus:0, avance:0 },
+  { key:'int', label:'Int', natif:36, bonus:5, avance:0 },
+  { key:'fm', label:'FM', natif:31, bonus:0, avance:5 },
+  { key:'soc', label:'Soc', natif:28, bonus:0, avance:0 },
 ];
 
 const SKILLS_BASE_DEF = [
@@ -791,8 +947,21 @@ let state = {
   armorPieces:JSON.parse(JSON.stringify(ARMOR_PIECES_DEF)),
 };
 
-STATS_DEF.forEach(s=>{ state.stats[s.key]={ init:s.init, avance:s.avance }; });
-function getStatTotal(k){ const s=state.stats[k]; return (parseInt(s.init)||0)+(parseInt(s.avance)||0); }
+STATS_DEF.forEach(s=>{ state.stats[s.key] = { natif: s.natif, bonus: s.bonus, avance: s.avance }; });
+function mergeStats(saved) {
+  // Migre les anciennes sauvegardes (init/avance) vers natif/bonus/avance
+  for(var k in saved) {
+    if(!state.stats[k]) continue;
+    var src = saved[k];
+    var dst = state.stats[k];
+    if(src.natif!==undefined) dst.natif = parseInt(src.natif)||0;
+    else if(src.init!==undefined) dst.natif = parseInt(src.init)||0;
+    if(src.bonus!==undefined) dst.bonus = parseInt(src.bonus)||0;
+    if(src.avance!==undefined) dst.avance = parseInt(src.avance)||0;
+  }
+}
+function getStatTotal(k){ const s=state.stats[k]; return (parseInt(s.natif)||0)+(parseInt(s.bonus)||0)+(parseInt(s.avance)||0); }
+function getStatBonusVal(k){ const s=state.stats[k]; return (parseInt(s.natif)||0)+(parseInt(s.bonus)||0); }
 
 function load() {
   const raw=localStorage.getItem('kevan_v1');
@@ -802,7 +971,7 @@ function load() {
     if(d.money) Object.assign(state.money,d.money);
     if(d.cet)   Object.assign(state.cet,d.cet);
     if(d.xp)    Object.assign(state.xp,d.xp);
-    if(d.stats)       Object.assign(state.stats,d.stats);
+    if(d.stats)       mergeStats(d.stats);
     if(d.skillsBase)  state.skillsBase  =d.skillsBase;
     if(d.skillsAdv)   state.skillsAdv   =d.skillsAdv;
     if(d.talents)     state.talents     =d.talents;
@@ -844,21 +1013,29 @@ function renderStats() {
   const g=document.getElementById('stats-grid'); g.innerHTML='';
   STATS_DEF.forEach(def=>{
     const s=state.stats[def.key];
-    const total=(parseInt(s.init)||0)+(parseInt(s.avance)||0);
+    const natif=parseInt(s.natif)||0; const bonusAff=natif+(parseInt(s.bonus)||0); const avance=parseInt(s.avance)||0; const total=bonusAff+avance;
     const bf=Math.floor(total/10);
     const div=document.createElement('div'); div.className='stat-box';
     div.innerHTML='<span class="stat-label">'+def.label+'</span>'
       +'<span class="stat-total" id="stat-total-'+def.key+'">'+total+'</span>'
       +'<span class="stat-bonus">B:'+bf+'</span>'
-      +'<div class="stat-edit-row">'
-        +'<span style="font-size:0.62rem;color:var(--SUB);opacity:0.55;">'+s.init+'</span>'
-        +'<span class="plus">+</span>'
-        +'<input class="editable-num" style="width:34px;font-size:0.78rem;color:var(--VIO2);border-bottom-color:rgba(160,120,48,0.15);" type="number" value="'+s.avance+'" onchange="updateStat(\''+def.key+'\',this.value)" />'
-      +'</div>';
+      +'<div class="stat-nba">'
+        +'<div class="stat-nba-row"><span class="stat-nba-lbl">Natif</span><input class="editable-num nba-natif" type="number" value="'+natif+'" onchange="updateStat(\''+def.key+'\',\'natif\',this.value)" /></div>'
+        +'<div class="stat-nba-row"><span class="stat-nba-lbl">Bonus</span><input class="editable-num nba-bonus" type="number" value="'+bonusAff+'" onchange="updateStat(\''+def.key+'\',\'bonusAff\',this.value)" /></div>'
+        +'<div class="stat-nba-sep"></div>'
+        +'<div class="stat-nba-row"><span class="stat-nba-lbl">Augm.</span><input class="editable-num nba-aug" type="number" value="'+avance+'" onchange="updateStat(\''+def.key+'\',\'avance\',this.value)" /></div>'
+      +'</div>'
+      +'<div style="margin-top:0.3rem;">'+xpBadgeHtml(avance,'carac','st-'+def.key)+'</div>';
     g.appendChild(div);
   });
 }
-function updateStat(key,val) { state.stats[key].avance=parseInt(val)||0; const total=getStatTotal(key); const bf=Math.floor(total/10); const el=document.getElementById('stat-total-'+key); if(el){ el.textContent=total; el.nextElementSibling.textContent='B:'+bf; } save(); }
+function updateStat(key,field,val) {
+  const s=state.stats[key]; const v=parseInt(val)||0;
+  if(field==='natif') s.natif=v;
+  else if(field==='bonusAff') s.bonus=v-(parseInt(s.natif)||0);
+  else if(field==='avance') s.avance=v;
+  save(); renderStats();
+}
 function updateWoundsMax(val) { state.woundsMax=Math.max(1,parseInt(val)||1); document.getElementById('w-max-input').value=state.woundsMax; save(); }
 function changeWound(d) { state.wounds=Math.max(0,Math.min(state.woundsMax,state.wounds+d)); document.getElementById('wounds-cur').textContent=state.wounds; updateWoundColor(); save(); }
 function updateWoundColor() { const el=document.getElementById('wounds-cur'); const p=state.wounds/state.woundsMax; el.style.color=p>0.6?'var(--parchment)':p>0.3?'#e8a040':'#e05050'; }
@@ -897,11 +1074,12 @@ function renderSkillsBase() {
     const li=document.createElement('li');
     li.innerHTML='<span class="skill-name">'+sk.name+' <span style="color:var(--SUB);font-size:0.7rem;">('+sk.car+')</span></span>'
       +'<div class="skill-aug"><input class="editable-num" type="number" value="'+(sk.aug||0)+'" style="width:38px;font-size:0.8rem;color:var(--VIO2);border-bottom-color:rgba(160,120,48,0.12);" onchange="updateSkillBaseAug('+i+',this.value)" /></div>'
-      +'<span class="skill-total" id="sk-base-total-'+i+'">'+total+'</span>';
+      +'<span class="skill-total" id="sk-base-total-'+i+'">'+total+'</span>'
+      +'<div style="flex-basis:100%;margin-top:0.25rem;">'+xpBadgeHtml(sk.aug,'comp','sb-'+i)+'</div>';
     ul.appendChild(li);
   });
 }
-function updateSkillBaseAug(idx,val) { state.skillsBase[idx].aug=parseInt(val)||0; const total=(state.skillsBase[idx].base||0)+state.skillsBase[idx].aug; const el=document.getElementById('sk-base-total-'+idx); if(el) el.textContent=total; save(); }
+function updateSkillBaseAug(idx,val) { state.skillsBase[idx].aug=parseInt(val)||0; save(); renderSkillsBase(); }
 
 function renderSkillsAdv() {
   const ul=document.getElementById('skills-adv-list'); ul.innerHTML='';
@@ -911,7 +1089,8 @@ function renderSkillsAdv() {
     li.innerHTML='<span class="skill-name">'+sk.name+' <span style="color:var(--SUB);font-size:0.7rem;">('+sk.car+')</span></span>'
       +'<div class="skill-aug"><input class="editable-num" type="number" value="'+(sk.aug||0)+'" style="width:38px;font-size:0.8rem;color:var(--VIO2);border-bottom-color:rgba(160,120,48,0.12);" onchange="updateSkillAdv('+i+',this.value)" /></div>'
       +'<span class="skill-total" id="sk-adv-total-'+i+'">'+total+'</span>'
-      +'<span class="inv-del" onclick="deleteAdvSkill('+i+')">x</span>';
+      +'<span class="inv-del" onclick="deleteAdvSkill('+i+')">x</span>'
+      +'<div style="flex-basis:100%;margin-top:0.25rem;">'+xpBadgeHtml(sk.aug,'comp','sa-'+i)+'</div>';
     ul.appendChild(li);
   });
   applyAdvSkillEditable();
@@ -1022,7 +1201,7 @@ function importJSON(input) {
       if(src.money) Object.assign(state.money,src.money);
       if(src.cet)   Object.assign(state.cet,src.cet);
       if(src.xp)    Object.assign(state.xp,src.xp);
-      if(src.stats) Object.assign(state.stats,src.stats);
+      if(src.stats) mergeStats(src.stats);
       if(src.skillsBase)  state.skillsBase  =src.skillsBase;
       if(src.skillsAdv)   state.skillsAdv   =src.skillsAdv;
       if(src.talents)     state.talents     =src.talents;
@@ -1035,6 +1214,7 @@ function importJSON(input) {
         if(d.df.assignment) dfData.assignment = d.df.assignment;
         if(d.df.deploy)     dfData.deploy     = d.df.deploy;
         if(d.df.deployUsed !== undefined) dfData.deployUsed = d.df.deployUsed;
+        if(typeof d.df.poids === 'number') dfData.poids = Math.max(0, Math.min(10, d.df.poids));
       }
       save(); dfSave(); renderAll(); dfRender();
       ioStatus('Importé','ok'); setTimeout(()=>ioStatus('',''),3000);
@@ -1079,7 +1259,8 @@ let dfData = {
   jugements: [],
   assignment: { fer:'', flanc:'', soutien:'', reserve:'' },
   deploy: [],
-  deployUsed: false
+  deployUsed: false,
+  poids: 0
 };
 
 function dfLoad() {
@@ -1090,11 +1271,12 @@ function dfLoad() {
     if(d.assignment) dfData.assignment = d.assignment;
     if(d.deploy)     dfData.deploy     = d.deploy;
     if(d.deployUsed !== undefined) dfData.deployUsed = d.deployUsed;
+    if(typeof d.poids === 'number') dfData.poids = Math.max(0, Math.min(10, d.poids));
   } catch(e){}
   dfRender();
 }
 function dfSave() { localStorage.setItem('kevan_df_v1', JSON.stringify(dfData)); }
-function dfRender() { dfRenderJug(); dfRenderOM(); dfRenderDeploy(); dfRenderStats(); }
+function dfRender() { dfRenderJug(); dfRenderOM(); dfRenderDeploy(); dfRenderStats(); dfRenderPoids(); }
 function dfToggleForm(id) { document.getElementById(id).classList.toggle('visible'); }
 
 function dfTab(name) {
@@ -1137,7 +1319,9 @@ function dfRenderJug() {
       + '</div>'
       + '<div class="jug-body">'
       + (j.desc?'<div class="jug-desc">' + j.desc + '</div>':'')
+      + dfInterroLineHtml(j)
       + (j.precedent?'<div class="jug-precedent">' + j.precedent + '</div>':'')
+      + (j.fiab==='entache'?'<div class="jug-entache-warn">Précédent entaché&#x202F;: l&#x2019;aveu a été obtenu sous contrainte. Invocable une fois, mais le MJ peut le retourner &#x2014; un aveu arraché n&#x2019;est pas une vérité.</div>':'')
       + '<div class="jug-actions">'
       + (j.epuise
           ? '<button class="jug-btn jug-btn-restore" onclick="dfRestoreJug(' + i + ')">Restaurer</button>'
@@ -1145,26 +1329,148 @@ function dfRenderJug() {
       + '<button class="jug-btn jug-btn-del" onclick="dfDelJug(' + i + ')">Suppr.</button>'
       + '</div>'
       + '</div>';
+    if(j.fiab==='entache') div.classList.add('entache');
     c.appendChild(div);
   });
 }
+
+// Méthodes & légitimité
+const INTERRO_METHODES = ['Plaidoyer','Pression','Contrainte','Question ardente'];
+const INTERRO_LEGIT = ['Avérée','Plausible','Ténue'];
+// Poids ajouté = table[methode][legitimite]
+const INTERRO_POIDS_TABLE = [
+  [0,0,0],   // Plaidoyer
+  [0,0,1],   // Pression
+  [1,2,3],   // Contrainte
+  [2,3,4]    // Question ardente
+];
+const INTERRO_INCIDENCE = [
+  { fiab:'Élevée', detail:'L&#x2019;aveu est solide, librement consenti. Précédent net, invocable sans réserve.' },
+  { fiab:'Correcte', detail:'L&#x2019;aveu tient, la peur a pu colorer les mots. Précédent net.' },
+  { fiab:'Douteuse', detail:'L&#x2019;accusé dit ce qu&#x2019;on veut entendre. Précédent entaché &#x2014; à double tranchant.' },
+  { fiab:'Non fiable', detail:'Un aveu arraché n&#x2019;est pas une vérité. Précédent entaché &#x2014; le MJ peut le retourner.' }
+];
+
+function dfInterroLineHtml(j) {
+  if(j.methode === undefined || j.methode === null) return '';
+  const m = Math.max(0, Math.min(3, j.methode));
+  const l = Math.max(0, Math.min(2, j.legit !== undefined ? j.legit : 1));
+  const fiabBadge = j.fiab==='entache'
+    ? '<span class="jug-fiab-badge entache">Aveu entaché</span>'
+    : '<span class="jug-fiab-badge net">Aveu net</span>';
+  return '<div class="jug-interro-line">'
+    + '<span class="lbl">Interrogatoire</span> &nbsp;'
+    + INTERRO_METHODES[m] + ' &middot; soupçon ' + INTERRO_LEGIT[l].toLowerCase()
+    + ' &nbsp; ' + fiabBadge
+    + '</div>';
+}
+
+function interroPreview() {
+  const mEl = document.getElementById('jug-methode');
+  const lEl = document.getElementById('jug-legit');
+  const tEl = document.getElementById('jug-type');
+  if(!mEl || !lEl) return;
+  const m = parseInt(mEl.value)||0;
+  const l = parseInt(lEl.value)||0;
+  const box = document.getElementById('interro-incidence');
+  const inc = INTERRO_INCIDENCE[m];
+  if(box) {
+    box.className = 'interro-incidence m' + m;
+    box.innerHTML = '<b>Fiabilité de l&#x2019;aveu&#x202F;: ' + inc.fiab + '.</b> ' + inc.detail;
+  }
+  const poids = INTERRO_POIDS_TABLE[m][l];
+  const prev = document.getElementById('interro-poids-preview');
+  if(prev) {
+    let txt = '';
+    if(poids > 0) {
+      txt = 'Poids de l&#x2019;Âme&#x202F;: <span class="v" style="color:#e05050;">+' + poids + '</span> '
+          + '&#x2014; la dureté de la méthode dépasse ce que le soupçon justifie.';
+    } else {
+      txt = 'Poids de l&#x2019;Âme&#x202F;: <span class="v" style="color:#8ab870;">+0</span> '
+          + '&#x2014; la méthode reste proportionnée au soupçon.';
+    }
+    // Rachat possible : Épargne sur soupçon non avéré
+    const t = tEl ? tEl.value : '';
+    if(t==='epargne' && l>=1 && m<=1) {
+      txt += '<br>Clémence légitime&#x202F;: épargner sur un soupçon incertain par une méthode mesurée allègera le Poids de <span class="v" style="color:#8ab870;">&#x2212;1</span>.';
+    }
+    prev.innerHTML = txt;
+  }
+}
+
 function dfAddJug() {
   const titre = document.getElementById('jug-titre').value.trim();
   if(!titre) return;
+  const methode = parseInt(document.getElementById('jug-methode').value)||0;
+  const legit   = parseInt(document.getElementById('jug-legit').value)||0;
+  const type    = document.getElementById('jug-type').value;
+  const fiab    = (methode >= 2) ? 'entache' : 'net';
   dfData.jugements.push({
     titre:titre,
-    type:document.getElementById('jug-type').value,
+    type:type,
     session:document.getElementById('jug-session').value.trim(),
     desc:document.getElementById('jug-desc').value.trim(),
     precedent:document.getElementById('jug-precedent').value.trim(),
+    methode:methode,
+    legit:legit,
+    fiab:fiab,
     epuise:false
   });
+  // Incidence sur le Poids de l'Âme
+  let delta = INTERRO_POIDS_TABLE[methode][legit];
+  if(type==='epargne' && legit>=1 && methode<=1) delta -= 1;
+  if(delta !== 0) {
+    dfData.poids = Math.max(0, Math.min(10, dfData.poids + delta));
+  }
   ['jug-titre','jug-session','jug-desc','jug-precedent'].forEach(id=>document.getElementById(id).value='');
-  dfSave(); dfRenderJug(); dfRenderStats(); dfToggleForm('df-form-jug');
+  document.getElementById('jug-methode').value='0';
+  document.getElementById('jug-legit').value='0';
+  document.getElementById('jug-type').value='epargne';
+  interroPreview();
+  dfSave(); dfRenderJug(); dfRenderStats(); dfRenderPoids(); dfToggleForm('df-form-jug');
 }
 function dfInvokeJug(idx) { if(confirm('Invoquer ce précédent ? (utilisable une fois)')){ dfData.jugements[idx].epuise=true; dfSave(); dfRenderJug(); dfRenderStats(); } }
 function dfRestoreJug(idx) { if(confirm('Restaurer ce précédent ?')){ dfData.jugements[idx].epuise=false; dfSave(); dfRenderJug(); dfRenderStats(); } }
 function dfDelJug(idx) { if(confirm('Supprimer ce jugement ?')){ dfData.jugements.splice(idx,1); dfSave(); dfRenderJug(); dfRenderStats(); } }
+
+// ── LE POIDS DE L'ÂME ────────────────────────────────────────────────
+const POIDS_SEUILS = [
+  { max:3,  cls:'s0', tier:'t0', nom:'Intègre',           desc:'Kevan juge encore avec mesure. La main qui tient le marteau hésite avant de frapper &#x2014; et cette hésitation est sa droiture.' },
+  { max:6,  cls:'s1', tier:'t1', nom:'Endurci',           desc:'La facilité s&#x2019;installe. Kevan justifie la dureté plus vite qu&#x2019;avant. Le doute se fait rare ; le MJ peut en jouer.' },
+  { max:10, cls:'s2', tier:'t2', nom:'Inquisiteur de fer', desc:'La torture est devenue méthode, le soupçon vaut preuve. Kevan glisse vers ce qu&#x2019;il jurait de combattre. Chaque excès appelle le suivant.' }
+];
+function poidsSeuil(v) {
+  for(let i=0;i<POIDS_SEUILS.length;i++) if(v<=POIDS_SEUILS[i].max) return POIDS_SEUILS[i];
+  return POIDS_SEUILS[POIDS_SEUILS.length-1];
+}
+function dfRenderPoids() {
+  const track = document.getElementById('poids-track');
+  if(!track) return;
+  const v = dfData.poids||0;
+  const s = poidsSeuil(v);
+  track.innerHTML='';
+  for(let i=0;i<10;i++) {
+    const cran = document.createElement('div');
+    let cls = 'poids-cran';
+    if(i < v) {
+      cls += ' on ';
+      cls += (i<3?'t0':i<6?'t1':'t2');
+    }
+    cran.className = cls;
+    cran.title = 'Poids '+(i+1);
+    (function(idx){ cran.onclick=function(){ dfData.poids=(idx<dfData.poids)?idx:(idx+1); dfSave(); dfRenderPoids(); }; })(i);
+    track.appendChild(cran);
+  }
+  const seuilEl = document.getElementById('poids-seuil');
+  if(seuilEl) { seuilEl.className='poids-seuil '+s.cls; seuilEl.textContent = v + ' / 10 — ' + s.nom; }
+  const descEl = document.getElementById('poids-desc');
+  if(descEl) descEl.innerHTML = s.desc;
+}
+function poidsAdjust(d) {
+  dfData.poids = Math.max(0, Math.min(10, (dfData.poids||0) + d));
+  dfSave(); dfRenderPoids();
+}
+
 
 // ── ORDRE DE MARCHE ──────────────────────────────────────────────────
 function dfRenderOM() {
@@ -1239,6 +1545,7 @@ function dfDelDeploy(idx) { dfData.deploy.splice(idx,1); dfSave(); dfRenderDeplo
 
 // Appel initial
 dfLoad();
+interroPreview();
 load();
 </script>
 </body>

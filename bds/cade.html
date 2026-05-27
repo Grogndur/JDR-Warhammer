@@ -375,6 +375,89 @@
   .cote-bonus-active { color:#8ab870; font-weight:600; }
   .cote-bonus-inactive { opacity:0.45; }
 
+  /* ══ L'OMBRE DU MARTEAU ══ */
+  .trauma-card { background:rgba(8,8,12,0.72); border:1px solid rgba(139,26,26,0.3); border-radius:2px; padding:1.1rem; grid-column:1/-1; }
+  .trauma-card.surmonte { border-color:rgba(94,160,80,0.4); }
+  .trauma-epigraph { font-size:0.8rem; color:var(--SUB); font-style:italic; font-family:"Crimson Text",serif; margin-bottom:0.9rem; line-height:1.5; border-left:2px solid rgba(139,26,26,0.4); padding-left:0.65rem; }
+  .trauma-card.surmonte .trauma-epigraph { border-left-color:rgba(94,160,80,0.5); }
+  .trauma-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media (max-width:760px) { .trauma-grid { grid-template-columns:1fr; } }
+  .trauma-block { background:rgba(139,26,26,0.04); border:1px solid rgba(139,26,26,0.14); border-radius:2px; padding:0.8rem; }
+  .trauma-block-title { font-family:"Cinzel",serif; font-size:0.66rem; letter-spacing:0.13em; text-transform:uppercase; color:#c0392b; margin-bottom:0.2rem; }
+  .trauma-block-sub { font-size:0.72rem; color:var(--SUB); font-style:italic; line-height:1.45; margin-bottom:0.6rem; }
+  /* Interrupteur déclencheur */
+  .trauma-trigger-row { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.55rem; flex-wrap:wrap; }
+  .trauma-switch { display:inline-flex; align-items:center; gap:0.45rem; cursor:pointer; user-select:none; }
+  .trauma-switch-track { width:42px; height:21px; border-radius:11px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.13); position:relative; transition:all 0.2s; flex-shrink:0; }
+  .trauma-switch-track.on { background:rgba(139,26,26,0.4); border-color:rgba(139,26,26,0.7); }
+  .trauma-switch-knob { width:15px; height:15px; border-radius:50%; background:var(--SUB); position:absolute; top:2px; left:2px; transition:all 0.2s; }
+  .trauma-switch-track.on .trauma-switch-knob { left:23px; background:#e05050; }
+  .trauma-switch-label { font-family:"Cinzel",serif; font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); }
+  .trauma-switch-label.on { color:#e05050; }
+  .trauma-test-line { font-size:0.74rem; color:var(--parchment-dark); line-height:1.55; }
+  .trauma-test-line b { color:#c0392b; font-weight:600; }
+  /* Table d6 */
+  .trauma-roll-btn { font-family:"Cinzel",serif; font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.35rem 0.7rem; border-radius:2px; cursor:pointer; transition:all 0.15s; background:rgba(139,26,26,0.14); border:1px solid rgba(139,26,26,0.4); color:#e07070; margin-top:0.55rem; }
+  .trauma-roll-btn:hover { background:rgba(139,26,26,0.28); }
+  .trauma-roll-btn:disabled { opacity:0.35; cursor:not-allowed; }
+  .trauma-roll-result { margin-top:0.55rem; padding:0.5rem 0.6rem; background:rgba(139,26,26,0.07); border:1px solid rgba(139,26,26,0.2); border-radius:2px; font-size:0.8rem; color:var(--parchment-dark); line-height:1.45; display:none; }
+  .trauma-roll-result.show { display:block; }
+  .trauma-roll-result.flash { animation:traumaFlash 0.5s ease; }
+  @keyframes traumaFlash { 0%{background:rgba(139,26,26,0.35);} 100%{background:rgba(139,26,26,0.07);} }
+  .trauma-roll-die { font-family:"Cinzel",serif; font-size:1rem; font-weight:700; color:#e05050; margin-right:0.4rem; }
+  .trauma-table { width:100%; border-collapse:collapse; font-size:0.74rem; margin-top:0.5rem; }
+  .trauma-table td { padding:0.22rem 0.4rem; border-bottom:1px solid rgba(255,255,255,0.04); color:var(--parchment-dark); vertical-align:top; line-height:1.4; }
+  .trauma-table td:first-child { font-family:"Cinzel",serif; color:#c0392b; width:24px; text-align:center; font-weight:700; }
+  .trauma-table tr:last-child td { border-bottom:none; }
+  /* Jalons */
+  .jalon-row { display:flex; align-items:flex-start; gap:0.6rem; padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .jalon-row:last-of-type { border-bottom:none; }
+  .jalon-check { width:22px; height:22px; flex-shrink:0; border-radius:3px; border:1px solid rgba(139,26,26,0.45); background:rgba(8,8,12,0.6); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.85rem; color:transparent; transition:all 0.15s; margin-top:0.05rem; }
+  .jalon-check:hover { border-color:rgba(139,26,26,0.8); }
+  .jalon-check.done { background:rgba(94,160,80,0.25); border-color:rgba(94,160,80,0.7); color:#8ab870; }
+  .jalon-text { flex:1; font-size:0.82rem; color:var(--parchment-dark); line-height:1.45; }
+  .jalon-text.done { color:var(--SUB); text-decoration:line-through; text-decoration-color:rgba(94,160,80,0.5); }
+  .jalon-text b { color:var(--parchment); font-family:"Cinzel",serif; font-size:0.74rem; letter-spacing:0.04em; display:block; margin-bottom:0.1rem; }
+  /* Barre de progression / rachat */
+  .trauma-progress { margin-top:0.7rem; }
+  .trauma-progress-bar { height:7px; background:rgba(8,8,12,0.7); border:1px solid rgba(255,255,255,0.08); border-radius:4px; overflow:hidden; }
+  .trauma-progress-fill { height:100%; background:linear-gradient(90deg, rgba(139,26,26,0.6), rgba(94,160,80,0.7)); transition:width 0.4s ease; }
+  .trauma-progress-label { font-size:0.68rem; color:var(--SUB); font-style:italic; margin-top:0.3rem; text-align:center; }
+  .trauma-surmonter-btn { width:100%; margin-top:0.7rem; font-family:"Cinzel",serif; font-size:0.68rem; letter-spacing:0.13em; text-transform:uppercase; padding:0.6rem; border-radius:2px; cursor:pointer; transition:all 0.2s; background:rgba(94,160,80,0.18); border:1px solid rgba(94,160,80,0.5); color:#8ab870; }
+  .trauma-surmonter-btn:hover { background:rgba(94,160,80,0.32); }
+  .trauma-surmonter-btn:disabled { opacity:0.3; cursor:not-allowed; }
+  .trauma-surmonte-banner { margin-top:0.7rem; padding:0.65rem; background:rgba(94,160,80,0.1); border:1px solid rgba(94,160,80,0.35); border-radius:2px; font-size:0.8rem; color:#8ab870; font-style:italic; text-align:center; line-height:1.5; }
+  /* Journal */
+  .trauma-journal { width:100%; background:rgba(139,26,26,0.05); border:1px solid rgba(139,26,26,0.16); color:var(--parchment); font-family:"Crimson Text",serif; font-size:0.85rem; padding:0.4rem 0.55rem; border-radius:1px; resize:vertical; min-height:60px; line-height:1.5; }
+  .trauma-journal:focus { outline:none; border-color:rgba(139,26,26,0.45); }
+
+  /* Lignes Natif / Bonus / Augmentations dans les stat-box */
+  .stat-nba { margin-top:0.35rem; display:flex; flex-direction:column; gap:0.15rem; }
+  .stat-nba-row { display:flex; align-items:center; justify-content:space-between; gap:0.3rem; }
+  .stat-nba-lbl { font-size:0.5rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--SUB); }
+  .stat-nba-row input.editable-num { width:38px; font-size:0.74rem; text-align:center; }
+  .stat-nba-row .nba-natif { color:var(--parchment-dark); }
+  .stat-nba-row .nba-bonus { color:#cda64a; }
+  .stat-nba-row .nba-aug   { color:var(--VIO2); }
+  .stat-nba-sep { height:1px; background:rgba(255,255,255,0.05); margin:0.05rem 0; }
+  /* ══ AFFICHAGE PALIERS D'AUGMENTATION (XP) ══ */
+  .skill-list li { flex-wrap:wrap; }
+  .xp-badge { display:inline-flex; align-items:center; gap:0.3rem; font-family:"Cinzel",serif; font-size:0.56rem; letter-spacing:0.02em; padding:0.12rem 0.4rem; border-radius:2px; cursor:pointer; border:1px solid rgba(184,146,42,0.35); background:rgba(184,146,42,0.07); color:var(--SUB); white-space:nowrap; transition:all 0.15s; user-select:none; }
+  .xp-badge:hover { background:rgba(184,146,42,0.16); border-color:rgba(184,146,42,0.55); }
+  .xp-badge .xp-aug { color:var(--parchment-dark); }
+  .xp-badge .xp-cost { font-weight:700; color:#e8c45a; background:rgba(184,146,42,0.18); padding:0.02rem 0.3rem; border-radius:2px; }
+  .xp-badge .xp-caret { font-size:0.5rem; opacity:0.6; transition:transform 0.15s; }
+  .xp-badge.open .xp-caret { transform:rotate(180deg); }
+  .xp-grid-pop { display:none; margin-top:0.35rem; background:rgba(8,8,12,0.92); border:1px solid rgba(184,146,42,0.3); border-radius:3px; padding:0.5rem 0.6rem; }
+  .xp-grid-pop.open { display:block; }
+  .xp-grid-pop-title { font-family:"Cinzel",serif; font-size:0.56rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--GLD); margin-bottom:0.35rem; }
+  .xp-grid-table { width:100%; border-collapse:collapse; font-size:0.66rem; }
+  .xp-grid-table th { font-family:"Cinzel",serif; font-size:0.54rem; letter-spacing:0.04em; text-transform:uppercase; color:var(--SUB); padding:0.15rem 0.35rem; border-bottom:1px solid rgba(184,146,42,0.25); text-align:center; }
+  .xp-grid-table td { padding:0.13rem 0.35rem; text-align:center; color:var(--parchment-dark); border-bottom:1px solid rgba(255,255,255,0.035); }
+  .xp-grid-table td:first-child { color:var(--SUB); }
+  .xp-grid-table tr.cur td { background:rgba(184,146,42,0.16); color:#e8c45a; font-weight:700; }
+  .xp-grid-table tr.cur td:first-child { color:#e8c45a; }
+  .xp-grid-note { font-size:0.6rem; color:var(--SUB); font-style:italic; margin-top:0.3rem; line-height:1.4; }
 </style>
 </head>
 <body>
@@ -457,8 +540,11 @@
       <div style="display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;">
         <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
           <span style="font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--SUB);">Destin</span>
-          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--GLD);">1</span>
-          <div style="display:flex;gap:0.3rem;" id="chance-pips"></div>
+          <span style="font-family:'Cinzel',serif;font-size:1.3rem;color:var(--GLD);" id="destin-val">1</span>
+          <div style="display:flex;gap:0.3rem;align-items:center;">
+            <button onclick="destinChange(-1)" title="Dépenser un point de Destin" style="width:22px;height:22px;border-radius:2px;font-size:0.9rem;cursor:pointer;background:rgba(139,26,26,0.2);border:1px solid rgba(139,26,26,0.4);color:#e08080;display:flex;align-items:center;justify-content:center;">&#x2212;</button>
+            <button onclick="destinChange(1)" title="Regagner un point de Destin" style="width:22px;height:22px;border-radius:2px;font-size:0.9rem;cursor:pointer;background:rgba(184,146,42,0.15);border:1px solid rgba(184,146,42,0.4);color:var(--GLD);display:flex;align-items:center;justify-content:center;">+</button>
+          </div>
         </div>
         <div style="color:var(--SUB);font-size:1rem;">→</div>
         <div style="display:flex;flex-direction:column;align-items:center;gap:0.25rem;">
@@ -722,6 +808,58 @@
     </div>
   </div>
 
+    <!-- L'OMBRE DU MARTEAU -->
+  <div class="trauma-card" id="trauma-card">
+    <div class="card-title red" style="margin-bottom:0.45rem;" id="trauma-title">L&#x2019;Ombre du Marteau
+      <span style="font-size:0.62rem;color:var(--SUB);font-style:italic;font-family:'Crimson Text',serif;text-transform:none;letter-spacing:0;margin-left:0.5rem;">&#x2014; s&#xE9;quelle d&#x2019;un Destin br&#xFB;l&#xE9;</span>
+    </div>
+    <div class="trauma-epigraph" id="trauma-epigraph">Le marteau est tomb&#xE9;. Vorrn l&#x2019;a frapp&#xE9;e en pleine t&#xEA;te &#x2014; sec, net, d&#xE9;finitif. Cade aurait d&#xFB; mourir l&#xE0;. Le Destin en a d&#xE9;cid&#xE9; autrement&#x202F;: elle est debout, indemne. Mais quelque chose en elle a pli&#xE9; ce jour-l&#xE0;, et ne s&#x2019;est pas tout &#xE0; fait redress&#xE9;.</div>
+
+    <div class="trauma-grid">
+
+      <!-- LE STIGMATE -->
+      <div class="trauma-block">
+        <div class="trauma-block-title">Le Stigmate</div>
+        <div class="trauma-block-sub">Face &#xE0; un nain combattant lourd, un marteau de guerre, le fracas d&#x2019;une arme &#xE0; deux mains &#x2014; ce n&#x2019;est pas que de la peur. C&#x2019;est une r&#xE9;action &#xE9;pidermique m&#xEA;l&#xE9;e d&#x2019;une haine froide qu&#x2019;il faut contenir.</div>
+        <div class="trauma-trigger-row">
+          <div class="trauma-switch" onclick="traumaToggleTrigger()">
+            <div class="trauma-switch-track" id="trauma-switch-track"><div class="trauma-switch-knob"></div></div>
+            <span class="trauma-switch-label" id="trauma-switch-label">D&#xE9;clencheur dormant</span>
+          </div>
+        </div>
+        <div class="trauma-test-line">Quand le MJ active le d&#xE9;clencheur, Cade teste <b>Calme</b>. &#xC9;chec&#x202F;: le stigmate se manifeste &#x2014; recul, main qui tremble, ou pulsion agressive &#xE0; ma&#xEE;triser. Un seul test par sc&#xE8;ne concern&#xE9;e.</div>
+        <button class="trauma-roll-btn" id="trauma-roll-btn" onclick="traumaRoll()">Lancer 1d6 &#x2014; manifestation</button>
+        <div class="trauma-roll-result" id="trauma-roll-result"></div>
+        <table class="trauma-table">
+          <tr><td>1</td><td>La main de tir tremble&#x202F;: &#x2212;10 &#xE0; la prochaine action de pr&#xE9;cision (tir, crochetage).</td></tr>
+          <tr><td>2</td><td>Recul involontaire d&#x2019;un pas&#x202F;: Cade c&#xE8;de l&#x2019;initiative de position, le MJ d&#xE9;crit un d&#xE9;savantage mineur.</td></tr>
+          <tr><td>3</td><td>La m&#xE2;choire se serre&#x202F;: impossible de parler posément ce tour-ci (n&#xE9;gociation, commandement compromis).</td></tr>
+          <tr><td>4</td><td>Fixation&#x202F;: Cade ne peut viser que la source du d&#xE9;clencheur ce tour, au m&#xE9;pris des cibles plus urgentes.</td></tr>
+          <tr><td>5</td><td>La haine d&#xE9;borde&#x202F;: sa prochaine attaque contre la menace est plus brutale que n&#xE9;cessaire &#x2014; cons&#xE9;quence narrative au MJ.</td></tr>
+          <tr><td>6</td><td>Souvenir net&#x202F;: l&#x2019;instant du marteau resurgit. Aucun malus chiffr&#xE9; &#x2014; mais Cade perd un instant le fil, pur moment de jeu de r&#xF4;le.</td></tr>
+        </table>
+      </div>
+
+      <!-- LE CHEMIN DE LA RÉSILIENCE -->
+      <div class="trauma-block">
+        <div class="trauma-block-title">Le Chemin de la R&#xE9;silience</div>
+        <div class="trauma-block-sub">On ne surmonte pas un trauma en l&#x2019;&#xE9;vitant. Chaque jalon se valide en <i>affrontant</i> le stigmate en jeu &#x2014; c&#x2019;est le MJ qui le coche. Les quatre faits&#x202F;: Cade regagne le point de Destin br&#xFB;l&#xE9;.</div>
+        <div id="trauma-jalons-list"></div>
+        <div class="trauma-progress">
+          <div class="trauma-progress-bar"><div class="trauma-progress-fill" id="trauma-progress-fill" style="width:0%;"></div></div>
+          <div class="trauma-progress-label" id="trauma-progress-label">0 / 4 jalon franchi</div>
+        </div>
+        <button class="trauma-surmonter-btn" id="trauma-surmonter-btn" onclick="traumaSurmonter()" disabled>Surmonter &#x2014; regagner 1 point de Destin</button>
+      </div>
+
+    </div>
+
+    <div style="margin-top:0.9rem;">
+      <span class="dossier-section-title" style="color:#c0392b;opacity:0.85;">Journal du trauma</span>
+      <textarea class="trauma-journal" id="trauma-journal" placeholder="Comment l&#x2019;Ombre se manifeste en jeu, les moments-cl&#xE9;s, les jalons franchis&#x2026;" oninput="traumaJournalSave()"></textarea>
+    </div>
+  </div>
+
     <!-- XP & AMBITIONS -->
   <div class="card full">
     <div class="card-title vio">Expérience & Ambitions</div>
@@ -785,19 +923,71 @@
 </div>
 
 <script>
+// ══ AFFICHAGE PALIERS D'AUGMENTATION (XP) ══
+var XP_GRILLE_CARAC = [25,30,40,50,70,90,120,150,190,230,280,330,390,450];
+var XP_GRILLE_COMP  = [10,15,20,30,40,60,80,110,140,180,220,270,320,380];
+// n = nombre d'augmentations déjà faites ; la prochaine est la (n+1)e
+function xpTrancheIdx(prochaineNum) { var idx=Math.floor((prochaineNum-1)/5); if(idx<0) idx=0; return idx; }
+function xpCoutProchaine(n, grille) {
+  var idx = xpTrancheIdx(n+1);
+  if(idx>=grille.length) idx=grille.length-1;
+  return grille[idx];
+}
+function xpOrdinal(num) {
+  if(num===1) return "1re";
+  return num+"e";
+}
+// Construit le HTML du badge + grille dépliable. type = 'carac' ou 'comp'. uid = identifiant unique.
+function xpBadgeHtml(n, type, uid) {
+  n = parseInt(n)||0;
+  var grille = (type==='carac') ? XP_GRILLE_CARAC : XP_GRILLE_COMP;
+  var cout = xpCoutProchaine(n, grille);
+  var prochaine = n+1;
+  var curIdx = xpTrancheIdx(prochaine);
+  if(curIdx>=grille.length) curIdx=grille.length-1;
+  var html = '<span class="xp-badge" id="xpb-'+uid+'" onclick="xpToggleGrid(\''+uid+'\')">'
+    + '<span class="xp-aug">'+n+' aug.</span>'
+    + '<span style="opacity:0.5;">\u00b7</span>'
+    + 'proch. ('+xpOrdinal(prochaine)+')\u202f: <span class="xp-cost">'+cout+' PX</span>'
+    + '<span class="xp-caret">\u25be</span>'
+    + '</span>';
+  // grille dépliable
+  var rows='';
+  for(var i=0;i<grille.length;i++) {
+    var lo = i*5+1, hi = i*5+5;
+    var loTxt = (i===0) ? '0' : lo;
+    var cls = (i===curIdx) ? ' class="cur"' : '';
+    rows += '<tr'+cls+'><td>'+loTxt+'\u2013'+hi+'</td><td>'+grille[i]+' PX</td></tr>';
+  }
+  html += '<div class="xp-grid-pop" id="xpg-'+uid+'">'
+    + '<div class="xp-grid-pop-title">Co\u00fbt par augmentation \u2014 '+(type==='carac'?'caract\u00e9ristiques':'comp\u00e9tences')+'</div>'
+    + '<table class="xp-grid-table"><thead><tr><th>Augmentations</th><th>Co\u00fbt</th></tr></thead><tbody>'
+    + rows
+    + '</tbody></table>'
+    + '<div class="xp-grid-note">La tranche surlign\u00e9e est celle de la prochaine augmentation. Le bonus de cr\u00e9ation (valeur de gauche) ne compte pas comme une augmentation.</div>'
+    + '</div>';
+  return html;
+}
+function xpToggleGrid(uid) {
+  var b=document.getElementById('xpb-'+uid);
+  var g=document.getElementById('xpg-'+uid);
+  if(b) b.classList.toggle('open');
+  if(g) g.classList.toggle('open');
+}
+
 // ══════ DONNÉES INITIALES ══════
 
 const STATS_DEF = [
-  { key:'cc',  label:'CC',  init:44, avance:0 },
-  { key:'ct',  label:'CT',  init:44, avance:0 },
-  { key:'f',   label:'F',   init:30, avance:5 },
-  { key:'e',   label:'End', init:30, avance:5 },
-  { key:'ini', label:'Ini', init:45, avance:0 },
-  { key:'ag',  label:'Ag',  init:42, avance:0 },
-  { key:'dex', label:'Dex', init:34, avance:0 },
-  { key:'int', label:'Int', init:39, avance:5 },
-  { key:'fm',  label:'FM',  init:41, avance:0 },
-  { key:'soc', label:'Soc', init:29, avance:0 },
+  { key:'cc', label:'CC', natif:44, bonus:0, avance:0 },
+  { key:'ct', label:'CT', natif:44, bonus:0, avance:0 },
+  { key:'f', label:'F', natif:40, bonus:0, avance:0 },
+  { key:'e', label:'End', natif:30, bonus:0, avance:5 },
+  { key:'ini', label:'Ini', natif:45, bonus:0, avance:0 },
+  { key:'ag', label:'Ag', natif:42, bonus:0, avance:0 },
+  { key:'dex', label:'Dex', natif:34, bonus:0, avance:0 },
+  { key:'int', label:'Int', natif:39, bonus:5, avance:0 },
+  { key:'fm', label:'FM', natif:41, bonus:0, avance:0 },
+  { key:'soc', label:'Soc', natif:29, bonus:0, avance:5 },
 ];
 
 const SKILLS_BASE_DEF = [
@@ -873,7 +1063,7 @@ const INV_DEF = [
 // ══════ STATE ══════
 let state = {
   wounds: 14, woundsMax: 14,
-  chance: 1, determ: 1,
+  chance: 1, determ: 1, destin: 1,
   money: { or:1, argent:825, cuivre:45 },
   notes: '', cet: { corruption:'', mutations:'', etats:'' },
   xp: { actuelle:60, depensee:0, totale:0 },
@@ -887,11 +1077,27 @@ let state = {
   armorPieces: JSON.parse(JSON.stringify(ARMOR_PIECES_DEF)),
 };
 
-STATS_DEF.forEach(s => { state.stats[s.key] = { init:s.init, avance:s.avance }; });
+STATS_DEF.forEach(s => { state.stats[s.key] = { natif: s.natif, bonus: s.bonus, avance: s.avance }; });
 
+function mergeStats(saved) {
+  // Migre les anciennes sauvegardes (init/avance) vers natif/bonus/avance
+  for(var k in saved) {
+    if(!state.stats[k]) continue;
+    var src = saved[k];
+    var dst = state.stats[k];
+    if(src.natif!==undefined) dst.natif = parseInt(src.natif)||0;
+    else if(src.init!==undefined) dst.natif = parseInt(src.init)||0;
+    if(src.bonus!==undefined) dst.bonus = parseInt(src.bonus)||0;
+    if(src.avance!==undefined) dst.avance = parseInt(src.avance)||0;
+  }
+}
 function getStatTotal(key) {
   const s = state.stats[key];
-  return (parseInt(s.init)||0) + (parseInt(s.avance)||0);
+  return (parseInt(s.natif)||0) + (parseInt(s.bonus)||0) + (parseInt(s.avance)||0);
+}
+function getStatBonusVal(key) {
+  const s = state.stats[key];
+  return (parseInt(s.natif)||0) + (parseInt(s.bonus)||0);
 }
 
 // ══════ LOAD / SAVE ══════
@@ -899,11 +1105,11 @@ function load() {
   const raw = localStorage.getItem('cade_v1');
   if (raw) try {
     const saved = JSON.parse(raw);
-    ['wounds','woundsMax','chance','determ','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
+    ['wounds','woundsMax','chance','determ','destin','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
     if(saved.money)      Object.assign(state.money, saved.money);
     if(saved.cet)        Object.assign(state.cet, saved.cet);
     if(saved.xp)         Object.assign(state.xp, saved.xp);
-    if(saved.stats)       Object.assign(state.stats, saved.stats);
+    if(saved.stats)       mergeStats(saved.stats);
     if(saved.skillsBase)  state.skillsBase  = saved.skillsBase;
     if(saved.skillsAdv)   state.skillsAdv   = saved.skillsAdv;
     if(saved.talents)     state.talents     = saved.talents;
@@ -930,7 +1136,7 @@ function saveAll() {
 function renderAll() {
   renderStats(); renderSkillsBase(); renderSkillsAdv(); renderTalents();
   renderArmor(); renderArmorPieces(); renderWeapons(); renderInventory();
-  renderChance(); renderDeterm();
+  renderChance(); renderDeterm(); renderDestin();
   document.getElementById('wounds-cur').textContent = state.wounds;
   const wmi=document.getElementById('w-max-input'); if(wmi) wmi.value=state.woundsMax||14;
   updateWoundColor();
@@ -947,27 +1153,29 @@ function renderStats() {
   const g=document.getElementById('stats-grid'); g.innerHTML='';
   STATS_DEF.forEach(def => {
     const s=state.stats[def.key];
-    const total=(parseInt(s.init)||0)+(parseInt(s.avance)||0);
+    const natif=parseInt(s.natif)||0; const bonusAff=natif+(parseInt(s.bonus)||0); const avance=parseInt(s.avance)||0; const total=bonusAff+avance;
     const bf=Math.floor(total/10);
     const div=document.createElement('div'); div.className='stat-box';
     div.innerHTML=`
       <span class="stat-label">${def.label}</span>
       <span class="stat-total" id="stat-total-${def.key}">${total}</span>
       <span class="stat-bonus">B:${bf}</span>
-      <div class="stat-edit-row">
-        <span style="font-size:0.62rem;color:var(--SUB);opacity:0.55;">${s.init}</span>
-        <span class="plus">+</span>
-        <input class="editable-num" style="width:34px;font-size:0.78rem;color:var(--VIO2);border-bottom-color:rgba(138,172,204,0.15);" type="number" value="${s.avance}" onchange="updateStat('${def.key}',this.value)" />
-      </div>`;
+      <div class="stat-nba">
+        <div class="stat-nba-row"><span class="stat-nba-lbl">Natif</span><input class="editable-num nba-natif" type="number" value="${natif}" onchange="updateStat('${def.key}','natif',this.value)" /></div>
+        <div class="stat-nba-row"><span class="stat-nba-lbl">Bonus</span><input class="editable-num nba-bonus" type="number" value="${bonusAff}" onchange="updateStat('${def.key}','bonusAff',this.value)" /></div>
+        <div class="stat-nba-sep"></div>
+        <div class="stat-nba-row"><span class="stat-nba-lbl">Augm.</span><input class="editable-num nba-aug" type="number" value="${avance}" onchange="updateStat('${def.key}','avance',this.value)" /></div>
+      </div>
+      <div style="margin-top:0.3rem;">${xpBadgeHtml(avance,'carac','st-'+def.key)}</div>`;
     g.appendChild(div);
   });
 }
-function updateStat(key,val) {
-  state.stats[key].avance=parseInt(val)||0;
-  const total=getStatTotal(key); const bf=Math.floor(total/10);
-  const el=document.getElementById('stat-total-'+key);
-  if(el){ el.textContent=total; el.nextElementSibling.textContent='B:'+bf; }
-  save();
+function updateStat(key,field,val) {
+  const s=state.stats[key]; const v=parseInt(val)||0;
+  if(field==='natif') s.natif=v;
+  else if(field==='bonusAff') s.bonus=v-(parseInt(s.natif)||0);
+  else if(field==='avance') s.avance=v;
+  save(); renderStats();
 }
 
 // ══════ WOUNDS ══════
@@ -1054,6 +1262,15 @@ function makePipsIcon(id,cur,max,fn,icon) {
 }
 function renderChance() { makePipsIcon('chance-track',state.chance,1,v=>{state.chance=v;save();renderChance();},CLOVER_ICON); }
 function renderDeterm() { makePipsIcon('determ-pips',state.determ,1,v=>{state.determ=v;save();renderDeterm();},FLAME_ICON); }
+function renderDestin() {
+  var el=document.getElementById('destin-val');
+  if(el) el.textContent=(state.destin!==undefined?state.destin:1);
+}
+function destinChange(d) {
+  if(state.destin===undefined) state.destin=1;
+  state.destin=Math.max(0,state.destin+d);
+  save(); renderDestin();
+}
 
 // ══════ COMPÉTENCES BASE ══════
 function renderSkillsBase() {
@@ -1064,15 +1281,15 @@ function renderSkillsBase() {
     li.innerHTML=`
       <span class="skill-name">${sk.name} <span style="color:var(--SUB);font-size:0.7rem;">(${sk.car})</span></span>
       <div class="skill-aug"><input class="editable-num" type="number" value="${sk.aug||0}" style="width:38px;font-size:0.8rem;color:var(--VIO2);border-bottom-color:rgba(138,172,204,0.12);" onchange="updateSkillBaseAug(${i},this.value)" /></div>
-      <span class="skill-total" id="sk-base-total-${i}">${total}</span>`;
+      <span class="skill-total" id="sk-base-total-${i}">${total}</span>
+      <div style="flex-basis:100%;margin-top:0.25rem;">${xpBadgeHtml(sk.aug,'comp','sb-'+i)}</div>`;
     ul.appendChild(li);
   });
 }
 function updateSkillBaseAug(idx,val) {
   state.skillsBase[idx].aug=parseInt(val)||0;
-  const total=(state.skillsBase[idx].base||0)+state.skillsBase[idx].aug;
-  const el=document.getElementById('sk-base-total-'+idx); if(el) el.textContent=total;
   save();
+  renderSkillsBase();
 }
 
 // ══════ COMPÉTENCES AVANCÉES ══════
@@ -1085,7 +1302,8 @@ function renderSkillsAdv() {
       <span class="skill-name">${sk.name} <span style="color:var(--SUB);font-size:0.7rem;">(${sk.car})</span></span>
       <div class="skill-aug"><input class="editable-num" type="number" value="${sk.aug||0}" style="width:38px;font-size:0.8rem;color:var(--VIO2);border-bottom-color:rgba(138,172,204,0.12);" onchange="updateSkillAdv(${i},this.value)" /></div>
       <span class="skill-total" id="sk-adv-total-${i}">${total}</span>
-      <span class="inv-del" onclick="deleteAdvSkill(${i})" title="Supprimer">✕</span>`;
+      <span class="inv-del" onclick="deleteAdvSkill(${i})" title="Supprimer">✕</span>
+      <div style="flex-basis:100%;margin-top:0.25rem;">${xpBadgeHtml(sk.aug,'comp','sa-'+i)}</div>`;
     ul.appendChild(li);
   });
   applyAdvSkillEditable();
@@ -1213,7 +1431,8 @@ function toggleForm(id) { document.getElementById(id).classList.toggle('visible'
 // ══════ EXPORT / IMPORT ══════
 function ioStatus(msg,cls) { const el=document.getElementById('io-status'); if(!el) return; el.textContent=msg; el.className='io-status'+(cls?' '+cls:''); }
 function exportJSON() {
-  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const full=Object.assign({},state,{ _ce:ceData, _trauma:traumaData });
+  const blob=new Blob([JSON.stringify(full,null,2)],{type:'application/json'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='cade.json'; a.click();
   ioStatus('✓ Exporté','ok'); setTimeout(()=>ioStatus('',''),3000);
 }
@@ -1223,11 +1442,11 @@ function importJSON(input) {
   reader.onload=e=>{
     try {
       const saved=JSON.parse(e.target.result);
-      ['wounds','woundsMax','chance','determ','notes'].forEach(k=>{if(saved[k]!==undefined) state[k]=saved[k];});
+      ['wounds','woundsMax','chance','determ','destin','notes'].forEach(k=>{if(saved[k]!==undefined) state[k]=saved[k];});
       if(saved.money) Object.assign(state.money,saved.money);
       if(saved.cet) Object.assign(state.cet,saved.cet);
       if(saved.xp) Object.assign(state.xp,saved.xp);
-      if(saved.stats) Object.assign(state.stats,saved.stats);
+      if(saved.stats) mergeStats(saved.stats);
       if(saved.skillsBase) state.skillsBase=saved.skillsBase;
       if(saved.skillsAdv) state.skillsAdv=saved.skillsAdv;
       if(saved.talents) state.talents=saved.talents;
@@ -1236,6 +1455,23 @@ function importJSON(input) {
       if(saved.armor) state.armor=saved.armor;
       if(saved.armorPieces) state.armorPieces=saved.armorPieces;
       save(); renderAll();
+      if(saved._ce) {
+        const c=saved._ce;
+        if(c.cote!==undefined) ceData.cote=c.cote;
+        if(c.dossiers) ceData.dossiers=c.dossiers;
+        if(c.indics) ceData.indics=c.indics;
+        if(c.commanditaires) ceData.commanditaires=c.commanditaires;
+        if(c.primesTotal!==undefined) ceData.primesTotal=c.primesTotal;
+        ceSave(); ceRender();
+      }
+      if(saved._trauma) {
+        const t=saved._trauma;
+        if(typeof t.triggerActif==='boolean') traumaData.triggerActif=t.triggerActif;
+        if(Array.isArray(t.jalons)&&t.jalons.length===4) traumaData.jalons=t.jalons;
+        if(typeof t.surmonte==='boolean') traumaData.surmonte=t.surmonte;
+        if(typeof t.journal==='string') traumaData.journal=t.journal;
+        traumaSave(); traumaRender();
+      }
       ioStatus('✓ Importé','ok'); setTimeout(()=>ioStatus('',''),3000);
     } catch(err){ ioStatus('Erreur : '+err.message,'err'); }
   };
@@ -1779,6 +2015,154 @@ function ceAddCmd(){
   var ids=['ce-cmd-nom','ce-cmd-note']; for(var i=0;i<ids.length;i++) document.getElementById(ids[i]).value='';
   ceSave(); ceRenderCmd(); ceToggleForm('ce-form-cmd');
 }
+
+// ══════ L'OMBRE DU MARTEAU ══════
+var traumaData = {
+  triggerActif: false,
+  jalons: [false, false, false, false],
+  surmonte: false,
+  journal: '',
+  lastRoll: 0
+};
+var TRAUMA_JALONS = [
+  { titre:'Tenir', desc:'Rester au combat face \u00e0 un nain combattant ou un porteur de marteau lourd, malgr\u00e9 un test de Calme rat\u00e9 \u2014 sans fuir, sans c\u00e9der \u00e0 la pulsion.' },
+  { titre:'Avouer', desc:'Mettre des mots sur la peur \u2014 admettre la s\u00e9quelle \u00e0 un autre PJ plut\u00f4t que de la cacher derri\u00e8re le sang-froid habituel.' },
+  { titre:'Agir', desc:'Accomplir une action d\u00e9cisive et lucide en pr\u00e9sence du d\u00e9clencheur actif \u2014 une r\u00e9ussite obtenue malgr\u00e9 l\u2019Ombre, pas \u00e0 c\u00f4t\u00e9 d\u2019elle.' },
+  { titre:'Confronter', desc:'Revenir volontairement vers ce genre de menace, ou vivre un moment de bascule d\u00e9fini avec le MJ \u2014 regarder le marteau en face.' }
+];
+var TRAUMA_ROLL_TABLE = [
+  'La main de tir tremble : \u221210 \u00e0 la prochaine action de pr\u00e9cision.',
+  'Recul involontaire d\u2019un pas : d\u00e9savantage de position mineur d\u00e9crit par le MJ.',
+  'La m\u00e2choire se serre : impossible de parler pos\u00e9ment ce tour-ci.',
+  'Fixation : Cade ne peut viser que la source du d\u00e9clencheur ce tour.',
+  'La haine d\u00e9borde : prochaine attaque plus brutale que n\u00e9cessaire \u2014 cons\u00e9quence au MJ.',
+  'Souvenir net : l\u2019instant du marteau resurgit. Pas de malus \u2014 pur jeu de r\u00f4le.'
+];
+
+function traumaLoad() {
+  var raw = localStorage.getItem('cade_trauma_v1');
+  if(raw) { try {
+    var d = JSON.parse(raw);
+    if(typeof d.triggerActif === 'boolean') traumaData.triggerActif = d.triggerActif;
+    if(Array.isArray(d.jalons) && d.jalons.length === 4) traumaData.jalons = d.jalons;
+    if(typeof d.surmonte === 'boolean') traumaData.surmonte = d.surmonte;
+    if(typeof d.journal === 'string') traumaData.journal = d.journal;
+  } catch(e){} }
+  traumaRender();
+}
+function traumaSave() { localStorage.setItem('cade_trauma_v1', JSON.stringify(traumaData)); }
+
+function traumaRender() {
+  traumaRenderTrigger();
+  traumaRenderJalons();
+  var jrn = document.getElementById('trauma-journal');
+  if(jrn) jrn.value = traumaData.journal || '';
+  var card = document.getElementById('trauma-card');
+  if(card) card.classList.toggle('surmonte', traumaData.surmonte);
+}
+
+function traumaRenderTrigger() {
+  var track = document.getElementById('trauma-switch-track');
+  var label = document.getElementById('trauma-switch-label');
+  var rollBtn = document.getElementById('trauma-roll-btn');
+  if(track) track.classList.toggle('on', traumaData.triggerActif);
+  if(label) {
+    label.classList.toggle('on', traumaData.triggerActif);
+    label.textContent = traumaData.triggerActif ? 'D\u00e9clencheur actif' : 'D\u00e9clencheur dormant';
+  }
+  if(rollBtn) rollBtn.disabled = !traumaData.triggerActif;
+}
+function traumaToggleTrigger() {
+  traumaData.triggerActif = !traumaData.triggerActif;
+  traumaSave();
+  traumaRenderTrigger();
+}
+
+function traumaRoll() {
+  if(!traumaData.triggerActif) return;
+  var r = Math.floor(Math.random() * 6) + 1;
+  traumaData.lastRoll = r;
+  var box = document.getElementById('trauma-roll-result');
+  if(box) {
+    box.innerHTML = '<span class="trauma-roll-die">' + r + '</span>' + TRAUMA_ROLL_TABLE[r-1];
+    box.classList.add('show');
+    box.classList.remove('flash');
+    void box.offsetWidth;
+    box.classList.add('flash');
+  }
+}
+
+function traumaRenderJalons() {
+  var list = document.getElementById('trauma-jalons-list');
+  if(!list) return;
+  list.innerHTML = '';
+  var done = 0;
+  TRAUMA_JALONS.forEach(function(j, i) {
+    var checked = !!traumaData.jalons[i];
+    if(checked) done++;
+    var row = document.createElement('div');
+    row.className = 'jalon-row';
+    row.innerHTML =
+      '<div class="jalon-check' + (checked ? ' done' : '') + '" onclick="traumaToggleJalon(' + i + ')">' + (checked ? '\u2713' : '') + '</div>' +
+      '<div class="jalon-text' + (checked ? ' done' : '') + '"><b>' + j.titre + '</b>' + j.desc + '</div>';
+    list.appendChild(row);
+  });
+  var fill = document.getElementById('trauma-progress-fill');
+  var lbl = document.getElementById('trauma-progress-label');
+  if(fill) fill.style.width = (done / 4 * 100) + '%';
+  if(lbl) lbl.textContent = done + ' / 4 jalon' + (done > 1 ? 's' : '') + ' franchi' + (done > 1 ? 's' : '');
+  var btn = document.getElementById('trauma-surmonter-btn');
+  var banner = document.getElementById('trauma-surmonte-banner');
+  if(traumaData.surmonte) {
+    if(btn) {
+      var b = document.createElement('div');
+      b.className = 'trauma-surmonte-banner';
+      b.id = 'trauma-surmonte-banner';
+      b.innerHTML = '\u25c6 L\u2019Ombre est surmont\u00e9e. Cade a regard\u00e9 le marteau en face \u2014 et le Destin br\u00fbl\u00e9 lui est revenu.';
+      btn.parentNode.replaceChild(b, btn);
+    }
+  } else {
+    if(banner) {
+      var nb = document.createElement('button');
+      nb.className = 'trauma-surmonter-btn';
+      nb.id = 'trauma-surmonter-btn';
+      nb.setAttribute('onclick', 'traumaSurmonter()');
+      nb.textContent = 'Surmonter \u2014 regagner 1 point de Destin';
+      banner.parentNode.replaceChild(nb, banner);
+      banner = null;
+      btn = nb;
+    }
+    if(btn) btn.disabled = (done < 4);
+  }
+}
+function traumaToggleJalon(i) {
+  if(traumaData.surmonte) return;
+  traumaData.jalons[i] = !traumaData.jalons[i];
+  traumaSave();
+  traumaRenderJalons();
+}
+
+function traumaSurmonter() {
+  if(traumaData.surmonte) return;
+  var done = traumaData.jalons.filter(function(x){ return x; }).length;
+  if(done < 4) return;
+  if(!confirm('Valider la r\u00e9silience de Cade ? Elle regagne 1 point de Destin et l\u2019Ombre du Marteau s\u2019\u00e9teint.')) return;
+  traumaData.surmonte = true;
+  traumaData.triggerActif = false;
+  traumaSave();
+  if(state.destin === undefined) state.destin = 1;
+  state.destin = state.destin + 1;
+  save();
+  renderDestin();
+  traumaRender();
+}
+
+function traumaJournalSave() {
+  var jrn = document.getElementById('trauma-journal');
+  if(jrn) { traumaData.journal = jrn.value; traumaSave(); }
+}
+
+traumaLoad();
 
 // Appel initial Cabinet
 ceLoad();
