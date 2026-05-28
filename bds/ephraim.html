@@ -476,9 +476,12 @@
         </div>
       </div>
       <div class="res-box">
-        <span class="res-label">Mouvement</span>
-        <span class="res-val">4</span>
-        <span class="res-sub">cases / tour</span>
+        <span class="res-label">Marche</span>
+        <span class="res-val">4<span style="font-size:0.6rem;color:var(--SUB);margin-left:0.15rem;">m</span></span>
+        <div style="display:flex;justify-content:center;gap:0.8rem;margin-top:0.4rem;font-size:0.62rem;color:var(--SUB);letter-spacing:0.04em;">
+          <span>Course <strong style="color:var(--parchment-dark);font-family:'Cinzel',serif;">8 m</strong></span>
+          <span>Charge <strong style="color:var(--parchment-dark);font-family:'Cinzel',serif;">16 m</strong></span>
+        </div>
       </div>
     </div>
     <div style="margin-bottom:0.6rem;">
@@ -486,14 +489,14 @@
       <div class="fortune-row">
         <div class="fortune-cell">
           <span class="fortune-lbl">Destin <span class="fortune-lbl-sub">(max)</span></span>
-          <input class="fortune-input fortune-max" type="number" min="0" id="destin-input" value="1" onchange="updateFortune('destin',this.value)" />
+          <input class="fortune-input fortune-max" type="number" min="0" id="destin-input" value="3" onchange="updateFortune('destin',this.value)" />
           <span class="fortune-hint">&nbsp;</span>
         </div>
         <div class="fortune-arrow">&#8594;</div>
         <div class="fortune-cell">
           <span class="fortune-lbl">Chance</span>
-          <input class="fortune-input fortune-cur" type="number" min="0" id="chance-input" value="1" onchange="updateFortune('chance',this.value)" />
-          <span class="fortune-hint" id="chance-hint">/ 1</span>
+          <input class="fortune-input fortune-cur" type="number" min="0" id="chance-input" value="3" onchange="updateFortune('chance',this.value)" />
+          <span class="fortune-hint" id="chance-hint">/ 3</span>
         </div>
       </div>
     </div>
@@ -502,14 +505,14 @@
       <div class="fortune-row">
         <div class="fortune-cell">
           <span class="fortune-lbl">Resilience <span class="fortune-lbl-sub">(max)</span></span>
-          <input class="fortune-input fortune-max" type="number" min="0" id="resil-input" value="1" onchange="updateFortune('resil',this.value)" />
+          <input class="fortune-input fortune-max" type="number" min="0" id="resil-input" value="3" onchange="updateFortune('resil',this.value)" />
           <span class="fortune-hint">&nbsp;</span>
         </div>
         <div class="fortune-arrow">&#8594;</div>
         <div class="fortune-cell">
           <span class="fortune-lbl">Determination</span>
-          <input class="fortune-input fortune-cur" type="number" min="0" id="determ-input" value="1" onchange="updateFortune('determ',this.value)" />
-          <span class="fortune-hint" id="determ-hint">/ 1</span>
+          <input class="fortune-input fortune-cur" type="number" min="0" id="determ-input" value="3" onchange="updateFortune('determ',this.value)" />
+          <span class="fortune-hint" id="determ-hint">/ 3</span>
         </div>
       </div>
     </div>
@@ -517,7 +520,7 @@
       <div class="card-title" style="margin-bottom:0.4rem;font-size:0.62rem;">Monnaie <span style="font-weight:400;opacity:0.5;font-family:'Crimson Text',serif;text-transform:none;letter-spacing:0;font-size:0.7rem;">1 Co = 20 Pa · 1 Pa = 12 Sc</span></div>
       <div class="money-row">
         <div class="money-item">
-          <span class="money-val" id="money-or">0</span>
+          <span class="money-val" id="money-or">1</span>
           <span class="money-label">CO</span>
           <div class="money-btns">
             <button class="money-btn" onclick="chMoney('or',-1)" title="-1 Co">&#8722;</button>
@@ -525,7 +528,7 @@
           </div>
         </div>
         <div class="money-item">
-          <span class="money-val" id="money-argent">4</span>
+          <span class="money-val" id="money-argent">9</span>
           <span class="money-label">PA</span>
           <div class="money-btns">
             <button class="money-btn" onclick="chMoney('argent',-1)" title="-1 Pa">&#8722;</button>
@@ -533,7 +536,7 @@
           </div>
         </div>
         <div class="money-item">
-          <span class="money-val" id="money-cuivre">43</span>
+          <span class="money-val" id="money-cuivre">6</span>
           <span class="money-label">SC</span>
           <div class="money-btns">
             <button class="money-btn" onclick="chMoney('cuivre',-1)" title="-1 Sc">&#8722;</button>
@@ -771,6 +774,18 @@
         <div class="affinite-result-desc"  id="affinite-desc"></div>
       </div>
 
+      <!-- Sortir de la Glaciation -->
+      <div style="margin-top:0.8rem;padding:0.65rem 0.8rem;background:rgba(74,90,122,0.07);border:1px solid rgba(138,172,204,0.25);border-radius:2px;">
+        <div style="font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:#8aaccc;margin-bottom:0.4rem;">Sortir de la Glaciation (G1 à G4)</div>
+        <div style="font-size:0.78rem;color:var(--parchment-dark);line-height:1.55;">
+          La Glaciation est subie via les Maladresses. Pour s'en extraire avant d'atteindre G5, deux portes :
+        </div>
+        <ul style="font-size:0.78rem;color:var(--parchment-dark);line-height:1.55;margin:0.35rem 0 0 1rem;padding:0;list-style:disc;">
+          <li><strong style="color:var(--parchment);">Recentrage (en combat)</strong> : Ephraïm consacre <strong>une action complète</strong> (pas d'autre action ce tour) à se recentrer sur Aqshy. Test de <strong>Force Mentale</strong>. <em>Succès</em> : l'axe se rapproche de l'Équilibre de 1 cran. <em>Critique</em> : 2 crans. <em>Échec</em> : aucun effet. <em>Maladresse</em> : l'axe glisse d'1 cran de plus vers la Glaciation (le recentrage rate, le Vent fuit).</li>
+          <li><strong style="color:var(--parchment);">Décrue (hors combat)</strong> : pendant un repos court (15-30 minutes) ou tout temps calme équivalent, l'axe revient automatiquement de 1 cran vers l'Équilibre.</li>
+        </ul>
+      </div>
+
       <!-- Boutons des tables d'effets cote a cote -->
       <div style="display:flex;gap:0.4rem;margin-top:0.7rem;margin-bottom:0.4rem;">
         <button class="axe-btn axe-btn-glace" style="flex:1;" onclick="document.getElementById('table-glace').classList.toggle('visible')">
@@ -793,10 +808,10 @@
           <li><strong>Souffle visible et audible.</strong> Sa respiration produit une buée blanche et un bruit grave perceptible à plusieurs mètres. -10 à Discrétion pendant 1 scène.</li>
           <li><strong>Givre sur les mains.</strong> Les mains d'Ephraïm sont engourdies par le froid. Son prochain sort nécessitant un contact physique ou un geste précis subit -10 à l'Incantation.</li>
           <li><strong>Onde de froid.</strong> Une vague de froid s'échappe d'Ephraïm. La cible la plus proche dans un rayon de 2 mètres subit 1 Blessure (dégâts de froid, ignore les armures légères de PA 1).</li>
-          <li><strong>Éclat de givre.</strong> Un fragment de glace jaillit involontairement de la Glyphe. Il file vers une cible aléatoire dans un rayon de 3 mètres (alliés inclus) et inflige 1 Blessure.</li>
-          <li><strong>Ralentissement.</strong> Le corps d'Ephraïm devient lourd, raide. Il perd 1 point de Mouvement (M) jusqu'à la fin du combat.</li>
-          <li><strong>Paralysie partielle.</strong> Ses doigts se figent un instant. Test d'Agilité (DR standard) ou Ephraïm laisse échapper ce qu'il tient en main (arme, bâton, parchemin...).</li>
-          <li><strong>Rupture inverse.</strong> La compression de la Glyphe cède brutalement : pic de Glaciation visible (cheveux blancs un instant, halo de givre autour de lui) puis effondrement. <em>Effet mécanique :</em> l'axe est immédiatement remis à 0. <em>Effet narratif :</em> les témoins doivent réussir un test de Sang-Froid (DR standard) ou subir l'état <em>Effrayé</em> 1.</li>
+          <li><strong>Éclat de givre.</strong> Un fragment de glace jaillit involontairement de la Glyphe. Le prochain sort d'Ephraïm subit <strong>−1 DR de Focalisation</strong> (ou <strong>−1 DR d'Incantation</strong> si le sort est lancé sans Focalisation). Et l'éclat file vers une cible aléatoire dans un rayon de 5 mètres (alliés inclus) et inflige <strong>1 Blessure</strong>.</li>
+          <li><strong>Ralentissement.</strong> Le corps d'Ephraïm devient lourd, raide. Il perd 1 point de Mouvement (M) pendant 3 rounds.</li>
+          <li><strong>Onde de gel.</strong> Une vague de froid se propage autour d'Ephraïm sur un rayon de 3 mètres. Toutes les créatures dans la zone (alliés inclus) doivent réussir un test d'<strong>Endurance</strong> (DR standard). Échec : la créature laisse échapper ce qu'elle tient en main (arme, bâton, parchemin...) et perd 1 point de Mouvement (M) pendant 1d6 rounds. <em>Ephraïm est seul épargné</em> (il est l'œil du gel).</li>
+          <li><strong>Rupture inverse — Nova de glace.</strong> La compression de la Glyphe cède brutalement : pic de Glaciation visible (cheveux blancs un instant, halo de givre autour de lui) puis effondrement. <em>Effet mécanique :</em> l'axe est immédiatement remis à 0. Une nova de glace se propage dans un rayon de 3 mètres : toutes les créatures dans la zone (alliés inclus) subissent <strong>2 Blessures</strong> et perdent <strong>1 point de Mouvement (M) pendant 1d6 rounds</strong>. <em>Ephraïm est seul épargné.</em> <em>Effet narratif :</em> les témoins doivent réussir un test de Sang-Froid (DR standard) ou subir l'état <em>Effrayé</em> 1.</li>
         </ol>
         <button class="axe-btn axe-btn-glace" style="margin-top:0.4rem;" onclick="effetRoll('glace')">Lancer 1d10</button>
         <div class="effet-result glace" id="result-glace"></div>
@@ -806,13 +821,13 @@
       <div class="effet-panel feu" id="table-feu">
         <div class="effet-panel-title">Effets d'Embrasement (1d10) — actifs uniquement au Degré 5</div>
         <ol>
-          <li><strong>Embrasement d'objet.</strong> Un objet inflammable porté ou tenu par Ephraïm prend feu (vêtement, parchemin, manche d'arme...). Test d'Agilité (DR standard) pour l'éteindre ou s'en débarrasser sans Blessure. Échec : 1 Blessure + objet détruit.</li>
+          <li><strong>Embrasement d'objet.</strong> L'arme tenue par Ephraïm (bâton, épée, dague…) s'embrase pendant <strong>4 rounds</strong> sans le brûler — le feu danse sur la lame ou le bois mais ne le consume pas. Si l'arme est <em>magique</em>, elle provoque l'état <strong>Enflammé</strong> sur ses cibles touchées pendant la durée.</li>
           <li><strong>Mirage de chaleur.</strong> L'air autour d'Ephraïm se trouble, déformé par la chaleur. Les attaquants ont du mal à le viser : -10 à la CC et CT contre lui pendant ce round.</li>
           <li><strong>Regard brûlant.</strong> Les yeux d'Ephraïm rougeoient comme des braises. L'adversaire au contact ce round doit réussir un test de Sang-Froid (DR standard) ou subir l'état <em>Effrayé</em> 1.</li>
-          <li><strong>Explosion de pression.</strong> Une onde de souffle se propage autour d'Ephraïm (cône de 3 mètres dans la direction de son choix). Toutes les créatures dans le cône reculent d'1 mètre. Pas de dégâts.</li>
+          <li><strong>Explosion de pression.</strong> Une onde de souffle se propage autour d'Ephraïm (cône de 3 mètres dans la direction de son choix). Toutes les créatures dans le cône reculent de <strong>2 mètres</strong> et doivent réussir un test d'<strong>Agilité</strong> (DR standard). Échec : la créature subit l'état <em>À terre</em>.</li>
           <li><strong>Éruption de chaleur.</strong> Le sol s'embrase autour d'Ephraïm. Une zone d'1 mètre de rayon devient brûlante : quiconque y reste ou y entre subit 1 Blessure par round (feu). L'effet dure 3 rounds.</li>
-          <li><strong>Chaîne de flamme.</strong> Le sort se propage. Une seconde cible adjacente à la première (à 2 mètres ou moins) subit les mêmes dégâts que la cible principale.</li>
-          <li><strong>Sort amplifié spontanément.</strong> Le sort en cours gagne en puissance brute mais perd en portée. Ses dégâts sont augmentés du Bonus de Force Mentale (BFM) d'Ephraïm, mais sa portée est divisée par deux.</li>
+          <li><strong>Chaîne de flamme.</strong> Le sort se propage en chaîne, frappant jusqu'à <strong>3 cibles au total</strong>. Après la cible principale, le feu saute vers la créature la plus proche (alliée ou ennemie, peu importe), puis encore vers la plus proche de celle-ci. Chaque cible touchée par la chaîne subit <strong>1d6 dégâts</strong>, sans aucun bonus ni multiplicateur (les bonus de dégâts du sort, les paliers d'Embrasement, le BFM, etc., ne s'appliquent pas à la propagation).</li>
+          <li><strong>Sort court mais net.</strong> Le sort se ramasse spatialement mais gagne en intensité. Sa <strong>portée est divisée par 2</strong>, mais il bénéficie de <strong>+3 DR de Focalisation gratuits</strong> (s'applique au test d'Incantation si le sort est lancé sans Focalisation).</li>
           <li><strong>Voix d'Aqshy.</strong> Le Vent du Feu murmure à l'oreille d'Ephraïm et lance lui-même un sort qu'il connaît (au choix d'Ephraïm, parmi ceux de son grimoire). Aucun test d'Incantation ni de Focalisation requis, aucun coût de Focalisation, et le sort ne consomme pas l'action d'Ephraïm pour ce round. <strong>En contrepartie, les dégâts du sort sont divisés par 2</strong> (en Embrasement 5, le x2 passif et le /2 s'annulent, ramenant les dégâts au niveau d'un sort normal). Les autres effets du sort restent normaux : portée, durée, effets secondaires, états appliqués.</li>
           <li><strong>Surge pur.</strong> Le sort en cours est lancé avec un effet maximal : tous les dégâts variables sont considérés au résultat maximum (un 1d10 devient 10, un 1d6 devient 6, etc.). Après résolution du sort, l'axe descend automatiquement de 2 vers la Glaciation.</li>
           <li><strong>Bascule totale.</strong> Submergé par les Vents d'Aqshy. Le sort en cours est résolu normalement (avec le x2 passif d'Embrasement 5 qui s'applique déjà). <strong>Le prochain sort lancé par Ephraïm est une réussite automatique</strong> (pas de jet d'Incantation requis) et bénéficie de <strong>+BFM dégâts</strong> bonus. Après résolution du sort de Bascule, l'axe revient à l'équilibre (0).</li>
@@ -1046,24 +1061,68 @@ const INV_DEF = [
 
 const SORTS_DEF = [
   {
-    name:'Flambee',
-    ni:0, type:'Mineur', portee:'BFM m', duree:'Instantane', cible:'1 cible', deg:'BFM+2',
-    desc:'Projette une langue de feu sur la cible. Degats ignores par l\'armure non magique si reussite exceptionnelle.',
-    imparf:'Le feu s\'emballe. Ephraim subit 1 Blessure ou met le feu a quelque chose de proche.'
+    name:'Alerte',
+    ni:0, type:'Mineur', portee:'1 m', duree:'Instantane', cible:'1 objet', deg:'',
+    desc:'Revele si un objet a portee est empoisonne ou piege.',
+    imparf:''
   },
   {
-    name:'Yeux de Feu',
-    ni:0, type:'Mineur', portee:'Soi', duree:'BFM minutes', cible:'Soi', deg:'',
-    desc:'Les yeux d\'Ephraim brillent d\'une lueur orange. Vision dans l\'obscurite totale. Effet d\'intimidation (Peur 1) sur les creatures sensibles.',
-    imparf:'La lueur s\'emballe et attire l\'attention dans un rayon de 20m.'
+    name:'Bruits',
+    ni:0, type:'Mineur', portee:'FM m', duree:'BFM rnds', cible:'', deg:'',
+    desc:'Fait resonner de petits bruits discrets et indistincts depuis un point a portee, sans ligne de vue requise : pas, murmures, cri d\'animal...',
+    imparf:''
+  },
+  {
+    name:'Flamme Magique',
+    ni:0, type:'Mineur', portee:'Soi', duree:'BFM rnds', cible:'', deg:'',
+    desc:'Une flamme vacille au creux de la paume. Elle peut enflammer un objet inflammable au contact.',
+    imparf:''
+  },
+  {
+    name:'Protection contre la pluie',
+    ni:0, type:'Mineur', portee:'Soi', duree:'BE heures', cible:'Soi', deg:'',
+    desc:'Aucune precipitation ne vous atteint : pluie, grele, gresil, neige...',
+    imparf:''
+  },
+  {
+    name:'Serrure Ouverte',
+    ni:0, type:'Mineur', portee:'Contact', duree:'Instantane', cible:'1 serrure', deg:'',
+    desc:'Une serrure non magique que vous touchez se deverrouille.',
+    imparf:''
+  },
+  {
+    name:'Lumiere',
+    ni:0, type:'Mineur', portee:'Soi', duree:'FM minutes', cible:'', deg:'',
+    desc:'Une lumiere proche d\'une torche jaillit de vous (mains, baton...). Un Test de Focalisation Accessible (+20) permet de la regler : plus vive (lanterne) ou plus faible (bougie).',
+    imparf:''
+  },
+  {
+    name:'Cauteriser',
+    ni:4, type:'Feu', portee:'Contact', duree:'Instantane', cible:'1 cible', deg:'',
+    desc:'Soigne 1d10 Blessures et retire tous les Etats Hemorragique ; ces Blessures ne s\'infecteront pas. La cible sans le Talent Magie des Arcanes (Feu) doit reussir un Test de Calme Intermediaire (+0) ou hurler de douleur. Echec de -6 DR ou plus : la cible gagne l\'Etat Inconscient, est marquee a vie, et se reveille 1d10 heures plus tard.',
+    imparf:''
+  },
+  {
+    name:'Grands feux d\'U\'Zhul',
+    ni:10, type:'Feu', portee:'FM m', duree:'BFM rnds', cible:'ZdE BFM m', deg:'+10 (PA ignoree)',
+    desc:'Projectile magique : +10 Degats ignorant les PA, +2 Etats Enflamme et Etat A Terre sur la cible. Dans la ZdE : +5 Degats ignorant les PA, et Test d\'Esquive ou Etat Enflamme. Le brasier persiste ensuite pour la duree : quiconque se trouve dans la ZdE au debut d\'un Round subit 1d10+6 Degats (PA ignoree) et gagne +1 Etat Enflamme.',
+    imparf:''
+  },
+  {
+    name:'Explosion',
+    ni:4, type:'Arcane', portee:'FM m', duree:'Instantane', cible:'ZdE BFM', deg:'3 (proj. magique)',
+    desc:'Une onde de choc explosive. Projectile magique infligeant 3 Degats a tout ce qui se trouve dans une Zone d\'Effet de BFM metres.',
+    imparf:''
   },
 ];
 
 // ══════ STATE ══════
 let state = {
+  sortsVersion: 3,
+  dataVersion: 1,
   wounds: 9, woundsMax: 9,
-  destin: 2, chance: 2, resil: 2, determ: 2,
-  money: { or:0, argent:4, cuivre:43 },
+  destin: 3, chance: 3, resil: 3, determ: 3,
+  money: { or:1, argent:9, cuivre:6 },
   notes: '', cet: { corruption:'', mutations:'', etats:'' },
   xp: { actuelle:0, depensee:0, totale:0 },
   stats: {},
@@ -1116,8 +1175,10 @@ function load() {
   const raw = localStorage.getItem('ephraim_v1');
   if (raw) try {
     const saved = JSON.parse(raw);
-    ['wounds','woundsMax','destin','chance','resil','determ','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
-    if(saved.money)      Object.assign(state.money, saved.money);
+    ['wounds','woundsMax','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
+    const dataOk = (saved.dataVersion === state.dataVersion);
+    ['destin','chance','resil','determ'].forEach(k => { if(dataOk && saved[k]!==undefined) state[k]=saved[k]; });
+    if(dataOk && saved.money) Object.assign(state.money, saved.money);
     if(saved.cet)        Object.assign(state.cet, saved.cet);
     if(saved.xp)         Object.assign(state.xp, saved.xp);
     if(saved.stats)       mergeStats(saved.stats);
@@ -1126,7 +1187,7 @@ function load() {
     if(saved.talents)     state.talents      = saved.talents;
     if(saved.weapons)     state.weapons      = saved.weapons;
     if(saved.inventory)   state.inventory    = saved.inventory;
-    if(saved.sorts)       state.sorts        = saved.sorts;
+    if(saved.sorts && saved.sortsVersion === state.sortsVersion) state.sorts = saved.sorts;
     if(saved.armor)       state.armor        = saved.armor;
     if(saved.armorPieces) state.armorPieces  = saved.armorPieces;
   } catch(e) {}
@@ -1462,6 +1523,7 @@ function renderSorts() {
           <span class="sort-badge ni">NI ${s.ni}</span>
           ${s.type?`<span class="sort-badge type">${s.type}</span>`:''}
           ${s.portee?`<span class="sort-badge portee">&#128205; ${s.portee}</span>`:''}
+          ${s.cible?`<span class="sort-badge cible">&#127919; ${s.cible}</span>`:''}
           ${s.duree?`<span class="sort-badge duree">&#9201; ${s.duree}</span>`:''}
           ${s.deg&&s.deg!==''?`<span class="sort-badge ni">&#9876; ${s.deg}</span>`:''}
           <span class="sort-expand-icon">&#9662;</span>
@@ -1486,11 +1548,12 @@ function editSort(idx) {
   const ni=prompt('NI',s.ni);
   const type=prompt('Type',s.type||'');
   const portee=prompt('Portee',s.portee||'');
+  const cible=prompt('Cible',s.cible||'');
   const duree=prompt('Duree',s.duree||'');
   const deg=prompt('Degats',s.deg||'');
   const desc=prompt('Description',s.desc||'');
   const imparf=prompt('Incantation Imparfaite',s.imparf||'');
-  Object.assign(state.sorts[idx],{name,ni:parseInt(ni)||0,type,portee,duree,deg,desc,imparf});
+  Object.assign(state.sorts[idx],{name,ni:parseInt(ni)||0,type,portee,cible,duree,deg,desc,imparf});
   renderSorts(); save();
 }
 function toggleSortForm() { document.getElementById('sort-new-form').classList.toggle('visible'); }
@@ -1526,8 +1589,10 @@ function importJSON(input) {
   reader.onload=e=>{
     try {
       const saved=JSON.parse(e.target.result);
-      ['wounds','woundsMax','destin','chance','resil','determ','notes'].forEach(k=>{if(saved[k]!==undefined) state[k]=saved[k];});
-      if(saved.money) Object.assign(state.money,saved.money);
+      ['wounds','woundsMax','notes'].forEach(k=>{if(saved[k]!==undefined) state[k]=saved[k];});
+      const dataOk = (saved.dataVersion === state.dataVersion);
+      ['destin','chance','resil','determ'].forEach(k=>{if(dataOk && saved[k]!==undefined) state[k]=saved[k];});
+      if(dataOk && saved.money) Object.assign(state.money,saved.money);
       if(saved.cet) Object.assign(state.cet,saved.cet);
       if(saved.xp) Object.assign(state.xp,saved.xp);
       if(saved.stats) mergeStats(saved.stats);
@@ -1536,7 +1601,7 @@ function importJSON(input) {
       if(saved.talents) state.talents=saved.talents;
       if(saved.weapons) state.weapons=saved.weapons;
       if(saved.inventory) state.inventory=saved.inventory;
-      if(saved.sorts) state.sorts=saved.sorts;
+      if(saved.sorts && saved.sortsVersion === state.sortsVersion) state.sorts=saved.sorts;
       if(saved.armor) state.armor=saved.armor;
       if(saved.armorPieces) state.armorPieces=saved.armorPieces;
       save(); renderAll();
@@ -1630,7 +1695,7 @@ const GLACE_STATES = [
     meca:"-3 dégâts. Focalisation à -10. Sort raté = gel partiel d'une main (1 round). La Glyphe pulse.",
     risque:"Effets passifs seulement. Pas de jet de table." },
   { title:"Glaciation 4", mecaCls:"glace",
-    meca:"-4 dégâts. Douleur sourde : 1 Blessure si on force un sort. La Glyphe est visible sur la peau.",
+    meca:"-4 dégâts. Douleur sourde : 1 Blessure. La Glyphe est visible sur la peau.",
     risque:"Effets passifs seulement. Pas de jet de table." },
   { title:"Glaciation 5", mecaCls:"glace",
     meca:"Sorts d'Aqshy impossibles. Feu totalement comprimé. Ephraïm peut tenter de forcer un sort de feu malgré tout, mais l'action prend 1 round complet (la Glyphe doit être déchirée par la force du Vent) : l'axe avance alors de +3 crans vers l'Embrasement (Glaciation 5 → Glaciation 2 ; Glaciation 4 → Glaciation 1 ; etc.).",
@@ -1643,16 +1708,16 @@ const FEU_STATES = [
     meca:"+1 dégât aux sorts de feu. Yeux qui rougeoient. Chaleur rayonnante perceptible.",
     risque:"Effets passifs seulement. Pas de jet de table." },
   { title:"Embrasement 2", mecaCls:"feu",
-    meca:"+2 dégâts. Sorts de zone gagnent +1m de rayon. Risque de brûler des objets proches.",
+    meca:"+1 DR de Focalisation gratuit (s'applique au test d'Incantation si le sort est lancé sans Focalisation). Sorts de zone gagnent +1m de rayon. Risque de brûler des objets proches.",
     risque:"Effets passifs seulement. Pas de jet de table." },
   { title:"Embrasement 3", mecaCls:"feu",
-    meca:"+BFM dégâts. Sort mineur = sort majeur sans surcoût. Focalisation obligatoire même pour les mineurs.",
+    meca:"Durée des effets de feu +1 round. AoE et portée +1m. +1 DR de Focalisation gratuit (s'applique au test d'Incantation si le sort est lancé sans Focalisation).",
     risque:"Effets passifs seulement. Pas de jet de table." },
   { title:"Embrasement 4", mecaCls:"feu",
-    meca:"Sort automatiquement amplifié (portée et dégâts x1.5). 1 chance sur 2 de toucher une cible adjacente non voulue.",
+    meca:"+1 dégât. +1 DR de Focalisation gratuit (s'applique au test d'Incantation si le sort est lancé sans Focalisation). Petite explosion à l'impact : un tiers des dégâts infligés à la cible principale (ou au point d'impact) est répercuté sur tout ce qui se trouve dans un rayon de 3m.",
     risque:"Effets passifs seulement. Pas de jet de table." },
   { title:"Embrasement 5", mecaCls:"feu",
-    meca:"Puissance absolue. Les effets de tous les sorts d'Ephraïm sont doublés (dégâts, durées, portées : x2).",
+    meca:"Puissance absolue. Les sorts d'Aqshy sont des réussites automatiques (pas de jet d'Incantation requis), mais le d100 est tout de même lancé. Les effets de tous les sorts sont doublés (dégâts, durées, portées : x2).",
     risque:"Jet d'effet d'Embrasement obligatoire après chaque sort lancé. Si Bascule totale tombe (10), l'apothéose : sort en cours x2 + prochain sort en réussite automatique avec +BFM dégâts, puis retour à l'équilibre." },
 ];
 
