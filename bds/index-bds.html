@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>De Boue et de Sang — Arc I</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0a0f;
+    --parchment: #f0e8d8;
+    --parchment-dark: #d4c8a8;
+    --GLD: #B8922A;
+    --SUB: #555566;
+    --blood: #8B1A1A;
+    --blood-mid: #c05050;
+    --blood-lite: #e07070;
+
+    /* Accents PJ */
+    --tryxx:    #9B2020;
+    --kant:     #7aac65;
+    --reiner:   #4A6878;
+    --kevan:    #A0632D;
+    --ephraim:  #8A806A;
+    --cade:     #9b82d4;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--ink); color: var(--parchment); font-family: 'Crimson Text', serif; min-height: 100vh; overflow-x: hidden; }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 15% 60%, rgba(139,26,26,0.12) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 25%, rgba(80,20,20,0.08) 0%, transparent 50%),
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.005) 2px, rgba(255,255,255,0.005) 4px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,15,0.93); backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(139,26,26,0.2);
+    padding: 0.6rem 1.5rem; display: flex; align-items: center; gap: 1rem;
+  }
+  nav a { color: var(--SUB); text-decoration: none; font-size: 0.82rem; font-style: italic; transition: color 0.2s; }
+  nav a:hover { color: var(--blood-mid); }
+  .nav-sep { color: var(--SUB); opacity: 0.3; }
+  .nav-current { color: var(--blood-mid) !important; font-style: normal; font-family: 'Cinzel', serif; font-size: 0.82rem; }
+
+  .container { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  /* HEADER */
+  header { text-align: center; padding: 3rem 0 2.5rem; }
+  header::after {
+    content: '';
+    display: block;
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--blood), transparent);
+    margin: 1.5rem auto 0;
+  }
+  .hub-label { font-family: 'Crimson Text', serif; font-style: italic; color: var(--blood-mid); font-size: 0.9rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  h1 { font-family: 'Cinzel', serif; font-size: clamp(1.6rem, 5vw, 2.8rem); font-weight: 700; color: var(--parchment); letter-spacing: 0.05em; text-shadow: 0 0 40px rgba(139,26,26,0.4), 0 2px 4px rgba(0,0,0,0.8); line-height: 1.2; }
+  .hub-arc { font-family: 'Cinzel', serif; font-size: 0.75rem; color: var(--blood-mid); opacity: 0.75; letter-spacing: 0.2em; text-transform: uppercase; margin-top: 0.6rem; }
+  .hub-desc { font-style: italic; color: var(--parchment-dark); font-size: 0.95rem; margin-top: 0.8rem; max-width: 520px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+
+  /* SECTION LABEL */
+  .section-title { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--SUB); margin: 2.5rem 0 1.25rem; display: flex; align-items: center; gap: 1rem; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+
+  /* GRID CARDS */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin: 1.5rem 0; }
+  .cards-3 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 780px) { .cards-3 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .cards-3 { grid-template-columns: 1fr; } }
+
+  .card { display: block; text-decoration: none; border-radius: 3px; padding: 1.6rem 1.5rem; transition: all 0.3s ease; position: relative; overflow: hidden; }
+  .card::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s; }
+  .card:hover { transform: translateY(-3px); }
+  .card:hover::before { opacity: 1; }
+
+  /* --- TRYXX --- */
+  .card-tryxx  { background: rgba(155,32,32,0.1); border: 1px solid rgba(155,32,32,0.28); border-top: 3px solid var(--tryxx); }
+  .card-tryxx::before  { background: linear-gradient(135deg, rgba(155,32,32,0.08) 0%, transparent 60%); }
+  .card-tryxx:hover  { border-color: rgba(155,32,32,0.6); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
+  .card-tryxx .card-accent { color: #c84040; }
+  .card-tryxx .card-enter  { background: rgba(155,32,32,0.2); color: #c84040; border: 1px solid rgba(155,32,32,0.4); }
+
+  /* --- KANTAGORAN --- */
+  .card-kant   { background: rgba(94,128,79,0.1); border: 1px solid rgba(94,128,79,0.28); border-top: 3px solid #5E804F; }
+  .card-kant::before   { background: linear-gradient(135deg, rgba(94,128,79,0.08) 0%, transparent 60%); }
+  .card-kant:hover   { border-color: rgba(94,128,79,0.6); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
+  .card-kant .card-accent { color: var(--kant); }
+  .card-kant .card-enter  { background: rgba(94,128,79,0.2); color: var(--kant); border: 1px solid rgba(94,128,79,0.4); }
+
+  /* --- REINER --- */
+  .card-reiner { background: rgba(74,104,120,0.1); border: 1px solid rgba(74,104,120,0.28); border-top: 3px solid #4A6878; }
+  .card-reiner::before { background: linear-gradient(135deg, rgba(74,104,120,0.08) 0%, transparent 60%); }
+  .card-reiner:hover { border-color: rgba(74,104,120,0.6); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
+  .card-reiner .card-accent { color: var(--reiner); }
+  .card-reiner .card-enter  { background: rgba(74,104,120,0.2); color: var(--reiner); border: 1px solid rgba(74,104,120,0.4); }
+
+  /* --- KEVAN --- */
+  .card-kevan  { background: rgba(160,99,45,0.1); border: 1px solid rgba(160,99,45,0.28); border-top: 3px solid #A0632D; }
+  .card-kevan::before  { background: linear-gradient(135deg, rgba(160,99,45,0.08) 0%, transparent 60%); }
+  .card-kevan:hover  { border-color: rgba(160,99,45,0.6); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
+  .card-kevan .card-accent { color: var(--kevan); }
+  .card-kevan .card-enter  { background: rgba(160,99,45,0.2); color: var(--kevan); border: 1px solid rgba(160,99,45,0.4); }
+
+  /* --- ÉPHRAÏM --- */
+  .card-ephraim { background: rgba(138,128,106,0.1); border: 1px solid rgba(138,128,106,0.28); border-top: 3px solid #8A806A; }
+  .card-ephraim::before { background: linear-gradient(135deg, rgba(138,128,106,0.08) 0%, transparent 60%); }
+  .card-ephraim:hover { border-color: rgba(138,128,106,0.6); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
+  .card-ephraim .card-accent { color: var(--ephraim); }
+  .card-ephraim .card-enter  { background: rgba(138,128,106,0.2); color: var(--ephraim); border: 1px solid rgba(138,128,106,0.4); }
+
+  /* --- CADE --- */
+  .card-cade   { background: rgba(103,78,167,0.1); border: 1px solid rgba(103,78,167,0.28); border-top: 3px solid #674EA7; }
+  .card-cade::before   { background: linear-gradient(135deg, rgba(103,78,167,0.08) 0%, transparent 60%); }
+  .card-cade:hover   { border-color: rgba(103,78,167,0.6); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
+  .card-cade .card-accent { color: var(--cade); }
+  .card-cade .card-enter  { background: rgba(103,78,167,0.2); color: var(--cade); border: 1px solid rgba(103,78,167,0.4); }
+
+  /* --- SCENARIO card --- */
+  .card-scenario { background: rgba(139,26,26,0.08); border: 1px solid rgba(139,26,26,0.22); border-top: 3px solid var(--blood); }
+  .card-scenario::before { background: linear-gradient(135deg, rgba(139,26,26,0.06) 0%, transparent 60%); }
+  .card-scenario:hover { border-color: rgba(139,26,26,0.5); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
+  .card-scenario .card-accent { color: var(--blood-mid); }
+  .card-scenario .card-enter  { background: rgba(139,26,26,0.15); color: var(--blood-mid); border: 1px solid rgba(139,26,26,0.3); }
+
+  /* CARD ANATOMY */
+  .card-symbol { font-size: 2rem; margin-bottom: 0.9rem; display: block; line-height: 1; }
+  .card-label  { font-family: 'Crimson Text', serif; font-style: italic; font-size: 0.78rem; letter-spacing: 0.08em; margin-bottom: 0.25rem; }
+  .card-name   { font-family: 'Cinzel', serif; font-size: 1.25rem; font-weight: 700; color: var(--parchment); letter-spacing: 0.04em; margin-bottom: 0.2rem; line-height: 1.15; }
+  .card-sub    { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.5; margin-bottom: 0.9rem; }
+  .card-desc   { font-size: 0.88rem; color: var(--parchment-dark); line-height: 1.5; font-style: italic; margin-bottom: 1.1rem; }
+  .card-enter  { display: inline-flex; align-items: center; gap: 0.4rem; font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.38rem 0.85rem; border-radius: 2px; transition: all 0.2s; }
+
+  /* WIP badge */
+  .card-wip { display: inline-block; font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: var(--SUB); padding: 0.15rem 0.5rem; border-radius: 2px; vertical-align: middle; margin-left: 0.4rem; }
+
+  /* ORNAMENT */
+  .ornament { text-align: center; color: var(--blood); opacity: 0.35; font-size: 1rem; letter-spacing: 0.6em; margin: 0.5rem 0; }
+
+  /* FOOTER */
+  footer { text-align: center; padding: 2rem 0; color: var(--SUB); font-size: 0.8rem; font-style: italic; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 3rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html">← Accueil</a>
+  <span class="nav-sep">·</span>
+  <span class="nav-current">De Boue et de Sang</span>
+</nav>
+
+<div class="container">
+
+  <header>
+    <div class="hub-label">Warhammer Fantasy Roleplay · 4e édition</div>
+    <h1>⚔️ De Boue et de Sang</h1>
+    <div class="hub-arc">Arc I</div>
+    <div class="hub-desc">Espace dédié à la campagne De Boue et de Sang.</div>
+  </header>
+
+  <div class="ornament">· · ·</div>
+
+  <div class="section-title">Personnages joueurs</div>
+
+  <div class="cards cards-3">
+
+    <a class="card card-tryxx" href="tryxx.html">
+      <span class="card-symbol">🗡️</span>
+      <div class="card-label card-accent">—</div>
+      <div class="card-name">Tryxx</div>
+      <div class="card-sub">À définir<span class="card-wip">à venir</span></div>
+      <div class="card-desc">La fiche sera complétée lors des prochaines sessions de construction.</div>
+      <span class="card-enter">Bientôt →</span>
+    </a>
+
+    <a class="card card-kant" href="kantagoran.html">
+      <span class="card-symbol">🏹</span>
+      <div class="card-label card-accent">Matthieu</div>
+      <div class="card-name">Kantagoran</div>
+      <div class="card-sub">Rôdeur · Elfe</div>
+      <div class="card-desc">Tacticien des bois, œil affûté. À l'aise dans l'ombre des arbres comme dans le chaos de la mêlée.</div>
+      <span class="card-enter card-accent">Ouvrir →</span>
+    </a>
+
+    <a class="card card-reiner" href="reiner.html">
+      <span class="card-symbol">🛡️</span>
+      <div class="card-label card-accent">—</div>
+      <div class="card-name">Reiner</div>
+      <div class="card-sub">À définir<span class="card-wip">à venir</span></div>
+      <div class="card-desc">La fiche sera complétée lors des prochaines sessions de construction.</div>
+      <span class="card-enter">Bientôt →</span>
+    </a>
+
+    <a class="card card-kevan" href="kevan.html">
+      <span class="card-symbol">🔨</span>
+      <div class="card-label card-accent">—</div>
+      <div class="card-name">Kevan</div>
+      <div class="card-sub">À définir<span class="card-wip">à venir</span></div>
+      <div class="card-desc">La fiche sera complétée lors des prochaines sessions de construction.</div>
+      <span class="card-enter">Bientôt →</span>
+    </a>
+
+    <a class="card card-ephraim" href="ephraim.html">
+      <span class="card-symbol">📿</span>
+      <div class="card-label card-accent">—</div>
+      <div class="card-name">Éphraïm</div>
+      <div class="card-sub">À définir<span class="card-wip">à venir</span></div>
+      <div class="card-desc">La fiche sera complétée lors des prochaines sessions de construction.</div>
+      <span class="card-enter">Bientôt →</span>
+    </a>
+
+    <a class="card card-cade" href="cade.html">
+      <span class="card-symbol">🎯</span>
+      <div class="card-label card-accent">Yelena</div>
+      <div class="card-name">Cade Mitchell</div>
+      <div class="card-sub">Chasseur de primes · Haut-elfe</div>
+      <div class="card-desc">Calculateur et persuasif. Chaque interaction est une négociation, chaque cible un contrat.</div>
+      <span class="card-enter card-accent">Ouvrir →</span>
+    </a>
+
+  </div>
+
+  <div class="section-title">MJ</div>
+
+  <div class="cards">
+
+    <a class="card card-scenario" href="scenario.html">
+      <span class="card-symbol">📜</span>
+      <div class="card-label card-accent">Guillaume</div>
+      <div class="card-name">Scénario</div>
+      <div class="card-sub">Accès protégé · Maître de Jeu</div>
+      <div class="card-desc">Document complet de campagne : actes, scènes, PNJ, fils narratifs. Accès restreint par mot de passe.</div>
+      <span class="card-enter card-accent">Ouvrir →</span>
+    </a>
+
+  </div>
+
+  <footer>
+    De Boue et de Sang · Arc I &nbsp;·&nbsp; Warhammer Fantasy Roleplay
+  </footer>
+
+</div>
+</body>
+</html>
