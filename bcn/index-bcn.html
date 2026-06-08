@@ -1,1 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blanc comme Neige — Nordland</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0a0f;
+    --parchment: #f0e8d8;
+    --parchment-dark: #d4c8a8;
+    --BLU: #1C3A5A;
+    --GLD: #B8922A;
+    --VIO: #674EA7;
+    --GRN: #5E804F;
+    --SUB: #555566;
+    --FROST: #cfe0ea;
+    --FROST-LT: #dcebf3;
+    --FIR: #6f9463;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--ink); color: var(--parchment); font-family: 'Crimson Text', serif; min-height: 100vh; overflow-x: hidden; }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(28,58,90,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(205,224,236,0.06) 0%, transparent 50%),
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.01) 2px, rgba(255,255,255,0.01) 4px);
+    pointer-events: none;
+    z-index: 0;
+  }
 
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,15,0.93); backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(184,146,42,0.15);
+    padding: 0.6rem 1.5rem; display: flex; align-items: center; gap: 1rem;
+  }
+  nav a { color: var(--SUB); text-decoration: none; font-size: 0.82rem; font-style: italic; transition: color 0.2s; }
+  nav a:hover { color: var(--GLD); }
+  .nav-sep { color: var(--SUB); opacity: 0.3; }
+  .nav-current { color: var(--GLD) !important; font-style: normal; font-family: 'Cinzel', serif; font-size: 0.82rem; }
+
+  .container { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  /* HEADER */
+  header { text-align: center; padding: 3rem 0 2.5rem; }
+  header::after { content: ''; display: block; width: 60%; height: 1px; background: linear-gradient(to right, transparent, var(--GLD), transparent); margin: 1.5rem auto 0; }
+  .hub-label { font-family: 'Crimson Text', serif; font-style: italic; color: var(--GLD); font-size: 0.9rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  h1 { font-family: 'Cinzel', serif; font-size: clamp(1.6rem, 5vw, 2.8rem); font-weight: 700; color: var(--parchment); letter-spacing: 0.05em; text-shadow: 0 0 40px rgba(205,224,236,0.25), 0 2px 4px rgba(0,0,0,0.8); line-height: 1.2; display: inline-flex; align-items: center; gap: 0.6rem; }
+  h1 .hub-icon { width: 2.4rem; height: 2.4rem; color: var(--FIR); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); }
+  .hub-desc { font-style: italic; color: var(--parchment-dark); font-size: 0.95rem; margin-top: 0.8rem; max-width: 520px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+
+  /* SECTION LABEL */
+  .section-title { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--SUB); margin: 2.5rem 0 1.25rem; display: flex; align-items: center; gap: 1rem; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.08); }
+
+  /* GRID CARDS */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin: 1.5rem 0; }
+
+  .card { display: block; text-decoration: none; border-radius: 3px; padding: 1.6rem 1.5rem; transition: all 0.3s ease; position: relative; overflow: hidden; }
+  .card::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s; }
+  .card:hover { transform: translateY(-3px); }
+  .card:hover::before { opacity: 1; }
+
+  /* Carte placeholder PJ */
+  .card-soon { background: rgba(205,224,236,0.05); border: 1px solid rgba(205,224,236,0.18); border-top: 3px solid rgba(205,224,236,0.4); cursor: default; }
+  .card-soon .card-accent { color: var(--FROST); }
+
+  /* Carte scénario (MJ) */
+  .card-scenario { background: rgba(205,224,236,0.08); border: 1px solid rgba(205,224,236,0.24); border-top: 3px solid var(--FROST); }
+  .card-scenario::before { background: linear-gradient(135deg, rgba(205,224,236,0.07) 0%, transparent 60%); }
+  .card-scenario:hover { border-color: rgba(205,224,236,0.5); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
+  .card-scenario .card-accent { color: var(--FROST-LT); }
+
+  .card-symbol { font-size: 2rem; margin-bottom: 0.9rem; display: block; line-height: 1; }
+  .card-label { font-family: 'Crimson Text', serif; font-style: italic; font-size: 0.78rem; letter-spacing: 0.08em; margin-bottom: 0.25rem; }
+  .card-name { font-family: 'Cinzel', serif; font-size: 1.25rem; font-weight: 700; color: var(--parchment); letter-spacing: 0.04em; margin-bottom: 0.2rem; line-height: 1.15; }
+  .card-sub { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; opacity: 0.55; margin-bottom: 0.9rem; }
+  .card-desc { font-size: 0.88rem; color: var(--parchment-dark); line-height: 1.5; font-style: italic; margin-bottom: 1.1rem; }
+  .card-enter { display: inline-flex; align-items: center; gap: 0.4rem; font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.38rem 0.85rem; border-radius: 2px; transition: all 0.2s; }
+  .card-scenario .card-enter { background: rgba(205,224,236,0.14); color: var(--FROST-LT); border: 1px solid rgba(205,224,236,0.32); }
+  .card-soon .card-enter { background: rgba(205,224,236,0.08); color: var(--FROST); border: 1px solid rgba(205,224,236,0.2); }
+
+  /* ORNAMENT */
+  .ornament { text-align: center; color: var(--FROST); opacity: 0.4; font-size: 1rem; letter-spacing: 0.6em; margin: 0.5rem 0; }
+
+  /* FOOTER */
+  footer { text-align: center; padding: 2rem 0; color: var(--SUB); font-size: 0.8rem; font-style: italic; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 3rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../index.html">&#8592; Accueil</a>
+  <span class="nav-sep">&#183;</span>
+  <span class="nav-current">Blanc comme Neige</span>
+</nav>
+
+<div class="container">
+
+  <header>
+    <div class="hub-label">Warhammer Fantasy Roleplay &#183; 4e édition</div>
+    <h1><svg class="hub-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="10.7" y="18.4" width="2.6" height="3.6" rx="0.4" fill="#5a4632"/><path fill="currentColor" d="M12 2.4 7.4 9.6h9.2Z"/><path fill="currentColor" d="M12 7 6 14.2h12Z"/><path fill="currentColor" d="M12 11.4 4.5 19.2h15Z"/><path fill="#eef4f7" d="M12 2.4 9.6 6.1c1.3-.7 3.5-.7 4.8 0Z"/><path fill="#eef4f7" d="M12 7 8.5 11.1c1.8-.9 5.2-.9 7 0Z"/><path fill="#eef4f7" d="M4.5 19.2h15l-2.7-1.7c-3.3 1.6-6.3 1.6-9.6 0Z"/><circle cx="9" cy="13.6" r="0.7" fill="#eef4f7"/><circle cx="15.1" cy="13.2" r="0.6" fill="#eef4f7"/></svg>Blanc comme Neige</h1>
+    <div class="hub-desc">Espace dédié à la campagne Blanc comme Neige, à l'est du Nordland.</div>
+  </header>
+
+  <div class="ornament">&#183; &#183; &#183;</div>
+
+  <div class="section-title">Personnages joueurs</div>
+
+  <div class="cards">
+
+    <div class="card card-soon">
+      <span class="card-symbol">&#10052;</span>
+      <div class="card-label card-accent">À venir</div>
+      <div class="card-name">Fiches de PJ</div>
+      <div class="card-sub">En préparation</div>
+      <div class="card-desc">Les personnages de cette campagne seront ajoutés ici au fil des sessions.</div>
+      <span class="card-enter card-accent">Bientôt</span>
+    </div>
+
+  </div>
+
+  <div class="section-title">MJ</div>
+
+  <div class="cards">
+
+    <a class="card card-scenario" href="scenario-bcn.html">
+      <span class="card-symbol">&#128220;</span>
+      <div class="card-label card-accent">Guillaume</div>
+      <div class="card-name">Scénario</div>
+      <div class="card-sub">Accès protégé &#183; Maître de Jeu</div>
+      <div class="card-desc">Introduction de campagne et premier chapitre. Accès restreint par mot de passe.</div>
+      <span class="card-enter card-accent">Ouvrir &#8594;</span>
+    </a>
+
+  </div>
+
+  <footer>
+    Blanc comme Neige &#183; Nordland &nbsp;&#183;&nbsp; Warhammer Fantasy Roleplay
+  </footer>
+
+</div>
+</body>
+</html>
