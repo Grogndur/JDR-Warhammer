@@ -150,7 +150,7 @@
   .scene .vide .comete{font-size:34px;color:var(--oxblood);display:block;margin-bottom:8px}
 
   /* ---- Caméras flottantes, déplaçables et redimensionnables ---- */
-  .cams{position:absolute;top:52px;right:12px;width:340px;height:250px;z-index:25;
+  .cams{position:absolute;top:52px;left:12px;width:340px;height:250px;z-index:25;
     border:1px solid var(--laiton-sombre);border-radius:10px;overflow:hidden;
     background:var(--noir-2);display:flex;flex-direction:column;
     resize:both;min-width:170px;min-height:120px;box-shadow:var(--ombre)}
@@ -186,8 +186,16 @@
   .gm-only{display:none}
   body.est-mj .gm-only{display:flex}
 
-  /* Journal des jets */
-  .journal{max-height:78px;overflow:auto;display:flex;flex-direction:column;gap:3px}
+  /* Journal des jets (panneau vertical, à droite) */
+  .journal-panel{position:fixed;top:52px;bottom:104px;right:0;width:236px;z-index:24;
+    display:flex;flex-direction:column;overflow:hidden;
+    background:rgba(18,14,10,.93);border:1px solid var(--bord);border-right:0;
+    border-radius:10px 0 0 10px;box-shadow:var(--ombre)}
+  .journal-panel.replie{display:none}
+  .jp-tete{display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid var(--bord)}
+  .jp-tete .pt{color:var(--laiton);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+  .jp-tete .spacer{flex:1}
+  .journal{flex:1;overflow:auto;display:flex;flex-direction:column;gap:4px;padding:8px}
   .jet{border-left:3px solid var(--laiton-sombre);background:var(--noir-2);
     padding:3px 8px;border-radius:0 5px 5px 0;font-size:13px}
   .jet .qui{color:var(--laiton);font-family:"Cinzel",serif;font-size:11px;letter-spacing:.05em}
@@ -213,7 +221,8 @@
     padding:10px 14px;border-radius:8px;font-size:14px;max-width:520px;text-align:center}
 
   @media (max-width:760px){
-    .cams{width:200px;height:150px;top:auto;bottom:118px;right:8px}
+    .cams{width:200px;height:150px;top:auto;bottom:118px;left:8px}
+    .journal-panel{width:180px;bottom:118px}
     .dock #img-url,.dock #amb-url{width:120px}
   }
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -263,6 +272,7 @@
     </div>
     <label class="toggle"><input type="checkbox" id="mj" /> MJ</label>
     <button id="ouvrir-cams" title="Afficher ou masquer les caméras">📹 Caméras</button>
+    <button id="ouvrir-journal" title="Afficher ou masquer le journal">📜 Journal</button>
     <button id="basculer-dock" title="Afficher ou masquer la barre">▾ Barre</button>
   </header>
 
@@ -275,6 +285,15 @@
       <button id="cams-rejoindre" class="mini" title="Rejoindre / reconnecter">⟳</button>
     </div>
     <div class="jitsi" id="callframe"></div>
+  </aside>
+
+  <aside class="journal-panel" id="journal-panel">
+    <div class="jp-tete">
+      <span class="pt">Journal des jets</span>
+      <span class="spacer"></span>
+      <button id="fermer-journal" class="mini" title="Masquer">×</button>
+    </div>
+    <div class="journal" id="journal"></div>
   </aside>
 
   <div class="amb-player"><div id="yt"></div></div>
@@ -317,10 +336,6 @@
       </div>
       <div class="galerie" id="galerie"></div>
       <div class="err" id="amb-err"></div>
-    </div>
-
-    <div class="grp grp-journal">
-      <div class="journal" id="journal"></div>
     </div>
 
     <button id="amb-activer" class="amb-activer" title="Démarrer le son d'ambiance si tu ne l'entends pas">🔊 Son</button>
@@ -582,6 +597,10 @@ $("#ouvrir-cams").addEventListener("click", ()=>{
   c.style.display = (c.style.display === "none") ? "flex" : "none";
 });
 $("#cams-rejoindre").addEventListener("click", lancerCams);
+
+// ---------- Journal : afficher/masquer ----------
+$("#ouvrir-journal").addEventListener("click", ()=> $("#journal-panel").classList.toggle("replie"));
+$("#fermer-journal").addEventListener("click", ()=> $("#journal-panel").classList.add("replie"));
 
 // ---------- Replier la barre du bas pour agrandir l'image ----------
 $("#basculer-dock").addEventListener("click", ()=> $("#dock").classList.toggle("replie"));
