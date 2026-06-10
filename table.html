@@ -150,7 +150,7 @@
   .scene .vide .comete{font-size:34px;color:var(--oxblood);display:block;margin-bottom:8px}
 
   /* ---- Caméras flottantes, déplaçables et redimensionnables ---- */
-  .cams{position:absolute;top:52px;right:12px;width:300px;height:210px;z-index:25;
+  .cams{position:absolute;top:52px;right:12px;width:340px;height:250px;z-index:25;
     border:1px solid var(--laiton-sombre);border-radius:10px;overflow:hidden;
     background:var(--noir-2);display:flex;flex-direction:column;
     resize:both;min-width:170px;min-height:120px;box-shadow:var(--ombre)}
@@ -534,7 +534,9 @@ function lancerCams(){
   cont.innerHTML = "";
   callFrame = window.DailyIframe.createFrame(cont, {
     iframeStyle: { width:"100%", height:"100%", border:"0" },
-    showLeaveButton:false, showFullscreenButton:true
+    showLeaveButton:false, showFullscreenButton:true,
+    activeSpeakerMode:false,                       // mosaïque : tout le monde à taille égale
+    layoutConfig:{ grid:{ maxTilesPerPage:25 } }
   });
   callFrame.join({ url, userName: nom() });
 }
