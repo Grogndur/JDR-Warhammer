@@ -93,9 +93,16 @@
     height:100dvh;position:relative;overflow:hidden;
   }
 
-  header{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;align-items:center;gap:10px;
-    padding:6px 12px;flex-wrap:wrap;
+  header{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;gap:10px;
+    padding:6px 12px;flex-wrap:wrap;pointer-events:none;
     background:linear-gradient(180deg, rgba(8,6,4,.96), rgba(8,6,4,.45) 80%, transparent)}
+  header .retour{pointer-events:auto;font-family:"Cinzel",serif;font-size:12px;letter-spacing:.04em;
+    color:var(--parchemin-doux);text-decoration:none;transition:color .15s ease}
+  header .retour:hover{color:var(--laiton)}
+  .dock-poignee{position:fixed;left:50%;bottom:0;transform:translateX(-50%);z-index:29;
+    height:18px;line-height:16px;padding:0 20px;font-size:11px;cursor:pointer;
+    border:1px solid var(--bord);border-bottom:0;border-radius:8px 8px 0 0;
+    background:linear-gradient(180deg,var(--surface-2),var(--surface));color:var(--laiton)}
   .titre{display:flex;align-items:baseline;gap:.5ch;margin:0;
     position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
     white-space:nowrap;pointer-events:none}
@@ -151,6 +158,40 @@
   }
   .scene .vide .comete{font-size:34px;color:var(--oxblood);display:block;margin-bottom:8px}
 
+  /* ---- Initiative : panneau vertical déplaçable ---- */
+  .initiative{position:fixed;top:318px;left:12px;width:220px;max-height:46vh;z-index:24;
+    display:flex;flex-direction:column;overflow:hidden;
+    background:rgba(18,14,10,.93);border:1px solid var(--bord);border-radius:10px;box-shadow:var(--ombre)}
+  .initiative.replie{display:none}
+  .ini-tete{display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid var(--bord);cursor:move}
+  .ini-tete .pt{color:var(--laiton);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+  .ini-tete .ini-round{font-family:"Cinzel",serif;font-size:11px;letter-spacing:.04em;
+    color:var(--parchemin-doux);white-space:nowrap}
+  .ini-tete .spacer{flex:1}
+  .ini-liste{flex:1;overflow:auto;padding:6px;display:flex;flex-direction:column;gap:4px}
+  .ini-vide{color:var(--parchemin-doux);font-size:12px;text-align:center;padding:12px 4px;opacity:.7}
+  .ini-chip{display:flex;align-items:center;gap:6px;padding:4px 7px;border-radius:7px;
+    border:1px solid var(--bord);background:rgba(40,32,24,.55);font-size:13px;
+    color:var(--parchemin-doux)}
+  .ini-chip.actif{border-color:var(--laiton);background:rgba(176,144,42,.20);
+    color:var(--parchemin);box-shadow:0 0 0 1px var(--laiton) inset}
+  .ini-chip .ini-val{min-width:24px;text-align:center;color:var(--laiton);font-weight:700;font-variant-numeric:tabular-nums}
+  .ini-chip .ini-nom{flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ini-av{display:inline-flex;align-items:center;gap:3px}
+  .ini-av::before{content:"Av";font-size:9px;letter-spacing:.04em;opacity:.55;margin-right:1px}
+  .ini-av b{min-width:13px;text-align:center;color:var(--laiton);font-variant-numeric:tabular-nums}
+  .ini-av button,.ini-x{cursor:pointer;font-family:inherit;line-height:18px;border-radius:5px;
+    border:1px solid var(--bord);background:rgba(40,32,24,.7);color:var(--parchemin-doux)}
+  .ini-av button{padding:0 6px;font-size:13px}
+  .ini-x{padding:0 6px;color:#c0613f}
+  .ini-av button:hover,.ini-x:hover{border-color:var(--laiton)}
+  body:not(.est-mj) .ini-av button,body:not(.est-mj) .ini-x{display:none}
+
+  /* ---- Calque des dés 3D (sur le plateau, sous les panneaux) ---- */
+  #dice3d{position:absolute;top:44px;left:0;right:0;bottom:0;z-index:10;pointer-events:none}
+  #dice3d>div{position:absolute;inset:0}
+  #dice3d canvas{display:block;width:100%;height:100%}
+
   /* ---- Caméras flottantes, déplaçables et redimensionnables ---- */
   .cams{position:absolute;top:52px;left:12px;width:340px;height:250px;z-index:25;
     border:1px solid var(--laiton-sombre);border-radius:10px;overflow:hidden;
@@ -180,6 +221,7 @@
   .dock input[type=text],.dock input[type=number],.dock input[type=url]{padding:4px 7px;font-size:13px}
   .dock #cible{width:50px}
   .dock #custom{width:66px}
+  .dock #nom{width:120px}
   .dock #img-url,.dock #amb-url{width:148px}
   .dock button{padding:5px 9px;font-size:12px}
   .dock input[type=range]{width:88px;accent-color:var(--laiton-sombre)}
@@ -266,19 +308,24 @@
     <img id="image" alt="Image partagée" />
   </section>
 
+  <div id="dice3d"><div id="dice3d-d"></div><div id="dice3d-u"></div></div>
+
   <header>
+    <a class="retour" href="index.html" title="Retour à l'accueil">← Accueil</a>
     <div class="titre"><span class="comete">✦</span><h1>La Table de Warhammer</h1></div>
-    <span class="spacer"></span>
-    <div class="champ">
-      <input type="text" id="nom" placeholder="Ton nom" maxlength="24" />
-    </div>
-    <label class="toggle"><input type="checkbox" id="mj" /> MJ</label>
-    <button id="ouvrir-cams" title="Afficher ou masquer les caméras">📹 Caméras</button>
-    <button id="ouvrir-journal" title="Afficher ou masquer le journal">📜 Journal</button>
-    <button id="basculer-dock" title="Afficher ou masquer la barre">▾ Barre</button>
   </header>
 
   <div class="alerte" id="alerte" style="display:none"></div>
+
+  <aside class="initiative replie" id="initiative">
+    <div class="ini-tete" id="init-drag">
+      <span class="pt">Initiative</span>
+      <span class="ini-round" id="init-round">Round 1</span>
+      <span class="spacer"></span>
+      <button id="fermer-init" class="mini" title="Masquer">×</button>
+    </div>
+    <div class="ini-liste" id="init-liste"></div>
+  </aside>
 
   <aside class="cams" id="cams">
     <div class="cams-tete" id="cams-drag">
@@ -304,12 +351,23 @@
 
     <div class="grp">
       <div class="ligne">
+        <input type="text" id="nom" placeholder="Ton nom" maxlength="24" />
+        <label class="toggle"><input type="checkbox" id="mj" /> MJ</label>
+        <button id="ouvrir-cams" title="Afficher ou masquer les caméras">📹 Caméras</button>
+        <button id="ouvrir-journal" title="Afficher ou masquer le journal">📜 Journal</button>
+        <button id="ouvrir-init" title="Afficher ou masquer l'initiative">⚔ Initiative</button>
+      </div>
+    </div>
+
+    <div class="grp">
+      <div class="ligne">
         <label for="cible">Test</label>
         <input type="number" id="cible" min="1" max="100" value="45" />
         <button class="primaire" id="lancer-test">Lancer</button>
         <button data-de="100">d100</button>
         <button data-de="10">d10</button>
         <button data-de="6">d6</button>
+        <button data-de="4">d4</button>
         <input type="text" id="custom" placeholder="2d6+3" />
         <button id="lancer-custom">Lancer</button>
       </div>
@@ -317,6 +375,15 @@
         <button id="jet-secret">Jet secret</button>
         <span class="secret-res" id="secret-res">—</span>
         <span class="secret-loc" id="secret-loc"></span>
+      </div>
+    </div>
+
+    <div class="grp gm-only">
+      <div class="ligne">
+        <input type="text" id="init-add" placeholder="Gobelin 42" />
+        <button id="init-ajout">+ Combattant</button>
+        <button id="init-suivant" class="primaire">Tour ▶</button>
+        <button id="init-vider" title="Vider l'initiative">✕</button>
       </div>
     </div>
 
@@ -343,6 +410,8 @@
     <button id="amb-activer" class="amb-activer" title="Démarrer le son d'ambiance si tu ne l'entends pas">🔊 Son</button>
 
   </section>
+
+  <button id="basculer-dock" class="dock-poignee" title="Plier ou afficher la barre">▾</button>
 
 </div>
 
@@ -380,6 +449,7 @@ if(!cfg.databaseURL){
 
 const refImage = db ? ref(db, `salles/${salle}/image`) : null;
 const refJets  = db ? ref(db, `salles/${salle}/jets`)  : null;
+const refInit  = db ? ref(db, `salles/${salle}/initiative`) : null;
 
 // ---------- Image partagée ----------
 const img = $("#image");
@@ -459,7 +529,8 @@ function lancerTest(cible){
     nom: nom(),
     res: `${affR}  (cible ${cible})`,
     detail: (succes ? "Réussite" : "Échec") + " · " + loc,
-    classe, marque
+    classe, marque,
+    des: { faces:10, vals:[dizR, uniR], pct:true }
   });
 }
 
@@ -479,14 +550,21 @@ function lancerExpr(expr){
   for(let i=0;i<nb;i++){ const t=Math.floor(Math.random()*faces)+1; tirages.push(t); total+=t; }
   total += mod;
   const detailDés = (nb>1 || mod) ? `[${tirages.join(", ")}]${mod?(mod>0?" +"+mod:" "+mod):""}` : `d${faces}`;
-  envoyerJet({ nom:nom(), res:`${total}`, detail:detailDés, classe:"", marque:"" });
+  let des = { faces, vals:tirages };
+  if(faces===100 && nb===1){                 // un d100 = deux d10 (dizaine + unité)
+    const r = tirages[0];
+    const dz = (r===100)?0:Math.floor(r/10);
+    const un = (r===100)?0:r%10;
+    des = { faces:10, vals:[dz, un], pct:true };
+  }
+  envoyerJet({ nom:nom(), res:`${total}`, detail:detailDés, classe:"", marque:"", des });
 }
 
 $("#lancer-test").addEventListener("click", ()=>{
   const c = Math.max(1, Math.min(100, parseInt($("#cible").value,10)||0));
   lancerTest(c);
 });
-document.querySelectorAll(".des-rapides [data-de]").forEach(b=>{
+document.querySelectorAll("[data-de]").forEach(b=>{
   b.addEventListener("click", ()=> lancerExpr("d"+b.dataset.de));
 });
 $("#lancer-custom").addEventListener("click", ()=> lancerExpr($("#custom").value || "d6"));
@@ -525,6 +603,7 @@ function afficherJet(j){
     (j.marque ? ` <span class="marque">· ${escape(j.marque)}</span>` : "");
   journal.prepend(el);
   while(journal.children.length > 60) journal.lastChild.remove();
+  if(j.des && (Date.now() - (j.ts||0) < 8000)) lancerDes3D(j.des, j.nom);
 }
 function escape(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
@@ -534,10 +613,199 @@ if(refJets){
   });
 }
 
+// ---------- Dés 3D (physique, par-dessus le plateau) ----------
+// Le calque #dice3d est dimensionné pour s'arrêter au bandeau du haut, à la barre
+// du bas et au journal : les dés rebondissent sur ces bords et restent visibles.
+let boxU = null, boxD = null, box3dPret = false;
+const TEINTE_DIZAINE = { background:"#e6dcc3", foreground:"#2a2018", texture:"none", material:"plastic" };
+
+function couleurDe(n){                                   // une teinte stable par lanceur
+  let h = 0; for(const c of (n||"Aventurier")) h = (h*31 + c.charCodeAt(0)) % 360;
+  return "hsl(" + h + ",65%,52%)";
+}
+function hslVersHex(hsl){
+  const m = hsl.match(/hsl\((\d+),(\d+)%,(\d+)%\)/); if(!m) return "#b0902a";
+  let H=+m[1], S=+m[2]/100, L=+m[3]/100;
+  const k=n=>(n+H/30)%12, a=S*Math.min(L,1-L);
+  const f=n=>L-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));
+  const t=x=>Math.round(255*x).toString(16).padStart(2,"0");
+  return "#"+t(f(0))+t(f(8))+t(f(4));
+}
+function teinteJoueur(n){ return { background:hslVersHex(couleurDe(n)), foreground:"#15110b", texture:"none", material:"plastic" }; }
+
+function zoneDes(){                                      // borne le plateau aux bandeaux
+  const el = document.getElementById("dice3d"); if(!el) return;
+  const h = document.querySelector("header");
+  const dock = document.getElementById("dock");
+  const jp = document.getElementById("journal-panel");
+  el.style.top    = (((h&&h.offsetHeight)||44)) + "px";
+  el.style.bottom = (dock && !dock.classList.contains("replie") ? dock.offsetHeight : 0) + "px";
+  el.style.right  = (jp && !jp.classList.contains("replie") ? jp.offsetWidth : 0) + "px";
+  el.style.left   = "0px";
+  for(const b of [boxU, boxD]){ if(b && b.onWindowResize){ try{ b.onWindowResize(); }catch(e){} } }
+}
+async function initDes3D(){
+  try{
+    const mod = await import("https://esm.sh/@3d-dice/dice-box-threejs");
+    const DiceBox = mod.default || mod.DiceBox || mod;
+    zoneDes();
+    const opts = { sounds:false, gravity_multiplier:400, baseScale:90, strength:2.2, theme_material:"plastic", onRollComplete:()=>{} };
+    boxU = new DiceBox("#dice3d-u", opts);
+    await boxU.initialize();
+    box3dPret = true;                                    // au moins les unités sont prêtes
+    try{
+      boxD = new DiceBox("#dice3d-d", opts);
+      await boxD.initialize();
+    }catch(e2){ console.warn("Calque dizaine indisponible, repli sur couleur unique :", e2); boxD = null; }
+  }catch(e){ console.warn("Dés 3D indisponibles (le reste fonctionne) :", e); box3dPret = false; }
+}
+function lancerDes3D(des, n){
+  if(!box3dPret || !boxU || !des || !des.vals || !des.vals.length) return;
+  try{
+    if(des.pct){                                        // test : dizaine distincte, unité couleur joueur
+      if(boxD){
+        if(boxD.updateConfig) boxD.updateConfig({ theme_customColorset: TEINTE_DIZAINE });
+        boxD.roll("1d10@" + des.vals[0]);
+        if(boxU.updateConfig) boxU.updateConfig({ theme_customColorset: teinteJoueur(n) });
+        boxU.roll("1d10@" + des.vals[1]);
+      } else {                                          // repli : deux d10 de même couleur
+        if(boxU.updateConfig) boxU.updateConfig({ theme_customColorset: teinteJoueur(n) });
+        boxU.roll("2d10@" + des.vals.join(","));
+      }
+      return;
+    }
+    if(![4,6,8,10,12,20].includes(des.faces)) return;   // autres jets : un seul dé coloré
+    if(boxU.updateConfig) boxU.updateConfig({ theme_customColorset: teinteJoueur(n) });
+    boxU.roll(des.vals.length + "d" + des.faces + "@" + des.vals.join(","));
+  }catch(e){ /* silencieux : le journal fait foi */ }
+}
+window.addEventListener("resize", zoneDes);
+initDes3D();
+
+// ---------- Initiative (bandeau synchronisé) ----------
+let initEtat = { ordre:[], actif:null, round:0 };
+let initPremier = true;
+
+function pousserInit(){ if(refInit) set(refInit, initEtat); else rendreInit(); }
+
+function rendreInit(){
+  const liste = $("#init-liste"); if(!liste) return;
+  const roundEl = $("#init-round");
+  const list = [...(initEtat.ordre||[])].sort((a,b)=> b.init - a.init);
+  if(roundEl) roundEl.textContent = "Round " + (initEtat.round||1);
+  if(!list.length){
+    liste.innerHTML = `<div class="ini-vide">Aucun combat en cours</div>`;
+    return;
+  }
+  liste.innerHTML = list.map(c=>{
+    const a = (c.id===initEtat.actif) ? " actif" : "";
+    return `<div class="ini-chip${a}" data-id="${c.id}">`+
+      `<span class="ini-val">${c.init}</span>`+
+      `<span class="ini-nom">${escape(c.nom)}</span>`+
+      `<span class="ini-av"><button data-act="moins" title="Avantage -1">−</button>`+
+      `<b>${c.av||0}</b>`+
+      `<button data-act="plus" title="Avantage +1">+</button></span>`+
+      `<button class="ini-x" data-act="x" title="Retirer">×</button>`+
+    `</div>`;
+  }).join("");
+}
+
+function iniAdd(){
+  const champ = $("#init-add");
+  const v = (champ.value||"").trim(); if(!v) return;
+  const m = v.match(/^(.*?)[\s,]+(-?\d+)\s*$/);          // "Nom 42"
+  const nom = (m ? (m[1].trim()||"Combattant") : v).slice(0,24);
+  const init = m ? parseInt(m[2],10) : 0;
+  const id = Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+  initEtat.ordre = [...(initEtat.ordre||[]), { id, nom, init, av:0 }];
+  champ.value = "";
+  $("#initiative").classList.remove("replie");
+  pousserInit();
+}
+function iniSuivant(){
+  const list = [...(initEtat.ordre||[])].sort((a,b)=> b.init - a.init);
+  if(!list.length) return;
+  if(!initEtat.actif){ initEtat.actif = list[0].id; initEtat.round = 1; }
+  else {
+    const i = list.findIndex(c=>c.id===initEtat.actif);
+    const n = i + 1;
+    if(n >= list.length){ initEtat.round = (initEtat.round||1) + 1; initEtat.actif = list[0].id; }
+    else initEtat.actif = list[n].id;
+  }
+  $("#initiative").classList.remove("replie");
+  pousserInit();
+}
+function iniVider(){
+  initEtat = { ordre:[], actif:null, round:0 };
+  $("#initiative").classList.add("replie");
+  pousserInit();
+}
+function iniAv(id, d){
+  const c = (initEtat.ordre||[]).find(x=>x.id===id); if(!c) return;
+  c.av = Math.max(0, (c.av||0) + d);
+  pousserInit();
+}
+function iniRemove(id){
+  initEtat.ordre = (initEtat.ordre||[]).filter(x=>x.id!==id);
+  if(initEtat.actif===id) initEtat.actif = null;
+  pousserInit();
+}
+
+$("#ouvrir-init").addEventListener("click", ()=>{ $("#initiative").classList.toggle("replie"); zoneDes(); });
+$("#init-ajout").addEventListener("click", iniAdd);
+$("#init-add").addEventListener("keydown", e=>{ if(e.key==="Enter") iniAdd(); });
+$("#init-suivant").addEventListener("click", iniSuivant);
+$("#init-vider").addEventListener("click", iniVider);
+$("#initiative").addEventListener("click", e=>{
+  const btn = e.target.closest("[data-act]"); if(!btn) return;
+  const chip = e.target.closest(".ini-chip"); if(!chip) return;
+  const id = chip.dataset.id, act = btn.dataset.act;
+  if(act==="plus") iniAv(id, +1);
+  else if(act==="moins") iniAv(id, -1);
+  else if(act==="x") iniRemove(id);
+});
+$("#fermer-init").addEventListener("click", ()=> $("#initiative").classList.add("replie"));
+(function(){
+  const panel = $("#initiative"), poignee = $("#init-drag");
+  if(!panel || !poignee) return;
+  let actif=false, dx=0, dy=0;
+  poignee.addEventListener("pointerdown", e=>{
+    if(e.target.closest("button")) return;
+    actif=true; const r=panel.getBoundingClientRect();
+    dx=e.clientX-r.left; dy=e.clientY-r.top;
+    try{ poignee.setPointerCapture(e.pointerId); }catch(_){}
+  });
+  poignee.addEventListener("pointermove", e=>{
+    if(!actif) return;
+    const x=Math.max(0, Math.min(window.innerWidth  - panel.offsetWidth,  e.clientX-dx));
+    const y=Math.max(0, Math.min(window.innerHeight - panel.offsetHeight, e.clientY-dy));
+    panel.style.left=x+"px"; panel.style.top=y+"px"; panel.style.right="auto";
+  });
+  const fin=()=>{ actif=false; };
+  poignee.addEventListener("pointerup", fin);
+  poignee.addEventListener("pointercancel", fin);
+})();
+
+if(refInit){
+  onValue(refInit, snap=>{
+    initEtat = snap.val() || { ordre:[], actif:null, round:0 };
+    if(initEtat.ordre && !Array.isArray(initEtat.ordre)) initEtat.ordre = Object.values(initEtat.ordre);
+    if(!initEtat.ordre) initEtat.ordre = [];
+    rendreInit();
+    if(initPremier){
+      initPremier = false;
+      $("#initiative").classList.toggle("replie", initEtat.ordre.length === 0);
+    }
+  });
+} else {
+  rendreInit();
+}
+
 // ---------- Rôle MJ ----------
 $("#mj").addEventListener("change", e=>{
   document.body.classList.toggle("est-mj", e.target.checked);
   lsSet("wh_mj", e.target.checked ? "1" : "0");
+  majPoignee(); zoneDes();
 });
 
 // ---------- Caméras (Daily, encastrées dans la page) ----------
@@ -601,11 +869,19 @@ $("#ouvrir-cams").addEventListener("click", ()=>{
 $("#cams-rejoindre").addEventListener("click", lancerCams);
 
 // ---------- Journal : afficher/masquer ----------
-$("#ouvrir-journal").addEventListener("click", ()=> $("#journal-panel").classList.toggle("replie"));
-$("#fermer-journal").addEventListener("click", ()=> $("#journal-panel").classList.add("replie"));
+$("#ouvrir-journal").addEventListener("click", ()=>{ $("#journal-panel").classList.toggle("replie"); zoneDes(); });
+$("#fermer-journal").addEventListener("click", ()=>{ $("#journal-panel").classList.add("replie"); zoneDes(); });
 
 // ---------- Replier la barre du bas pour agrandir l'image ----------
-$("#basculer-dock").addEventListener("click", ()=> $("#dock").classList.toggle("replie"));
+function majPoignee(){
+  const dock = $("#dock"), p = $("#basculer-dock");
+  const replie = dock.classList.contains("replie");
+  p.style.bottom = (replie ? 0 : dock.offsetHeight) + "px";
+  p.textContent = replie ? "▴" : "▾";
+}
+$("#basculer-dock").addEventListener("click", ()=>{ $("#dock").classList.toggle("replie"); majPoignee(); zoneDes(); });
+window.addEventListener("resize", majPoignee);
+setTimeout(majPoignee, 0);
 
 // ---------- Déplacer le panneau caméras où on veut ----------
 (function(){
@@ -621,13 +897,11 @@ $("#basculer-dock").addEventListener("click", ()=> $("#dock").classList.toggle("
   });
   poignee.addEventListener("pointermove", e=>{
     if(!actif) return;
-    const header = document.querySelector("header");
     const dock = document.querySelector("#dock");
-    const hautMin = (header?.offsetHeight || 44) + 4;
     const dockH = (dock && !dock.classList.contains("replie")) ? dock.offsetHeight + 4 : 0;
     const basMax = window.innerHeight - dockH - cams.offsetHeight;
     let x = Math.max(0, Math.min(window.innerWidth - cams.offsetWidth, e.clientX - dx));
-    let y = Math.max(hautMin, Math.min(basMax, e.clientY - dy));
+    let y = Math.max(0, Math.min(basMax, e.clientY - dy));
     cams.style.left = x + "px"; cams.style.top = y + "px";
   });
   poignee.addEventListener("pointerup", ()=>{ actif = false; });
