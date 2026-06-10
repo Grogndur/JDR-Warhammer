@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>La Table — Warhammer JdR</title>
+
+<!-- Jitsi (caméras). Service gratuit, sans compte. -->
+<script src="https://meet.jit.si/external_api.js"></script>
+<!-- API YouTube (ambiance sonore synchronisée) -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<!--
+  ============================================================
+   À CONFIGURER (une seule fois)
+  ============================================================
+  1) Crée un projet sur https://console.firebase.google.com (gratuit).
+  2) Ajoute une "Realtime Database" (mode test pour commencer).
+  3) Dans Paramètres du projet > tes applications > Web, copie l'objet
+     firebaseConfig et colle-le ci-dessous à la place de l'exemple.
+  4) Mets tes cartes / illustrations dans un dossier "images" de ton dépôt,
+     puis liste-les dans GALERIE ci-dessous (ou colle une URL à la volée
+     directement dans l'interface, côté MJ).
+  ============================================================
+-->
+<script>
+  // --- Colle ICI ta config Firebase ---
+  window.FIREBASE_CONFIG = {
+    apiKey: "",
+    authDomain: "",
+    databaseURL: "",   // ex: https://ton-projet-default-rtdb.europe-west1.firebasedatabase.app
+    projectId: "",
+    storageBucket: "",
+    messagingSenderId: "",
+    appId: ""
+  };
+
+  // --- Ta bibliothèque d'images (facultatif). Adresses relatives ou complètes. ---
+  window.GALERIE = [
+    // { nom: "Auberge du Cochon Pendu", url: "images/auberge.jpg" },
+    // { nom: "Carte de Reikland",        url: "images/reikland.png" },
+  ];
+
+  // --- Mot de passe d'entrée (verrou simple). Mets "" pour n'avoir aucune entrée. ---
+  // ⚠ Le site étant public, ce mot de passe est visible dans le code source :
+  //   il écarte les curieux, ce n'est pas une vraie protection.
+  window.MOT_DE_PASSE = "pepouze";
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --noir:#14110d;
+    --noir-2:#1d1812;
+    --surface:#241d15;
+    --surface-2:#2c2419;
+    --laiton:#c9a25a;
+    --laiton-sombre:#8a6d2f;
+    --oxblood:#9b2226;
+    --oxblood-clair:#c1453f;
+    --parchemin:#e9dcc2;
+    --parchemin-doux:#c9bca0;
+    --vert-succes:#7f9b54;
+    --bord:#3a2f20;
+    --ombre:0 10px 30px rgba(0,0,0,.55);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 700px at 50% -10%, #20190f 0%, var(--noir) 60%) ,
+      var(--noir);
+    color:var(--parchemin);
+    font-family:"EB Garamond",Georgia,serif;
+    font-size:17px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.cinzel{font-family:"Cinzel",serif;letter-spacing:.04em}
+
+  /* ---- Structure ---- */
+  .app{
+    display:grid;
+    grid-template-columns:1fr 320px;
+    grid-template-rows:auto 1fr auto;
+    grid-template-areas:
+      "entete  cams"
+      "scene   cams"
+      "barre   barre";
+    height:100dvh;
+    gap:10px;
+    padding:10px;
+  }
+  .app.cams-haut{
+    grid-template-columns:1fr;
+    grid-template-rows:auto auto 1fr auto;
+    grid-template-areas:
+      "entete"
+      "cams"
+      "scene"
+      "barre";
+  }
+
+  header{grid-area:entete;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .titre{display:flex;align-items:baseline;gap:.5ch;margin:0}
+  .titre .comete{color:var(--oxblood-clair);font-size:.8em}
+  .titre h1{font-size:clamp(18px,2.4vw,26px);margin:0;color:var(--laiton)}
+  .sous{color:var(--parchemin-doux);font-style:italic;font-size:14px}
+  header .spacer{flex:1}
+
+  /* champs */
+  .champ{display:flex;align-items:center;gap:6px}
+  label{font-size:13px;color:var(--parchemin-doux);text-transform:uppercase;letter-spacing:.08em}
+  input[type=text],input[type=number],input[type=url]{
+    background:var(--noir-2);
+    border:1px solid var(--bord);
+    color:var(--parchemin);
+    padding:7px 9px;border-radius:6px;font-family:inherit;font-size:15px;
+    min-width:0;
+  }
+  input:focus{outline:2px solid var(--laiton-sombre);outline-offset:1px}
+  .toggle{display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none}
+  .toggle input{accent-color:var(--oxblood)}
+
+  button{
+    font-family:"Cinzel",serif;
+    background:linear-gradient(180deg,var(--surface-2),var(--surface));
+    color:var(--parchemin);
+    border:1px solid var(--laiton-sombre);
+    padding:8px 12px;border-radius:7px;cursor:pointer;
+    letter-spacing:.04em;font-size:13px;
+    transition:border-color .15s ease, transform .05s ease, background .15s ease;
+  }
+  button:hover{border-color:var(--laiton);background:linear-gradient(180deg,#34291c,var(--surface-2))}
+  button:active{transform:translateY(1px)}
+  button.primaire{border-color:var(--oxblood);color:#f6e7c8;
+    background:linear-gradient(180deg,#7a1f1f,#5d1717)}
+  button.primaire:hover{border-color:var(--oxblood-clair)}
+  button:disabled{opacity:.4;cursor:not-allowed}
+
+  /* ---- Scène centrale ---- */
+  .scene{
+    grid-area:scene;position:relative;border-radius:12px;overflow:hidden;
+    background:
+      repeating-linear-gradient(45deg, rgba(0,0,0,.18) 0 2px, transparent 2px 7px),
+      radial-gradient(120% 120% at 50% 40%, #1b150e 0%, #0c0a07 100%);
+    border:1px solid var(--bord);
+    box-shadow:inset 0 0 90px rgba(0,0,0,.7);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .scene img{max-width:100%;max-height:100%;object-fit:contain;display:none}
+  .scene .vide{
+    text-align:center;color:var(--parchemin-doux);padding:24px;max-width:440px
+  }
+  .scene .vide .comete{font-size:34px;color:var(--oxblood);display:block;margin-bottom:8px}
+
+  /* ---- Caméras ---- */
+  .cams{grid-area:cams;border:1px solid var(--bord);border-radius:12px;overflow:hidden;
+    background:var(--noir-2);display:flex;flex-direction:column;min-height:160px}
+  .cams .cams-tete{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--bord)}
+  .cams .cams-tete .pt{color:var(--laiton);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+  .cams .jitsi{flex:1;min-height:0}
+  .cams .jitsi iframe{width:100%;height:100%;border:0;display:block}
+  .app.cams-haut .cams{height:200px}
+
+  /* ---- Barre du bas ---- */
+  .barre{grid-area:barre;display:grid;grid-template-columns:1.3fr 1fr;gap:10px}
+  .panneau{background:var(--surface);border:1px solid var(--bord);border-radius:12px;padding:12px;box-shadow:var(--ombre)}
+  .panneau h2{font-size:13px;margin:0 0 10px;color:var(--laiton);text-transform:uppercase;letter-spacing:.12em}
+  .ligne{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .ligne + .ligne{margin-top:9px}
+  .des-rapides button{min-width:54px}
+
+  .gm-only{display:none}
+  body.est-mj .gm-only{display:flex}
+
+  /* Journal des jets */
+  .journal{max-height:150px;overflow:auto;display:flex;flex-direction:column;gap:6px}
+  .jet{border-left:3px solid var(--laiton-sombre);background:var(--noir-2);
+    padding:6px 9px;border-radius:0 6px 6px 0;font-size:15px}
+  .jet .qui{color:var(--laiton);font-family:"Cinzel",serif;font-size:12px;letter-spacing:.05em}
+  .jet .res{font-size:16px}
+  .jet.succes{border-left-color:var(--vert-succes)}
+  .jet.echec{border-left-color:var(--oxblood)}
+  .jet .marque{font-style:italic;color:var(--parchemin-doux)}
+  .jet.crit .marque{color:var(--vert-succes);font-weight:600;font-style:normal}
+  .jet.fumble .marque{color:var(--oxblood-clair);font-weight:600;font-style:normal}
+
+  .galerie{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .galerie button{font-size:12px}
+
+  .secret-res{font-family:"Cinzel",serif;color:var(--parchemin-doux);font-size:15px}
+  .secret-loc{margin-top:6px;color:var(--oxblood-clair);font-style:italic;font-size:16px;min-height:20px}
+
+  /* ---- Ambiance sonore ---- */
+  .ambiance{border-top:1px solid var(--bord);padding:8px 10px;display:flex;flex-direction:column;gap:8px}
+  .ambiance .amb-tete{display:flex;align-items:center;gap:8px}
+  .ambiance .amb-tete .pt{color:var(--laiton);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+  .amb-activer{font-size:12px;padding:5px 9px;margin-left:auto}
+  .amb-player{height:1px;opacity:0;overflow:hidden;border-radius:8px}
+  body.est-mj .amb-player{height:140px;opacity:1}
+  .amb-ctrl{flex-wrap:wrap}
+  .amb-ctrl button{min-width:40px}
+  .amb-ctrl input[type=range]{accent-color:var(--laiton-sombre)}
+
+  .alerte{grid-area:scene;align-self:start;justify-self:center;margin-top:14px;
+    background:var(--surface);border:1px solid var(--oxblood);color:var(--parchemin);
+    padding:10px 14px;border-radius:8px;font-size:14px;position:absolute;z-index:5;max-width:520px}
+
+  @media (max-width:880px){
+    .app{grid-template-columns:1fr;grid-template-rows:auto 200px 1fr auto;
+      grid-template-areas:"entete" "cams" "scene" "barre"}
+    .barre{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+  /* ---- Écran d'entrée ---- */
+  .gate{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(900px 600px at 50% 20%, #211a10, #0b0906 70%)}
+  .gate .carte{background:var(--surface);border:1px solid var(--laiton-sombre);
+    border-radius:14px;padding:28px 30px;max-width:360px;width:90%;text-align:center;box-shadow:var(--ombre)}
+  .gate .comete{color:var(--oxblood);font-size:30px;display:block;margin-bottom:6px}
+  .gate h1{font-size:22px;color:var(--laiton);margin:0 0 4px}
+  .gate p{color:var(--parchemin-doux);font-style:italic;font-size:14px;margin:0 0 18px}
+  .gate input{width:100%;text-align:center;font-size:18px;margin-bottom:12px}
+  .gate button{width:100%}
+  .gate .err{color:var(--oxblood-clair);font-size:14px;min-height:18px;margin-top:10px}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <div class="carte">
+    <span class="comete">✦</span>
+    <h1>La Table</h1>
+    <p>Le Vieux Monde n'ouvre ses portes qu'aux initiés.</p>
+    <input type="text" id="gate-nom" placeholder="Ton nom" maxlength="24" autocomplete="off" />
+    <input type="password" id="gate-mdp" placeholder="Mot de passe" autocomplete="off" />
+    <button class="primaire" id="gate-ok">Entrer</button>
+    <div class="err" id="gate-err"></div>
+  </div>
+</div>
+
+<div class="app" id="app">
+
+  <header>
+    <div class="titre"><span class="comete">✦</span><h1>La Table</h1></div>
+    <span class="sous">Warhammer, le Vieux Monde</span>
+    <span class="spacer"></span>
+    <div class="champ">
+      <label for="nom">Nom</label>
+      <input type="text" id="nom" placeholder="Aventurier" maxlength="24" />
+    </div>
+    <label class="toggle"><input type="checkbox" id="mj" /> Je suis le MJ</label>
+    <button id="basculer-cams" title="Déplacer les caméras">Caméras : côté</button>
+  </header>
+
+  <section class="scene" id="scene">
+    <div class="vide" id="scene-vide">
+      <span class="comete">✦</span>
+      En attente d'une image. Le MJ peut afficher une carte ou une illustration pour toute la table.
+    </div>
+    <img id="image" alt="Image partagée" />
+    <div class="alerte" id="alerte" style="display:none"></div>
+  </section>
+
+  <aside class="cams">
+    <div class="cams-tete"><span class="pt">Caméras</span></div>
+    <div class="jitsi" id="jitsi"></div>
+    <div class="ambiance" id="ambiance">
+      <div class="amb-tete">
+        <span class="pt">Ambiance</span>
+        <button id="amb-activer" class="amb-activer" title="Si tu n'entends rien, tape ici">🔊 Activer</button>
+      </div>
+      <div class="amb-player"><div id="yt"></div></div>
+      <div class="ligne gm-only amb-ctrl">
+        <input type="url" id="amb-url" placeholder="Lien YouTube" style="flex:1" />
+        <button id="amb-load">Charger</button>
+        <button id="amb-play" title="Lecture">▶</button>
+        <button id="amb-pause" title="Pause">⏸</button>
+        <button id="amb-stop" title="Couper l'ambiance">⏹</button>
+      </div>
+      <div class="ligne gm-only amb-ctrl">
+        <label for="amb-vol">Volume</label>
+        <input type="range" id="amb-vol" min="0" max="100" value="50" style="flex:1" />
+      </div>
+      <div class="err gm-only" id="amb-err"></div>
+    </div>
+  </aside>
+
+  <section class="barre">
+    <div class="panneau">
+      <h2>Dés</h2>
+
+      <div class="ligne">
+        <label for="cible">Test (%)</label>
+        <input type="number" id="cible" min="1" max="100" value="45" style="width:78px" />
+        <button class="primaire" id="lancer-test">Lancer le test</button>
+      </div>
+
+      <div class="ligne des-rapides">
+        <button data-de="100">d100</button>
+        <button data-de="10">d10</button>
+        <button data-de="6">d6</button>
+        <input type="text" id="custom" placeholder="ex: 2d6+3" style="width:96px" />
+        <button id="lancer-custom">Lancer</button>
+      </div>
+
+      <div class="ligne gm-only" style="margin-top:12px">
+        <button id="jet-secret">Jet secret (MJ)</button>
+        <span class="secret-res" id="secret-res">—</span>
+      </div>
+      <div class="gm-only secret-loc" id="secret-loc"></div>
+
+      <div class="ligne gm-only" style="margin-top:12px">
+        <label for="img-url">Image (MJ)</label>
+        <input type="url" id="img-url" placeholder="images/carte.png ou https://..." style="flex:1" />
+        <button class="primaire" id="afficher-img">Afficher pour tous</button>
+        <button id="vider-img" title="Retirer l'image">Effacer</button>
+      </div>
+      <div class="galerie gm-only" id="galerie"></div>
+    </div>
+
+    <div class="panneau">
+      <h2>Journal des jets</h2>
+      <div class="journal" id="journal"></div>
+    </div>
+  </section>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, push, set, query, limitToLast, onChildAdded }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+// ---------- Salle (commune à Firebase ET aux caméras) ----------
+const params = new URLSearchParams(location.search);
+const salle = (params.get("salle") || "table-warhammer").replace(/[^a-zA-Z0-9_-]/g,"");
+
+// ---------- Outils ----------
+const $ = (s)=>document.querySelector(s);
+function alerte(msg){
+  const a = $("#alerte");
+  a.textContent = msg; a.style.display = "block";
+}
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+
+// ---------- Firebase (synchro temps réel) ----------
+let db = null;
+const cfg = window.FIREBASE_CONFIG || {};
+if(!cfg.databaseURL){
+  alerte("Firebase n'est pas encore configuré : les dés et l'image ne seront pas partagés tant que tu n'as pas collé ta config dans le fichier. Le reste fonctionne.");
+}else{
+  try{
+    const app = initializeApp(cfg);
+    db = getDatabase(app);
+  }catch(e){
+    alerte("Config Firebase invalide : " + e.message);
+  }
+}
+
+const refImage = db ? ref(db, `salles/${salle}/image`) : null;
+const refJets  = db ? ref(db, `salles/${salle}/jets`)  : null;
+
+// ---------- Image partagée ----------
+const img = $("#image");
+const vide = $("#scene-vide");
+const VIDE_DEFAUT = '<span class="comete">✦</span> En attente d\'une image. Le MJ peut afficher une carte ou une illustration pour toute la table.';
+function montrerImage(url){
+  if(url){
+    img.onload  = ()=>{ img.style.display="block"; vide.style.display="none"; };
+    img.onerror = ()=>{ img.style.display="none";
+      vide.innerHTML = '<span class="comete">✦</span> Image introuvable. Vérifie le lien ou le chemin.';
+      vide.style.display="block"; };
+    img.src = url;
+  } else {
+    img.removeAttribute("src"); img.style.display="none";
+    vide.innerHTML = VIDE_DEFAUT; vide.style.display="block";
+  }
+}
+if(refImage){
+  onValue(refImage, (snap)=>{
+    const v = snap.val();
+    montrerImage(v && v.url ? v.url : null);
+  });
+}
+function pousserImage(url){
+  if(!refImage){ alerte("Firebase requis pour partager une image."); return; }
+  set(refImage, url ? { url, par: nom(), ts: Date.now() } : null);
+}
+
+$("#afficher-img").addEventListener("click", ()=>{
+  const u = $("#img-url").value.trim();
+  if(u) pousserImage(u);
+});
+$("#vider-img").addEventListener("click", ()=> pousserImage(null));
+
+// Galerie
+const gal = $("#galerie");
+(window.GALERIE||[]).forEach(item=>{
+  const b = document.createElement("button");
+  b.textContent = item.nom || item.url;
+  b.addEventListener("click", ()=> pousserImage(item.url));
+  gal.appendChild(b);
+});
+
+// ---------- Nom du joueur ----------
+function nom(){ return ($("#nom").value.trim() || "Aventurier").slice(0,24); }
+
+// ---------- Dés ----------
+function envoyerJet(jet){
+  // jet = { nom, res, detail, classe, marque }
+  if(refJets){ push(refJets, { ...jet, ts: Date.now() }); }
+  else { afficherJet(jet); } // hors-ligne : visible seulement chez soi
+}
+
+function lancerTest(cible){
+  const r = Math.floor(Math.random()*100)+1;       // 1..100
+  const dizR = (r===100) ? 0 : Math.floor(r/10);
+  const uniR = (r===100) ? 0 : r%10;
+  const dizC = Math.floor(cible/10);
+  const sl = dizC - ((r===100)?10:dizR);            // Degrés de Réussite
+  const succes = r <= cible;
+  const dbl = (dizR === uniR);                      // doublé = crit/maladresse
+  const loc = localisation(uniR*10 + dizR);         // localisation (dés inversés)
+  let classe = succes ? "succes" : "echec";
+  let marque = `DR ${sl>=0?"+":""}${sl}`;
+  if(dbl && succes){ classe += " crit";   marque = "Critique ! " + marque; }
+  if(dbl && !succes){ classe += " fumble"; marque = "Maladresse ! " + marque; }
+  const affR = (r===100) ? "00" : String(r).padStart(2,"0");
+  envoyerJet({
+    nom: nom(),
+    res: `${affR}  (cible ${cible})`,
+    detail: (succes ? "Réussite" : "Échec") + " · " + loc,
+    classe, marque
+  });
+}
+
+function lancerExpr(expr){
+  // accepte "NdX+M" / "dX" / "X"
+  const m = expr.replace(/\s+/g,"").match(/^(\d*)d(\d+)([+-]\d+)?$/i);
+  if(!m){
+    const n = parseInt(expr,10);
+    if(!isNaN(n)){ const r=Math.floor(Math.random()*n)+1; envoyerJet({nom:nom(),res:`${r}`,detail:`d${n}`,classe:"",marque:""}); }
+    return;
+  }
+  const nb = m[1] ? parseInt(m[1],10) : 1;
+  const faces = parseInt(m[2],10);
+  const mod = m[3] ? parseInt(m[3],10) : 0;
+  if(nb<1 || nb>50 || faces<2 || faces>1000) return;
+  let total=0; const tirages=[];
+  for(let i=0;i<nb;i++){ const t=Math.floor(Math.random()*faces)+1; tirages.push(t); total+=t; }
+  total += mod;
+  const detailDés = (nb>1 || mod) ? `[${tirages.join(", ")}]${mod?(mod>0?" +"+mod:" "+mod):""}` : `d${faces}`;
+  envoyerJet({ nom:nom(), res:`${total}`, detail:detailDés, classe:"", marque:"" });
+}
+
+$("#lancer-test").addEventListener("click", ()=>{
+  const c = Math.max(1, Math.min(100, parseInt($("#cible").value,10)||0));
+  lancerTest(c);
+});
+document.querySelectorAll(".des-rapides [data-de]").forEach(b=>{
+  b.addEventListener("click", ()=> lancerExpr("d"+b.dataset.de));
+});
+$("#lancer-custom").addEventListener("click", ()=> lancerExpr($("#custom").value || "d6"));
+$("#custom").addEventListener("keydown", e=>{ if(e.key==="Enter") lancerExpr($("#custom").value||"d6"); });
+
+// ---------- Jet secret (MJ) : localisation des touches ----------
+// On inverse d'abord le résultat des dés (ex: 52 -> 25), puis on lit la table.
+function localisation(rev){           // rev de 0 à 99, où 0 vaut "00" (=100)
+  if(rev === 0)  return "Jambe droite";   // 90-00
+  if(rev <= 9)   return "Tête";           // 01-09
+  if(rev <= 24)  return "Bras gauche";    // 10-24
+  if(rev <= 44)  return "Bras droit";     // 25-44
+  if(rev <= 79)  return "Corps";          // 45-79
+  if(rev <= 89)  return "Jambe gauche";   // 80-89
+  return "Jambe droite";                  // 90-99
+}
+$("#jet-secret").addEventListener("click", ()=>{
+  const r = Math.floor(Math.random()*100)+1;     // 1..100
+  const diz = Math.floor(r/10) % 10;             // 100 -> 0
+  const uni = r % 10;
+  const rev = uni*10 + diz;                      // dés inversés
+  const aff = (r===100) ? "00" : String(r).padStart(2,"0");
+  $("#secret-res").textContent = aff;
+  $("#secret-loc").textContent = `Localisation = ${localisation(rev)}`;
+});
+
+// ---------- Journal ----------
+const journal = $("#journal");
+function afficherJet(j){
+  const el = document.createElement("div");
+  el.className = "jet " + (j.classe||"");
+  el.innerHTML =
+    `<span class="qui">${escape(j.nom)}</span> — `+
+    `<span class="res">${escape(j.res)}</span> `+
+    `<span class="detail">· ${escape(j.detail||"")}</span>`+
+    (j.marque ? ` <span class="marque">· ${escape(j.marque)}</span>` : "");
+  journal.prepend(el);
+  while(journal.children.length > 60) journal.lastChild.remove();
+}
+function escape(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+if(refJets){
+  onChildAdded(query(refJets, limitToLast(30)), (snap)=>{
+    afficherJet(snap.val());
+  });
+}
+
+// ---------- Rôle MJ ----------
+$("#mj").addEventListener("change", e=>{
+  document.body.classList.toggle("est-mj", e.target.checked);
+  lsSet("wh_mj", e.target.checked ? "1" : "0");
+});
+
+// ---------- Caméras (Jitsi) ----------
+let jitsiApi = null;
+function lancerJitsi(){
+  if(typeof JitsiMeetExternalAPI === "undefined"){ return; }
+  const api = new JitsiMeetExternalAPI("meet.jit.si", {
+    roomName: "VieuxMonde_" + salle,
+    parentNode: document.getElementById("jitsi"),
+    userInfo: { displayName: nom() },
+    configOverwrite: { startWithAudioMuted:false, startWithVideoMuted:false, prejoinPageEnabled:false },
+    interfaceConfigOverwrite: {
+      TOOLBAR_BUTTONS: ["microphone","camera","tileview","hangup","fullscreen","settings"],
+      SHOW_JITSI_WATERMARK:false, SHOW_WATERMARK_FOR_GUESTS:false
+    }
+  });
+  return api;
+}
+// ---------- Écran d'entrée ----------
+const gate = $("#gate");
+const gateNom = $("#gate-nom");
+const gateMdp = $("#gate-mdp");
+const gateErr = $("#gate-err");
+const motDePasse = (window.MOT_DE_PASSE || "");
+
+// Pré-remplissage mémorisé
+const nomSauve = lsGet("wh_nom") || "";
+if(nomSauve){ $("#nom").value = nomSauve; gateNom.value = nomSauve; }
+if(lsGet("wh_mj") === "1"){ $("#mj").checked = true; document.body.classList.add("est-mj"); }
+if(!motDePasse){ gateMdp.style.display = "none"; }
+
+function entrer(){
+  const n = (gateNom.value.trim() || $("#nom").value.trim());
+  if(n){ $("#nom").value = n.slice(0,24); }
+  lsSet("wh_nom", $("#nom").value.trim());
+  gate.style.display = "none";
+  jitsiApi = lancerJitsi();
+}
+function tenter(){
+  if(motDePasse && gateMdp.value !== motDePasse){
+    gateErr.textContent = "Mot de passe incorrect."; gateMdp.select(); return;
+  }
+  entrer();
+}
+$("#gate-ok").addEventListener("click", tenter);
+gateMdp.addEventListener("keydown", e=>{ if(e.key==="Enter") tenter(); });
+gateNom.addEventListener("keydown", e=>{ if(e.key==="Enter") tenter(); });
+(motDePasse ? gateMdp : gateNom).focus();
+
+// Garder le nom à jour (journal, caméras) quand on le modifie
+$("#nom").addEventListener("change", ()=>{
+  lsSet("wh_nom", $("#nom").value.trim());
+  if(jitsiApi) jitsiApi.executeCommand("displayName", nom());
+});
+
+// ---------- Disposition des caméras ----------
+const app = $("#app");
+$("#basculer-cams").addEventListener("click", (e)=>{
+  app.classList.toggle("cams-haut");
+  e.target.textContent = app.classList.contains("cams-haut") ? "Caméras : haut" : "Caméras : côté";
+});
+
+// ---------- Ambiance sonore (YouTube synchronisé) ----------
+// Le MJ pilote ; le son est joué par le navigateur de chacun, pas par le micro.
+const refAmb = db ? ref(db, `salles/${salle}/ambiance`) : null;
+let player = null, ytPret = false, ambCourant = {};
+
+function ytId(u){
+  u = (u||"").trim();
+  let m = u.match(/[?&]v=([\w-]{11})/);     if(m) return m[1];
+  m = u.match(/youtu\.be\/([\w-]{11})/);     if(m) return m[1];
+  m = u.match(/\/embed\/([\w-]{11})/);       if(m) return m[1];
+  if(/^[\w-]{11}$/.test(u)) return u;
+  return null;
+}
+window.onYouTubeIframeAPIReady = function(){
+  player = new YT.Player("yt", {
+    width:"100%", height:"140",
+    playerVars:{ rel:0, modestbranding:1, playsinline:1 },
+    events:{ onReady:()=>{ ytPret = true; appliquerAmb(ambCourant); } }
+  });
+};
+// Si l'API YouTube est déjà prête (course possible au chargement), on initialise tout de suite.
+if(window.YT && window.YT.Player) window.onYouTubeIframeAPIReady();
+function appliquerAmb(a){
+  if(!ytPret || !player || !a) return;
+  if(a.videoId && a.etat !== "stop" && a.videoId !== player.__vid){
+    player.__vid = a.videoId;
+    if(a.etat === "play") player.loadVideoById(a.videoId);
+    else                  player.cueVideoById(a.videoId);
+  }
+  if(typeof a.volume === "number" && player.setVolume) player.setVolume(a.volume);
+  if(a.etat === "play"  && player.playVideo)  player.playVideo();
+  if(a.etat === "pause" && player.pauseVideo) player.pauseVideo();
+  if(a.etat === "stop"  && player.stopVideo){ player.stopVideo(); player.__vid = null; }
+}
+function pousserAmb(maj){
+  const o = { ...ambCourant, ...maj };
+  if(refAmb){ set(refAmb, { ...o, ts:Date.now() }); }
+  else { ambCourant = o; appliquerAmb(o); }
+}
+if(refAmb){
+  onValue(refAmb, snap=>{ ambCourant = snap.val() || {}; appliquerAmb(ambCourant); });
+}
+$("#amb-load").addEventListener("click", ()=>{
+  const id = ytId($("#amb-url").value);
+  const err = $("#amb-err");
+  if(!id){ err.textContent = "Lien YouTube non reconnu."; return; }
+  err.textContent = "";
+  pousserAmb({ videoId:id, etat:"play", volume: parseInt($("#amb-vol").value,10) });
+});
+$("#amb-play").addEventListener("click",  ()=> pousserAmb({ etat:"play"  }));
+$("#amb-pause").addEventListener("click", ()=> pousserAmb({ etat:"pause" }));
+$("#amb-stop").addEventListener("click",  ()=> pousserAmb({ etat:"stop"  }));
+$("#amb-vol").addEventListener("input", e=>{   // retour immédiat pour le MJ
+  if(player && player.setVolume) player.setVolume(parseInt(e.target.value,10));
+});
+$("#amb-vol").addEventListener("change", e=>{  // diffusé à la table au relâcher
+  pousserAmb({ volume: parseInt(e.target.value,10) });
+});
+$("#amb-activer").addEventListener("click", ()=>{
+  if(player){
+    if(player.unMute) player.unMute();
+    appliquerAmb(ambCourant);
+    if(player.playVideo) player.playVideo();
+  }
+});
+</script>
+</body>
+</html>
