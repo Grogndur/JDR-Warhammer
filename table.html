@@ -621,8 +621,13 @@ $("#basculer-dock").addEventListener("click", ()=> $("#dock").classList.toggle("
   });
   poignee.addEventListener("pointermove", e=>{
     if(!actif) return;
-    let x = Math.max(0, Math.min(window.innerWidth  - cams.offsetWidth,  e.clientX - dx));
-    let y = Math.max(0, Math.min(window.innerHeight - cams.offsetHeight, e.clientY - dy));
+    const header = document.querySelector("header");
+    const dock = document.querySelector("#dock");
+    const hautMin = (header?.offsetHeight || 44) + 4;
+    const dockH = (dock && !dock.classList.contains("replie")) ? dock.offsetHeight + 4 : 0;
+    const basMax = window.innerHeight - dockH - cams.offsetHeight;
+    let x = Math.max(0, Math.min(window.innerWidth - cams.offsetWidth, e.clientX - dx));
+    let y = Math.max(hautMin, Math.min(basMax, e.clientY - dy));
     cams.style.left = x + "px"; cams.style.top = y + "px";
   });
   poignee.addEventListener("pointerup", ()=>{ actif = false; });
