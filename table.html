@@ -7,6 +7,8 @@
 
 <!-- API YouTube (ambiance sonore synchronisée) -->
 <script src="https://www.youtube.com/iframe_api"></script>
+<!-- Daily (caméras encastrées dans la page) -->
+<script src="https://unpkg.com/@daily-co/daily-js"></script>
 
 <!--
   ============================================================
@@ -43,6 +45,11 @@
   // ⚠ Le site étant public, ce mot de passe est visible dans le code source :
   //   il écarte les curieux, ce n'est pas une vraie protection.
   window.MOT_DE_PASSE = "pepouze";
+
+  // --- Caméras : colle ici l'adresse de ta salle Daily ---
+  // Crée un compte gratuit sur daily.co, crée une "room", et colle son URL ci-dessous.
+  // Elle ressemble à : https://toncompte.daily.co/tasalle
+  window.DAILY_ROOM_URL = "";
 </script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -154,6 +161,7 @@
   .cams .jitsi{flex:1;min-height:0}
   .cams .jitsi iframe{width:100%;height:100%;border:0;display:block}
   .mini{padding:2px 7px;font-size:12px;min-width:0}
+  .cams-msg{padding:14px;color:var(--parchemin-doux);font-size:13px;text-align:center}
 
   /* ---- Dock du bas, compact et repliable ---- */
   .dock{position:fixed;left:0;right:0;bottom:0;z-index:28;
@@ -254,11 +262,20 @@
       <input type="text" id="nom" placeholder="Ton nom" maxlength="24" />
     </div>
     <label class="toggle"><input type="checkbox" id="mj" /> MJ</label>
-    <button id="ouvrir-cams" class="primaire" title="Ouvrir les caméras dans une fenêtre">📹 Caméras</button>
+    <button id="ouvrir-cams" title="Afficher ou masquer les caméras">📹 Caméras</button>
     <button id="basculer-dock" title="Afficher ou masquer la barre">▾ Barre</button>
   </header>
 
   <div class="alerte" id="alerte" style="display:none"></div>
+
+  <aside class="cams" id="cams">
+    <div class="cams-tete" id="cams-drag">
+      <span class="pt">Caméras</span>
+      <span class="spacer"></span>
+      <button id="cams-rejoindre" class="mini" title="Rejoindre / reconnecter">⟳</button>
+    </div>
+    <div class="jitsi" id="callframe"></div>
+  </aside>
 
   <div class="amb-player"><div id="yt"></div></div>
 
@@ -506,13 +523,20 @@ $("#mj").addEventListener("change", e=>{
   lsSet("wh_mj", e.target.checked ? "1" : "0");
 });
 
-// ---------- Caméras (fenêtre Jitsi séparée) ----------
-let camWin = null;
-function ouvrirCams(){
-  const url = "https://meet.jit.si/VieuxMonde_" + salle +
-              "#userInfo.displayName=%22" + encodeURIComponent(nom()) + "%22";
-  if(camWin && !camWin.closed){ camWin.focus(); return; }
-  camWin = window.open(url, "camerasTable", "width=520,height=640");
+// ---------- Caméras (Daily, encastrées dans la page) ----------
+let callFrame = null;
+function lancerCams(){
+  const cont = document.getElementById("callframe");
+  if(!window.DailyIframe){ cont.innerHTML = "<div class='cams-msg'>Module caméras non chargé.</div>"; return; }
+  const url = window.DAILY_ROOM_URL;
+  if(!url){ cont.innerHTML = "<div class='cams-msg'>Caméras non configurées : colle l'adresse de ta salle Daily en haut du fichier.</div>"; return; }
+  try{ if(callFrame){ callFrame.destroy(); callFrame = null; } }catch(e){}
+  cont.innerHTML = "";
+  callFrame = window.DailyIframe.createFrame(cont, {
+    iframeStyle: { width:"100%", height:"100%", border:"0" },
+    showLeaveButton:false, showFullscreenButton:true
+  });
+  callFrame.join({ url, userName: nom() });
 }
 // ---------- Écran d'entrée ----------
 const gate = $("#gate");
@@ -532,7 +556,7 @@ function entrer(){
   if(n){ $("#nom").value = n.slice(0,24); }
   lsSet("wh_nom", $("#nom").value.trim());
   gate.style.display = "none";
-  ouvrirCams();
+  lancerCams();
 }
 function tenter(){
   if(motDePasse && gateMdp.value !== motDePasse){
@@ -550,11 +574,36 @@ $("#nom").addEventListener("change", ()=>{
   lsSet("wh_nom", $("#nom").value.trim());
 });
 
-// ---------- Ouvrir les caméras dans une fenêtre séparée ----------
-$("#ouvrir-cams").addEventListener("click", ouvrirCams);
+// ---------- Caméras : afficher/masquer, rejoindre, déplacer ----------
+$("#ouvrir-cams").addEventListener("click", ()=>{
+  const c = $("#cams");
+  c.style.display = (c.style.display === "none") ? "flex" : "none";
+});
+$("#cams-rejoindre").addEventListener("click", lancerCams);
 
 // ---------- Replier la barre du bas pour agrandir l'image ----------
 $("#basculer-dock").addEventListener("click", ()=> $("#dock").classList.toggle("replie"));
+
+// ---------- Déplacer le panneau caméras où on veut ----------
+(function(){
+  const cams = $("#cams"), poignee = $("#cams-drag");
+  let dx=0, dy=0, actif=false;
+  poignee.addEventListener("pointerdown", e=>{
+    if(e.target.closest("button")) return;          // laisser les boutons cliquables
+    actif = true;
+    const r = cams.getBoundingClientRect();
+    dx = e.clientX - r.left; dy = e.clientY - r.top;
+    cams.style.right = "auto";
+    poignee.setPointerCapture(e.pointerId);
+  });
+  poignee.addEventListener("pointermove", e=>{
+    if(!actif) return;
+    let x = Math.max(0, Math.min(window.innerWidth  - cams.offsetWidth,  e.clientX - dx));
+    let y = Math.max(0, Math.min(window.innerHeight - cams.offsetHeight, e.clientY - dy));
+    cams.style.left = x + "px"; cams.style.top = y + "px";
+  });
+  poignee.addEventListener("pointerup", ()=>{ actif = false; });
+})();
 
 // ---------- Ambiance sonore (YouTube synchronisé) ----------
 // Le MJ pilote ; le son est joué par le navigateur de chacun, pas par le micro.
