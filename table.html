@@ -395,8 +395,16 @@ function pousserImage(url){
   set(refImage, url ? { url, par: nom(), ts: Date.now() } : null);
 }
 
+function lienImageDirect(u){
+  u = (u||"").trim();
+  if(/drive\.google\.com/.test(u)){
+    const m = u.match(/\/file\/d\/([\w-]+)/) || u.match(/[?&]id=([\w-]+)/);
+    if(m) return "https://drive.google.com/thumbnail?id=" + m[1] + "&sz=w2000";
+  }
+  return u;
+}
 $("#afficher-img").addEventListener("click", ()=>{
-  const u = $("#img-url").value.trim();
+  const u = lienImageDirect($("#img-url").value);
   if(u) pousserImage(u);
 });
 $("#vider-img").addEventListener("click", ()=> pousserImage(null));
