@@ -317,7 +317,7 @@
       <div class="journal" id="journal"></div>
     </div>
 
-    <button id="amb-activer" class="amb-activer" title="Si tu n'entends rien, tape ici">🔊 Son</button>
+    <button id="amb-activer" class="amb-activer" title="Démarrer le son d'ambiance si tu ne l'entends pas">🔊 Son</button>
 
   </section>
 
@@ -666,11 +666,21 @@ $("#amb-vol").addEventListener("input", e=>{   // retour immédiat pour le MJ
 $("#amb-vol").addEventListener("change", e=>{  // diffusé à la table au relâcher
   pousserAmb({ volume: parseInt(e.target.value,10) });
 });
+function flashSon(txt){
+  const b = $("#amb-activer");
+  if(!b.dataset.libelle) b.dataset.libelle = b.textContent;
+  b.textContent = txt;
+  clearTimeout(b.__t);
+  b.__t = setTimeout(()=>{ b.textContent = b.dataset.libelle; }, 1800);
+}
 $("#amb-activer").addEventListener("click", ()=>{
-  if(player){
-    if(player.unMute) player.unMute();
+  if(!player){ flashSon("Pas prêt…"); return; }
+  if(player.unMute) player.unMute();
+  if(ambCourant && ambCourant.videoId){
     appliquerAmb(ambCourant);
-    if(player.playVideo) player.playVideo();
+    flashSon("Son activé ✓");
+  } else {
+    flashSon("Aucune ambiance lancée");
   }
 });
 </script>
