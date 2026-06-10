@@ -85,32 +85,19 @@
   /* ---- Structure ---- */
   .app{
     display:grid;
-    grid-template-columns:1fr 320px;
-    grid-template-rows:auto 1fr auto;
-    grid-template-areas:
-      "entete  cams"
-      "scene   cams"
-      "barre   barre";
-    height:100dvh;
-    gap:10px;
-    padding:10px;
-  }
-  .app.cams-haut{
-    grid-template-columns:1fr;
-    grid-template-rows:auto auto 1fr auto;
-    grid-template-areas:
-      "entete"
-      "cams"
-      "scene"
-      "barre";
+    height:100dvh;position:relative;overflow:hidden;
   }
 
-  header{grid-area:entete;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  header{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;align-items:center;gap:10px;
+    padding:6px 12px;flex-wrap:wrap;
+    background:linear-gradient(180deg, rgba(8,6,4,.96), rgba(8,6,4,.45) 80%, transparent)}
   .titre{display:flex;align-items:baseline;gap:.5ch;margin:0}
   .titre .comete{color:var(--oxblood-clair);font-size:.8em}
-  .titre h1{font-size:clamp(18px,2.4vw,26px);margin:0;color:var(--laiton)}
-  .sous{color:var(--parchemin-doux);font-style:italic;font-size:14px}
+  .titre h1{font-size:clamp(15px,2vw,21px);margin:0;color:var(--laiton)}
   header .spacer{flex:1}
+  header .champ input{padding:4px 8px;font-size:13px;width:120px}
+  header .toggle{font-size:12px}
+  header button{padding:5px 9px;font-size:12px}
 
   /* champs */
   .champ{display:flex;align-items:center;gap:6px}
@@ -142,14 +129,13 @@
   button.primaire:hover{border-color:var(--oxblood-clair)}
   button:disabled{opacity:.4;cursor:not-allowed}
 
-  /* ---- Scène centrale ---- */
+  /* ---- Scène plein écran (image au centre, priorité visuelle) ---- */
   .scene{
-    grid-area:scene;position:relative;border-radius:12px;overflow:hidden;
+    position:absolute;inset:0;overflow:hidden;
     background:
       repeating-linear-gradient(45deg, rgba(0,0,0,.18) 0 2px, transparent 2px 7px),
       radial-gradient(120% 120% at 50% 40%, #1b150e 0%, #0c0a07 100%);
-    border:1px solid var(--bord);
-    box-shadow:inset 0 0 90px rgba(0,0,0,.7);
+    box-shadow:inset 0 0 120px rgba(0,0,0,.8);
     display:flex;align-items:center;justify-content:center;
   }
   .scene img{max-width:100%;max-height:100%;object-fit:contain;display:none}
@@ -158,63 +144,71 @@
   }
   .scene .vide .comete{font-size:34px;color:var(--oxblood);display:block;margin-bottom:8px}
 
-  /* ---- Caméras ---- */
-  .cams{grid-area:cams;border:1px solid var(--bord);border-radius:12px;overflow:hidden;
-    background:var(--noir-2);display:flex;flex-direction:column;min-height:160px}
-  .cams .cams-tete{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--bord)}
-  .cams .cams-tete .pt{color:var(--laiton);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+  /* ---- Caméras flottantes, déplaçables et redimensionnables ---- */
+  .cams{position:absolute;top:52px;right:12px;width:300px;height:210px;z-index:25;
+    border:1px solid var(--laiton-sombre);border-radius:10px;overflow:hidden;
+    background:var(--noir-2);display:flex;flex-direction:column;
+    resize:both;min-width:170px;min-height:120px;box-shadow:var(--ombre)}
+  .cams .cams-tete{display:flex;align-items:center;gap:8px;padding:4px 9px;
+    border-bottom:1px solid var(--bord);cursor:move;user-select:none;touch-action:none}
+  .cams .cams-tete .pt{color:var(--laiton);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+  .cams .cams-tete .spacer{flex:1}
   .cams .jitsi{flex:1;min-height:0}
   .cams .jitsi iframe{width:100%;height:100%;border:0;display:block}
-  .app.cams-haut .cams{height:200px}
+  .mini{padding:2px 7px;font-size:12px;min-width:0}
 
-  /* ---- Barre du bas ---- */
-  .barre{grid-area:barre;display:grid;grid-template-columns:1.3fr 1fr;gap:10px}
-  .panneau{background:var(--surface);border:1px solid var(--bord);border-radius:12px;padding:12px;box-shadow:var(--ombre)}
-  .panneau h2{font-size:13px;margin:0 0 10px;color:var(--laiton);text-transform:uppercase;letter-spacing:.12em}
-  .ligne{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .ligne + .ligne{margin-top:9px}
-  .des-rapides button{min-width:54px}
+  /* ---- Dock du bas, compact et repliable ---- */
+  .dock{position:fixed;left:0;right:0;bottom:0;z-index:28;
+    display:flex;align-items:stretch;gap:8px;flex-wrap:wrap;
+    padding:7px 10px;border-top:1px solid var(--bord);
+    background:linear-gradient(0deg, rgba(8,6,4,.97), rgba(8,6,4,.78));
+    transition:transform .2s ease}
+  .dock.replie{transform:translateY(110%)}
+  .grp{display:flex;flex-direction:column;gap:5px;background:rgba(36,29,21,.55);
+    border:1px solid var(--bord);border-radius:8px;padding:6px 8px}
+  .grp-journal{flex:1;min-width:170px;padding:4px 8px}
+  .ligne{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .dock label{font-size:11px}
+  .dock input[type=text],.dock input[type=number],.dock input[type=url]{padding:4px 7px;font-size:13px}
+  .dock #cible{width:50px}
+  .dock #custom{width:66px}
+  .dock #img-url,.dock #amb-url{width:148px}
+  .dock button{padding:5px 9px;font-size:12px}
+  .dock input[type=range]{width:88px;accent-color:var(--laiton-sombre)}
+  .amb-activer{margin-left:auto;align-self:center}
 
   .gm-only{display:none}
   body.est-mj .gm-only{display:flex}
 
   /* Journal des jets */
-  .journal{max-height:150px;overflow:auto;display:flex;flex-direction:column;gap:6px}
+  .journal{max-height:78px;overflow:auto;display:flex;flex-direction:column;gap:3px}
   .jet{border-left:3px solid var(--laiton-sombre);background:var(--noir-2);
-    padding:6px 9px;border-radius:0 6px 6px 0;font-size:15px}
-  .jet .qui{color:var(--laiton);font-family:"Cinzel",serif;font-size:12px;letter-spacing:.05em}
-  .jet .res{font-size:16px}
+    padding:3px 8px;border-radius:0 5px 5px 0;font-size:13px}
+  .jet .qui{color:var(--laiton);font-family:"Cinzel",serif;font-size:11px;letter-spacing:.05em}
+  .jet .res{font-size:14px}
   .jet.succes{border-left-color:var(--vert-succes)}
   .jet.echec{border-left-color:var(--oxblood)}
   .jet .marque{font-style:italic;color:var(--parchemin-doux)}
   .jet.crit .marque{color:var(--vert-succes);font-weight:600;font-style:normal}
   .jet.fumble .marque{color:var(--oxblood-clair);font-weight:600;font-style:normal}
 
-  .galerie{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .galerie{display:flex;gap:6px;flex-wrap:wrap}
   .galerie button{font-size:12px}
 
-  .secret-res{font-family:"Cinzel",serif;color:var(--parchemin-doux);font-size:15px}
-  .secret-loc{margin-top:6px;color:var(--oxblood-clair);font-style:italic;font-size:16px;min-height:20px}
+  .secret-res{font-family:"Cinzel",serif;color:var(--parchemin-doux);font-size:14px}
+  .secret-loc{color:var(--oxblood-clair);font-style:italic;font-size:14px}
 
-  /* ---- Ambiance sonore ---- */
-  .ambiance{border-top:1px solid var(--bord);padding:8px 10px;display:flex;flex-direction:column;gap:8px}
-  .ambiance .amb-tete{display:flex;align-items:center;gap:8px}
-  .ambiance .amb-tete .pt{color:var(--laiton);font-size:12px;letter-spacing:.1em;text-transform:uppercase}
-  .amb-activer{font-size:12px;padding:5px 9px;margin-left:auto}
-  .amb-player{height:1px;opacity:0;overflow:hidden;border-radius:8px}
-  body.est-mj .amb-player{height:140px;opacity:1}
-  .amb-ctrl{flex-wrap:wrap}
-  .amb-ctrl button{min-width:40px}
-  .amb-ctrl input[type=range]{accent-color:var(--laiton-sombre)}
+  /* ---- Lecteur d'ambiance (invisible, le son sort de chaque appareil) ---- */
+  .amb-player{position:absolute;left:0;bottom:0;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
+  .err{color:var(--oxblood-clair);font-size:12px}
 
-  .alerte{grid-area:scene;align-self:start;justify-self:center;margin-top:14px;
+  .alerte{position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:22;
     background:var(--surface);border:1px solid var(--oxblood);color:var(--parchemin);
-    padding:10px 14px;border-radius:8px;font-size:14px;position:absolute;z-index:5;max-width:520px}
+    padding:10px 14px;border-radius:8px;font-size:14px;max-width:520px;text-align:center}
 
-  @media (max-width:880px){
-    .app{grid-template-columns:1fr;grid-template-rows:auto 200px 1fr auto;
-      grid-template-areas:"entete" "cams" "scene" "barre"}
-    .barre{grid-template-columns:1fr}
+  @media (max-width:760px){
+    .cams{width:200px;height:150px;top:auto;bottom:118px;right:8px}
+    .dock #img-url,.dock #amb-url{width:120px}
   }
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
@@ -236,7 +230,7 @@
 <div class="gate" id="gate">
   <div class="carte">
     <span class="comete">✦</span>
-    <h1>La Table</h1>
+    <h1>La Table de Warhammer</h1>
     <p>Le Vieux Monde n'ouvre ses portes qu'aux initiés.</p>
     <input type="text" id="gate-nom" placeholder="Ton nom" maxlength="24" autocomplete="off" />
     <input type="password" id="gate-mdp" placeholder="Mot de passe" autocomplete="off" />
@@ -247,88 +241,84 @@
 
 <div class="app" id="app">
 
-  <header>
-    <div class="titre"><span class="comete">✦</span><h1>La Table</h1></div>
-    <span class="sous">Warhammer, le Vieux Monde</span>
-    <span class="spacer"></span>
-    <div class="champ">
-      <label for="nom">Nom</label>
-      <input type="text" id="nom" placeholder="Aventurier" maxlength="24" />
-    </div>
-    <label class="toggle"><input type="checkbox" id="mj" /> Je suis le MJ</label>
-    <button id="basculer-cams" title="Déplacer les caméras">Caméras : côté</button>
-  </header>
-
   <section class="scene" id="scene">
     <div class="vide" id="scene-vide">
       <span class="comete">✦</span>
       En attente d'une image. Le MJ peut afficher une carte ou une illustration pour toute la table.
     </div>
     <img id="image" alt="Image partagée" />
-    <div class="alerte" id="alerte" style="display:none"></div>
   </section>
 
-  <aside class="cams">
-    <div class="cams-tete"><span class="pt">Caméras</span></div>
-    <div class="jitsi" id="jitsi"></div>
-    <div class="ambiance" id="ambiance">
-      <div class="amb-tete">
-        <span class="pt">Ambiance</span>
-        <button id="amb-activer" class="amb-activer" title="Si tu n'entends rien, tape ici">🔊 Activer</button>
-      </div>
-      <div class="amb-player"><div id="yt"></div></div>
-      <div class="ligne gm-only amb-ctrl">
-        <input type="url" id="amb-url" placeholder="Lien YouTube" style="flex:1" />
-        <button id="amb-load">Charger</button>
-        <button id="amb-play" title="Lecture">▶</button>
-        <button id="amb-pause" title="Pause">⏸</button>
-        <button id="amb-stop" title="Couper l'ambiance">⏹</button>
-      </div>
-      <div class="ligne gm-only amb-ctrl">
-        <label for="amb-vol">Volume</label>
-        <input type="range" id="amb-vol" min="0" max="100" value="50" style="flex:1" />
-      </div>
-      <div class="err gm-only" id="amb-err"></div>
+  <header>
+    <div class="titre"><span class="comete">✦</span><h1>La Table de Warhammer</h1></div>
+    <span class="spacer"></span>
+    <div class="champ">
+      <input type="text" id="nom" placeholder="Ton nom" maxlength="24" />
     </div>
+    <label class="toggle"><input type="checkbox" id="mj" /> MJ</label>
+    <button id="reconnecter" title="Relancer caméras et micro">⟳ Caméras</button>
+    <button id="basculer-dock" title="Afficher ou masquer la barre">▾ Barre</button>
+  </header>
+
+  <div class="alerte" id="alerte" style="display:none"></div>
+
+  <aside class="cams" id="cams">
+    <div class="cams-tete" id="cams-drag">
+      <span class="pt">Caméras</span>
+      <span class="spacer"></span>
+      <button id="reconnecter2" class="mini" title="Reconnecter">⟳</button>
+    </div>
+    <div class="jitsi" id="jitsi"></div>
   </aside>
 
-  <section class="barre">
-    <div class="panneau">
-      <h2>Dés</h2>
+  <div class="amb-player"><div id="yt"></div></div>
 
+  <section class="dock" id="dock">
+
+    <div class="grp">
       <div class="ligne">
-        <label for="cible">Test (%)</label>
-        <input type="number" id="cible" min="1" max="100" value="45" style="width:78px" />
-        <button class="primaire" id="lancer-test">Lancer le test</button>
-      </div>
-
-      <div class="ligne des-rapides">
+        <label for="cible">Test</label>
+        <input type="number" id="cible" min="1" max="100" value="45" />
+        <button class="primaire" id="lancer-test">Lancer</button>
         <button data-de="100">d100</button>
         <button data-de="10">d10</button>
         <button data-de="6">d6</button>
-        <input type="text" id="custom" placeholder="ex: 2d6+3" style="width:96px" />
+        <input type="text" id="custom" placeholder="2d6+3" />
         <button id="lancer-custom">Lancer</button>
       </div>
-
-      <div class="ligne gm-only" style="margin-top:12px">
-        <button id="jet-secret">Jet secret (MJ)</button>
+      <div class="ligne gm-only">
+        <button id="jet-secret">Jet secret</button>
         <span class="secret-res" id="secret-res">—</span>
+        <span class="secret-loc" id="secret-loc"></span>
       </div>
-      <div class="gm-only secret-loc" id="secret-loc"></div>
-
-      <div class="ligne gm-only" style="margin-top:12px">
-        <label for="img-url">Image (MJ)</label>
-        <input type="url" id="img-url" placeholder="images/carte.png ou https://..." style="flex:1" />
-        <button class="primaire" id="afficher-img">Afficher pour tous</button>
-        <button id="vider-img" title="Retirer l'image">Effacer</button>
-      </div>
-      <div class="galerie gm-only" id="galerie"></div>
     </div>
 
-    <div class="panneau">
-      <h2>Journal des jets</h2>
+    <div class="grp gm-only">
+      <div class="ligne">
+        <label for="img-url">Image</label>
+        <input type="url" id="img-url" placeholder="lien ou images/x.png" />
+        <button class="primaire" id="afficher-img">Afficher</button>
+        <button id="vider-img" title="Retirer l'image">✕</button>
+      </div>
+      <div class="ligne">
+        <label for="amb-url">Ambiance</label>
+        <input type="url" id="amb-url" placeholder="Lien YouTube" />
+        <button id="amb-load">Charger</button>
+        <button id="amb-play" title="Lecture">▶</button>
+        <button id="amb-pause" title="Pause">⏸</button>
+        <button id="amb-stop" title="Couper">⏹</button>
+        <input type="range" id="amb-vol" min="0" max="100" value="50" title="Volume" />
+      </div>
+      <div class="galerie" id="galerie"></div>
+      <div class="err" id="amb-err"></div>
+    </div>
+
+    <div class="grp grp-journal">
       <div class="journal" id="journal"></div>
     </div>
+
+    <button id="amb-activer" class="amb-activer" title="Si tu n'entends rien, tape ici">🔊 Son</button>
+
   </section>
 
 </div>
@@ -530,18 +520,28 @@ $("#mj").addEventListener("change", e=>{
 // ---------- Caméras (Jitsi) ----------
 let jitsiApi = null;
 function lancerJitsi(){
-  if(typeof JitsiMeetExternalAPI === "undefined"){ return; }
+  if(typeof JitsiMeetExternalAPI === "undefined"){ return null; }
+  document.getElementById("jitsi").innerHTML = "";   // repart propre lors d'une reconnexion
   const api = new JitsiMeetExternalAPI("meet.jit.si", {
     roomName: "VieuxMonde_" + salle,
     parentNode: document.getElementById("jitsi"),
     userInfo: { displayName: nom() },
-    configOverwrite: { startWithAudioMuted:false, startWithVideoMuted:false, prejoinPageEnabled:false },
+    configOverwrite: {
+      startWithAudioMuted:false, startWithVideoMuted:false, prejoinPageEnabled:false,
+      disableTileEnlargement:true
+    },
     interfaceConfigOverwrite: {
-      TOOLBAR_BUTTONS: ["microphone","camera","tileview","hangup","fullscreen","settings"],
-      SHOW_JITSI_WATERMARK:false, SHOW_WATERMARK_FOR_GUESTS:false
+      TOOLBAR_BUTTONS: ["microphone","camera","tileview","hangup","settings"],
+      SHOW_JITSI_WATERMARK:false, SHOW_WATERMARK_FOR_GUESTS:false, TILE_VIEW_MAX_COLUMNS:3
     }
   });
+  // Vue mosaïque pour tous : PJ et MJ sur un pied d'égalité.
+  api.addEventListener("videoConferenceJoined", ()=>{ try{ api.executeCommand("setTileView", true); }catch(e){} });
   return api;
+}
+function reconnecterCams(){
+  try{ if(jitsiApi && jitsiApi.dispose) jitsiApi.dispose(); }catch(e){}
+  jitsiApi = lancerJitsi();
 }
 // ---------- Écran d'entrée ----------
 const gate = $("#gate");
@@ -580,12 +580,33 @@ $("#nom").addEventListener("change", ()=>{
   if(jitsiApi) jitsiApi.executeCommand("displayName", nom());
 });
 
-// ---------- Disposition des caméras ----------
-const app = $("#app");
-$("#basculer-cams").addEventListener("click", (e)=>{
-  app.classList.toggle("cams-haut");
-  e.target.textContent = app.classList.contains("cams-haut") ? "Caméras : haut" : "Caméras : côté";
-});
+// ---------- Reconnexion caméras / micro (après une veille du PC) ----------
+$("#reconnecter").addEventListener("click", reconnecterCams);
+$("#reconnecter2").addEventListener("click", reconnecterCams);
+
+// ---------- Replier la barre du bas pour agrandir l'image ----------
+$("#basculer-dock").addEventListener("click", ()=> $("#dock").classList.toggle("replie"));
+
+// ---------- Déplacer le panneau caméras où on veut ----------
+(function(){
+  const cams = $("#cams"), poignee = $("#cams-drag");
+  let dx=0, dy=0, actif=false;
+  poignee.addEventListener("pointerdown", e=>{
+    if(e.target.closest("button")) return;          // laisser le bouton reconnecter cliquable
+    actif = true;
+    const r = cams.getBoundingClientRect();
+    dx = e.clientX - r.left; dy = e.clientY - r.top;
+    cams.style.right = "auto";
+    poignee.setPointerCapture(e.pointerId);
+  });
+  poignee.addEventListener("pointermove", e=>{
+    if(!actif) return;
+    let x = Math.max(0, Math.min(window.innerWidth  - cams.offsetWidth,  e.clientX - dx));
+    let y = Math.max(0, Math.min(window.innerHeight - cams.offsetHeight, e.clientY - dy));
+    cams.style.left = x + "px"; cams.style.top = y + "px";
+  });
+  poignee.addEventListener("pointerup", ()=>{ actif = false; });
+})();
 
 // ---------- Ambiance sonore (YouTube synchronisé) ----------
 // Le MJ pilote ; le son est joué par le navigateur de chacun, pas par le micro.
