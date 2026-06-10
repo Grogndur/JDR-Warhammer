@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>La Table — Warhammer JdR</title>
 
-<!-- Jitsi (caméras). Service gratuit, sans compte. -->
-<script src="https://meet.jit.si/external_api.js"></script>
 <!-- API YouTube (ambiance sonore synchronisée) -->
 <script src="https://www.youtube.com/iframe_api"></script>
 
@@ -256,20 +254,11 @@
       <input type="text" id="nom" placeholder="Ton nom" maxlength="24" />
     </div>
     <label class="toggle"><input type="checkbox" id="mj" /> MJ</label>
-    <button id="reconnecter" title="Relancer caméras et micro">⟳ Caméras</button>
+    <button id="ouvrir-cams" class="primaire" title="Ouvrir les caméras dans une fenêtre">📹 Caméras</button>
     <button id="basculer-dock" title="Afficher ou masquer la barre">▾ Barre</button>
   </header>
 
   <div class="alerte" id="alerte" style="display:none"></div>
-
-  <aside class="cams" id="cams">
-    <div class="cams-tete" id="cams-drag">
-      <span class="pt">Caméras</span>
-      <span class="spacer"></span>
-      <button id="reconnecter2" class="mini" title="Reconnecter">⟳</button>
-    </div>
-    <div class="jitsi" id="jitsi"></div>
-  </aside>
 
   <div class="amb-player"><div id="yt"></div></div>
 
@@ -517,31 +506,13 @@ $("#mj").addEventListener("change", e=>{
   lsSet("wh_mj", e.target.checked ? "1" : "0");
 });
 
-// ---------- Caméras (Jitsi) ----------
-let jitsiApi = null;
-function lancerJitsi(){
-  if(typeof JitsiMeetExternalAPI === "undefined"){ return null; }
-  document.getElementById("jitsi").innerHTML = "";   // repart propre lors d'une reconnexion
-  const api = new JitsiMeetExternalAPI("meet.jit.si", {
-    roomName: "VieuxMonde_" + salle,
-    parentNode: document.getElementById("jitsi"),
-    userInfo: { displayName: nom() },
-    configOverwrite: {
-      startWithAudioMuted:false, startWithVideoMuted:false, prejoinPageEnabled:false,
-      disableTileEnlargement:true
-    },
-    interfaceConfigOverwrite: {
-      TOOLBAR_BUTTONS: ["microphone","camera","tileview","hangup","settings"],
-      SHOW_JITSI_WATERMARK:false, SHOW_WATERMARK_FOR_GUESTS:false, TILE_VIEW_MAX_COLUMNS:3
-    }
-  });
-  // Vue mosaïque pour tous : PJ et MJ sur un pied d'égalité.
-  api.addEventListener("videoConferenceJoined", ()=>{ try{ api.executeCommand("setTileView", true); }catch(e){} });
-  return api;
-}
-function reconnecterCams(){
-  try{ if(jitsiApi && jitsiApi.dispose) jitsiApi.dispose(); }catch(e){}
-  jitsiApi = lancerJitsi();
+// ---------- Caméras (fenêtre Jitsi séparée) ----------
+let camWin = null;
+function ouvrirCams(){
+  const url = "https://meet.jit.si/VieuxMonde_" + salle +
+              "#userInfo.displayName=%22" + encodeURIComponent(nom()) + "%22";
+  if(camWin && !camWin.closed){ camWin.focus(); return; }
+  camWin = window.open(url, "camerasTable", "width=520,height=640");
 }
 // ---------- Écran d'entrée ----------
 const gate = $("#gate");
@@ -561,7 +532,7 @@ function entrer(){
   if(n){ $("#nom").value = n.slice(0,24); }
   lsSet("wh_nom", $("#nom").value.trim());
   gate.style.display = "none";
-  jitsiApi = lancerJitsi();
+  ouvrirCams();
 }
 function tenter(){
   if(motDePasse && gateMdp.value !== motDePasse){
@@ -574,39 +545,16 @@ gateMdp.addEventListener("keydown", e=>{ if(e.key==="Enter") tenter(); });
 gateNom.addEventListener("keydown", e=>{ if(e.key==="Enter") tenter(); });
 (motDePasse ? gateMdp : gateNom).focus();
 
-// Garder le nom à jour (journal, caméras) quand on le modifie
+// Garder le nom mémorisé quand on le modifie
 $("#nom").addEventListener("change", ()=>{
   lsSet("wh_nom", $("#nom").value.trim());
-  if(jitsiApi) jitsiApi.executeCommand("displayName", nom());
 });
 
-// ---------- Reconnexion caméras / micro (après une veille du PC) ----------
-$("#reconnecter").addEventListener("click", reconnecterCams);
-$("#reconnecter2").addEventListener("click", reconnecterCams);
+// ---------- Ouvrir les caméras dans une fenêtre séparée ----------
+$("#ouvrir-cams").addEventListener("click", ouvrirCams);
 
 // ---------- Replier la barre du bas pour agrandir l'image ----------
 $("#basculer-dock").addEventListener("click", ()=> $("#dock").classList.toggle("replie"));
-
-// ---------- Déplacer le panneau caméras où on veut ----------
-(function(){
-  const cams = $("#cams"), poignee = $("#cams-drag");
-  let dx=0, dy=0, actif=false;
-  poignee.addEventListener("pointerdown", e=>{
-    if(e.target.closest("button")) return;          // laisser le bouton reconnecter cliquable
-    actif = true;
-    const r = cams.getBoundingClientRect();
-    dx = e.clientX - r.left; dy = e.clientY - r.top;
-    cams.style.right = "auto";
-    poignee.setPointerCapture(e.pointerId);
-  });
-  poignee.addEventListener("pointermove", e=>{
-    if(!actif) return;
-    let x = Math.max(0, Math.min(window.innerWidth  - cams.offsetWidth,  e.clientX - dx));
-    let y = Math.max(0, Math.min(window.innerHeight - cams.offsetHeight, e.clientY - dy));
-    cams.style.left = x + "px"; cams.style.top = y + "px";
-  });
-  poignee.addEventListener("pointerup", ()=>{ actif = false; });
-})();
 
 // ---------- Ambiance sonore (YouTube synchronisé) ----------
 // Le MJ pilote ; le son est joué par le navigateur de chacun, pas par le micro.
