@@ -46,6 +46,13 @@
   //   il écarte les curieux, ce n'est pas une vraie protection.
   window.MOT_DE_PASSE = "pepouze";
 
+  // --- Mot de passe MJ (réservé à toi, Grogndur). ---
+  // Seul celui qui connaît ce mot de passe peut cocher la case "MJ".
+  // ⚠ Comme ci-dessus, il reste visible dans le code source : il empêche tes
+  //   joueurs de devenir MJ par erreur ou par jeu, sans être inviolable.
+  //   Change-le pour quelque chose que toi seul connais. Mets "" pour ne pas verrouiller.
+  window.MOT_DE_PASSE_MJ = "change-moi-mj";
+
   // --- Caméras : colle ici l'adresse de ta salle Daily ---
   // Crée un compte gratuit sur daily.co, crée une "room", et colle son URL ci-dessous.
   // Elle ressemble à : https://toncompte.daily.co/tasalle
@@ -103,6 +110,7 @@
     height:18px;line-height:16px;padding:0 20px;font-size:11px;cursor:pointer;
     border:1px solid var(--bord);border-bottom:0;border-radius:8px 8px 0 0;
     background:linear-gradient(180deg,var(--surface-2),var(--surface));color:var(--laiton)}
+  .dock-poignee:active{transform:translateX(-50%) translateY(1px)}
   .titre{display:flex;align-items:baseline;gap:.5ch;margin:0;
     position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
     white-space:nowrap;pointer-events:none}
@@ -190,7 +198,7 @@
   /* ---- Calque des dés 3D (sur le plateau, sous les panneaux) ---- */
   #dice3d{position:absolute;top:44px;left:0;right:0;bottom:0;z-index:10;pointer-events:none}
   #dice3d>div{position:absolute;inset:0}
-  #dice3d canvas{display:block;width:100%;height:100%}
+  #dice3d canvas{display:block;width:100%;height:100%;background:transparent;border:0}
 
   /* ---- Caméras flottantes, déplaçables et redimensionnables ---- */
   .cams{position:absolute;top:52px;left:12px;width:340px;height:250px;z-index:25;
@@ -370,6 +378,7 @@
         <button data-de="4">d4</button>
         <input type="text" id="custom" placeholder="2d6+3" />
         <button id="lancer-custom">Lancer</button>
+        <button id="vider-des" title="Retirer les dés de la table">🧹 Table</button>
       </div>
       <div class="ligne gm-only">
         <button id="jet-secret">Jet secret</button>
@@ -450,6 +459,7 @@ if(!cfg.databaseURL){
 const refImage = db ? ref(db, `salles/${salle}/image`) : null;
 const refJets  = db ? ref(db, `salles/${salle}/jets`)  : null;
 const refInit  = db ? ref(db, `salles/${salle}/initiative`) : null;
+const refDesClear = db ? ref(db, `salles/${salle}/desClear`) : null;
 
 // ---------- Image partagée ----------
 const img = $("#image");
@@ -569,6 +579,7 @@ document.querySelectorAll("[data-de]").forEach(b=>{
 });
 $("#lancer-custom").addEventListener("click", ()=> lancerExpr($("#custom").value || "d6"));
 $("#custom").addEventListener("keydown", e=>{ if(e.key==="Enter") lancerExpr($("#custom").value||"d6"); });
+$("#vider-des").addEventListener("click", demanderViderDes);
 
 // ---------- Jet secret (MJ) : localisation des touches ----------
 // On inverse d'abord le résultat des dés (ex: 52 -> 25), puis on lit la table.
@@ -661,6 +672,7 @@ async function initDes3D(){
 }
 function lancerDes3D(des, n){
   if(!box3dPret || !boxU || !des || !des.vals || !des.vals.length) return;
+  viderTableLocal();                                  // les dés du jet précédent disparaissent
   try{
     if(des.pct){                                        // test : dizaine distincte, unité couleur joueur
       if(boxD){
@@ -679,6 +691,11 @@ function lancerDes3D(des, n){
     boxU.roll(des.vals.length + "d" + des.faces + "@" + des.vals.join(","));
   }catch(e){ /* silencieux : le journal fait foi */ }
 }
+function viderTableLocal(){
+  for(const b of [boxU, boxD]){ if(b){ try{ if(b.clearDice) b.clearDice(); }catch(e){} } }
+}
+function demanderViderDes(){ if(refDesClear) set(refDesClear, Date.now()); else viderTableLocal(); }
+if(refDesClear){ onValue(refDesClear, ()=> viderTableLocal()); }
 window.addEventListener("resize", zoneDes);
 initDes3D();
 
@@ -803,6 +820,15 @@ if(refInit){
 
 // ---------- Rôle MJ ----------
 $("#mj").addEventListener("change", e=>{
+  const mdpMJ = (window.MOT_DE_PASSE_MJ || "");
+  if(e.target.checked && mdpMJ){
+    const essai = prompt("Mot de passe MJ :") || "";
+    if(essai !== mdpMJ){
+      e.target.checked = false;
+      alerte("Mot de passe MJ incorrect.");
+      return;
+    }
+  }
   document.body.classList.toggle("est-mj", e.target.checked);
   lsSet("wh_mj", e.target.checked ? "1" : "0");
   majPoignee(); zoneDes();
