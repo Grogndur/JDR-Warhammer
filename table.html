@@ -96,7 +96,9 @@
   header{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;align-items:center;gap:10px;
     padding:6px 12px;flex-wrap:wrap;
     background:linear-gradient(180deg, rgba(8,6,4,.96), rgba(8,6,4,.45) 80%, transparent)}
-  .titre{display:flex;align-items:baseline;gap:.5ch;margin:0}
+  .titre{display:flex;align-items:baseline;gap:.5ch;margin:0;
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    white-space:nowrap;pointer-events:none}
   .titre .comete{color:var(--oxblood-clair);font-size:.8em}
   .titre h1{font-size:clamp(15px,2vw,21px);margin:0;color:var(--laiton)}
   header .spacer{flex:1}
