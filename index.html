@@ -192,6 +192,15 @@
   .portal-bcn::before { background: linear-gradient(135deg, rgba(205,224,236,0.10) 0%, transparent 60%); }
   .portal-bcn:hover { border-color: rgba(205,224,236,0.5); background: rgba(150,172,192,0.2); box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(205,224,236,0.12); }
 
+  /* Table virtuelle (outil de jeu) */
+  .portal-table {
+    background: rgba(184,146,42,0.14);
+    border: 1px solid rgba(184,146,42,0.35);
+    border-top: 3px solid var(--GLD);
+  }
+  .portal-table::before { background: linear-gradient(135deg, rgba(227,198,110,0.12) 0%, transparent 60%); }
+  .portal-table:hover { border-color: rgba(227,198,110,0.65); background: rgba(184,146,42,0.22); box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(227,198,110,0.14); }
+
   .portal-symbol { display: block; width: 2.5rem; height: 2.5rem; margin-bottom: 1rem; line-height: 1; }
   .portal-symbol svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); }
   .portal-eclipse .portal-symbol { color: #9b7fd4; }
@@ -328,6 +337,18 @@
       <span class="portal-enter">Entrer →</span>
     </a>
 
+  </div>
+
+  <div class="section-title">À la table</div>
+
+  <div class="portals">
+    <a class="portal portal-table" href="table.html">
+      <span class="portal-symbol" style="font-size:2.2rem;">🎲</span>
+      <div class="portal-system">Visio · dés · cartes · ambiance</div>
+      <div class="portal-name">La Table virtuelle</div>
+      <div class="portal-desc">L'espace de jeu en ligne : caméras, lancers de dés partagés, images et son d'ambiance.</div>
+      <span class="portal-enter">Ouvrir →</span>
+    </a>
   </div>
 
   <footer>
