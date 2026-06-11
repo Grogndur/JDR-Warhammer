@@ -679,10 +679,19 @@ function zoneDes(){                                      // borne le plateau aux
 }
 async function initDes3D(){
   try{
-    const mod = await import("https://esm.sh/@3d-dice/dice-box-threejs");
+    const mod = await import("https://esm.sh/@3d-dice/dice-box-threejs@0.0.12");
     const DiceBox = mod.default || mod.DiceBox || mod;
     zoneDes();
-    const opts = { sounds:false, gravity_multiplier:400, baseScale:90, strength:2.2, theme_material:"plastic", onRollComplete:()=>{} };
+    // Sons d'impact : déclenchés par le moteur physique à chaque collision,
+    // donc calés tout seuls sur le mouvement des dés. Les .mp3 viennent du paquet
+    // npm via jsDelivr (aucun fichier à héberger). Pour t'affranchir du CDN, copie
+    // le dossier "sounds/" dans ton dépôt et remplace assetPath par "sounds/" (sans plus).
+    // Surface : "wood_table" (taverne), ou "felt" / "metal" / "wood_tray" au choix.
+    const opts = {
+      sounds:true, volume:60, sound_dieMaterial:"plastic", surface:"wood_table",
+      assetPath:"https://cdn.jsdelivr.net/npm/@3d-dice/dice-box-threejs@0.0.12/public/",
+      gravity_multiplier:400, baseScale:90, strength:2.2, theme_material:"plastic", onRollComplete:()=>{}
+    };
     boxU = new DiceBox("#dice3d-u", opts);
     await boxU.initialize();
     box3dPret = true;                                    // au moins les unités sont prêtes
