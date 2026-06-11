@@ -18,9 +18,10 @@
   2) Ajoute une "Realtime Database" (mode test pour commencer).
   3) Dans Paramètres du projet > tes applications > Web, copie l'objet
      firebaseConfig et colle-le ci-dessous à la place de l'exemple.
-  4) Mets tes cartes / illustrations dans un dossier "images" de ton dépôt,
-     puis liste-les dans GALERIE ci-dessous (ou colle une URL à la volée
-     directement dans l'interface, côté MJ).
+  4) Mets tes cartes / illustrations dans le dossier "Gallerie" de ton dépôt :
+     dans l'interface, côté MJ, il suffira de taper le nom du fichier
+     (le préfixe "Gallerie/" est ajouté tout seul). Une URL complète
+     collée dans le champ fonctionne aussi.
   ============================================================
 -->
 <script>
@@ -34,6 +35,10 @@
     messagingSenderId: "347804803970",
     appId: "1:347804803970:web:43e062299c53e59d20e59b"
   };
+
+  // --- Dossier des images de la Table (préfixe ajouté automatiquement). ---
+  // Si tu renommes le dossier sur GitHub, change-le ici aussi (attention à la casse !).
+  window.DOSSIER_IMAGES = "Gallerie/";
 
   // --- Ta bibliothèque d'images (facultatif). Adresses relatives ou complètes. ---
   window.GALERIE = [
@@ -230,7 +235,13 @@
   .dock #cible{width:50px}
   .dock #custom{width:66px}
   .dock #nom{width:120px}
-  .dock #img-url,.dock #amb-url{width:148px}
+  .dock #img-url{width:118px}
+  .dock #amb-url{width:148px}
+  .prefixe-img{font-family:"Cinzel",serif;font-size:12px;letter-spacing:.03em;
+    color:var(--laiton);background:var(--noir-2);border:1px solid var(--bord);
+    border-right:0;border-radius:6px 0 0 6px;padding:5px 4px 5px 8px;
+    user-select:none;white-space:nowrap}
+  .prefixe-img + #img-url{border-radius:0 6px 6px 0;margin-left:-6px}
   .dock button{padding:5px 9px;font-size:12px}
   .dock input[type=range]{width:88px;accent-color:var(--laiton-sombre)}
   .amb-activer{margin-left:auto;align-self:center}
@@ -399,7 +410,8 @@
     <div class="grp gm-only">
       <div class="ligne">
         <label for="img-url">Image</label>
-        <input type="url" id="img-url" placeholder="lien ou images/x.png" />
+        <span class="prefixe-img" id="prefixe-img">Gallerie/</span>
+        <input type="text" id="img-url" placeholder="nom-image.jpg" />
         <button class="primaire" id="afficher-img">Afficher</button>
         <button id="vider-img" title="Retirer l'image">✕</button>
       </div>
@@ -490,15 +502,25 @@ function pousserImage(url){
 
 function lienImageDirect(u){
   u = (u||"").trim();
+  if(!u) return "";
   if(/drive\.google\.com/.test(u)){
     const m = u.match(/\/file\/d\/([\w-]+)/) || u.match(/[?&]id=([\w-]+)/);
     if(m) return "https://drive.google.com/thumbnail?id=" + m[1] + "&sz=w2000";
   }
+  // Nom de fichier seul (pas d'URL complète, pas de chemin) : on ajoute le dossier.
+  if(!/^https?:\/\//i.test(u) && !u.includes("/")){
+    u = (window.DOSSIER_IMAGES || "") + u;
+  }
   return u;
 }
+// Le préfixe affiché dans l'interface suit la configuration du haut du fichier.
+$("#prefixe-img").textContent = window.DOSSIER_IMAGES || "";
 $("#afficher-img").addEventListener("click", ()=>{
   const u = lienImageDirect($("#img-url").value);
   if(u) pousserImage(u);
+});
+$("#img-url").addEventListener("keydown", e=>{
+  if(e.key==="Enter"){ const u = lienImageDirect($("#img-url").value); if(u) pousserImage(u); }
 });
 $("#vider-img").addEventListener("click", ()=> pousserImage(null));
 
