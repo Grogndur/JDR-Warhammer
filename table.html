@@ -155,6 +155,13 @@
     background:linear-gradient(180deg,#7a1f1f,#5d1717)}
   button.primaire:hover{border-color:var(--oxblood-clair)}
   button:disabled{opacity:.4;cursor:not-allowed}
+  /* Dé de gauche choisi (surbrillance « sélectionné », sans lancer) */
+  button.de-sel{border-color:var(--laiton);color:#f6e7c8;
+    background:linear-gradient(180deg,#3a2c12,#2a2012);
+    box-shadow:0 0 0 1px var(--laiton) inset}
+  button.de-sel:hover{border-color:var(--laiton);
+    background:linear-gradient(180deg,#3a2c12,#2a2012)}
+  input:disabled{opacity:.4;cursor:not-allowed}
 
   /* ---- Scène plein écran (image au centre, priorité visuelle) ---- */
   .scene{
@@ -382,13 +389,16 @@
       <div class="ligne">
         <label for="cible">Test</label>
         <input type="number" id="cible" min="1" max="100" value="45" />
-        <button class="primaire" id="lancer-test">Lancer</button>
         <button data-de="100">d100</button>
         <button data-de="10">d10</button>
         <button data-de="6">d6</button>
         <button data-de="4">d4</button>
+        <button class="primaire" id="lancer-test">Lancer</button>
+      </div>
+      <div class="ligne">
+        <label for="custom">Dés</label>
         <input type="text" id="custom" placeholder="2d6+3" />
-        <button id="lancer-custom">Lancer</button>
+        <button class="primaire" id="lancer-custom">Lancer</button>
         <button id="vider-des" title="Retirer les dés de la table">🧹 Table</button>
       </div>
       <div class="ligne gm-only">
@@ -592,15 +602,37 @@ function lancerExpr(expr){
   envoyerJet({ nom:nom(), res:`${total}`, detail:detailDés, classe:"", marque:"", des });
 }
 
+// --- Sélecteur de dé à gauche : un clic sélectionne (surbrillance), ne lance pas ---
+let deSelection = "100";                       // d100 par défaut (test de caractéristique)
+const btnsDe = document.querySelectorAll("[data-de]");
+function majSelectionDe(val){
+  deSelection = val;
+  btnsDe.forEach(b=> b.classList.toggle("de-sel", b.dataset.de === val));
+  $("#cible").disabled = (val !== "100");      // la cible ne sert qu'au test d100
+}
+btnsDe.forEach(b=> b.addEventListener("click", ()=> majSelectionDe(b.dataset.de)));
+majSelectionDe("100");                          // état initial : d100 sélectionné
+
+// Le « Lancer » de gauche lance le dé sélectionné
 $("#lancer-test").addEventListener("click", ()=>{
-  const c = Math.max(1, Math.min(100, parseInt($("#cible").value,10)||0));
-  lancerTest(c);
+  if(deSelection === "100"){
+    const c = Math.max(1, Math.min(100, parseInt($("#cible").value,10)||0));
+    lancerTest(c);                              // test WFRP : DR, localisation, critique/maladresse
+  } else {
+    lancerExpr("d" + deSelection);              // d10 / d6 / d4 : jet simple
+  }
 });
-document.querySelectorAll("[data-de]").forEach(b=>{
-  b.addEventListener("click", ()=> lancerExpr("d"+b.dataset.de));
-});
-$("#lancer-custom").addEventListener("click", ()=> lancerExpr($("#custom").value || "d6"));
-$("#custom").addEventListener("keydown", e=>{ if(e.key==="Enter") lancerExpr($("#custom").value||"d6"); });
+
+// --- Lancer personnalisé à droite : actif seulement si l'expression est valide ---
+const RE_DES = /^(\d*)d(\d+)([+-]\d+)?$/i;       // NdX, dX, NdX+M ...
+function exprValide(){ return RE_DES.test(($("#custom").value||"").replace(/\s+/g,"")); }
+function majBoutonCustom(){ $("#lancer-custom").disabled = !exprValide(); }
+function lancerCustom(){ if(exprValide()) lancerExpr($("#custom").value); }
+$("#custom").addEventListener("input", majBoutonCustom);
+$("#lancer-custom").addEventListener("click", lancerCustom);
+$("#custom").addEventListener("keydown", e=>{ if(e.key==="Enter") lancerCustom(); });
+majBoutonCustom();                              // grisé tant que le champ est vide ou invalide
+
 $("#vider-des").addEventListener("click", demanderViderDes);
 
 // ---------- Jet secret (MJ) : localisation des touches ----------
