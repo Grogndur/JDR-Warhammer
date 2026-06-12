@@ -308,6 +308,48 @@
   .gate input{width:100%;text-align:center;font-size:18px;margin-bottom:12px}
   .gate button{width:100%}
   .gate .err{color:var(--oxblood-clair);font-size:14px;min-height:18px;margin-top:10px}
+
+  /* ---- Plateau : image + calque de dessin, zoomable et déplaçable ---- */
+  .plateau{position:absolute;left:0;top:0;transform-origin:0 0;display:none;
+    touch-action:none;will-change:transform}
+  .plateau.actif{display:block}
+  .plateau img{display:block;width:100%;height:100%;user-select:none;-webkit-user-drag:none;pointer-events:none}
+  .plateau.vierge img{display:none}
+  #calque{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+  #calque.interactif{pointer-events:auto;cursor:grab}
+  #calque.interactif.t-dessin{cursor:crosshair}
+  #calque.interactif.t-gomme{cursor:cell}
+  #calque.interactif.glisse{cursor:grabbing}
+  #grille path{vector-effect:non-scaling-stroke}
+
+  /* ---- Palette de dessin (flottante, déplaçable) ---- */
+  .palette{position:fixed;z-index:26;width:252px;left:50%;margin-left:-126px;top:54px;
+    background:rgba(18,14,10,.95);border:1px solid var(--bord);border-radius:10px;
+    box-shadow:var(--ombre);overflow:hidden}
+  .palette.replie{display:none}
+  .pal-tete{display:flex;align-items:center;gap:8px;padding:5px 10px;
+    border-bottom:1px solid var(--bord);cursor:move;user-select:none;touch-action:none}
+  .pal-tete .pt{color:var(--laiton);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+  .pal-tete .spacer{flex:1}
+  .pal-corps{padding:8px;display:flex;flex-direction:column;gap:7px}
+  .pal-ligne{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+  .pal-ligne .spacer{flex:1}
+  .pal-lib{font-size:11px;color:var(--parchemin-doux);text-transform:uppercase;letter-spacing:.08em}
+  .pal-sep{width:1px;align-self:stretch;background:var(--bord);margin:2px 3px}
+  .palette button{padding:5px 8px;font-size:13px;line-height:1}
+  .palette .outil.actif,.palette .taille.actif{border-color:var(--laiton);color:#f6e7c8;
+    background:linear-gradient(180deg,#3a2c12,#2a2012);box-shadow:0 0 0 1px var(--laiton) inset}
+  .pal-couleurs{gap:6px}
+  .pastille{width:22px;height:22px;padding:0;border-radius:50%;border:2px solid #00000055;cursor:pointer;
+    box-shadow:0 1px 3px rgba(0,0,0,.5)}
+  .pastille.actif{outline:2px solid var(--laiton);outline-offset:2px}
+  .palette .taille{width:34px;display:flex;align-items:center;justify-content:center}
+  .gm-only-in{display:none!important}
+  body.est-mj .gm-only-in{display:inline-flex!important}
+
+  @media (max-width:760px){
+    .palette{left:8px;margin-left:0;top:auto;bottom:118px;width:230px}
+  }
 </style>
 </head>
 <body>
@@ -331,7 +373,14 @@
       <span class="comete">✦</span>
       En attente d'une image. Le MJ peut afficher une carte ou une illustration pour toute la table.
     </div>
-    <img id="image" alt="Image partagée" />
+    <div class="plateau" id="plateau">
+      <img id="image" alt="Image partagée" />
+      <svg id="calque" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+        <g id="grille"></g>
+        <g id="g-strokes"></g>
+        <path id="g-live" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </div>
   </section>
 
   <div id="dice3d"><div id="dice3d-d"></div><div id="dice3d-u"></div></div>
@@ -342,6 +391,41 @@
   </header>
 
   <div class="alerte" id="alerte" style="display:none"></div>
+
+  <aside class="palette replie" id="palette">
+    <div class="pal-tete" id="pal-drag">
+      <span class="pt">Dessin & zoom</span>
+      <span class="spacer"></span>
+      <button id="fermer-dessin" class="mini" title="Masquer">×</button>
+    </div>
+    <div class="pal-corps">
+      <div class="pal-ligne">
+        <button class="outil actif" data-outil="nav" title="Déplacer la carte (clic droit aussi)">✋</button>
+        <button class="outil" data-outil="dessin" title="Crayon">✏</button>
+        <button class="outil" data-outil="gomme" title="Gomme (efface les traits touchés)">🩹</button>
+        <span class="pal-sep"></span>
+        <button id="annuler-trait" title="Annuler mon dernier trait">↶</button>
+        <button id="effacer-tout" class="gm-only-in" title="Effacer tous les traits (MJ)">🗑</button>
+      </div>
+      <div class="pal-ligne pal-couleurs" id="pal-couleurs"></div>
+      <div class="pal-ligne">
+        <span class="pal-lib">Taille</span>
+        <button class="taille" data-taille="1">•</button>
+        <button class="taille actif" data-taille="2">●</button>
+        <button class="taille" data-taille="3">⬤</button>
+        <span class="pal-sep"></span>
+        <label class="toggle"><input type="checkbox" id="grille-chk" /> Grille</label>
+      </div>
+      <div class="pal-ligne">
+        <span class="pal-lib">Zoom</span>
+        <button id="zoom-moins" title="Dézoomer">−</button>
+        <button id="zoom-reset" title="Recentrer">⤢</button>
+        <button id="zoom-plus" title="Zoomer">+</button>
+        <span class="spacer"></span>
+        <button id="carte-vierge" class="gm-only-in" title="Plateau vierge à dessiner (MJ)">Carte vierge</button>
+      </div>
+    </div>
+  </aside>
 
   <aside class="initiative replie" id="initiative">
     <div class="ini-tete" id="init-drag">
@@ -382,6 +466,7 @@
         <button id="ouvrir-cams" title="Afficher ou masquer les caméras">📹 Caméras</button>
         <button id="ouvrir-journal" title="Afficher ou masquer le journal">📜 Journal</button>
         <button id="ouvrir-init" title="Afficher ou masquer l'initiative">⚔ Initiative</button>
+        <button id="ouvrir-dessin" title="Zoom et dessin sur la carte">🖌 Dessin</button>
       </div>
     </div>
 
@@ -482,32 +567,132 @@ const refImage = db ? ref(db, `salles/${salle}/image`) : null;
 const refJets  = db ? ref(db, `salles/${salle}/jets`)  : null;
 const refInit  = db ? ref(db, `salles/${salle}/initiative`) : null;
 const refDesClear = db ? ref(db, `salles/${salle}/desClear`) : null;
+const refDessin = db ? ref(db, `salles/${salle}/dessin`) : null;
 
-// ---------- Image partagée ----------
-const img = $("#image");
-const vide = $("#scene-vide");
+// ---------- Plateau partagé (image ou carte vierge) + zoom + dessin ----------
+const img    = $("#image");
+const vide   = $("#scene-vide");
+const scene  = $("#scene");
+const plateau= $("#plateau");
+const svg    = $("#calque");
 const VIDE_DEFAUT = '<span class="comete">✦</span> En attente d\'une image. Le MJ peut afficher une carte ou une illustration pour toute la table.';
-function montrerImage(url){
-  if(url){
-    img.onload  = ()=>{ img.style.display="block"; vide.style.display="none"; };
-    img.onerror = ()=>{ img.style.display="none";
-      vide.innerHTML = '<span class="comete">✦</span> Image introuvable. Vérifie le lien ou le chemin.';
-      vide.style.display="block"; };
-    img.src = url;
-  } else {
-    img.removeAttribute("src"); img.style.display="none";
-    vide.innerHTML = VIDE_DEFAUT; vide.style.display="block";
-  }
+
+// État de la vue (zoom/déplacement) : LOCAL à chaque appareil.
+const vue  = { z:1, x:0, y:0 };
+// Boîte de base du plateau (calée « contain » dans la scène) + dimensions logiques.
+const base = { L:0, T:0, W:0, H:0, iw:0, ih:0 };
+// Traits : strokesDB vient de Firebase ; strokesLocal sert en mode hors-ligne.
+let strokesDB = {}, strokesLocal = {};
+let grilleOn = false;
+
+function appliquerVue(){
+  plateau.style.transform = `translate(${vue.x}px,${vue.y}px) scale(${vue.z})`;
 }
+function caler(iw, ih, reinit){
+  base.iw = iw; base.ih = ih;
+  const sw = scene.clientWidth, sh = scene.clientHeight;
+  const r = Math.min(sw/iw, sh/ih);
+  base.W = iw*r; base.H = ih*r;
+  base.L = (sw-base.W)/2; base.T = (sh-base.H)/2;
+  plateau.style.left = base.L+"px"; plateau.style.top = base.T+"px";
+  plateau.style.width = base.W+"px"; plateau.style.height = base.H+"px";
+  svg.setAttribute("viewBox", `0 0 ${iw} ${ih}`);
+  if(reinit){ vue.z=1; vue.x=0; vue.y=0; }
+  appliquerVue(); majGrille(); rendreStrokes();
+}
+
+function montrerVide(){
+  plateau.classList.remove("actif","vierge");
+  img.removeAttribute("src"); img.style.display="none";
+  vide.innerHTML = VIDE_DEFAUT; vide.style.display="block";
+}
+function montrerImage(url){
+  if(!url){ montrerVide(); return; }
+  plateau.classList.remove("vierge");
+  plateau.style.background = "transparent";
+  img.onload  = ()=>{
+    img.style.display="block"; vide.style.display="none";
+    plateau.classList.add("actif");
+    caler(img.naturalWidth||1600, img.naturalHeight||1000, true);
+  };
+  img.onerror = ()=>{
+    plateau.classList.remove("actif"); img.style.display="none";
+    vide.innerHTML = '<span class="comete">✦</span> Image introuvable. Vérifie le lien ou le chemin.';
+    vide.style.display="block";
+  };
+  img.src = url;
+}
+function montrerVierge(v){
+  vide.style.display="none";
+  img.style.display="none"; img.removeAttribute("src");
+  plateau.classList.add("actif","vierge");
+  plateau.style.background = v.bg || "#e9dcc2";
+  caler(v.w||1600, v.h||1000, true);
+}
+
 if(refImage){
   onValue(refImage, (snap)=>{
     const v = snap.val();
-    montrerImage(v && v.url ? v.url : null);
+    if(v && v.blank) montrerVierge(v);
+    else montrerImage(v && v.url ? v.url : null);
   });
 }
+if(refDessin){
+  onValue(refDessin, (snap)=>{ strokesDB = snap.val() || {}; rendreStrokes(); });
+}
+
+// Changer de fond efface les traits (ils sont calés sur l'ancienne carte).
 function pousserImage(url){
   if(!refImage){ alerte("Firebase requis pour partager une image."); return; }
+  if(refDessin) set(refDessin, null);
+  mesTraits.length = 0;
   set(refImage, url ? { url, par: nom(), ts: Date.now() } : null);
+}
+function carteVierge(){
+  const sw = scene.clientWidth || 1280, sh = scene.clientHeight || 800;
+  const W = 1600, H = Math.max(600, Math.round(1600*sh/sw));
+  if(!refImage){
+    strokesLocal = {}; montrerVierge({ w:W, h:H, bg:"#e9dcc2" }); return;
+  }
+  if(refDessin) set(refDessin, null);
+  mesTraits.length = 0;
+  set(refImage, { blank:true, w:W, h:H, bg:"#e9dcc2", par:nom(), ts:Date.now() });
+}
+
+// ---------- Rendu des traits (SVG, calés sur l'image en coordonnées 0..1) ----------
+let traitCourant = null;
+const mesTraits = [];  // clés de mes propres traits, pour « Annuler »
+
+function cheminD(s){
+  return s.pts.map((p,i)=> (i?"L":"M") + (p[0]*base.iw).toFixed(1) + " " + (p[1]*base.ih).toFixed(1)).join(" ");
+}
+function rendreStrokes(){
+  const g = document.getElementById("g-strokes"); if(!g) return;
+  if(!base.iw){ g.innerHTML=""; return; }
+  const src = refDessin ? strokesDB : strokesLocal;
+  let html = "";
+  for(const k in src){
+    const s = src[k]; if(!s || !s.pts || !s.pts.length) continue;
+    html += `<path d="${cheminD(s)}" stroke="${s.c}" stroke-width="${s.w}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  }
+  g.innerHTML = html;
+}
+function majLive(){
+  const l = document.getElementById("g-live"); if(!l) return;
+  if(traitCourant && traitCourant.pts.length){
+    l.setAttribute("d", cheminD(traitCourant));
+    l.setAttribute("stroke", traitCourant.c);
+    l.setAttribute("stroke-width", traitCourant.w);
+  } else { l.removeAttribute("d"); }
+}
+function majGrille(){
+  const g = document.getElementById("grille"); if(!g) return;
+  if(!grilleOn || !base.iw){ g.innerHTML=""; return; }
+  const pas = base.iw/24, ep = Math.max(0.5, base.iw/1100);
+  let d = "";
+  for(let x=0; x<=base.iw+0.5; x+=pas) d += `M${x.toFixed(1)} 0 L${x.toFixed(1)} ${base.ih.toFixed(1)} `;
+  for(let y=0; y<=base.ih+0.5; y+=pas) d += `M0 ${y.toFixed(1)} L${base.iw.toFixed(1)} ${y.toFixed(1)} `;
+  g.innerHTML = `<path d="${d}" stroke="rgba(120,100,70,.45)" stroke-width="${ep.toFixed(2)}" fill="none"/>`;
 }
 
 function lienImageDirect(u){
@@ -542,6 +727,220 @@ const gal = $("#galerie");
   b.addEventListener("click", ()=> pousserImage(item.url));
   gal.appendChild(b);
 });
+
+// ============ Zoom + déplacement + dessin sur le plateau ============
+let outil = "nav";                       // "nav" | "dessin" | "gomme"
+let couleur = "#c1453f";
+let niveau = 2;                          // 1 / 2 / 3
+const COULEURS = [
+  "#16110b","#f4ecd8","#c1453f","#9b2226","#3b6fd2","#5a9e3f","#e8c33a","#c9a25a"
+];
+
+function paletteOuverte(){ return !$("#palette").classList.contains("replie"); }
+function svgInteractif(on){ svg.classList.toggle("interactif", on); }
+function epaisseur(n){ return ({1:0.5, 2:1.1, 3:2.2}[n] || 1.1) * Math.min(base.iw, base.ih)/100; }
+
+// Conversion écran -> coordonnées du calque (tient compte du zoom et du déplacement).
+function ptCalque(cx, cy){
+  const rect = scene.getBoundingClientRect();
+  const r = base.W / base.iw;          // pixels par unité de calque, à zoom 1
+  return {
+    x: (cx - rect.left - base.L - vue.x) / vue.z / r,
+    y: (cy - rect.top  - base.T - vue.y) / vue.z / r
+  };
+}
+function clampZoom(z){ return Math.max(0.15, Math.min(12, z)); }
+function zoomVers(cx, cy, nz){
+  nz = clampZoom(nz);
+  const rect = scene.getBoundingClientRect();
+  const sx = cx - rect.left, sy = cy - rect.top;
+  const lx = (sx - base.L - vue.x) / vue.z;
+  const ly = (sy - base.T - vue.y) / vue.z;
+  vue.z = nz;
+  vue.x = sx - base.L - nz*lx;
+  vue.y = sy - base.T - nz*ly;
+  appliquerVue();
+}
+
+// --- Crayon ---
+function debutTrait(e){
+  const p = ptCalque(e.clientX, e.clientY);
+  traitCourant = { c:couleur, w:+epaisseur(niveau).toFixed(2),
+                   pts:[[+(p.x/base.iw).toFixed(4), +(p.y/base.ih).toFixed(4)]], par:nom() };
+  majLive();
+}
+function suiteTrait(e){
+  if(!traitCourant) return;
+  const p = ptCalque(e.clientX, e.clientY);
+  const nx = p.x/base.iw, ny = p.y/base.ih;
+  const last = traitCourant.pts[traitCourant.pts.length-1];
+  if(Math.hypot((nx-last[0])*base.iw, (ny-last[1])*base.ih) < base.iw*0.0025) return;
+  traitCourant.pts.push([+nx.toFixed(4), +ny.toFixed(4)]);
+  majLive();
+}
+function finTrait(){
+  if(traitCourant && traitCourant.pts.length){
+    if(refDessin){ const rr = push(refDessin); set(rr, traitCourant); mesTraits.push(rr.key); }
+    else { strokesLocal["l"+Date.now()+Math.random().toString(36).slice(2,5)] = traitCourant; rendreStrokes(); }
+  }
+  traitCourant = null; majLive();
+}
+// --- Gomme : retire les traits dont un point est sous le pointeur ---
+function gommerEn(e){
+  const p = ptCalque(e.clientX, e.clientY);
+  const rayon = Math.min(base.iw, base.ih)/22;
+  const src = refDessin ? strokesDB : strokesLocal;
+  const aRetirer = [];
+  for(const k in src){
+    const s = src[k]; if(!s || !s.pts) continue;
+    const seuil = rayon + (s.w||1);
+    if(s.pts.some(pt => Math.hypot(pt[0]*base.iw - p.x, pt[1]*base.ih - p.y) < seuil)) aRetirer.push(k);
+  }
+  if(!aRetirer.length) return;
+  aRetirer.forEach(k=>{
+    if(refDessin) set(ref(db, `salles/${salle}/dessin/${k}`), null);
+    else delete strokesLocal[k];
+    const i = mesTraits.indexOf(k); if(i>=0) mesTraits.splice(i,1);
+  });
+  if(!refDessin) rendreStrokes();
+}
+function annulerTrait(){
+  const k = mesTraits.pop(); if(!k) return;
+  if(refDessin) set(ref(db, `salles/${salle}/dessin/${k}`), null);
+  else { delete strokesLocal[k]; rendreStrokes(); }
+}
+function effacerTout(){
+  if(refDessin) set(refDessin, null); else { strokesLocal = {}; rendreStrokes(); }
+  mesTraits.length = 0;
+}
+
+// --- Gestion des pointeurs (souris/stylet = outil courant ; doigts = navigation) ---
+const touches = new Map();
+let pan = false, panLast = null, touchLast = null, pinch = null;
+let dessine = false, gomme = false;
+
+svg.addEventListener("contextmenu", e=> e.preventDefault());
+svg.addEventListener("pointerdown", e=>{
+  if(!paletteOuverte() || !base.iw) return;
+  try{ svg.setPointerCapture(e.pointerId); }catch(_){}
+  if(e.pointerType === "touch"){ touches.set(e.pointerId, {x:e.clientX,y:e.clientY}); return; }
+  if(e.button === 2 || outil === "nav"){ pan = true; panLast = {x:e.clientX,y:e.clientY}; svg.classList.add("glisse"); return; }
+  if(outil === "dessin"){ dessine = true; debutTrait(e); return; }
+  if(outil === "gomme"){ gomme = true; gommerEn(e); return; }
+});
+svg.addEventListener("pointermove", e=>{
+  if(touches.has(e.pointerId)){ touches.set(e.pointerId, {x:e.clientX,y:e.clientY}); gererTouches(); return; }
+  if(pan){ vue.x += e.clientX-panLast.x; vue.y += e.clientY-panLast.y; panLast={x:e.clientX,y:e.clientY}; appliquerVue(); return; }
+  if(dessine){ suiteTrait(e); return; }
+  if(gomme){ gommerEn(e); return; }
+});
+function finPointeur(e){
+  if(touches.has(e.pointerId)){
+    touches.delete(e.pointerId);
+    if(touches.size < 2) pinch = null;
+    if(touches.size === 0) touchLast = null;
+    return;
+  }
+  if(pan){ pan = false; svg.classList.remove("glisse"); return; }
+  if(dessine){ dessine = false; finTrait(); return; }
+  if(gomme){ gomme = false; return; }
+}
+svg.addEventListener("pointerup", finPointeur);
+svg.addEventListener("pointercancel", finPointeur);
+
+function gererTouches(){
+  const pts = [...touches.values()];
+  if(pts.length === 1){
+    const p = pts[0];
+    if(touchLast){ vue.x += p.x-touchLast.x; vue.y += p.y-touchLast.y; appliquerVue(); }
+    touchLast = {x:p.x, y:p.y}; pinch = null;
+  } else if(pts.length >= 2){
+    touchLast = null;
+    const a = pts[0], b = pts[1];
+    const dist = Math.hypot(a.x-b.x, a.y-b.y);
+    const mid  = {x:(a.x+b.x)/2, y:(a.y+b.y)/2};
+    if(pinch){
+      zoomVers(mid.x, mid.y, vue.z * (dist/pinch.dist));
+      vue.x += mid.x-pinch.mid.x; vue.y += mid.y-pinch.mid.y; appliquerVue();
+    }
+    pinch = { dist, mid };
+  }
+}
+
+scene.addEventListener("wheel", e=>{
+  if(!paletteOuverte() || !base.iw) return;
+  e.preventDefault();
+  zoomVers(e.clientX, e.clientY, vue.z * (e.deltaY < 0 ? 1.12 : 1/1.12));
+}, { passive:false });
+
+// --- Câblage de la palette ---
+const palCoul = $("#pal-couleurs");
+COULEURS.forEach((c, i)=>{
+  const b = document.createElement("button");
+  b.className = "pastille" + (c===couleur ? " actif" : "");
+  b.style.background = c; b.dataset.coul = c; b.title = "Couleur";
+  b.addEventListener("click", ()=>{
+    couleur = c;
+    palCoul.querySelectorAll(".pastille").forEach(x=> x.classList.toggle("actif", x.dataset.coul===c));
+    if(outil === "nav") choisirOutil("dessin");
+  });
+  palCoul.appendChild(b);
+});
+function choisirOutil(o){
+  outil = o;
+  document.querySelectorAll(".palette .outil").forEach(b=> b.classList.toggle("actif", b.dataset.outil===o));
+  svg.classList.toggle("t-dessin", o==="dessin");
+  svg.classList.toggle("t-gomme",  o==="gomme");
+}
+document.querySelectorAll(".palette .outil").forEach(b=>
+  b.addEventListener("click", ()=> choisirOutil(b.dataset.outil)));
+document.querySelectorAll(".palette .taille").forEach(b=>
+  b.addEventListener("click", ()=>{
+    niveau = parseInt(b.dataset.taille,10);
+    document.querySelectorAll(".palette .taille").forEach(x=> x.classList.toggle("actif", x===b));
+    if(outil === "nav") choisirOutil("dessin");
+  }));
+$("#annuler-trait").addEventListener("click", annulerTrait);
+$("#effacer-tout").addEventListener("click", effacerTout);
+$("#carte-vierge").addEventListener("click", carteVierge);
+$("#grille-chk").addEventListener("change", e=>{ grilleOn = e.target.checked; majGrille(); });
+$("#zoom-plus").addEventListener("click",  ()=> zoomVers(scene.clientWidth/2, scene.clientHeight/2, vue.z*1.2));
+$("#zoom-moins").addEventListener("click", ()=> zoomVers(scene.clientWidth/2, scene.clientHeight/2, vue.z/1.2));
+$("#zoom-reset").addEventListener("click", ()=>{ vue.z=1; vue.x=0; vue.y=0; appliquerVue(); });
+
+function basculerPalette(forcer){
+  const p = $("#palette");
+  const ouvrir = (typeof forcer === "boolean") ? forcer : p.classList.contains("replie");
+  p.classList.toggle("replie", !ouvrir);
+  svgInteractif(ouvrir);
+  if(ouvrir && outil === "nav") svg.classList.remove("t-dessin","t-gomme");
+}
+$("#ouvrir-dessin").addEventListener("click", ()=> basculerPalette());
+$("#fermer-dessin").addEventListener("click", ()=> basculerPalette(false));
+
+// Déplacer la palette
+(function(){
+  const panneau = $("#palette"), poignee = $("#pal-drag");
+  let actif=false, dx=0, dy=0;
+  poignee.addEventListener("pointerdown", e=>{
+    if(e.target.closest("button")) return;
+    actif=true; const r=panneau.getBoundingClientRect();
+    dx=e.clientX-r.left; dy=e.clientY-r.top;
+    try{ poignee.setPointerCapture(e.pointerId); }catch(_){}
+  });
+  poignee.addEventListener("pointermove", e=>{
+    if(!actif) return;
+    const x=Math.max(0, Math.min(window.innerWidth - panneau.offsetWidth, e.clientX-dx));
+    const y=Math.max(0, Math.min(window.innerHeight - panneau.offsetHeight, e.clientY-dy));
+    panneau.style.left=x+"px"; panneau.style.top=y+"px"; panneau.style.marginLeft="0";
+  });
+  const fin=()=>{ actif=false; };
+  poignee.addEventListener("pointerup", fin);
+  poignee.addEventListener("pointercancel", fin);
+})();
+
+// Recaler le plateau quand la fenêtre change (sans casser le zoom en cours).
+window.addEventListener("resize", ()=>{ if(base.iw) caler(base.iw, base.ih, false); });
 
 // ---------- Nom du joueur ----------
 function nom(){ return ($("#nom").value.trim() || "Aventurier").slice(0,24); }
