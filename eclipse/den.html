@@ -391,6 +391,30 @@
   .del-btn { color:rgba(139,26,26,0.4); cursor:pointer; font-size:0.75rem; flex-shrink:0; transition:color 0.15s; }
   .del-btn:hover { color:#e08080; }
 </style>
+<!-- Firebase : sauvegarde en ligne, partagee entre tous les appareils -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<style>
+  .pdf-btn {
+    position:fixed; bottom:14px; right:14px; z-index:9999;
+    background:rgba(184,146,42,0.12); border:1px solid var(--GLD,#B8922A);
+    color:var(--GLD,#B8922A); font-family:'Cinzel',serif; font-size:0.7rem;
+    letter-spacing:0.12em; text-transform:uppercase; padding:0.45rem 0.75rem;
+    border-radius:2px; cursor:pointer; transition:all 0.15s; opacity:0.72;
+  }
+  .pdf-btn:hover { opacity:1; background:rgba(184,146,42,0.28); }
+  /* Plus de sauvegarde/export/import manuels : tout est en ligne et automatique. */
+  .io-bar, .btn-save, .save-confirm { display:none !important; }
+  @media print {
+    @page { margin:12mm; }
+    html, body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    body::before { display:none !important; }
+    nav, .pdf-btn, button { display:none !important; }
+    .editable, .editable-num { border:none !important; }
+    .sort-body { display:block !important; }
+    .card, .stat-box, .sort-item, .skill-list li, .talent-list li { break-inside:avoid; }
+  }
+</style>
 </head>
 <body>
 <nav>
@@ -402,15 +426,6 @@
 </nav>
 
 <div class="layout">
-
-  <!-- GITHUB SYNC BAR -->
-  <div class="io-bar full" style="grid-column:1/-1;">
-    <button class="io-btn io-btn-export" onclick="exportJSON()">↓ Exporter sauvegarde</button>
-    <button class="io-btn io-btn-import" onclick="document.getElementById('import-input').click()">↑ Importer sauvegarde</button>
-    <input type="file" id="import-input" accept=".json" style="display:none" onchange="importJSON(this)" />
-    <span class="io-status" id="io-status"></span>
-  </div>
-
 
   <!-- HEADER -->
   <div class="perso-header">
@@ -771,7 +786,6 @@
     <div class="card-title">Notes de session</div>
     <div style="font-size:0.82rem;color:var(--SUB);font-style:italic;margin-bottom:0.5rem;line-height:1.5;">Objectif : trouver une bonne arme à deux mains, de préférence une épée · Garder un œil sur le jeunot</div>
     <textarea class="notes-area" id="session-notes" rows="4" placeholder="Plans, contacts, observations..."></textarea>
-    <button class="btn-save" onclick="saveAll()">Sauvegarder</button>
     <span class="save-confirm" id="save-confirm">✓ Sauvegardé</span>
   </div>
 
@@ -2150,7 +2164,69 @@ const _origRenderSkillsAdv = renderSkillsAdv;
 renderSkillsAdv = function() { _origRenderSkillsAdv(); applyAdvSkillEditable(); };
 
 
+/* ============ SAUVEGARDE EN LIGNE (Firebase) ============
+   Remplace le localStorage. On reassigne save() et load() ;
+   le reste de la fiche n'est pas touche. */
+(function(){
+  const FICHE_ID = "den";
+  const LS_KEY = "fiche_" + FICHE_ID + "_cache";
+  const FB_CONFIG = {
+    apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+    authDomain: "warhammer-table-jdr.firebaseapp.com",
+    databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "warhammer-table-jdr",
+    storageBucket: "warhammer-table-jdr.firebasestorage.app",
+    messagingSenderId: "347804803970",
+    appId: "1:347804803970:web:43e062299c53e59d20e59b"
+  };
+  let fbRef = null;
+  try {
+    if (typeof firebase !== "undefined") {
+      if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+      fbRef = firebase.database().ref("fiches/" + FICHE_ID);
+    }
+  } catch (e) { console.warn("Firebase indisponible, sauvegarde locale seule :", e); }
+
+  // Fusionne une sauvegarde (locale ou en ligne) dans l'etat courant.
+  function fusion(saved) {
+    if (!saved || typeof saved !== "object") return;
+    for (var k in saved) {
+      var v = saved[k];
+      if (Array.isArray(v)) state[k] = v;
+      else if (v && typeof v === "object") {
+        if (state[k] && typeof state[k] === "object" && !Array.isArray(state[k])) Object.assign(state[k], v);
+        else state[k] = v;
+      } else state[k] = v;
+    }
+  }
+
+  // save() : cache local instantane + ecriture Firebase regroupee (600 ms).
+  var timer = null;
+  save = function() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {}
+    if (!fbRef) return;
+    clearTimeout(timer);
+    timer = setTimeout(function() {
+      fbRef.set(JSON.parse(JSON.stringify(state)))
+           .catch(function(e){ console.warn("Ecriture en ligne echouee (garde en local) :", e); });
+    }, 600);
+  };
+
+  // load() : cache local d'abord (affichage immediat), puis Firebase (source de verite).
+  load = function() {
+    try { var raw = localStorage.getItem(LS_KEY); if (raw) fusion(JSON.parse(raw)); } catch (e) {}
+    renderAll();
+    if (!fbRef) return;
+    fbRef.once("value").then(function(snap){
+      var enLigne = snap.val();
+      if (enLigne) { fusion(enLigne); renderAll(); }
+      else { fbRef.set(JSON.parse(JSON.stringify(state))); }
+    }).catch(function(e){ console.warn("Lecture en ligne echouee, cache local conserve :", e); });
+  };
+})();
+
 load();
 </script>
+<button class="pdf-btn" onclick="window.print()" title="Exporter cette fiche en PDF (etat actuel)">PDF</button>
 </body>
 </html>
