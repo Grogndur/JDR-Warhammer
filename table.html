@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>La Table — Warhammer JdR</title>
 
-<!-- API YouTube (ambiance sonore synchronisée) -->
-<script src="https://www.youtube.com/iframe_api"></script>
 <!-- Daily (caméras encastrées dans la page) -->
 <script src="https://unpkg.com/@daily-co/daily-js"></script>
 
@@ -44,6 +42,18 @@
   window.GALERIE = [
     // { nom: "Auberge du Cochon Pendu", url: "images/auberge.jpg" },
     // { nom: "Carte de Reikland",        url: "images/reikland.png" },
+  ];
+
+  // --- Dossier des sons d'ambiance (préfixe ajouté automatiquement). ---
+  // Dépose tes .mp3 (Tabletop Audio, etc.) dans ce dossier de ton dépôt.
+  window.DOSSIER_SONS = "sons/";
+
+  // --- Ta liste d'ambiances (facultatif). Nom affiché + nom du fichier dans sons/. ---
+  // Le nom du fichier suffit, le préfixe "sons/" est ajouté tout seul.
+  window.AMBIANCES = [
+    // { nom: "Forêt de jour",   fichier: "foret-jour.mp3" },
+    // { nom: "Taverne animée",  fichier: "taverne-animee.mp3" },
+    // { nom: "Caverne humide",  fichier: "caverne.mp3" },
   ];
 
   // --- Mot de passe d'entrée (verrou simple). Mets "" pour n'avoir aucune entrée. ---
@@ -243,12 +253,15 @@
   .dock #custom{width:66px}
   .dock #nom{width:120px}
   .dock #img-url{width:118px}
-  .dock #amb-url{width:148px}
+  .dock #amb-choix{max-width:150px;padding:4px 6px;font-size:13px}
+  .dock #amb-fichier{width:104px}
+  .dock select{background:var(--noir-2);border:1px solid var(--bord);color:var(--parchemin);
+    border-radius:6px;font-family:inherit}
   .prefixe-img{font-family:"Cinzel",serif;font-size:12px;letter-spacing:.03em;
     color:var(--laiton);background:var(--noir-2);border:1px solid var(--bord);
     border-right:0;border-radius:6px 0 0 6px;padding:5px 4px 5px 8px;
     user-select:none;white-space:nowrap}
-  .prefixe-img + #img-url{border-radius:0 6px 6px 0;margin-left:-6px}
+  .prefixe-img + #img-url,.prefixe-img + #amb-fichier{border-radius:0 6px 6px 0;margin-left:-6px}
   .dock button{padding:5px 9px;font-size:12px}
   .dock input[type=range]{width:88px;accent-color:var(--laiton-sombre)}
   .amb-activer{margin-left:auto;align-self:center}
@@ -283,7 +296,7 @@
   .secret-loc{color:var(--oxblood-clair);font-style:italic;font-size:14px}
 
   /* ---- Lecteur d'ambiance (invisible, le son sort de chaque appareil) ---- */
-  .amb-player{position:absolute;left:0;bottom:0;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
+  #amb-audio{display:none}
   .err{color:var(--oxblood-clair);font-size:12px}
 
   .alerte{position:fixed;top:54px;left:50%;transform:translateX(-50%);z-index:22;
@@ -293,7 +306,7 @@
   @media (max-width:760px){
     .cams{width:200px;height:150px;top:auto;bottom:118px;left:8px}
     .journal-panel{width:180px;bottom:118px}
-    .dock #img-url,.dock #amb-url{width:120px}
+    .dock #img-url,.dock #amb-fichier{width:104px}
   }
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
@@ -455,7 +468,7 @@
     <div class="journal" id="journal"></div>
   </aside>
 
-  <div class="amb-player"><div id="yt"></div></div>
+  <audio id="amb-audio" loop preload="none"></audio>
 
   <section class="dock" id="dock">
 
@@ -511,10 +524,11 @@
         <button id="vider-img" title="Retirer l'image">✕</button>
       </div>
       <div class="ligne">
-        <label for="amb-url">Ambiance</label>
-        <input type="url" id="amb-url" placeholder="Lien YouTube" />
-        <button id="amb-load">Charger</button>
-        <button id="amb-play" title="Lecture">▶</button>
+        <label for="amb-choix">Ambiance</label>
+        <select id="amb-choix"></select>
+        <span class="prefixe-img" id="prefixe-son">sons/</span>
+        <input type="text" id="amb-fichier" placeholder="nom.mp3" />
+        <button class="primaire" id="amb-load">Lancer</button>
         <button id="amb-pause" title="Pause">⏸</button>
         <button id="amb-stop" title="Couper">⏹</button>
         <input type="range" id="amb-vol" min="0" max="100" value="50" title="Volume" />
@@ -1395,64 +1409,86 @@ setTimeout(majPoignee, 0);
   poignee.addEventListener("pointerup", ()=>{ actif = false; });
 })();
 
-// ---------- Ambiance sonore (YouTube synchronisé) ----------
-// Le MJ pilote ; le son est joué par le navigateur de chacun, pas par le micro.
+// ---------- Ambiance sonore (fichiers audio, lus par chaque navigateur) ----------
+// Le MJ choisit une piste ; chaque appareil lit le même fichier en boucle, sans pub.
+// Les fichiers vivent dans le dossier "sons/" de ton dépôt (voir config en haut).
 const refAmb = db ? ref(db, `salles/${salle}/ambiance`) : null;
-let player = null, ytPret = false, ambCourant = {};
+const audioAmb = document.getElementById("amb-audio");
+let ambCourant = {};
 
-function ytId(u){
-  u = (u||"").trim();
-  let m = u.match(/[?&]v=([\w-]{11})/);     if(m) return m[1];
-  m = u.match(/youtu\.be\/([\w-]{11})/);     if(m) return m[1];
-  m = u.match(/\/embed\/([\w-]{11})/);       if(m) return m[1];
-  if(/^[\w-]{11}$/.test(u)) return u;
-  return null;
-}
-window.onYouTubeIframeAPIReady = function(){
-  player = new YT.Player("yt", {
-    width:"100%", height:"140",
-    playerVars:{ rel:0, modestbranding:1, playsinline:1 },
-    events:{ onReady:()=>{ ytPret = true; appliquerAmb(ambCourant); } }
+// Remplir le menu déroulant depuis window.AMBIANCES
+const selAmb = $("#amb-choix");
+(function(){
+  const def = document.createElement("option");
+  def.value = ""; def.textContent = "— choisir —";
+  selAmb.appendChild(def);
+  (window.AMBIANCES || []).forEach(a=>{
+    const o = document.createElement("option");
+    o.value = a.fichier || a.url || "";
+    o.textContent = a.nom || a.fichier || a.url;
+    selAmb.appendChild(o);
   });
-};
-// Si l'API YouTube est déjà prête (course possible au chargement), on initialise tout de suite.
-if(window.YT && window.YT.Player) window.onYouTubeIframeAPIReady();
+})();
+$("#prefixe-son").textContent = window.DOSSIER_SONS || "";
+
+function urlSon(f){
+  f = (f||"").trim();
+  if(!f) return "";
+  if(/^https?:\/\//i.test(f) || f.includes("/")) return f;     // URL ou chemin complet
+  return (window.DOSSIER_SONS || "") + f;                        // simple nom de fichier
+}
+
 function appliquerAmb(a){
-  if(!ytPret || !player || !a) return;
-  if(a.videoId && a.etat !== "stop" && a.videoId !== player.__vid){
-    player.__vid = a.videoId;
-    if(a.etat === "play") player.loadVideoById(a.videoId);
-    else                  player.cueVideoById(a.videoId);
+  if(!audioAmb || !a) return;
+  if(a.etat === "stop"){
+    audioAmb.pause();
+    try{ audioAmb.currentTime = 0; }catch(e){}
+    audioAmb.removeAttribute("src"); audioAmb.dataset.url = "";
+    return;
   }
-  if(typeof a.volume === "number" && player.setVolume) player.setVolume(a.volume);
-  if(a.etat === "play"  && player.playVideo)  player.playVideo();
-  if(a.etat === "pause" && player.pauseVideo) player.pauseVideo();
-  if(a.etat === "stop"  && player.stopVideo){ player.stopVideo(); player.__vid = null; }
+  if(a.url && audioAmb.dataset.url !== a.url){
+    audioAmb.dataset.url = a.url;
+    audioAmb.src = a.url;
+  }
+  if(typeof a.volume === "number") audioAmb.volume = Math.max(0, Math.min(1, a.volume/100));
+  if(a.etat === "play"){
+    const p = audioAmb.play();
+    if(p && p.catch) p.catch(()=> flashSon("Clique 🔊 Son"));    // lecture bloquée tant qu'on n'a pas cliqué
+  } else if(a.etat === "pause"){
+    audioAmb.pause();
+  }
 }
 function pousserAmb(maj){
-  const o = { ...ambCourant, ...maj };
-  if(refAmb){ set(refAmb, { ...o, ts:Date.now() }); }
-  else { ambCourant = o; appliquerAmb(o); }
+  ambCourant = { ...ambCourant, ...maj };
+  if(refAmb){ set(refAmb, { ...ambCourant, ts:Date.now() }); }
+  else { appliquerAmb(ambCourant); }
 }
 if(refAmb){
   onValue(refAmb, snap=>{ ambCourant = snap.val() || {}; appliquerAmb(ambCourant); });
 }
-$("#amb-load").addEventListener("click", ()=>{
-  const id = ytId($("#amb-url").value);
+
+function lancerAmb(){
+  const f = ($("#amb-fichier").value.trim()) || selAmb.value;
+  const url = urlSon(f);
   const err = $("#amb-err");
-  if(!id){ err.textContent = "Lien YouTube non reconnu."; return; }
-  err.textContent = "";
-  pousserAmb({ videoId:id, etat:"play", volume: parseInt($("#amb-vol").value,10) });
+  if(!url){ if(err) err.textContent = "Choisis une ambiance ou tape un nom de fichier."; return; }
+  if(err) err.textContent = "";
+  pousserAmb({ url, etat:"play", volume: parseInt($("#amb-vol").value,10) });
+}
+selAmb.addEventListener("change", ()=>{
+  if(selAmb.value){ $("#amb-fichier").value = ""; lancerAmb(); }   // un choix dans la liste lance direct
 });
-$("#amb-play").addEventListener("click",  ()=> pousserAmb({ etat:"play"  }));
+$("#amb-load").addEventListener("click", lancerAmb);
+$("#amb-fichier").addEventListener("keydown", e=>{ if(e.key==="Enter") lancerAmb(); });
 $("#amb-pause").addEventListener("click", ()=> pousserAmb({ etat:"pause" }));
 $("#amb-stop").addEventListener("click",  ()=> pousserAmb({ etat:"stop"  }));
 $("#amb-vol").addEventListener("input", e=>{   // retour immédiat pour le MJ
-  if(player && player.setVolume) player.setVolume(parseInt(e.target.value,10));
+  if(audioAmb) audioAmb.volume = Math.max(0, Math.min(1, parseInt(e.target.value,10)/100));
 });
 $("#amb-vol").addEventListener("change", e=>{  // diffusé à la table au relâcher
   pousserAmb({ volume: parseInt(e.target.value,10) });
 });
+
 function flashSon(txt){
   const b = $("#amb-activer");
   if(!b.dataset.libelle) b.dataset.libelle = b.textContent;
@@ -1460,11 +1496,13 @@ function flashSon(txt){
   clearTimeout(b.__t);
   b.__t = setTimeout(()=>{ b.textContent = b.dataset.libelle; }, 1800);
 }
+// "🔊 Son" : débloque et relance la lecture sur CHAQUE appareil (politique navigateur)
 $("#amb-activer").addEventListener("click", ()=>{
-  if(!player){ flashSon("Pas prêt…"); return; }
-  if(player.unMute) player.unMute();
-  if(ambCourant && ambCourant.videoId){
-    appliquerAmb(ambCourant);
+  if(ambCourant && ambCourant.url && ambCourant.etat !== "stop"){
+    if(audioAmb.dataset.url !== ambCourant.url){ audioAmb.src = ambCourant.url; audioAmb.dataset.url = ambCourant.url; }
+    if(typeof ambCourant.volume === "number") audioAmb.volume = Math.max(0, Math.min(1, ambCourant.volume/100));
+    const p = audioAmb.play();
+    if(p && p.catch) p.catch(()=>{});
     flashSon("Son activé ✓");
   } else {
     flashSon("Aucune ambiance lancée");
