@@ -330,6 +330,19 @@
   .career-input.career-num { width:34px; text-align:center; }
   .career-input.career-echelon { width:150px; }
   .career-sep { color:var(--SUB); opacity:0.5; }
+
+  /* ══ MOUVEMENT : COURSE / CHARGE ══ */
+  .move-sub { display:flex; justify-content:center; gap:1.1rem; margin-top:0.45rem; font-size:0.72rem; color:var(--SUB); letter-spacing:0.04em; }
+  .move-sub strong { color:var(--parchment-dark); font-family:'Cinzel',serif; font-size:1rem; font-weight:600; margin-left:0.2rem; }
+  /* ══ STATUT SOCIAL ══ */
+  .statut-box { margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:0.25rem; }
+  .statut-label { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); }
+  .statut-fields { display:flex; align-items:stretch; gap:0.3rem; }
+  .statut-tier, .statut-rank { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:2px; font-family:'Cinzel',serif; transition:border-color 0.15s; }
+  .statut-tier { color:var(--GLD); font-size:0.85rem; padding:0.2rem 0.25rem; cursor:pointer; }
+  .statut-tier option { background:var(--ink); color:var(--parchment); }
+  .statut-rank { color:var(--parchment); font-size:1.15rem; width:44px; text-align:center; padding:0.1rem 0; }
+  .statut-tier:focus, .statut-rank:focus { outline:none; border-color:rgba(184,146,42,0.55); }
 </style>
 <!-- Firebase : sauvegarde en ligne, partagee entre tous les appareils -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -373,7 +386,7 @@
     <div class="perso-info">
       <h1>Azart</h1>
       <div class="career-line"><input class="career-input career-carriere" id="career-carriere" value="Voleur · Roublard" placeholder="Nom de carrière" onchange="careerSave()" /><span class="career-sep">·</span><input class="career-input career-num" id="career-num" value="2" placeholder="N°" onchange="careerSave()" /><span class="career-sep">·</span><input class="career-input career-echelon" id="career-echelon" value="" placeholder="Nom d&#x2019;échelon" onchange="careerSave()" /></div>
-      <div class="player">Quentin · Humain · 18 ans · Bronze 3</div>
+      <div class="player">Quentin · Humain · 18 ans</div>
     </div>
     <div class="perso-meta">
       <div>Taille 1m70 · Poids 65 kg</div>
@@ -406,9 +419,9 @@
       <div class="res-box">
         <span class="res-label">Marche</span>
         <span class="res-val">4<span style="font-size:0.6rem;color:var(--SUB);margin-left:0.15rem;">m</span></span>
-        <div style="display:flex;justify-content:center;gap:0.8rem;margin-top:0.4rem;font-size:0.62rem;color:var(--SUB);letter-spacing:0.04em;">
-          <span>Course <strong style="color:var(--parchment-dark);font-family:'Cinzel',serif;">8 m</strong></span>
-          <span>Charge <strong style="color:var(--parchment-dark);font-family:'Cinzel',serif;">16 m</strong></span>
+        <div class="move-sub">
+          <span>Course <strong>8 m</strong></span>
+          <span>Charge <strong>16 m</strong></span>
         </div>
       </div>
     </div>
@@ -450,6 +463,18 @@
         <div class="money-item"><span class="money-val" id="m-or">10</span><span class="money-label">CO</span><div class="money-btns"><button class="money-btn" onclick="chMoney('or',-1)">−</button><button class="money-btn" onclick="chMoney('or',1)">+</button></div></div>
         <div class="money-item"><span class="money-val" id="m-argent">3</span><span class="money-label">PA</span><div class="money-btns"><button class="money-btn" onclick="chMoney('argent',-1)">−</button><button class="money-btn" onclick="chMoney('argent',1)">+</button></div></div>
         <div class="money-item"><span class="money-val" id="m-cuivre">0</span><span class="money-label">SC</span><div class="money-btns"><button class="money-btn" onclick="chMoney('cuivre',-1)">−</button><button class="money-btn" onclick="chMoney('cuivre',1)">+</button></div></div>
+        <div class="statut-box">
+          <span class="statut-label">Statut social</span>
+          <div class="statut-fields">
+            <select class="statut-tier" id="statut-tier" onchange="updateStatut()">
+              <option>Airain</option>
+              <option selected>Bronze</option>
+              <option>Argent</option>
+              <option>Or</option>
+            </select>
+            <input class="statut-rank" id="statut-rank" type="number" min="0" max="9" value="3" onchange="updateStatut()" />
+          </div>
+        </div>
       </div>
     </div>
       <div id="m-convert-msg" style="font-size:0.68rem;font-style:italic;color:var(--GLD);margin-top:0.35rem;min-height:0.9rem;opacity:0;transition:opacity 0.4s;"></div>
@@ -897,6 +922,7 @@ let state = {
   wounds: 12, woundsMax: 12,
   destin: 4, chance: 4, resil: 2, determ: 2,
   career: { carriere:'Voleur · Roublard', num:'2', echelon:'' },
+  statut: { tier:'Bronze', rank:3 },
   money: { or:10, argent:3, cuivre:0 },
   notes: '', cet: { corruption:'', mutations:'', etats:'' },
   xp: { actuelle:100, depensee:0, totale:0 },
@@ -953,6 +979,7 @@ function load() {
     if (saved.money)     Object.assign(state.money, saved.money);
     if (saved.cet)       Object.assign(state.cet, saved.cet);
     if (saved.career) Object.assign(state.career, saved.career);
+    if (saved.statut) Object.assign(state.statut, saved.statut);
     if (saved.xp)        Object.assign(state.xp, saved.xp);
     if (saved.stats)     mergeStats(saved.stats);
     if (saved.skillsBase) state.skillsBase = saved.skillsBase;
@@ -985,7 +1012,7 @@ function saveAll() {
 function renderAll() {
   renderStats(); renderSkillsBase(); renderSkillsAdv(); renderTalents();
   renderArmor(); renderArmorPieces(); renderWeapons(); renderInventory(); renderCollection();
-  renderFortune(); renderCareer(); renderCollNewStars();
+  renderFortune(); renderCareer(); renderStatut(); renderCollNewStars();
   document.getElementById('w-cur').textContent = state.wounds;
   const wmi=document.getElementById('w-max-input'); if(wmi) wmi.value=state.woundsMax||12;
   updateWC();
@@ -1065,6 +1092,21 @@ function chMoney(k, d) {
   var msgEl = document.getElementById('m-convert-msg');
   if (msgEl && msg.trim()) { msgEl.textContent = '⇄ ' + msg.trim(); msgEl.style.opacity = '1'; clearTimeout(msgEl._t); msgEl._t = setTimeout(function(){ msgEl.style.opacity='0'; }, 2500); }
   save();
+}
+
+// ══════ STATUT SOCIAL ══════
+function updateStatut() {
+  if(!state.statut) state.statut={};
+  var t=document.getElementById('statut-tier'), r=document.getElementById('statut-rank');
+  if(t) state.statut.tier=t.value;
+  if(r) state.statut.rank=Math.max(0,Math.min(9,parseInt(r.value)||0));
+  save(); renderStatut();
+}
+function renderStatut() {
+  if(!state.statut) return;
+  var t=document.getElementById('statut-tier'), r=document.getElementById('statut-rank');
+  if(t && state.statut.tier!==undefined) t.value=state.statut.tier;
+  if(r && state.statut.rank!==undefined) r.value=state.statut.rank;
 }
 
 // ══════ DESTIN/CHANCE · RÉSILIENCE/DÉTERMINATION ══════
@@ -1551,6 +1593,7 @@ function importJSON(input) {
       if(saved.money) Object.assign(state.money, saved.money);
       if(saved.cet) Object.assign(state.cet, saved.cet);
     if (saved.career) Object.assign(state.career, saved.career);
+    if (saved.statut) Object.assign(state.statut, saved.statut);
       if(saved.xp) Object.assign(state.xp, saved.xp);
       if(saved.stats) mergeStats(saved.stats);
       if(saved.skillsBase) state.skillsBase=saved.skillsBase;
