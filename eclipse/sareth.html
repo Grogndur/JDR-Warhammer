@@ -211,10 +211,13 @@
   .trait-line.minus { color:#c07060; }
 
   /* ── CORRUPTION ── */
-  .cet-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; }
-  .cet-box { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:0.5rem 0.6rem; }
+  .cet-card { display:flex; flex-direction:column; }
+  .cet-card .cet-grid { flex:1; }
+  .cet-grid { display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:0.5rem; }
+  @media(max-width:500px){ .cet-grid { grid-template-columns:1fr; } }
+  .cet-box { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:0.5rem 0.6rem; display:flex; flex-direction:column; }
   .cet-label { font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.35rem; display:block; font-family:'Cinzel',serif; }
-  .cet-input { width:100%; background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.85rem; padding:0.2rem 0; resize:none; min-height:48px; line-height:1.4; }
+  .cet-input { width:100%; background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.85rem; padding:0.2rem 0; resize:none; flex:1; min-height:52px; line-height:1.4; }
   .cet-input:focus { outline:none; border-bottom-color:var(--VIO2); }
   .cet-input::placeholder { color:rgba(85,85,102,0.5); font-style:italic; }
 
@@ -235,6 +238,11 @@
   .meditation-box strong { color:var(--VIO2); }
   .jet-btn { width:100%; font-family:'Cinzel',serif; font-size:0.75rem; letter-spacing:0.15em; text-transform:uppercase; padding:0.6rem; border-radius:2px; cursor:pointer; transition:all 0.2s; background:rgba(103,78,167,0.15); border:1px solid rgba(103,78,167,0.4); color:var(--VIO2); margin-bottom:0.75rem; }
   .jet-btn:hover { background:rgba(103,78,167,0.28); border-color:rgba(103,78,167,0.65); }
+  .jet-btn-med { background:rgba(28,58,90,0.25); border-color:rgba(28,58,90,0.6); color:#8ba8c4; }
+  .jet-btn-med:hover { background:rgba(28,58,90,0.42); border-color:rgba(28,58,90,0.85); }
+  .jet-result.reussi { border-color:rgba(94,128,79,0.4); background:rgba(94,128,79,0.08); }
+  .jet-result.echec { border-color:rgba(139,26,26,0.35); background:rgba(139,26,26,0.07); }
+  .jet-trace-gain { margin-top:0.5rem; font-family:'Cinzel',serif; font-size:0.75rem; color:#8fbf7a; letter-spacing:0.08em; padding:0.3rem 0.5rem; background:rgba(94,128,79,0.15); border:1px solid rgba(94,128,79,0.3); border-radius:2px; }
   .jet-result { display:none; border:1px solid rgba(103,78,167,0.3); border-radius:2px; padding:0.75rem; background:rgba(103,78,167,0.08); }
   .jet-result.visible { display:block; }
   .jet-palier { font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.25rem; }
@@ -517,11 +525,12 @@
 
 
   <!-- CORRUPTION -->
-  <div class="card">
-    <div class="card-title red">Corruption · Mutations · États</div>
+  <div class="card cet-card">
+    <div class="card-title red">Corruption · Mutations · Maladies · États</div>
     <div class="cet-grid">
       <div class="cet-box"><span class="cet-label">Corruption</span><textarea class="cet-input" id="cet-corruption" placeholder="—"></textarea></div>
       <div class="cet-box"><span class="cet-label">Mutations</span><textarea class="cet-input" id="cet-mutations" placeholder="—"></textarea></div>
+      <div class="cet-box"><span class="cet-label">Maladies &amp; Blessures durables</span><textarea class="cet-input" id="cet-maladies" placeholder="—"></textarea></div>
       <div class="cet-box"><span class="cet-label">États actifs</span><textarea class="cet-input" id="cet-etats" placeholder="Sonné, Exténué…"></textarea></div>
     </div>
   </div>
@@ -682,6 +691,8 @@
       <div class="palier-desc" id="palier-desc">—</div>
     </div>
     <div class="meditation-box">Méditation — seuil actuel : <span id="meditation-text">—</span></div>
+    <button class="jet-btn jet-btn-med" onclick="jetMeditation()">☾ Jet de Méditation (1d100) · réussite : −1D6+2 Traces</button>
+    <div class="jet-result" id="med-result" style="margin-bottom:0.75rem;"></div>
     <button class="jet-btn" onclick="jetAffinite()">⬡ Jet d'Affinité d'Ombre (1d20)</button>
     <div class="jet-result" id="jet-result"></div>
   </div>
@@ -929,7 +940,7 @@ let state = {
   career: { carriere:'Sorcière de l\'Ombre (Ulgu) · Lettrée', num:'2', echelon:'' }, traces: 1,
   statut: { tier:'Argent', rank:3 },
   money: { or:62, argent:0, cuivre:0 },
-  notes: '', cet: { corruption:'', mutations:'', etats:'' },
+  notes: '', cet: { corruption:'', mutations:'', maladies:'', etats:'' },
   xp: { actuelle:100, depensee:0, totale:0 },
   stats: {},
   skillsBase: JSON.parse(JSON.stringify(SKILLS_BASE_DEF)),
@@ -1008,7 +1019,7 @@ function saveAll() {
 
   state.notes = document.getElementById('session-notes').value;
   if (!state.cet) state.cet = {};
-  ['corruption','mutations','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) state.cet[k]=el.value; });
+  ['corruption','mutations','maladies','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) state.cet[k]=el.value; });
   state.xp.actuelle = parseInt(document.getElementById('xp-actuelle').value)||0;
   state.xp.depensee = parseInt(document.getElementById('xp-depensee').value)||0;
   state.xp.totale   = parseInt(document.getElementById('xp-totale').value)||0;
@@ -1036,7 +1047,7 @@ function renderAll() {
   updateWoundColor();
   ['or','argent','cuivre'].forEach(k => document.getElementById('money-'+k).textContent = state.money[k]||0);
   document.getElementById('session-notes').value = state.notes||'';
-  ['corruption','mutations','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) el.value=(state.cet&&state.cet[k])||''; });
+  ['corruption','mutations','maladies','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) el.value=(state.cet&&state.cet[k])||''; });
   document.getElementById('xp-actuelle').value = state.xp.actuelle||100;
   document.getElementById('xp-depensee').value = state.xp.depensee||0;
   document.getElementById('xp-totale').value   = state.xp.totale||0;
@@ -1415,11 +1426,11 @@ const PALIERS = [
   { range:[9,10], name:"9–10 · Dette cosmique",  desc:"Ulgu réclame. Le MJ propose un choix narratif majeur. Trois voies : Sceller l'Ombre, Accepter le lien, ou Ne rien décider (effets 7–8 hors contrôle)." },
 ];
 const MED_TABLE = [
-  { range:[1,2],  label:"80 ou moins — avec BFM : 86 ou moins" },
-  { range:[3,4],  label:"60 ou moins — avec BFM : 66 ou moins" },
-  { range:[5,6],  label:"40 ou moins — avec BFM : 46 ou moins" },
-  { range:[7,8],  label:"20 ou moins — avec BFM : 26 ou moins" },
-  { range:[9,10], label:"05 ou moins — avec BFM : 11 ou moins" },
+  { range:[1,2],  base:80 },
+  { range:[3,4],  base:60 },
+  { range:[5,6],  base:40 },
+  { range:[7,8],  base:20 },
+  { range:[9,10], base:5  },
 ];
 
 function renderTraces() {
@@ -1437,7 +1448,11 @@ function renderTraces() {
   const palier=PALIERS.find(p=>state.traces>=p.range[0]&&state.traces<=p.range[1]);
   if(palier){ document.getElementById('palier-name').textContent=palier.name; document.getElementById('palier-desc').textContent=palier.desc; }
   const med=MED_TABLE.find(p=>state.traces>=p.range[0]&&state.traces<=p.range[1]);
-  if(med) document.getElementById('meditation-text').innerHTML=`<strong>${med.label}</strong>`;
+  if(med) {
+    const b=medBFM();
+    document.getElementById('meditation-text').innerHTML=
+      `<strong>${pad2(med.base)} ou moins</strong> — avec BFM (+${b}) : <strong>${pad2(med.base+b)} ou moins</strong>`;
+  }
 }
 
 // ══════ JET D'AFFINITÉ ══════
@@ -1464,6 +1479,45 @@ const AFFINITE = [
   { palier:"IV · Rupture",       name:"L'Ombre projetée",      desc:"L'ombre se détache et se projette là où Ulgu le juge nécessaire. Sareth voit et entend à travers elle. 1 Trace d'Ombre.", trace:true },
   { palier:"IV · Rupture",       name:"Doppelgänger",          desc:"L'ombre prend forme et volume dans la réalité. Elle peut se déplacer, interagir. Terreur 1 pour tous les témoins. 1–2 Traces d'Ombre.", trace:true },
 ];
+
+// ══════ MÉDITATION (1d100) ══════
+// Seuil = valeur de la table selon les Traces, majorée du Bonus de Force Mentale.
+// Réussite : retire 1D6+2 Traces, la première Trace étant permanente.
+function pad2(n) { return n<10 ? '0'+n : ''+n; }
+function medBFM() { return Math.floor(getStatTotal('fm')/10); }
+function medSeuilBase() {
+  const med = MED_TABLE.find(p=>state.traces>=p.range[0]&&state.traces<=p.range[1]);
+  return med ? med.base : 0;
+}
+function jetMeditation() {
+  const base=medSeuilBase(), bfm=medBFM(), seuil=base+bfm;
+  const roll=Math.floor(Math.random()*100)+1;
+  const reussi=roll<=seuil;
+  const de=Math.floor(Math.random()*6)+1;
+  const retire=de+2;
+  const avant=state.traces;
+  const apres=reussi ? Math.max(1, avant-retire) : avant;
+  const retireReel=avant-apres;
+  const c=document.getElementById('med-result');
+  c.className='jet-result visible '+(reussi?'reussi':'echec');
+  c.innerHTML=`
+    <div class="jet-palier">Méditation · seuil ${pad2(base)} + ${bfm} BFM = ${pad2(seuil)}</div>
+    <div class="jet-number" style="color:${reussi?'#8fbf7a':'#c07070'};">${roll}</div>
+    <div class="jet-effet-name">${reussi?'Réussite':'Échec'}</div>
+    <div class="jet-effet-desc">${reussi
+      ? `1D6+2 = ${de}+2 = <strong>${retire}</strong> Trace${retire>1?'s':''} dissipée${retire>1?'s':''}. Traces : ${avant} → ${apres}.${(avant-retire)<1?' La première Trace est permanente, elle ne peut pas être retirée.':''}`
+      : `${roll} > ${pad2(seuil)} : l'Ombre ne reflue pas. Les Traces restent à ${avant}.`}</div>
+    ${reussi&&retireReel>0?`<div class="jet-trace-gain">⬡ −${retireReel} Trace${retireReel>1?'s':''} d'Ombre</div>`:''}
+    ${reussi&&retireReel===0?`<div class="jet-trace-warning">Déjà au minimum : rien à dissiper.</div>`:''}
+  `;
+  if(reussi && retireReel>0) {
+    setTimeout(()=>{
+      if(confirm(`Méditation réussie — ${roll} pour ${pad2(seuil)}\n\n1D6+2 = ${retire}\n\nRetirer les Traces ? (${avant} → ${apres})`)) {
+        state.traces=apres; save(); renderTraces();
+      }
+    },300);
+  }
+}
 
 function jetAffinite() {
   const roll=Math.floor(Math.random()*20)+1;
@@ -1533,7 +1587,7 @@ function addArmorPiece() {
   renderArmorPieces(); save(); toggleForm('armor-piece-form');
 }
 // ══════ EVENT LISTENERS ══════
-['session-notes','cet-corruption','cet-mutations','cet-etats'].forEach(id=>{
+['session-notes','cet-corruption','cet-mutations','cet-maladies','cet-etats'].forEach(id=>{
   const el=document.getElementById(id);
   if(el){
     el.addEventListener('blur', saveAll);
