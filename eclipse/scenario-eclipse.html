@@ -144,6 +144,20 @@ strong{color:var(--parchment);}
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-thumb{background:rgba(184,146,42,0.2);border-radius:3px;}
 
+/* MODE ÉDITION */
+.btn-edit{background:rgba(103,78,167,0.15);border:1px solid rgba(103,78,167,0.4);color:#a78fd8;font-size:0.85rem;cursor:pointer;padding:0.3rem 0.6rem;border-radius:2px;font-family:'Cinzel',serif;}
+.btn-edit:hover{background:rgba(103,78,167,0.3);}
+body.editing .btn-edit{background:rgba(103,78,167,0.45);color:#fff;}
+body.editing .main{outline:2px dashed rgba(103,78,167,0.5);outline-offset:-2px;caret-color:#a78fd8;}
+.edit-bar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:rgba(20,14,32,0.98);border-top:1px solid rgba(103,78,167,0.5);padding:0.5rem 0.75rem;gap:0.5rem;align-items:center;flex-wrap:wrap;}
+body.editing .edit-bar{display:flex;}
+.edit-bar-title{font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:#a78fd8;margin-right:auto;}
+.edit-btn{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:var(--parchment);font-family:'Crimson Text',serif;font-size:0.85rem;padding:0.35rem 0.7rem;border-radius:2px;cursor:pointer;min-height:38px;}
+.edit-btn:hover{border-color:rgba(103,78,167,0.6);color:#c9b8ec;}
+.edit-btn.primary{background:rgba(103,78,167,0.3);border-color:rgba(103,78,167,0.6);}
+.edit-status{font-size:0.78rem;color:var(--SUB);font-style:italic;min-width:120px;}
+body.editing .main{padding-bottom:6rem;}
+
 /* MOT DE PASSE */
 .pwd-overlay{display:flex;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.97);align-items:center;justify-content:center;}
 .pwd-overlay.unlocked{display:none;}
@@ -179,6 +193,7 @@ strong{color:var(--parchment);}
   <a class="topbar-home" href="index-eclipse.html">L'Éclipse</a>
   <span class="topbar-title">L'Éclipse · Scénario</span>
   <div class="topbar-right">
+    <button class="btn-edit" id="btn-edit" title="Mode édition">&#9998;</button>
     <input class="search-input" type="text" placeholder="Rechercher…" id="search-input" autocomplete="off">
     <div class="search-results" id="search-results"></div>
   </div>
@@ -742,6 +757,9 @@ strong{color:var(--parchment);}
 <ul class="scene-list"><li><strong>Fils tendus :</strong> Clochettes déclenchées, deux tranchées latérales camouflées par de la végétation.</li></ul>
 <div class="section-head"><strong>LETTRE INACHEVÉE DE GODFROY</strong></div>
 <p class="ambiance"><em>Salut Lulu ! Tu vas pas le croire\... Y a un patelin qui a cramé dans un endroit perdu et tout le monde s'en fout. Je vais salement me remplir les fouilles là HAHAHA. Ha et dis-moi où en est la couverture de qui tu sais, ça commence à se faire urgent\...</em></p>
+
+<div class="npc-stat"><div class="npc-name">Godfroy Tross</div><div class="npc-sub">Pilleur de tombes — Profil de combat</div><div class="stat-grid"><div class="stat-cell"><span class="stat-label">M</span><span class="stat-val">4</span></div><div class="stat-cell"><span class="stat-label">CC</span><span class="stat-val">45</span></div><div class="stat-cell"><span class="stat-label">CT</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">F</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">E</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">I</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">Ag</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">Dex</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">Int</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">FM</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">Soc</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">B</span><span class="stat-val">14</span></div></div><div class="npc-gear">Épée d'arme — BF+4 · Dague de parade — BF+2 · Cuir PA 1</div><div class="npc-ability"><strong>Sournois :</strong> +10 CC contre une cible déjà engagée avec un de ses alliés.</div><div class="npc-ability"><strong>Vicieux :</strong> Il vise les jambes : sur un critique, la cible est mise à terre en plus des effets normaux.</div><div class="npc-ability"><strong>Pragmatique :</strong> Se rend si le combat est manifestement perdu --- il négocie sa peau (Zodar, le camp, la prime).</div><div class="loot"><span class="loot-label">Butin</span><span class="loot-text">Son équipement, 8 Co 14 Pa cachés dans la doublure de sa botte, et la lettre inachevée à « Lulu ».</span></div></div>
+<div class="npc-stat"><div class="npc-name">Duric &amp; Tarl</div><div class="npc-sub">Acolytes de Tross — Profil commun</div><div class="stat-grid"><div class="stat-cell"><span class="stat-label">M</span><span class="stat-val">4</span></div><div class="stat-cell"><span class="stat-label">CC</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">CT</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">F</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">E</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">I</span><span class="stat-val">25</span></div><div class="stat-cell"><span class="stat-label">Ag</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Dex</span><span class="stat-val">25</span></div><div class="stat-cell"><span class="stat-label">Int</span><span class="stat-val">20</span></div><div class="stat-cell"><span class="stat-label">FM</span><span class="stat-val">20</span></div><div class="stat-cell"><span class="stat-label">Soc</span><span class="stat-val">20</span></div><div class="stat-cell"><span class="stat-label">B</span><span class="stat-val">10</span></div></div><div class="npc-gear">Gourdin ou couteau — BF+2 · Vêtements épais</div><div class="npc-ability"><strong>Trouillards :</strong> Test de Calme dès la première blessure ou dès que Godfroy tombe : sur un échec, fuite ou reddition immédiate.</div><div class="npc-ability"><strong>Tarl — Ronfleur :</strong> S'il monte la garde de nuit, jet de chance : ses ronflements couvrent l'approche des PJ et retardent le réveil du camp.</div><div class="loot"><span class="loot-label">Butin</span><span class="loot-text">Quelques pistoles, outils de fossoyeur volés.</span></div></div>
 <div class="section-head"><strong>PISTES EXPLOITABLES</strong></div>
 <ul class="scene-list"><li><em>Zodar : même prime que Tross. Planqué à Swartzhafen chez Fred dit l'Anguille. L'a humilié par le passé. Le trio peut balancer sa planque comme monnaie d'échange si la situation s'y prête.</em></li></ul>
 <ul class="scene-list"><li><em>Fred l'Anguille : vieux receleur à la retraite, arrêté de nombreuses fois, en a toujours réchappé.</em></li></ul>
@@ -760,6 +778,8 @@ strong{color:var(--parchment);}
 <div class="lecture">La route serpente entre des bosquets de hêtres. Les arbres sont anciens, leurs racines soulèvent les pierres du chemin. Une meute de trois loups ronge un demi-squelette dans une clairière à gauche --- ils fuient à l'approche, mais sans précipitation. Ce ne sont pas des loups ordinaires.</div>
 <div class="lecture">Le squelette brisé rampe lentement vers la lisière, membres désolidarisés qui avancent séparément dans la même direction, en l'ignorant totalement.</div>
 <div class="jet-roll"><span class="jet-label">Jet — Intelligence</span><span class="jet-detail"><span class="mod mod-neu">(0)</span> Le squelette n'est pas dangereux --- il ne réagit pas aux PJ. Il est animé par quelque chose de résiduel, pas de combat. Le laisser partir.</span></div>
+
+<div class="npc-stat"><div class="npc-name">Loup sylvanien</div><div class="npc-sub">Meutes de la région — Profil de combat</div><div class="stat-grid"><div class="stat-cell"><span class="stat-label">M</span><span class="stat-val">9</span></div><div class="stat-cell"><span class="stat-label">CC</span><span class="stat-val">38</span></div><div class="stat-cell"><span class="stat-label">CT</span><span class="stat-val">—</span></div><div class="stat-cell"><span class="stat-label">F</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">E</span><span class="stat-val">32</span></div><div class="stat-cell"><span class="stat-label">I</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Ag</span><span class="stat-val">50</span></div><div class="stat-cell"><span class="stat-label">Dex</span><span class="stat-val">—</span></div><div class="stat-cell"><span class="stat-label">Int</span><span class="stat-val">12</span></div><div class="stat-cell"><span class="stat-label">FM</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Soc</span><span class="stat-val">—</span></div><div class="stat-cell"><span class="stat-label">B</span><span class="stat-val">11</span></div></div><div class="npc-gear">Morsure — BF+3</div><div class="npc-ability"><strong>Vision nocturne :</strong> Voit dans la pénombre à 20 m.</div><div class="npc-ability"><strong>Chasse en meute :</strong> +5 CC par autre loup engagé sur la même cible (max +15).</div><div class="npc-ability"><strong>Étrangement patients :</strong> Ces loups n'attaquent que sur faiblesse manifeste --- un blessé, un isolé, une monture paniquée. Sinon ils suivent, et ils attendent.</div></div>
 <div class="section-head"><strong>LE MANOIR EN VUE</strong></div>
 <div class="lecture">Le manoir apparaît à l'orée d'un champ dévasté --- les sillons ont été creusés mais rien n'a poussé. La terre est noire, compacte, morte. Le bâtiment lui-même est grand, solide, construit pour durer. Lugubre, volets battant au vent, pierres grises recouvertes de lierre mort.</div>
 <div class="lecture">L'endroit donne l'impression d'avoir été abandonné dans l'urgence --- pas abandonné depuis longtemps.</div>
@@ -788,6 +808,8 @@ strong{color:var(--parchment);}
 <ul class="scene-list"><li><em>Leurs griffes sont courtes mais acérées. Leur morsure est leur arme principale, une blessure ouverte qui saigne difficilement.</em></li></ul>
 <ul class="scene-list"><li><em>Elles coordonnent leurs attaques sans signal visible. Deux fixent, deux frappent.</em></li></ul>
 <ul class="scene-list"><li><em>Elles fuient si deux des leurs tombent, sauf si acculées.</em></li></ul>
+<div class="npc-stat"><div class="npc-name">Squelette animé</div><div class="npc-sub">Caves du manoir — Profil de combat</div><div class="stat-grid"><div class="stat-cell"><span class="stat-label">M</span><span class="stat-val">4</span></div><div class="stat-cell"><span class="stat-label">CC</span><span class="stat-val">25</span></div><div class="stat-cell"><span class="stat-label">CT</span><span class="stat-val">20</span></div><div class="stat-cell"><span class="stat-label">F</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">E</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">I</span><span class="stat-val">10</span></div><div class="stat-cell"><span class="stat-label">Ag</span><span class="stat-val">15</span></div><div class="stat-cell"><span class="stat-label">Dex</span><span class="stat-val">15</span></div><div class="stat-cell"><span class="stat-label">Int</span><span class="stat-val">—</span></div><div class="stat-cell"><span class="stat-label">FM</span><span class="stat-val">—</span></div><div class="stat-cell"><span class="stat-label">Soc</span><span class="stat-val">—</span></div><div class="stat-cell"><span class="stat-label">B</span><span class="stat-val">12</span></div></div><div class="npc-gear">Épée rouillée — BF+3 · Restes d'armure PA 1 (torse)</div><div class="npc-ability"><strong>Mort-vivant :</strong> Ne respire pas, ne saigne pas, ne fuit jamais.</div><div class="npc-ability"><strong>Peur 1 :</strong> Test de Calme requis, sinon -1DR.</div><div class="npc-ability"><strong>Ossements cassants :</strong> +1 dégât subi des armes contondantes ; les armes perforantes font -1 dégât.</div></div>
+<div class="npc-stat"><div class="npc-name">Goule</div><div class="npc-sub">Caves du manoir — Profil de combat</div><div class="stat-grid"><div class="stat-cell"><span class="stat-label">M</span><span class="stat-val">4</span></div><div class="stat-cell"><span class="stat-label">CC</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">CT</span><span class="stat-val">—</span></div><div class="stat-cell"><span class="stat-label">F</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">E</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">I</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">Ag</span><span class="stat-val">45</span></div><div class="stat-cell"><span class="stat-label">Dex</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Int</span><span class="stat-val">15</span></div><div class="stat-cell"><span class="stat-label">FM</span><span class="stat-val">25</span></div><div class="stat-cell"><span class="stat-label">Soc</span><span class="stat-val">10</span></div><div class="stat-cell"><span class="stat-label">B</span><span class="stat-val">11</span></div></div><div class="npc-gear">Griffes — BF+2 · Morsure — BF+3</div><div class="npc-ability"><strong>Peur 1 :</strong> Test de Calme requis, sinon -1DR.</div><div class="npc-ability"><strong>Morsure infecte :</strong> Toute blessure de morsure saigne difficilement : -10 aux tests de Soins pour la refermer.</div><div class="npc-ability"><strong>Déplacement en crabe :</strong> Ignore le terrain difficile et peut se désengager sans test.</div><div class="npc-ability"><strong>Meute coordonnée :</strong> Deux fixent, deux frappent : +10 CC si une autre goule est engagée sur la même cible.</div><div class="npc-ability"><strong>Fuite :</strong> Elles décrochent si deux des leurs tombent --- sauf si acculées.</div></div>
 <div class="jet-roll"><span class="jet-label">Jet — Intelligence (combat)</span><span class="jet-detail"><span class="mod mod-neu">(0)</span> Ce sont des goules, mortes-vivantes, pas des squelettes animés. Leurs blessures saignent un peu. Elles ressentent quelque chose qui ressemble à de la peur.</span></div>
 <div class="section-head"><strong>CACHES</strong></div>
 <p>Angle du dernier renfoncement à droite, avant les escaliers remontant au rez-de-chaussée : dalle avec détourage suspect. En dessous, un trou peu profond contenant un linceul roulé autour d'une bourse.</p>
@@ -1070,6 +1092,8 @@ strong{color:var(--parchment);}
 <ul class="scene-list"><li><em>Elle ne sait pas pourquoi elle redirige, elle exécute. Hommes les moins regardants = ses fidèles.</em></li></ul>
 <ul class="scene-list"><li><em>Les autres ont été discrètement réaffectés sans éveiller de soupçon.</em></li></ul>
 <div class="indice-box"><span class="indice-label">Indice</span><span class="indice-text"><strong>Indice bonus :</strong> Dans les ordres nocturnes des rondes du secteur : des lettres sont systématiquement doublées, cela compose L-E-S, puis toujours les chiffres (seulement) : 12 hommes, 4h, 7 arrêts, marqués d'au moins --2 min.</span></div>
+
+<div class="npc-stat"><div class="npc-name">Milicien de Swartzhafen</div><div class="npc-sub">Profil générique — gardes de ville, postes, Rathaus</div><div class="stat-grid"><div class="stat-cell"><span class="stat-label">M</span><span class="stat-val">4</span></div><div class="stat-cell"><span class="stat-label">CC</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">CT</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">F</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">E</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">I</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Ag</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Dex</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Int</span><span class="stat-val">25</span></div><div class="stat-cell"><span class="stat-label">FM</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Soc</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">B</span><span class="stat-val">12</span></div></div><div class="npc-gear">Lance — BF+4 ou Épée courte — BF+3 · Gambison PA 1 · Lanterne, sifflet</div><div class="npc-ability"><strong>Alerte :</strong> Un coup de sifflet : 1d10 minutes avant l'arrivée de 2 collègues.</div><div class="npc-ability"><strong>Pas des héros :</strong> Face à une menace clairement supérieure, ils se replient et donnent l'alerte plutôt que de mourir sur place.</div></div>
 <div class="section-head"><strong>LE GARDE SUSPICIEUX</strong></div>
 <p>Conséquence d'une approche maladroite lors de la découverte de la condamnation de la taverne de Gnarla. 15% de chances d'être en présence de ce garde et d'être reconnu.</p>
 <ul class="scene-list"><li><em>Mentir efficacement, avec malus, il est déjà méfiant.</em></li></ul>
@@ -1199,11 +1223,13 @@ strong{color:var(--parchment);}
 <ul class="scene-list"><li><em>Responsable de la préparation physique des corps --- découpe, préservation primaire, conditionnement en caisses. Ses compétences de boucher sont utilisées ici sans ironie.</em></li></ul>
 <ul class="scene-list"><li><em>Commande le groupe de nuit dans les tunnels. Ses huit hommes lui obéissent par crainte.</em></li></ul>
 <ul class="scene-list"><li><em>A organisé au moins deux repas collectifs avec des restes de corps rejetés par Darlasov. Les Viandards ont un surnom qui leur vient de là --- et ils le portent sans honte.</em></li></ul>
+<div class="npc-stat"><div class="npc-name">Borke</div><div class="npc-sub">Lieutenant des tunnels — Profil de combat</div><div class="stat-grid"><div class="stat-cell"><span class="stat-label">M</span><span class="stat-val">4</span></div><div class="stat-cell"><span class="stat-label">CC</span><span class="stat-val">45</span></div><div class="stat-cell"><span class="stat-label">CT</span><span class="stat-val">25</span></div><div class="stat-cell"><span class="stat-label">F</span><span class="stat-val">50</span></div><div class="stat-cell"><span class="stat-label">E</span><span class="stat-val">45</span></div><div class="stat-cell"><span class="stat-label">I</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Ag</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Dex</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">Int</span><span class="stat-val">25</span></div><div class="stat-cell"><span class="stat-label">FM</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">Soc</span><span class="stat-val">25</span></div><div class="stat-cell"><span class="stat-label">B</span><span class="stat-val">16</span></div></div><div class="npc-gear">Hachoir de boucher — BF+4 — Taille · Tablier de cuir épais PA 1</div><div class="npc-ability"><strong>Boucher :</strong> +1 dégât contre toute cible à terre ou immobilisée.</div><div class="npc-ability"><strong>Rire dans la violence :</strong> Peur 1 dès qu'il commence à frapper --- pas à cause de sa taille, à cause du rire.</div><div class="npc-ability"><strong>Fidèle à la peur :</strong> Il ne se rend pas aux PJ : il craint plus Varden et Varro Kalt que la mort.</div><div class="loot"><span class="loot-label">Butin</span><span class="loot-text">Son hachoir, un trousseau des portes secondaires des tunnels, 1d10 Co.</span></div></div>
 <div class="pnj-header">PNJ Svarta</div>
 <p class="ambiance"><em>Femme, trentaine, mince et silencieuse. Ancienne garde personnelle d'un noble sylvanien, avant qu'il ne disparaisse. Personne ne sait dans quelles circonstances.</em></p>
 <ul class="scene-list"><li><em>Commande le groupe de surface et les opérations de surveillance du bâtiment de transit.</em></li></ul>
 <ul class="scene-list"><li><em>Observe, note, rend compte à Varden. Ne parle presque jamais.</em></li></ul>
 <ul class="scene-list"><li><em>Plus intelligente que Varden et il le sait. Elle ne cherche pas le poste --- pour l'instant. Ils se respectent par complémentarité.</em></li></ul>
+<div class="npc-stat"><div class="npc-name">Svarta</div><div class="npc-sub">Lieutenante de surface — Profil de combat</div><div class="stat-grid"><div class="stat-cell"><span class="stat-label">M</span><span class="stat-val">4</span></div><div class="stat-cell"><span class="stat-label">CC</span><span class="stat-val">45</span></div><div class="stat-cell"><span class="stat-label">CT</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">F</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">E</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">I</span><span class="stat-val">45</span></div><div class="stat-cell"><span class="stat-label">Ag</span><span class="stat-val">50</span></div><div class="stat-cell"><span class="stat-label">Dex</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">Int</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">FM</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">Soc</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">B</span><span class="stat-val">13</span></div></div><div class="npc-gear">Épée courte — BF+3 · Arbalète légère — BF+6 · Cuir souple PA 1</div><div class="npc-ability"><strong>Silencieuse :</strong> +20 en Discrétion ; elle se déplace sans qu'on l'entende, même armée.</div><div class="npc-ability"><strong>Frappe précise :</strong> Ses attaques ignorent 1 PA.</div><div class="npc-ability"><strong>Calcul froid :</strong> Elle n'engage jamais un combat qu'elle n'est pas sûre de gagner --- elle observe, décroche, et revient avec du nombre.</div><div class="loot"><span class="loot-label">Butin</span><span class="loot-text">Son équipement, un carnet de surveillance codé (relevés des allées et venues autour du bâtiment de transit --- dont, peut-être, celles des PJ).</span></div></div>
 <div class="section-head"><strong>L'ESPION --- GREGOR</strong></div>
 <div class="pnj-header">PNJ Gregor</div>
 <p class="ambiance"><em>Visage ordinaire, mémorable par son absence de traits marquants. Accent difficile à placer. Toujours propre, contrairement au reste de la troupe.</em></p>
@@ -1214,12 +1240,14 @@ strong{color:var(--parchment);}
 <div class="section-head"><strong>PARCOURS --- CE QU'ON PEUT DÉDUIRE</strong></div>
 <p>Personne ne connaît son vrai nom, pas même Darlasov. Les seuls recoupements possibles viennent de sa main (Veld) : une écriture formée, présente à la fois aux archives de la ville, au temple de Morr et à l'intendance comtale --- formation de clerc ou de scribe judiciaire, donc, et un accès aux institutions qui ne s'improvise pas. Son accent impossible à placer suggère un homme qui a vécu partout et n'est de nulle part. Hypothèse laissée au choix du MJ pour la suite : ancien agent d'un service de renseignement --- impérial, provincial, ou pire, un candidat écarté de l'Eclipse elle-même, qui en connaîtrait les méthodes de l'intérieur.</p>
 <div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Gregor est le seul membre des Viandards qui connaît l'identité de Darlasov et l'emplacement réel du laboratoire. Il n'est jamais dans les tunnels. Si les PJ le capturent en surface, c'est leur voie la plus directe vers Darlasov --- peut-être même, sans passer par les Viandards.</span></div>
+<div class="npc-stat"><div class="npc-name">Gregor</div><div class="npc-sub">L'interface — Profil de combat (il n'en veut pas)</div><div class="stat-grid"><div class="stat-cell"><span class="stat-label">M</span><span class="stat-val">4</span></div><div class="stat-cell"><span class="stat-label">CC</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">CT</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">F</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">E</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">I</span><span class="stat-val">60</span></div><div class="stat-cell"><span class="stat-label">Ag</span><span class="stat-val">45</span></div><div class="stat-cell"><span class="stat-label">Dex</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">Int</span><span class="stat-val">50</span></div><div class="stat-cell"><span class="stat-label">FM</span><span class="stat-val">50</span></div><div class="stat-cell"><span class="stat-label">Soc</span><span class="stat-val">45</span></div><div class="stat-cell"><span class="stat-label">B</span><span class="stat-val">13</span></div></div><div class="npc-gear">Dague — BF+2 · Stylet dissimulé dans la manche — BF+1, ignore 1 PA</div><div class="npc-ability"><strong>Toujours une sortie :</strong> Une fois par scène, s'il n'est pas encerclé, il se soustrait au combat --- porte dérobée, foule, toit, passage qu'il est le seul à connaître.</div><div class="npc-ability"><strong>Sang-froid absolu :</strong> Immunisé à l'Intimidation et à la Peur 1. Il ne panique pas : il calcule.</div><div class="npc-ability"><strong>Il ne se bat pas :</strong> Gregor ne combat que pour créer l'ouverture de sa fuite. S'il est réellement acculé, il parle --- et ce qu'il propose est toujours empoisonné.</div><div class="loot"><span class="loot-label">Butin</span><span class="loot-text">Jamais de documents sur lui. Quelques couronnes, une clé sans marque, un visage qu'on oubliera.</span></div></div>
 <div class="section-head"><strong>LA TROUPE</strong></div>
 <p>Une quinzaine d'hommes et deux femmes en dehors de la hiérarchie nommée. Recrutés un par un dans les bas-fonds de Swartzhafen, les prisons de passage, ou parmi les déserteurs qui traversent la Sylvanie. Aucun d'eux n'a été sélectionné pour sa loyauté idéologique --- seulement pour sa capacité à faire des choses que les gens normaux refusent.</p>
 <ul class="scene-list"><li><em>Armés simplement : matraques, couteaux, haches, épées, quelques arbalètes légères. Pas de formation militaire collective.</em></li></ul>
 <ul class="scene-list"><li><em>Quatre à six hommes par patrouille dans les tunnels. Rotations toutes les six heures environ.</em></li></ul>
 <ul class="scene-list"><li><em>Plusieurs ont des comportements cannibales avérés ou suspectés. C'est une forme de cohésion interne --- un secret partagé qui les lie et les isole du reste du monde.</em></li></ul>
 <ul class="scene-list"><li><em>Ils ne savent pas ce que font les corps dans le laboratoire. Ils s'en moquent.</em></li></ul>
+<div class="npc-stat"><div class="npc-name">Viandard (troupe)</div><div class="npc-sub">Profil générique — patrouilles des tunnels et de surface</div><div class="stat-grid"><div class="stat-cell"><span class="stat-label">M</span><span class="stat-val">4</span></div><div class="stat-cell"><span class="stat-label">CC</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">CT</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">F</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">E</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">I</span><span class="stat-val">25</span></div><div class="stat-cell"><span class="stat-label">Ag</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Dex</span><span class="stat-val">25</span></div><div class="stat-cell"><span class="stat-label">Int</span><span class="stat-val">20</span></div><div class="stat-cell"><span class="stat-label">FM</span><span class="stat-val">25</span></div><div class="stat-cell"><span class="stat-label">Soc</span><span class="stat-val">20</span></div><div class="stat-cell"><span class="stat-label">B</span><span class="stat-val">12</span></div></div><div class="npc-gear">Matraque, couteau ou hache — BF+3 · Quelques arbalètes légères — BF+6 (courte portée) · Cuir partiel PA 1</div><div class="npc-ability"><strong>Meute :</strong> +5 CC par autre Viandard engagé sur la même cible (max +15).</div><div class="npc-ability"><strong>Familiers des tunnels :</strong> Aucun malus dans l'obscurité partielle et l'espace confiné des égouts.</div><div class="npc-ability"><strong>Sans cause :</strong> Ils fuient si leur chef tombe ou à la moitié des pertes --- personne ne meurt ici pour une idée.</div><div class="loot"><span class="loot-label">Butin</span><span class="loot-text">2d10 Pa par homme, armes de fortune.</span></div></div>
 <div class="section-head"><strong>COMPORTEMENTS &amp; DANGERS</strong></div>
 <ul class="scene-list"><li><strong>Combat contre les Viandards :</strong> Ils ne sont pas sophistiqués --- mais ils sont violents, nombreux, et familiers de l'espace confiné des tunnels. Le bruit porte. Deux groupes peuvent arriver en renfort en moins de cinq minutes.</li></ul>
 <ul class="scene-list"><li><strong>Négociation avec Varden :</strong> Possible. Il est pragmatique et ne croit en rien. Une démonstration de force convaincante ou une offre d'argent peut ouvrir des portes. Il ne trahit pas Gregor facilement --- mais sous pression réelle, le nom sort.</li></ul>
@@ -1297,6 +1325,7 @@ strong{color:var(--parchment);}
 <ul class="scene-list"><li><em>Il a observé les activités de Darlasov depuis des mois, sans intervenir. Il attend de voir où ça mène.</em></li></ul>
 <ul class="scene-list"><li><em>Il connaît l'existence des Pâles sans en connaître tous les détails. L'idée de morts-vivants de science l'intrigue autant qu'elle l'inquiète, si ça réussit vraiment, ça change la donne pour tout le monde.</em></li></ul>
 <ul class="scene-list"><li><em>Il sait que les vampires de Sylvanie ont des liens avec les Pâles, et il soupçonne la trahison à venir. Ça l'amuse mais l'inquiète en même temps.</em></li></ul>
+<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Pas de profil de combat pour Tremmler, et c'est volontaire : un vampire ancien contre ce groupe, à ce stade, n'est pas un combat --- c'est une fin de campagne. S'il en venait aux mains, jouer la scène comme une catastrophe naturelle : les PJ doivent fuir, se cacher, négocier. Un profil chiffré sera établi si l'arc vampirique rend l'affrontement légitime.</span></div>
 <div class="section-head"><strong>SON RÔLE FUTUR</strong></div>
 <p>Pour l'instant, Tremmler se fait discret. Il surveille. Il évalue les PJ, leur efficacité, leur moralité, leur potentiel. Il n'est ni allié ni ennemi déclaré.</p>
 <p>Quand les vampires de Sylvanie sortiront de l'ombre, Tremmler deviendra une pièce centrale. Sa position ambiguë, noble vampirique indépendant, observateur des Pâles, potentiel intermédiaire, en fait un personnage dont les PJ ne pourront ni se méfier complètement ni tout à fait lui faire confiance.</p>
@@ -1513,6 +1542,7 @@ strong{color:var(--parchment);}
 <ul class="scene-list"><li><em>Parle d'un « scientifique » qui a su la convaincre, ce n'est pas Darlasov directement, c'est Gregor qui s'en est chargé.</em></li></ul>
 <ul class="scene-list"><li><em>Sous corruption suffisante : elle peut indiquer les créneaux où la surveillance est la plus légère.</em></li></ul>
 <ul class="scene-list"><li><em>Sous pression ou preuve solide : elle peut craquer et impliquer Kessler. Elle ne veut pas tomber seule.</em></li></ul>
+<div class="npc-stat"><div class="npc-name">Sergent Lysa Harden</div><div class="npc-sub">Milice, secteur nord — Profil de combat</div><div class="stat-grid"><div class="stat-cell"><span class="stat-label">M</span><span class="stat-val">4</span></div><div class="stat-cell"><span class="stat-label">CC</span><span class="stat-val">45</span></div><div class="stat-cell"><span class="stat-label">CT</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">F</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">E</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">I</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">Ag</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">Dex</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Int</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">FM</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">Soc</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">B</span><span class="stat-val">14</span></div></div><div class="npc-gear">Épée d'arme — BF+4 · Cotte de mailles PA 2 (torse) · Sifflet de milice</div><div class="npc-ability"><strong>Brutale :</strong> +1 dégât contre toute cible Sonnée ou à terre.</div><div class="npc-ability"><strong>Ses fidèles :</strong> En service, 1d10-4 (min 0) de ses hommes « peu regardants » sont à portée de sifflet.</div><div class="npc-ability"><strong>Instinct de survie :</strong> Sous la moitié de ses Blessures, ou face à une preuve accablante : elle cesse le combat et négocie. Elle ne veut pas tomber seule --- le nom de Kessler sort.</div><div class="loot"><span class="loot-label">Butin</span><span class="loot-text">Son équipement, une bourse trop lourde pour une sergente (14 Co), ses ordres de ronde codés (indice L-E-S).</span></div></div>
 <div class="jet-roll"><span class="jet-label">Jet — Persuasion (argent)</span><span class="jet-detail"><span class="mod mod-neu">(0)</span> Un pot-de-vin substantiel (5+ Co) pour obtenir les horaires des patrouilles légères autour du bâtiment de transit nord.</span></div>
 <div class="indice-box"><span class="indice-label">Indice</span><span class="indice-text"><strong>Indice bonus :</strong> Dans les ordres nocturnes des rondes du secteur : des lettres sont systématiquement doublées et composent L-E-S, avec toujours les mêmes chiffres : 12 hommes, 4h, 7 arrêts, au moins --2 min de décalage. Assemblé au P-Â des notes des fossoyeurs, cela reconstitue le mot complet, visible en clair sur les bons de transport.</span></div>
 <div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Pont vers le décryptage : si les PJ flairent un code sans parvenir à le lire, plusieurs PNJ peuvent les orienter vers la bibliothèque municipale et Marta Scheel (Scène 15) --- Federico (« il existe des gens dont c'est le métier »), le Père Adelmar, le Temple de Verena, ou n'importe quel marchand honnête qui a déjà eu affaire à elle. L'idée doit venir d'eux, mais la ficelle est là.</span></div>
@@ -1577,6 +1607,8 @@ strong{color:var(--parchment);}
 <ul class="scene-list"><li><strong>Jost :</strong> jeune, nerveux. Sort fumer sa pipe à la porte de service quand Vrane dort --- c'est aussi lui qui nourrit les chiens à onze heures. La faille humaine du dispositif.</li></ul>
 <ul class="scene-list"><li><strong>Brenner :</strong> déserteur réhabilité, joueur, endetté auprès d'un bookmaker des quais. Corruptible --- mais il a plus peur de Vrane que de la prison.</li></ul>
 <ul class="scene-list"><li><strong>Udo :</strong> massif, lent, sommeil de plomb. De repos, il ne se réveille que pour la cloche.</li></ul>
+<div class="npc-stat"><div class="npc-name">Ser Dietmar Vrane</div><div class="npc-sub">Chef de la garde de la Villa Bal — Profil de combat</div><div class="stat-grid"><div class="stat-cell"><span class="stat-label">M</span><span class="stat-val">4</span></div><div class="stat-cell"><span class="stat-label">CC</span><span class="stat-val">50</span></div><div class="stat-cell"><span class="stat-label">CT</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">F</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">E</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">I</span><span class="stat-val">45</span></div><div class="stat-cell"><span class="stat-label">Ag</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">Dex</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Int</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">FM</span><span class="stat-val">45</span></div><div class="stat-cell"><span class="stat-label">Soc</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">B</span><span class="stat-val">15</span></div></div><div class="npc-gear">Épée longue — BF+4 · Cuir clouté PA 2 (torse, bras) · Lanterne sourde</div><div class="npc-ability"><strong>Riposte :</strong> Une fois par round, après une parade réussie, il porte une attaque gratuite.</div><div class="npc-ability"><strong>Protecteur :</strong> Adjacent à Celestia : +10 CC et il peut s'interposer pour encaisser une attaque qui la vise.</div><div class="npc-ability"><strong>Repli calculé :</strong> Il ne meurt pas pour les meubles : face à des PJ clairement supérieurs, il recule vers Celestia et transforme le combat en négociation --- sauf menace directe sur elle, où il devient imprévisible et très dangereux.</div><div class="loot"><span class="loot-label">Butin</span><span class="loot-text">Son équipement, la clé du portail, un médaillon de cavalerie du Reikland au nom limé.</span></div></div>
+<div class="npc-stat"><div class="npc-name">Garde de la Villa Bal</div><div class="npc-sub">Hartwig, Jost, Brenner, Udo — Profil commun</div><div class="stat-grid"><div class="stat-cell"><span class="stat-label">M</span><span class="stat-val">4</span></div><div class="stat-cell"><span class="stat-label">CC</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">CT</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">F</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">E</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">I</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Ag</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Dex</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Int</span><span class="stat-val">25</span></div><div class="stat-cell"><span class="stat-label">FM</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Soc</span><span class="stat-val">25</span></div><div class="stat-cell"><span class="stat-label">B</span><span class="stat-val">12</span></div></div><div class="npc-gear">Épée courte — BF+3 · Arbalète de poing — BF+5 (courte portée, au poste du vestibule) · Cuir PA 1</div><div class="npc-ability"><strong>Consigne :</strong> Personne ne descend au sous-sol, jamais. Sur la cloche : regroupement au vestibule, pas de poursuite hors de l'enceinte.</div><div class="npc-ability"><strong>Individualités :</strong> Hartwig se bat bien et froidement (+5 CC). Jost panique à la première blessure (test de Calme ou fuite). Brenner peut être acheté avant le combat, pas pendant. Udo encaisse (+1 B, mais -10 I).</div><div class="loot"><span class="loot-label">Butin</span><span class="loot-text">Équipement, 1d10 Pa. Jost porte la clé du chenil.</span></div></div>
 <div class="section-head"><strong>LE RYTHME DES RONDES</strong></div>
 <ul class="scene-list"><li><em>Un garde en poste fixe au vestibule (porte principale, cordon de la cloche d'alarme à portée de main).</em></li></ul>
 <ul class="scene-list"><li><em>Le second fait la ronde extérieure des jardins toutes les quarante-cinq minutes environ, lanterne sourde, une dizaine de minutes par tour : portail, mur est, bassin, cour de service, soupiraux, retour.</em></li></ul>
@@ -1791,6 +1823,7 @@ strong{color:var(--parchment);}
 <ul class="scene-list"><li><em>Peut déclencher une opération sur le quartier nord avec ses propres hommes, pas ceux de Harden.</em></li></ul>
 <ul class="scene-list"><li><strong>Usage recommandé :</strong> Éviter au début. Activer en fin d'acte avec des preuves. Il est le débouché institutionnel de l'enquête.</li></ul>
 <div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Si les PJ lui parlent de Harden sans preuve : il défend sa sergent. Avec une preuve : il pâlit et dit laissez-moi une nuit.</span></div>
+<div class="npc-stat"><div class="npc-name">Capitaine Elric Varn</div><div class="npc-sub">Milice de Swartzhafen — Profil de combat</div><div class="stat-grid"><div class="stat-cell"><span class="stat-label">M</span><span class="stat-val">4</span></div><div class="stat-cell"><span class="stat-label">CC</span><span class="stat-val">55</span></div><div class="stat-cell"><span class="stat-label">CT</span><span class="stat-val">45</span></div><div class="stat-cell"><span class="stat-label">F</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">E</span><span class="stat-val">45</span></div><div class="stat-cell"><span class="stat-label">I</span><span class="stat-val">50</span></div><div class="stat-cell"><span class="stat-label">Ag</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">Dex</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">Int</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">FM</span><span class="stat-val">50</span></div><div class="stat-cell"><span class="stat-label">Soc</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">B</span><span class="stat-val">16</span></div></div><div class="npc-gear">Épée d'arme — BF+4 · Plastron PA 3 (torse) · Insigne de capitaine</div><div class="npc-ability"><strong>Vétéran :</strong> Immunisé à la Peur 1 ; +10 aux tests de Calme.</div><div class="npc-ability"><strong>Commandement :</strong> Les miliciens à moins de 10 m gagnent +10 à leurs tests de Calme et ne fuient pas tant qu'il tient.</div><div class="npc-ability"><strong>La loi incarnée :</strong> Affronter Varn, c'est affronter l'institution : tout combat contre lui, même gagné, fait des PJ des hommes traqués dans toute la province.</div></div>
 </div>
 <div class="scene-panel" id="s5_sc18" style="display:none">
 <div class="scene-title-bar"><h2 class="scene-title">Scène 18 MARLA --- BRUIT DE FOND</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s5','s5_sc17')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s5','s5_sc19')">Suiv. &#8594;</button></div></div>
@@ -1958,6 +1991,7 @@ strong{color:var(--parchment);}
 <div class="jet-roll"><span class="jet-label">Jet — Perception vue</span><span class="jet-detail"><span class="mod mod-pos">(+20)</span> Den ou Azart : scarifications en losange sous les pieds. Quatre à gauche, trois à droite. C'est Georric Leblanc. Le coursier de l'Eclipse, resté à Swartzhafen pour voir s'il pouvait récupérer quelque chose.</span></div>
 <div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Ce moment mérite du silence. Les PJ ont su depuis l'Acte 1 qu'il était quelque part dans la ville. Armand avait dit qu'il était fiable. Il l'était. Le MJ peut laisser la table réaliser ce que ça signifie sans le préciser. Leblanc n'est pas mort d'une lame --- il a été préparé. Il était vivant quand on l'a amené ici.</span></div>
 <ul class="scene-list"><li><em>Deux Pâles en cours d'activation, pas aussi aboutis que Varro Kalt. Plus instables, plus imprévisibles.</em></li></ul>
+<div class="npc-stat"><div class="npc-name">Pâle instable (×2)</div><div class="npc-sub">Laboratoire — activation incomplète — Profil de combat</div><div class="stat-grid"><div class="stat-cell"><span class="stat-label">M</span><span class="stat-val">3</span></div><div class="stat-cell"><span class="stat-label">CC</span><span class="stat-val">35</span></div><div class="stat-cell"><span class="stat-label">CT</span><span class="stat-val">—</span></div><div class="stat-cell"><span class="stat-label">F</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">E</span><span class="stat-val">45</span></div><div class="stat-cell"><span class="stat-label">I</span><span class="stat-val">10</span></div><div class="stat-cell"><span class="stat-label">Ag</span><span class="stat-val">15</span></div><div class="stat-cell"><span class="stat-label">Dex</span><span class="stat-val">10</span></div><div class="stat-cell"><span class="stat-label">Int</span><span class="stat-val">05</span></div><div class="stat-cell"><span class="stat-label">FM</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Soc</span><span class="stat-val">—</span></div><div class="stat-cell"><span class="stat-label">B</span><span class="stat-val">16</span></div></div><div class="npc-gear">Coups — BF+3</div><div class="npc-ability"><strong>Mort-vivant :</strong> Ne respire pas, ne saigne presque pas, ne fuit jamais.</div><div class="npc-ability"><strong>Insensible à la douleur :</strong> Pas d'effets Critiques autres qu'Amputations ou Mort.</div><div class="npc-ability"><strong>Peur 2 :</strong> Test de Calme avec DR 2 ou plus, sinon -1DR.</div><div class="npc-ability"><strong>Vulnérable au feu :</strong> +1d3 dégâts, ignore Insensible à la douleur.</div><div class="npc-ability"><strong>Instable :</strong> Sur un double à son jet d'attaque, il frappe la créature la plus proche --- alliée ou ennemie. Si Darlasov crie un ordre : test FM ou le Pâle reste immobile un round, tête penchée.</div></div>
 <div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Darlasov n'est pas là si les PJ arrivent sans être repérés. Varro Kalt est présent, immobile dans un coin, debout, yeux ouverts. Il ne réagit pas à leur entrée. Il attend. Quand quelqu'un s'approche du journal ou des corps, il se tourne vers eux. Lentement. Sans bruit.</span></div>
 <div class="section-head"><strong>VARRO KALT --- COMPORTEMENT EN COMBAT</strong></div>
 <ul class="scene-list"><li><em>Lent mais prévisible, il charge en ligne droite, sans ruse.</em></li></ul>
@@ -1974,6 +2008,7 @@ strong{color:var(--parchment);}
 <ul class="scene-list"><li><em>Il sait qui ils sont, ou peut le deviner. Agents de l'Eclipse. Il connaît l'organisation.</em></li></ul>
 <ul class="scene-list"><li><em>Il peut proposer un marché : informations contre discrétion. Il a besoin de temps.</em></li></ul>
 <ul class="scene-list"><li><em>Il n'a aucune intention de tenir sa parole si ça l'arrange.</em></li></ul>
+<div class="npc-stat"><div class="npc-name">Anselm Darlasov</div><div class="npc-sub">Fondateur des Pâles — Profil de combat (dérisoire, et il le sait)</div><div class="stat-grid"><div class="stat-cell"><span class="stat-label">M</span><span class="stat-val">4</span></div><div class="stat-cell"><span class="stat-label">CC</span><span class="stat-val">25</span></div><div class="stat-cell"><span class="stat-label">CT</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">F</span><span class="stat-val">25</span></div><div class="stat-cell"><span class="stat-label">E</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">I</span><span class="stat-val">55</span></div><div class="stat-cell"><span class="stat-label">Ag</span><span class="stat-val">30</span></div><div class="stat-cell"><span class="stat-label">Dex</span><span class="stat-val">50</span></div><div class="stat-cell"><span class="stat-label">Int</span><span class="stat-val">65</span></div><div class="stat-cell"><span class="stat-label">FM</span><span class="stat-val">55</span></div><div class="stat-cell"><span class="stat-label">Soc</span><span class="stat-val">40</span></div><div class="stat-cell"><span class="stat-label">B</span><span class="stat-val">11</span></div></div><div class="npc-gear">Scalpel — BF+1 · Sacoche de fioles · Lunettes épaisses</div><div class="npc-ability"><strong>Fioles volatiles :</strong> Action : lancer une fiole (test CT, 8 m). Corrosive : 1d10 dégâts, ignore les PA non métalliques. Ou fumigène : nuage opaque de 4 m pendant 2 rounds.</div><div class="npc-ability"><strong>Génie froid :</strong> Immunisé à l'Intimidation. Menacé, il ne supplie pas : il négocie, et ses arguments sont réels.</div><div class="npc-ability"><strong>Protégé :</strong> Varro Kalt s'interpose dès la première menace physique. Darlasov ne combat que le temps de rejoindre sa chambre secondaire --- et sa sortie.</div><div class="loot"><span class="loot-label">Butin</span><span class="loot-text">Ses notes de travail (le journal des vingt-trois tentatives est ailleurs dans la salle), une clé de la porte dissimulée, des composés sans étiquette.</span></div></div>
 <div class="dialogue"><span class="dialogue-who">Darlasov</span><span class="dialogue-text"><em>Vous pensez que ce que je fais est monstrueux. Peut-être. Mais dites-moi, combien de vos soldats sont morts contre des créatures que rien ne peut tuer ? Moi, j'ai trouvé quelque chose qui peut.</em></span></div>
 <div class="dialogue"><span class="dialogue-who">Darlasov</span><span class="dialogue-text"><em>Les vampires pensent que je travaille pour eux. C'est commode. Quand j'aurai ce qu'il me faut, Sylvanie n'aura plus besoin d'eux. Ni de Nuln. Ni de l'Empire.</em></span></div>
 <div class="section-head"><strong>RÉSOLUTIONS POSSIBLES</strong></div>
@@ -2494,6 +2529,179 @@ document.getElementById('btn-menu').addEventListener('click', toggleSidebar);
   document.getElementById('pwd-btn').addEventListener('click', check);
   document.getElementById('pwd-input').addEventListener('keydown', function(e){ if(e.key==='Enter') check(); });
 })();
+</script>
+
+<!-- BARRE D'ÉDITION -->
+<div class="edit-bar" id="edit-bar">
+  <span class="edit-bar-title">Mode édition</span>
+  <span class="edit-status" id="edit-status"></span>
+  <button class="edit-btn primary" onclick="editSave()">&#128190; Enregistrer</button>
+  <button class="edit-btn" onclick="editPushGitHub()">&#8679; Pousser GitHub</button>
+  <button class="edit-btn" onclick="editDownload()">&#8681; Télécharger le HTML</button>
+  <button class="edit-btn" onclick="editReset()">&#8634; Réinitialiser</button>
+  <button class="edit-btn" onclick="editToggle()">&#10005; Quitter</button>
+</div>
+
+<script>
+/* ============ MODE ÉDITION ============ */
+var EDIT_KEY = 'eclipse_scenario_edit';
+var CFG_KEY  = 'eclipse_gh_cfg';
+var TOKEN_KEY = 'gh_token';
+
+// Appliquer une édition sauvegardée au chargement
+(function(){
+  var saved = localStorage.getItem(EDIT_KEY);
+  if(saved){
+    document.querySelector('.main').innerHTML = saved;
+    // remettre l'affichage par défaut (accueil visible, sections fermées)
+    resetDisplayState(document);
+    var st = document.getElementById('edit-status');
+    if(st) st.textContent = 'Version éditée chargée (localStorage)';
+  }
+})();
+
+function resetDisplayState(root){
+  var w = root.getElementById ? root.getElementById('welcome') : root.querySelector('#welcome');
+  if(w) w.style.display = '';
+  root.querySelectorAll('.section-panel').forEach(function(s){
+    s.style.display = 'none';
+    var panels = s.querySelectorAll('.scene-panel');
+    panels.forEach(function(p, i){ p.style.display = i === 0 ? '' : 'none'; });
+  });
+}
+
+function editToggle(){
+  var main = document.querySelector('.main');
+  var on = !document.body.classList.contains('editing');
+  if(on){
+    document.body.classList.add('editing');
+    main.contentEditable = 'true';
+    setStatus('Cliquez dans le texte pour éditer. La navigation reste active hors du texte.');
+  } else {
+    editSave(true);
+    document.body.classList.remove('editing');
+    main.contentEditable = 'false';
+  }
+}
+
+function setStatus(msg){
+  var st = document.getElementById('edit-status');
+  if(st){ st.textContent = msg; }
+}
+
+function editSave(silent){
+  var main = document.querySelector('.main');
+  try{
+    localStorage.setItem(EDIT_KEY, main.innerHTML);
+    if(!silent) setStatus('Enregistré localement à ' + new Date().toLocaleTimeString());
+  }catch(e){
+    alert('Sauvegarde locale impossible : ' + e.message);
+  }
+}
+
+function editReset(){
+  if(confirm('Supprimer toutes les modifications locales et revenir au fichier d\u2019origine ?')){
+    localStorage.removeItem(EDIT_KEY);
+    location.reload();
+  }
+}
+
+// Reconstruit le fichier HTML complet, propre, prêt à héberger
+function buildFullHtml(){
+  editSave(true);
+  var clone = document.documentElement.cloneNode(true);
+  var main = clone.querySelector('.main');
+  if(main) main.removeAttribute('contenteditable');
+  clone.querySelector('body').classList.remove('editing');
+  var pwd = clone.querySelector('#pwd-overlay');
+  if(pwd) pwd.classList.remove('unlocked');
+  var sr = clone.querySelector('#search-results');
+  if(sr){ sr.classList.remove('visible'); sr.innerHTML=''; }
+  var si = clone.querySelector('#search-input'); if(si) si.removeAttribute('value');
+  var sb = clone.querySelector('#sidebar'); if(sb) sb.classList.remove('open');
+  var ov = clone.querySelector('#overlay'); if(ov) ov.classList.remove('visible');
+  // affichage par défaut
+  var w = clone.querySelector('#welcome'); if(w) w.style.display = '';
+  clone.querySelectorAll('.section-panel').forEach(function(s){
+    s.style.display = 'none';
+    var panels = s.querySelectorAll('.scene-panel');
+    panels.forEach(function(p, i){ p.style.display = i === 0 ? '' : 'none'; });
+  });
+  return '<!DOCTYPE html>\n' + clone.outerHTML;
+}
+
+function editDownload(){
+  var blob = new Blob([buildFullHtml()], {type:'text/html;charset=utf-8'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'scenario-eclipse.html';
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 3000);
+  setStatus('Fichier téléchargé.');
+}
+
+function b64utf8(str){
+  var bytes = new TextEncoder().encode(str);
+  var bin = '';
+  for(var i = 0; i < bytes.length; i += 8192){
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 8192));
+  }
+  return btoa(bin);
+}
+
+function ghConfig(){
+  var cfg = null;
+  try{ cfg = JSON.parse(localStorage.getItem(CFG_KEY) || 'null'); }catch(e){}
+  if(!cfg){
+    var repo = prompt('Dépôt GitHub (owner/repo) :', 'Grogndur/JDR-Warhammer'); if(!repo) return null;
+    var branch = prompt('Branche :', 'main'); if(!branch) return null;
+    var path = prompt('Chemin du fichier dans le dépôt :', 'eclipse/scenario-eclipse.html'); if(!path) return null;
+    cfg = {repo: repo.trim(), branch: branch.trim(), path: path.trim()};
+    localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+  }
+  return cfg;
+}
+
+function ghToken(){
+  var t = localStorage.getItem(TOKEN_KEY);
+  if(!t){
+    t = prompt('Token GitHub (permission Contents, stock\u00e9 en localStorage) :');
+    if(!t) return null;
+    localStorage.setItem(TOKEN_KEY, t.trim());
+  }
+  return t;
+}
+
+async function editPushGitHub(){
+  var cfg = ghConfig(); if(!cfg) return;
+  var token = ghToken(); if(!token) return;
+  setStatus('Push en cours\u2026');
+  var api = 'https://api.github.com/repos/' + cfg.repo + '/contents/' + cfg.path;
+  var headers = {'Authorization': 'token ' + token, 'Accept': 'application/vnd.github+json'};
+  try{
+    var sha = null;
+    var r = await fetch(api + '?ref=' + encodeURIComponent(cfg.branch), {headers: headers});
+    if(r.ok){ sha = (await r.json()).sha; }
+    else if(r.status === 401){ localStorage.removeItem(TOKEN_KEY); setStatus('Token refus\u00e9 (supprim\u00e9). Relancez.'); return; }
+    var body = {message: '\u00c9dition in-browser \u2014 sc\u00e9nario Eclipse', content: b64utf8(buildFullHtml()), branch: cfg.branch};
+    if(sha) body.sha = sha;
+    var r2 = await fetch(api, {method:'PUT', headers: Object.assign({'Content-Type':'application/json'}, headers), body: JSON.stringify(body)});
+    if(r2.ok){ setStatus('Pouss\u00e9 sur GitHub \u2714 ' + new Date().toLocaleTimeString()); }
+    else{
+      var txt = await r2.text();
+      setStatus('\u00c9chec push : ' + r2.status);
+      alert('\u00c9chec du push GitHub (' + r2.status + ') :\n' + txt.slice(0, 300) + '\n\nPour changer la config : localStorage.removeItem(\'eclipse_gh_cfg\')');
+    }
+  }catch(e){
+    setStatus('Erreur r\u00e9seau.');
+    alert('Erreur : ' + e.message);
+  }
+}
+
+document.getElementById('btn-edit').addEventListener('click', editToggle);
+window.addEventListener('beforeunload', function(){
+  if(document.body.classList.contains('editing')) editSave(true);
+});
 </script>
 </body>
 </html>
