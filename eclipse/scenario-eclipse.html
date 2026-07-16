@@ -2686,7 +2686,10 @@ async function editPushGitHub(){
     var body = {message: '\u00c9dition in-browser \u2014 sc\u00e9nario Eclipse', content: b64utf8(buildFullHtml()), branch: cfg.branch};
     if(sha) body.sha = sha;
     var r2 = await fetch(api, {method:'PUT', headers: Object.assign({'Content-Type':'application/json'}, headers), body: JSON.stringify(body)});
-    if(r2.ok){ setStatus('Pouss\u00e9 sur GitHub \u2714 ' + new Date().toLocaleTimeString()); }
+    if(r2.ok){
+      localStorage.removeItem(EDIT_KEY);
+      setStatus('Pouss\u00e9 \u2714 ' + new Date().toLocaleTimeString() + ' \u2014 le fichier en ligne fait foi (mise en ligne sous ~1 min).');
+    }
     else{
       var txt = await r2.text();
       setStatus('\u00c9chec push : ' + r2.status);
@@ -2697,6 +2700,14 @@ async function editPushGitHub(){
     alert('Erreur : ' + e.message);
   }
 }
+
+// Coller en texte brut : évite d'importer le HTML parasite de Word, d'un site, etc.
+document.querySelector('.main').addEventListener('paste', function(e){
+  if(!document.body.classList.contains('editing')) return;
+  e.preventDefault();
+  var txt = (e.clipboardData || window.clipboardData).getData('text/plain');
+  document.execCommand('insertText', false, txt);
+});
 
 document.getElementById('btn-edit').addEventListener('click', editToggle);
 window.addEventListener('beforeunload', function(){
