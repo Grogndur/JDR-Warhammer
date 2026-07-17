@@ -16,10 +16,12 @@
   2) Ajoute une "Realtime Database" (mode test pour commencer).
   3) Dans Paramètres du projet > tes applications > Web, copie l'objet
      firebaseConfig et colle-le ci-dessous à la place de l'exemple.
-  4) Mets tes cartes / illustrations dans le dossier "gallerie" de ton dépôt :
-     dans l'interface, côté MJ, il suffira de taper le nom du fichier
-     (le préfixe "gallerie/" est ajouté tout seul). Une URL complète
-     collée dans le champ fonctionne aussi.
+  4) Mets TOUT dans le dossier "gallerie" de ton dépôt : cartes, illustrations
+     ET fichiers audio (.mp3). Un seul dossier, rien d'autre à créer.
+     Les images apparaissent toutes seules dans la galerie, les .mp3 dans le
+     menu Ambiance. Tu n'as qu'à déposer le fichier sur GitHub.
+     (Ça marche grâce à window.DEPOT_GITHUB, plus bas. Tu peux aussi toujours
+     taper un nom de fichier à la main, ou coller une URL complète.)
   ============================================================
 -->
 <script>
@@ -45,11 +47,20 @@
   ];
 
   // --- Dossier des sons d'ambiance (préfixe ajouté automatiquement). ---
-  // Dépose tes .mp3 (Tabletop Audio, etc.) dans ce dossier de ton dépôt.
-  window.DOSSIER_SONS = "sons/";
+  // Tes .mp3 vont au MÊME endroit que tes images : le dossier "gallerie".
+  window.DOSSIER_SONS = "gallerie/";
 
-  // --- Ta liste d'ambiances (facultatif). Nom affiché + nom du fichier dans sons/. ---
-  // Le nom du fichier suffit, le préfixe "sons/" est ajouté tout seul.
+  // --- Détection automatique du contenu de "gallerie/" ---
+  // Mets ici "TonPseudoGitHub/NomDuDepot". La table interroge alors GitHub au
+  // chargement et remplit toute seule le menu Ambiance (mp3, ogg, m4a, wav)
+  // et la galerie d'images (jpg, png, webp...) avec ce qu'il y a dans le dossier.
+  // Résultat : tu déposes un fichier dans "gallerie", il apparaît. Rien à écrire ici.
+  // Mets "" pour désactiver et revenir aux listes manuelles ci-dessous.
+  window.DEPOT_GITHUB = "Grogndur/JDR-Warhammer";
+
+  // --- Liste d'ambiances manuelle (facultatif, et inutile si DEPOT_GITHUB est rempli). ---
+  // Sert de secours si la détection automatique échoue, ou à donner un joli nom
+  // à un fichier. Le préfixe "gallerie/" est ajouté tout seul.
   window.AMBIANCES = [
     // { nom: "Forêt de jour",   fichier: "foret-jour.mp3" },
     // { nom: "Taverne animée",  fichier: "taverne-animee.mp3" },
@@ -526,7 +537,7 @@
       <div class="ligne">
         <label for="amb-choix">Ambiance</label>
         <select id="amb-choix"></select>
-        <span class="prefixe-img" id="prefixe-son">sons/</span>
+        <span class="prefixe-img" id="prefixe-son">gallerie/</span>
         <input type="text" id="amb-fichier" placeholder="nom.mp3" />
         <button class="primaire" id="amb-load">Lancer</button>
         <button id="amb-pause" title="Pause">⏸</button>
@@ -1411,7 +1422,7 @@ setTimeout(majPoignee, 0);
 
 // ---------- Ambiance sonore (fichiers audio, lus par chaque navigateur) ----------
 // Le MJ choisit une piste ; chaque appareil lit le même fichier en boucle, sans pub.
-// Les fichiers vivent dans le dossier "sons/" de ton dépôt (voir config en haut).
+// Les fichiers vivent dans le dossier "gallerie/" de ton dépôt, avec les images.
 const refAmb = db ? ref(db, `salles/${salle}/ambiance`) : null;
 const audioAmb = document.getElementById("amb-audio");
 let ambCourant = {};
@@ -1430,6 +1441,58 @@ const selAmb = $("#amb-choix");
   });
 })();
 $("#prefixe-son").textContent = window.DOSSIER_SONS || "";
+
+// ---------- Détection automatique du contenu de "gallerie/" ----------
+// On demande à GitHub la liste des fichiers du dossier, puis on remplit tout
+// seul le menu Ambiance (fichiers audio) et la galerie (fichiers image).
+// Tu déposes un mp3 dans "gallerie" sur GitHub : il apparaît dans le menu.
+// Si l'appel échoue (hors ligne, dépôt privé, quota GitHub dépassé), on garde
+// simplement les listes manuelles du haut du fichier. Rien ne casse jamais.
+(function(){
+  const depot = (window.DEPOT_GITHUB || "").trim();
+  if(!depot) return;
+  const dossier = (window.DOSSIER_SONS || "gallerie/").replace(/^\/+|\/+$/g, "");
+
+  const EXT_SON   = /\.(mp3|ogg|m4a|wav|opus)$/i;
+  const EXT_IMAGE = /\.(jpe?g|png|webp|gif|avif)$/i;
+
+  // "foret-de-nuit_02.mp3"  ->  "Foret de nuit 02"
+  function joliNom(f){
+    const base = f.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim();
+    return base.charAt(0).toUpperCase() + base.slice(1);
+  }
+
+  fetch("https://api.github.com/repos/" + depot + "/contents/" + dossier)
+    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(liste => {
+      if(!Array.isArray(liste)) return;
+      const fichiers = liste
+        .filter(x => x.type === "file")
+        .map(x => x.name)
+        .sort((a, b) => a.localeCompare(b, "fr"));
+
+      // Menu Ambiance
+      const dejaSon = new Set(Array.from(selAmb.options).map(o => o.value));
+      fichiers.filter(f => EXT_SON.test(f)).forEach(f => {
+        if(dejaSon.has(f)) return;
+        const o = document.createElement("option");
+        o.value = f;
+        o.textContent = joliNom(f);
+        selAmb.appendChild(o);
+      });
+
+      // Galerie d'images
+      const dejaImg = new Set((window.GALERIE || []).map(i => i.url));
+      fichiers.filter(f => EXT_IMAGE.test(f)).forEach(f => {
+        if(dejaImg.has(f)) return;
+        const b = document.createElement("button");
+        b.textContent = joliNom(f);
+        b.addEventListener("click", () => pousserImage(lienImageDirect(f)));
+        gal.appendChild(b);
+      });
+    })
+    .catch(() => { /* silencieux : les listes manuelles prennent le relais */ });
+})();
 
 function urlSon(f){
   f = (f||"").trim();
