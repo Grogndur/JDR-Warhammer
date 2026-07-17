@@ -183,15 +183,6 @@
   .portal-bds::before { background: linear-gradient(135deg, rgba(139,26,26,0.08) 0%, transparent 60%); }
   .portal-bds:hover { border-color: rgba(139,26,26,0.55); background: rgba(139,26,26,0.26); box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(139,26,26,0.12); }
 
-  /* Blanc comme Neige portal */
-  .portal-bcn {
-    background: rgba(150,172,192,0.12);
-    border: 1px solid rgba(186,206,221,0.24);
-    border-top: 3px solid #b8cdd9;
-  }
-  .portal-bcn::before { background: linear-gradient(135deg, rgba(205,224,236,0.10) 0%, transparent 60%); }
-  .portal-bcn:hover { border-color: rgba(205,224,236,0.5); background: rgba(150,172,192,0.2); box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(205,224,236,0.12); }
-
   /* Table virtuelle (outil de jeu) */
   .portal-table {
     background: rgba(184,146,42,0.14);
@@ -205,17 +196,14 @@
   .portal-symbol svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); }
   .portal-eclipse .portal-symbol { color: #9b7fd4; }
   .portal-bds .portal-symbol { color: #a3262a; }
-  .portal-bcn .portal-symbol { color: #6f9463; }
   .portal-system { font-family: 'Crimson Text', serif; font-style: italic; font-size: 0.8rem; letter-spacing: 0.1em; margin-bottom: 0.4rem; }
   .portal-eclipse .portal-system { color: rgba(155,127,212,0.85); }
   .portal-bds .portal-system { color: rgba(180,60,60,0.8); }
-  .portal-bcn .portal-system { color: rgba(186,206,221,0.85); }
 
   .portal-name { font-family: 'Cinzel', serif; font-size: clamp(1.2rem, 3vw, 1.7rem); font-weight: 700; color: var(--parchment); letter-spacing: 0.04em; margin-bottom: 0.3rem; line-height: 1.15; }
   .portal-arc { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 1rem; }
   .portal-eclipse .portal-arc { color: #9b7fd4; opacity: 0.8; }
   .portal-bds .portal-arc { color: #c05050; opacity: 0.8; }
-  .portal-bcn .portal-arc { color: #cfe0ea; opacity: 0.85; }
 
   .portal-desc { font-size: 0.92rem; color: var(--parchment-dark); line-height: 1.55; font-style: italic; margin-bottom: 1.25rem; }
 
@@ -224,8 +212,6 @@
   .portal-eclipse:hover .portal-enter { background: rgba(140,111,208,0.30); border-color: rgba(155,127,212,0.55); }
   .portal-bds .portal-enter { background: rgba(139,26,26,0.2); color: #c06060; border: 1px solid rgba(139,26,26,0.35); }
   .portal-bds:hover .portal-enter { background: rgba(139,26,26,0.3); border-color: rgba(139,26,26,0.55); }
-  .portal-bcn .portal-enter { background: rgba(205,224,236,0.14); color: #dcebf3; border: 1px solid rgba(205,224,236,0.32); }
-  .portal-bcn:hover .portal-enter { background: rgba(205,224,236,0.24); border-color: rgba(205,224,236,0.55); }
 
   /* DIVIDER */
   .ornament { text-align: center; color: var(--GLD); opacity: 0.35; font-size: 1rem; letter-spacing: 0.6em; margin: 0.5rem 0; }
@@ -322,18 +308,8 @@
       <span class="portal-symbol"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M12 2.2c0 0-7.2 8.6-7.2 13.1a7.2 7.2 0 0 0 14.4 0C19.2 10.8 12 2.2 12 2.2Z"/><path fill="rgba(255,255,255,0.22)" d="M9.2 11.5c-1 1.4-1.5 2.7-1.5 3.9a4.3 4.3 0 0 0 1.6 3.3c-2-.6-2.9-2.4-2.9-4.1 0-1.2.9-2.6 2.8-3.1Z"/></svg></span>
       <div class="portal-system">Warhammer FRP 4e édition</div>
       <div class="portal-name">De Boue et de Sang</div>
-      <div class="portal-arc">Arc I</div>
-      <div class="portal-desc">Six joueurs, un monde à découvrir. Actes, PNJ et fiches construits au fil des sessions.</div>
-      <span class="portal-enter">Entrer →</span>
-    </a>
-
-    <!-- BLANC COMME NEIGE -->
-    <a class="portal portal-bcn" href="bcn/index-bcn.html">
-      <span class="portal-symbol"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="10.7" y="18.4" width="2.6" height="3.6" rx="0.4" fill="#5a4632"/><path fill="currentColor" d="M12 2.4 7.4 9.6h9.2Z"/><path fill="currentColor" d="M12 7 6 14.2h12Z"/><path fill="currentColor" d="M12 11.4 4.5 19.2h15Z"/><path fill="#eef4f7" d="M12 2.4 9.6 6.1c1.3-.7 3.5-.7 4.8 0Z"/><path fill="#eef4f7" d="M12 7 8.5 11.1c1.8-.9 5.2-.9 7 0Z"/><path fill="#eef4f7" d="M4.5 19.2h15l-2.7-1.7c-3.3 1.6-6.3 1.6-9.6 0Z"/><circle cx="9" cy="13.6" r="0.7" fill="#eef4f7"/><circle cx="15.1" cy="13.2" r="0.6" fill="#eef4f7"/></svg></span>
-      <div class="portal-system">Warhammer FRP 4e édition</div>
-      <div class="portal-name">Blanc comme Neige</div>
-      <div class="portal-arc">En préparation</div>
-      <div class="portal-desc">Nouvelle campagne en gestation. Personnages et récit encore à venir.</div>
+      <div class="portal-arc">Arcs I &amp; II</div>
+      <div class="portal-desc">De l'Averland au Nordland. Deux arcs qui se répondent, PNJ, bestiaire et documents réunis.</div>
       <span class="portal-enter">Entrer →</span>
     </a>
 
