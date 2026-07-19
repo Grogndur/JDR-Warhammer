@@ -81,6 +81,12 @@
   .card-sareth:hover { border-color: rgba(103,78,167,0.6); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
   .card-sareth .card-accent { color: #9b82d4; }
 
+  .card-chronique { background: rgba(122,46,46,0.1); border: 1px solid rgba(122,46,46,0.28); border-top: 3px solid #7a2e2e; }
+  .card-chronique::before { background: linear-gradient(135deg, rgba(122,46,46,0.09) 0%, transparent 60%); }
+  .card-chronique:hover { border-color: rgba(122,46,46,0.6); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
+  .card-chronique .card-accent { color: #c96b6b; }
+  .card-chronique .card-enter { background: rgba(122,46,46,0.18); color: #c96b6b; border: 1px solid rgba(122,46,46,0.4); }
+
   .card-scenario { background: rgba(184,146,42,0.08); border: 1px solid rgba(184,146,42,0.22); border-top: 3px solid var(--GLD); }
   .card-scenario::before { background: linear-gradient(135deg, rgba(184,146,42,0.06) 0%, transparent 60%); }
   .card-scenario:hover { border-color: rgba(184,146,42,0.5); box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
@@ -150,6 +156,21 @@
       <div class="card-name">Sareth Liamah</div>
       <div class="card-sub">Sorcière des ombres · Demi-elfe</div>
       <div class="card-desc">Entre deux mondes. Maîtrise du Vent d'Ulgu, à la frontière du visible et de l'obscur.</div>
+      <span class="card-enter card-accent">Ouvrir →</span>
+    </a>
+
+  </div>
+
+  <div class="section-title">Chronique commune</div>
+
+  <div class="cards">
+
+    <a class="card card-chronique" href="chronique-eclipse.html">
+      <span class="card-symbol"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 44" width="38" height="36" fill="none"><path d="M24 8 C18 4, 8 4, 4 6 L4 36 C8 34, 18 34, 24 38 C30 34, 40 34, 44 36 L44 6 C40 4, 30 4, 24 8 Z" fill="#7a2e2e" opacity="0.16" stroke="#c96b6b" stroke-width="1.8" stroke-linejoin="round"/><path d="M24 8 L24 38" stroke="#c96b6b" stroke-width="1.6"/><path d="M9 13 C13 12, 18 12, 21 14" stroke="#c96b6b" stroke-width="1" opacity="0.6"/><path d="M9 19 C13 18, 18 18, 21 20" stroke="#c96b6b" stroke-width="1" opacity="0.6"/><path d="M9 25 C13 24, 18 24, 21 26" stroke="#c96b6b" stroke-width="1" opacity="0.6"/><path d="M27 14 C30 12, 35 12, 39 13" stroke="#c96b6b" stroke-width="1" opacity="0.6"/><path d="M27 20 C30 18, 35 18, 39 19" stroke="#c96b6b" stroke-width="1" opacity="0.6"/><path d="M27 26 C30 24, 35 24, 39 25" stroke="#c96b6b" stroke-width="1" opacity="0.6"/><path d="M32 2 L34 2 L34 16 L33 13 L32 16 Z" fill="#c96b6b" opacity="0.9"/></svg></span>
+      <div class="card-label card-accent">Table entière</div>
+      <div class="card-name">Acta Chronica</div>
+      <div class="card-sub">Journal de campagne · L'Éclipse</div>
+      <div class="card-desc">Séance après séance : ce qu'on a vécu, les visages croisés, les pistes en cours. À tenir et consulter ensemble.</div>
       <span class="card-enter card-accent">Ouvrir →</span>
     </a>
 

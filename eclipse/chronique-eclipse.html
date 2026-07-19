@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acta Chronica — L'Éclipse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&family=Caveat:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:#0a0a0f; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
+    --GLD:#B8922A; --VIO:#674EA7; --GRN:#5E804F; --SUB:#555566; --BLU:#1C3A5A;
+    /* chronique — teinte sang gothique */
+    --acc:#7a2e2e; --acc2:#a24444; --acc-soft:#c96b6b;
+    --acc-border:rgba(122,46,46,0.22); --acc-border-s:rgba(122,46,46,0.45);
+    /* parchemin clair pour la zone de lecture */
+    --pap:#e9dfc4; --pap2:#e0d3b0; --pap-line:rgba(60,40,20,0.14);
+    --encre:#2a2018; --encre-soft:#5a4a38;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--ink); color:var(--parchment); font-family:'Crimson Text',serif; min-height:100vh; }
+  body::before { content:''; position:fixed; inset:0;
+    background: radial-gradient(ellipse at 25% 0%, rgba(122,46,46,0.10) 0%, transparent 55%),
+                radial-gradient(ellipse at 80% 100%, rgba(103,78,167,0.06) 0%, transparent 50%);
+    pointer-events:none; z-index:0; }
+
+  /* ── NAV ── */
+  nav { position:sticky; top:0; z-index:100; background:rgba(10,10,15,0.93); backdrop-filter:blur(8px); border-bottom:1px solid var(--acc-border); padding:0.6rem 1.5rem; display:flex; align-items:center; gap:1rem; }
+  nav a { color:var(--SUB); text-decoration:none; font-size:0.82rem; font-style:italic; transition:color 0.2s; }
+  nav a:hover { color:var(--acc-soft); }
+  .nav-current { color:var(--acc-soft) !important; font-style:normal; font-family:'Cinzel',serif; font-size:0.82rem; }
+  .nav-sep { color:var(--SUB); opacity:0.3; }
+  .nav-sync { margin-left:auto; font-size:0.7rem; font-style:italic; color:var(--SUB); display:flex; align-items:center; gap:0.4rem; }
+  .nav-sync .dot { width:7px; height:7px; border-radius:50%; background:var(--SUB); transition:background 0.3s; }
+  .nav-sync.online .dot { background:var(--GRN); box-shadow:0 0 6px rgba(94,128,79,0.7); }
+  .nav-sync.saving .dot { background:var(--GLD); }
+
+  .wrap { position:relative; z-index:1; max-width:900px; margin:0 auto; padding:2rem 1.25rem 4rem; }
+
+  /* ── EN-TÊTE ── */
+  header { text-align:center; padding:1.5rem 0 1rem; }
+  .h-arc { font-family:'Crimson Text',serif; font-style:italic; color:var(--acc-soft); font-size:0.85rem; letter-spacing:0.15em; text-transform:uppercase; }
+  h1 { font-family:'Cinzel',serif; font-size:clamp(1.5rem,5vw,2.4rem); font-weight:700; letter-spacing:0.04em; margin:0.35rem 0; text-shadow:0 0 40px rgba(122,46,46,0.3), 0 2px 4px rgba(0,0,0,0.8); }
+  .h-sub { font-family:'Caveat',cursive; font-size:1.25rem; color:var(--parchment-dark); }
+  header::after { content:''; display:block; width:55%; height:1px; background:linear-gradient(to right,transparent,var(--acc-soft),transparent); margin:1.1rem auto 0; }
+
+  /* ── ONGLETS ── */
+  .tabs { display:flex; justify-content:center; gap:0.4rem; margin:1.5rem 0 1.75rem; flex-wrap:wrap; }
+  .tab { font-family:'Cinzel',serif; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--SUB); background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.07); border-radius:2px; padding:0.5rem 1rem; cursor:pointer; transition:all 0.18s; }
+  .tab:hover { color:var(--acc-soft); border-color:var(--acc-border-s); }
+  .tab.active { color:var(--parchment); background:rgba(122,46,46,0.18); border-color:var(--acc-border-s); }
+  .tab .count { font-family:'Crimson Text',serif; opacity:0.55; margin-left:0.35rem; font-size:0.8em; }
+
+  .panel { display:none; }
+  .panel.active { display:block; animation:fade 0.25s ease; }
+  @keyframes fade { from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
+
+  /* ── BARRE D'ACTION ── */
+  .bar { display:flex; gap:0.6rem; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; }
+  .search { flex:1; min-width:180px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.09); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.9rem; padding:0.5rem 0.8rem; border-radius:2px; }
+  .search:focus { outline:none; border-color:var(--acc-border-s); }
+  .search::placeholder { color:var(--SUB); font-style:italic; }
+  .btn-add { font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; background:rgba(122,46,46,0.2); border:1px solid var(--acc-border-s); color:var(--acc-soft); padding:0.5rem 0.95rem; border-radius:2px; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .btn-add:hover { background:rgba(122,46,46,0.35); color:var(--parchment); }
+
+  /* ══════ PARCHEMIN (entrées) ══════ */
+  .scroll { position:relative; background:linear-gradient(160deg,var(--pap) 0%,var(--pap2) 100%); color:var(--encre); border-radius:3px; padding:1.6rem 1.7rem 1.4rem; margin-bottom:1.25rem; box-shadow:0 10px 30px rgba(0,0,0,0.55), inset 0 0 60px rgba(120,90,50,0.12); border:1px solid rgba(60,40,20,0.25); }
+  .scroll::before { content:''; position:absolute; inset:0; border-radius:3px; pointer-events:none;
+    background: repeating-linear-gradient(0deg, transparent, transparent 27px, var(--pap-line) 27px, var(--pap-line) 28px);
+    opacity:0.5; mix-blend-mode:multiply; }
+  .scroll::after { content:''; position:absolute; inset:0; border-radius:3px; pointer-events:none; box-shadow:inset 0 0 40px rgba(90,60,30,0.18); }
+  .scroll > * { position:relative; z-index:1; }
+
+  .entry-head { display:flex; align-items:baseline; gap:0.75rem; flex-wrap:wrap; border-bottom:1px solid rgba(60,40,20,0.2); padding-bottom:0.6rem; margin-bottom:0.9rem; }
+  .entry-date { font-family:'Caveat',cursive; font-size:1.35rem; font-weight:700; color:var(--acc); flex-shrink:0; }
+  .entry-date input { font-family:'Caveat',cursive; font-size:1.35rem; font-weight:700; color:var(--acc); background:transparent; border:none; border-bottom:1px dashed rgba(122,46,46,0.35); width:130px; padding:0; }
+  .entry-title { flex:1; min-width:150px; }
+  .entry-title input { width:100%; font-family:'IM Fell English',serif; font-style:italic; font-size:1.3rem; color:var(--encre); background:transparent; border:none; border-bottom:1px solid transparent; padding:0.1rem 0; transition:border-color 0.15s; }
+  .entry-title input:focus { outline:none; border-bottom-color:rgba(122,46,46,0.4); }
+  .entry-title input::placeholder { color:rgba(90,74,56,0.5); font-style:italic; }
+  .entry-del { color:rgba(122,46,46,0.4); cursor:pointer; font-size:0.9rem; flex-shrink:0; align-self:center; transition:color 0.15s; user-select:none; }
+  .entry-del:hover { color:var(--acc); }
+
+  .entry-body { width:100%; font-family:'IM Fell English',serif; font-size:1.06rem; line-height:1.75; color:var(--encre); background:transparent; border:none; resize:none; overflow:hidden; min-height:2.5rem; }
+  .entry-body:focus { outline:none; }
+  .entry-body::placeholder { color:rgba(90,74,56,0.45); font-style:italic; }
+
+  /* ══════ PNJ ══════ */
+  .npc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:1rem; }
+  .npc { background:linear-gradient(160deg,var(--pap) 0%,var(--pap2) 100%); color:var(--encre); border-radius:3px; padding:0.9rem 1rem 0.85rem; box-shadow:0 6px 18px rgba(0,0,0,0.45); border:1px solid rgba(60,40,20,0.25); position:relative; }
+  .npc-top { display:flex; align-items:center; gap:0.5rem; }
+  .npc-name { flex:1; font-family:'IM Fell English',serif; font-size:1.15rem; font-weight:600; color:var(--encre); background:transparent; border:none; border-bottom:1px solid transparent; padding:0.1rem 0; }
+  .npc-name:focus { outline:none; border-bottom-color:rgba(122,46,46,0.4); }
+  .npc-name::placeholder { color:rgba(90,74,56,0.5); }
+  .npc-status { font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.06em; text-transform:uppercase; border-radius:2px; padding:0.2rem 0.4rem; cursor:pointer; border:1px solid; background:transparent; }
+  .st-allie   { color:#3d6b30; border-color:#3d6b30; }
+  .st-ennemi  { color:#8a2020; border-color:#8a2020; }
+  .st-neutre  { color:#7a5a20; border-color:#7a5a20; }
+  .st-defunt  { color:#4a4a4a; border-color:#4a4a4a; }
+  .st-inconnu { color:#5a4a70; border-color:#5a4a70; }
+  .npc-status option { background:var(--pap); color:var(--encre); }
+  .npc-line { display:flex; align-items:center; gap:0.4rem; margin-top:0.5rem; }
+  .npc-line .lbl { font-family:'Cinzel',serif; font-size:0.55rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--encre-soft); opacity:0.7; flex-shrink:0; width:38px; }
+  .npc-line input { flex:1; font-family:'Crimson Text',serif; font-size:0.9rem; color:var(--encre); background:transparent; border:none; border-bottom:1px solid rgba(60,40,20,0.15); padding:0.1rem 0; }
+  .npc-line input:focus { outline:none; border-bottom-color:rgba(122,46,46,0.4); }
+  .npc-note { width:100%; margin-top:0.6rem; font-family:'IM Fell English',serif; font-size:0.95rem; line-height:1.5; color:var(--encre); background:transparent; border:none; border-top:1px solid rgba(60,40,20,0.15); padding-top:0.5rem; resize:none; overflow:hidden; min-height:1.5rem; }
+  .npc-note:focus { outline:none; }
+  .npc-note::placeholder { color:rgba(90,74,56,0.45); font-style:italic; }
+  .npc-del { position:absolute; top:0.5rem; right:0.6rem; color:rgba(122,46,46,0.35); cursor:pointer; font-size:0.85rem; transition:color 0.15s; user-select:none; }
+  .npc-del:hover { color:var(--acc); }
+
+  /* ══════ FILS ══════ */
+  .thread { background:linear-gradient(160deg,var(--pap) 0%,var(--pap2) 100%); color:var(--encre); border-radius:3px; padding:0.85rem 1rem; margin-bottom:0.8rem; box-shadow:0 5px 15px rgba(0,0,0,0.4); border:1px solid rgba(60,40,20,0.25); border-left:4px solid var(--acc); display:flex; align-items:flex-start; gap:0.75rem; }
+  .thread.done { border-left-color:#3d6b30; opacity:0.72; }
+  .thread-check { flex-shrink:0; width:22px; height:22px; border-radius:2px; border:1.5px solid var(--acc); background:transparent; cursor:pointer; margin-top:0.15rem; display:flex; align-items:center; justify-content:center; font-size:0.9rem; color:#3d6b30; transition:all 0.15s; }
+  .thread.done .thread-check { border-color:#3d6b30; background:rgba(61,107,48,0.12); }
+  .thread-body { flex:1; }
+  .thread-title { width:100%; font-family:'IM Fell English',serif; font-size:1.08rem; font-weight:600; color:var(--encre); background:transparent; border:none; padding:0; }
+  .thread.done .thread-title { text-decoration:line-through; text-decoration-color:rgba(60,40,20,0.4); }
+  .thread-title:focus { outline:none; }
+  .thread-title::placeholder { color:rgba(90,74,56,0.5); }
+  .thread-note { width:100%; margin-top:0.3rem; font-family:'Crimson Text',serif; font-size:0.92rem; line-height:1.5; color:var(--encre-soft); background:transparent; border:none; resize:none; overflow:hidden; min-height:1.2rem; }
+  .thread-note:focus { outline:none; }
+  .thread-note::placeholder { color:rgba(90,74,56,0.45); font-style:italic; }
+  .thread-del { flex-shrink:0; color:rgba(122,46,46,0.35); cursor:pointer; font-size:0.85rem; transition:color 0.15s; user-select:none; align-self:center; }
+  .thread-del:hover { color:var(--acc); }
+
+  /* ── VIDE ── */
+  .empty { text-align:center; padding:2.5rem 1rem; color:var(--SUB); font-style:italic; font-size:0.95rem; }
+  .empty .big { font-family:'Caveat',cursive; font-size:1.4rem; color:var(--parchment-dark); display:block; margin-bottom:0.3rem; }
+
+  /* ── PIED ── */
+  footer { text-align:center; padding:2.5rem 0 0; color:var(--SUB); font-size:0.78rem; font-style:italic; }
+  .foot-tools { display:flex; justify-content:center; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap; }
+  .tool-btn { font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.1em; text-transform:uppercase; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:var(--SUB); padding:0.4rem 0.8rem; border-radius:2px; cursor:pointer; transition:all 0.15s; }
+  .tool-btn:hover { color:var(--GLD); border-color:rgba(184,146,42,0.3); }
+
+  @media print {
+    nav,.tabs,.bar,.foot-tools,.entry-del,.npc-del,.thread-del,.nav-sync { display:none !important; }
+    body { background:#fff; }
+    body::before { display:none; }
+    .panel { display:block !important; }
+    .scroll,.npc,.thread { box-shadow:none; break-inside:avoid; }
+    h1,.h-arc,.h-sub { color:#000 !important; text-shadow:none; }
+  }
+</style>
+<!-- Firebase : sauvegarde en ligne, partagée entre tous les joueurs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">← L'Éclipse</a>
+  <span class="nav-sep">·</span>
+  <span class="nav-current">Acta Chronica</span>
+  <span class="nav-sync" id="sync"><span class="dot"></span><span id="sync-txt">Local</span></span>
+</nav>
+
+<div class="wrap">
+
+  <header>
+    <div class="h-arc">L'Éclipse · Arc I</div>
+    <h1>Acta Chronica</h1>
+    <div class="h-sub">journal tenu de séance en séance</div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="chronique">La Chronique <span class="count" id="c-chronique"></span></button>
+    <button class="tab" data-tab="pnj">Dramatis Personae <span class="count" id="c-pnj"></span></button>
+    <button class="tab" data-tab="fils">Les Fils <span class="count" id="c-fils"></span></button>
+  </div>
+
+  <!-- ══ CHRONIQUE ══ -->
+  <section class="panel active" id="panel-chronique">
+    <div class="bar">
+      <input class="search" id="search-entries" placeholder="Rechercher dans la chronique…">
+      <button class="btn-add" onclick="addEntry()">+ Nouvelle séance</button>
+    </div>
+    <div id="entries"></div>
+  </section>
+
+  <!-- ══ PNJ ══ -->
+  <section class="panel" id="panel-pnj">
+    <div class="bar">
+      <input class="search" id="search-npcs" placeholder="Rechercher un personnage…">
+      <button class="btn-add" onclick="addNpc()">+ Personnage</button>
+    </div>
+    <div class="npc-grid" id="npcs"></div>
+  </section>
+
+  <!-- ══ FILS ══ -->
+  <section class="panel" id="panel-fils">
+    <div class="bar">
+      <input class="search" id="search-threads" placeholder="Rechercher une piste…">
+      <button class="btn-add" onclick="addThread()">+ Piste</button>
+    </div>
+    <div id="threads"></div>
+  </section>
+
+  <footer>
+    <div class="foot-tools">
+      <button class="tool-btn" onclick="exportJSON()">Exporter (JSON)</button>
+      <button class="tool-btn" onclick="document.getElementById('import-file').click()">Importer</button>
+      <button class="tool-btn" onclick="window.print()">Imprimer / PDF</button>
+      <input type="file" id="import-file" accept="application/json" style="display:none" onchange="importJSON(event)">
+    </div>
+    Acta Chronica &nbsp;·&nbsp; L'Éclipse &nbsp;·&nbsp; Warhammer Fantasy Roleplay
+  </footer>
+
+</div>
+
+<script>
+/* ═══════════════════ ÉTAT ═══════════════════ */
+let state = { entries: [], npcs: [], threads: [] };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const esc = s => (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const today = () => { const d = new Date(); return d.getDate()+' '+['janv','févr','mars','avr','mai','juin','juil','août','sept','oct','nov','déc'][d.getMonth()]+' '+d.getFullYear(); };
+
+/* verrou d'édition : on ne réécrit pas le DOM tant qu'un champ est en cours de frappe */
+let editing = false;
+let pending = null;
+document.addEventListener('focusin', e => { if (e.target.closest('.wrap') && (e.target.matches('input,textarea'))) editing = true; });
+document.addEventListener('focusout', () => { editing = false; if (pending) { const p = pending; pending = null; applyRemote(p); } });
+
+/* ═══════════════════ RENDU ═══════════════════ */
+function autosize(el){ el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+
+function renderAll(){ renderEntries(); renderNpcs(); renderThreads(); updateCounts(); }
+
+function updateCounts(){
+  document.getElementById('c-chronique').textContent = state.entries.length ? '('+state.entries.length+')' : '';
+  document.getElementById('c-pnj').textContent = state.npcs.length ? '('+state.npcs.length+')' : '';
+  const open = state.threads.filter(t=>!t.done).length;
+  document.getElementById('c-fils').textContent = open ? '('+open+')' : '';
+}
+
+/* ── Chronique ── */
+function renderEntries(){
+  const box = document.getElementById('entries');
+  const q = (document.getElementById('search-entries').value || '').toLowerCase();
+  const list = state.entries.filter(e => !q || (e.title+' '+e.body+' '+e.date).toLowerCase().includes(q));
+  if (!state.entries.length){
+    box.innerHTML = '<div class="empty"><span class="big">Le parchemin est vierge.</span>Commence par consigner votre première séance.</div>';
+    return;
+  }
+  if (!list.length){ box.innerHTML = '<div class="empty">Aucune séance ne correspond.</div>'; return; }
+  box.innerHTML = list.map(e => `
+    <article class="scroll" data-id="${e.id}">
+      <div class="entry-head">
+        <span class="entry-date"><input value="${esc(e.date)}" data-f="date" placeholder="date…"></span>
+        <span class="entry-title"><input value="${esc(e.title)}" data-f="title" placeholder="Titre de la séance…"></span>
+        <span class="entry-del" title="Supprimer" onclick="delEntry('${e.id}')">✕</span>
+      </div>
+      <textarea class="entry-body" data-f="body" placeholder="Ce qui s'est passé, ce qui a été dit, ce qu'on a découvert…">${esc(e.body)}</textarea>
+    </article>`).join('');
+  box.querySelectorAll('.scroll').forEach(art => {
+    const id = art.dataset.id;
+    art.querySelectorAll('[data-f]').forEach(inp => {
+      inp.addEventListener('input', () => {
+        const ent = state.entries.find(x=>x.id===id); if(!ent) return;
+        ent[inp.dataset.f] = inp.value; if (inp.tagName==='TEXTAREA') autosize(inp); save();
+      });
+    });
+    const ta = art.querySelector('textarea'); if (ta) autosize(ta);
+  });
+}
+
+/* ── PNJ ── */
+const NPC_STATUS = { allie:'Allié', ennemi:'Ennemi', neutre:'Neutre', defunt:'Défunt', inconnu:'Inconnu' };
+function renderNpcs(){
+  const box = document.getElementById('npcs');
+  const q = (document.getElementById('search-npcs').value || '').toLowerCase();
+  const list = state.npcs.filter(n => !q || (n.name+' '+n.role+' '+n.place+' '+n.note).toLowerCase().includes(q));
+  if (!state.npcs.length){
+    box.innerHTML = '<div class="empty" style="grid-column:1/-1"><span class="big">Personne pour l\'instant.</span>Ajoute les visages croisés en chemin.</div>';
+    return;
+  }
+  if (!list.length){ box.innerHTML = '<div class="empty" style="grid-column:1/-1">Aucun personnage ne correspond.</div>'; return; }
+  box.innerHTML = list.map(n => {
+    const opts = Object.entries(NPC_STATUS).map(([k,v])=>`<option value="${k}" ${n.status===k?'selected':''}>${v}</option>`).join('');
+    return `
+    <div class="npc" data-id="${n.id}">
+      <span class="npc-del" onclick="delNpc('${n.id}')">✕</span>
+      <div class="npc-top">
+        <input class="npc-name" value="${esc(n.name)}" data-f="name" placeholder="Nom…">
+        <select class="npc-status st-${n.status||'inconnu'}" data-f="status">${opts}</select>
+      </div>
+      <div class="npc-line"><span class="lbl">Rôle</span><input value="${esc(n.role)}" data-f="role" placeholder="fonction, faction…"></div>
+      <div class="npc-line"><span class="lbl">Lieu</span><input value="${esc(n.place)}" data-f="place" placeholder="où on l'a vu…"></div>
+      <textarea class="npc-note" data-f="note" placeholder="notes, ce qu'il sait, ce qu'il veut…">${esc(n.note)}</textarea>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('.npc').forEach(card => {
+    const id = card.dataset.id;
+    card.querySelectorAll('[data-f]').forEach(inp => {
+      inp.addEventListener('input', () => {
+        const n = state.npcs.find(x=>x.id===id); if(!n) return;
+        n[inp.dataset.f] = inp.value;
+        if (inp.dataset.f==='status') inp.className = 'npc-status st-'+inp.value;
+        if (inp.tagName==='TEXTAREA') autosize(inp);
+        save();
+      });
+      if (inp.tagName==='SELECT') inp.addEventListener('change', ()=>inp.dispatchEvent(new Event('input')));
+    });
+    const ta = card.querySelector('textarea'); if (ta) autosize(ta);
+  });
+}
+
+/* ── Fils ── */
+function renderThreads(){
+  const box = document.getElementById('threads');
+  const q = (document.getElementById('search-threads').value || '').toLowerCase();
+  const list = state.threads.filter(t => !q || (t.title+' '+t.note).toLowerCase().includes(q));
+  if (!state.threads.length){
+    box.innerHTML = '<div class="empty"><span class="big">Aucune piste ouverte.</span>Note ici les mystères et objectifs en cours.</div>';
+    return;
+  }
+  if (!list.length){ box.innerHTML = '<div class="empty">Aucune piste ne correspond.</div>'; return; }
+  const sorted = [...list].sort((a,b)=>(a.done?1:0)-(b.done?1:0));
+  box.innerHTML = sorted.map(t => `
+    <div class="thread ${t.done?'done':''}" data-id="${t.id}">
+      <button class="thread-check" onclick="toggleThread('${t.id}')" title="Marquer résolu">${t.done?'✓':''}</button>
+      <div class="thread-body">
+        <input class="thread-title" value="${esc(t.title)}" data-f="title" placeholder="La piste, la question, l'objectif…">
+        <textarea class="thread-note" data-f="note" placeholder="détails, indices…">${esc(t.note)}</textarea>
+      </div>
+      <span class="thread-del" onclick="delThread('${t.id}')">✕</span>
+    </div>`).join('');
+  box.querySelectorAll('.thread').forEach(row => {
+    const id = row.dataset.id;
+    row.querySelectorAll('[data-f]').forEach(inp => {
+      inp.addEventListener('input', () => {
+        const t = state.threads.find(x=>x.id===id); if(!t) return;
+        t[inp.dataset.f] = inp.value; if (inp.tagName==='TEXTAREA') autosize(inp); save();
+      });
+    });
+    const ta = row.querySelector('textarea'); if (ta) autosize(ta);
+  });
+}
+
+/* ═══════════════════ ACTIONS ═══════════════════ */
+function addEntry(){ state.entries.unshift({ id:uid(), date:today(), title:'', body:'' }); save(); renderEntries(); updateCounts(); const f=document.querySelector('#entries .entry-title input'); if(f) f.focus(); }
+function delEntry(id){ if(!confirm('Supprimer cette séance ?')) return; state.entries = state.entries.filter(e=>e.id!==id); save(); renderEntries(); updateCounts(); }
+
+function addNpc(){ state.npcs.push({ id:uid(), name:'', role:'', place:'', status:'inconnu', note:'' }); save(); renderNpcs(); updateCounts(); const cards=document.querySelectorAll('#npcs .npc-name'); if(cards.length) cards[cards.length-1].focus(); }
+function delNpc(id){ if(!confirm('Supprimer ce personnage ?')) return; state.npcs = state.npcs.filter(n=>n.id!==id); save(); renderNpcs(); updateCounts(); }
+
+function addThread(){ state.threads.unshift({ id:uid(), title:'', note:'', done:false }); save(); renderThreads(); updateCounts(); const f=document.querySelector('#threads .thread-title'); if(f) f.focus(); }
+function delThread(id){ if(!confirm('Supprimer cette piste ?')) return; state.threads = state.threads.filter(t=>t.id!==id); save(); renderThreads(); updateCounts(); }
+function toggleThread(id){ const t=state.threads.find(x=>x.id===id); if(!t) return; t.done=!t.done; save(); renderThreads(); updateCounts(); }
+
+/* ── Onglets ── */
+document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById('panel-'+tab.dataset.tab).classList.add('active');
+}));
+
+/* ── Recherche ── */
+document.getElementById('search-entries').addEventListener('input', renderEntries);
+document.getElementById('search-npcs').addEventListener('input', renderNpcs);
+document.getElementById('search-threads').addEventListener('input', renderThreads);
+
+/* ── Import / Export ── */
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'chronique-eclipse.json'; a.click(); URL.revokeObjectURL(a.href);
+}
+function importJSON(ev){
+  const file = ev.target.files[0]; if(!file) return;
+  const r = new FileReader();
+  r.onload = () => { try {
+    const d = JSON.parse(r.result);
+    if (d && typeof d==='object'){
+      state.entries = Array.isArray(d.entries)?d.entries:[];
+      state.npcs = Array.isArray(d.npcs)?d.npcs:[];
+      state.threads = Array.isArray(d.threads)?d.threads:[];
+      save(); renderAll(); alert('Chronique importée.');
+    }
+  } catch(e){ alert('Fichier illisible : '+e.message); } };
+  r.readAsText(file); ev.target.value='';
+}
+
+/* ═══════════════════ SYNC FIREBASE (partagée, temps réel) ═══════════════════ */
+let save = function(){}; // remplacée ci-dessous
+(function(){
+  const REF = "journal/eclipse";
+  const LS_KEY = "chronique_eclipse_cache";
+  const FB_CONFIG = {
+    apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+    authDomain: "warhammer-table-jdr.firebaseapp.com",
+    databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "warhammer-table-jdr",
+    storageBucket: "warhammer-table-jdr.firebasestorage.app",
+    messagingSenderId: "347804803970",
+    appId: "1:347804803970:web:43e062299c53e59d20e59b"
+  };
+  const syncEl = document.getElementById('sync'), syncTxt = document.getElementById('sync-txt');
+  function status(cls,txt){ syncEl.className='nav-sync '+(cls||''); syncTxt.textContent=txt; }
+
+  let fbRef = null;
+  try {
+    if (typeof firebase !== "undefined") {
+      if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+      fbRef = firebase.database().ref(REF);
+    }
+  } catch(e){ console.warn("Firebase indisponible, mode local :", e); }
+
+  function normalize(d){
+    return {
+      entries: Array.isArray(d && d.entries) ? d.entries : [],
+      npcs:    Array.isArray(d && d.npcs)    ? d.npcs    : [],
+      threads: Array.isArray(d && d.threads) ? d.threads : []
+    };
+  }
+
+  // appliquée quand un changement distant arrive
+  window.applyRemote = function(d){
+    state = normalize(d);
+    renderAll();
+  };
+
+  let timer = null;
+  save = function(){
+    try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){}
+    if (!fbRef) { status('','Local'); return; }
+    status('saving','Enregistrement…');
+    clearTimeout(timer);
+    timer = setTimeout(function(){
+      fbRef.set(JSON.parse(JSON.stringify(state)))
+        .then(()=>status('online','Synchronisé'))
+        .catch(e=>{ console.warn("Écriture échouée (gardé en local) :", e); status('','Local'); });
+    }, 500);
+  };
+
+  // chargement : cache local d'abord, puis écoute temps réel
+  try { const raw = localStorage.getItem(LS_KEY); if (raw) state = normalize(JSON.parse(raw)); } catch(e){}
+  renderAll();
+
+  if (fbRef){
+    status('online','Connexion…');
+    fbRef.on("value", function(snap){
+      const remote = snap.val();
+      if (!remote){ // base vide : on y pousse l'état courant
+        fbRef.set(JSON.parse(JSON.stringify(state)));
+        status('online','Synchronisé'); return;
+      }
+      if (editing){ pending = remote; }  // on attend la fin de la frappe
+      else applyRemote(remote);
+      status('online','Synchronisé');
+    }, function(err){ console.warn("Écoute échouée :", err); status('','Local'); });
+  } else {
+    status('','Local');
+  }
+})();
+</script>
+</body>
+</html>
