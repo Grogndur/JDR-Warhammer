@@ -89,28 +89,30 @@
   .entry-body::placeholder { color:rgba(90,74,56,0.45); font-style:italic; }
 
   /* ══════ PNJ ══════ */
-  .npc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:1rem; }
-  .npc { background:linear-gradient(160deg,var(--pap) 0%,var(--pap2) 100%); color:var(--encre); border-radius:3px; padding:0.9rem 1rem 0.85rem; box-shadow:0 6px 18px rgba(0,0,0,0.45); border:1px solid rgba(60,40,20,0.25); position:relative; }
-  .npc-top { display:flex; align-items:center; gap:0.5rem; }
-  .npc-name { flex:1; font-family:'IM Fell English',serif; font-size:1.15rem; font-weight:600; color:var(--encre); background:transparent; border:none; border-bottom:1px solid transparent; padding:0.1rem 0; }
+  .npc-grid { display:flex; flex-direction:column; gap:1rem; }
+  .npc { background:linear-gradient(160deg,var(--pap) 0%,var(--pap2) 100%); color:var(--encre); border-radius:3px; padding:1.15rem 1.5rem 1rem; box-shadow:0 8px 22px rgba(0,0,0,0.45); border:1px solid rgba(60,40,20,0.25); }
+  .npc-top { display:flex; align-items:center; gap:0.85rem; border-bottom:1px solid rgba(60,40,20,0.2); padding-bottom:0.65rem; margin-bottom:0.75rem; }
+  .npc-name { flex:1; min-width:0; font-family:'IM Fell English',serif; font-size:1.3rem; font-weight:600; color:var(--encre); background:transparent; border:none; border-bottom:1px solid transparent; padding:0.1rem 0; }
   .npc-name:focus { outline:none; border-bottom-color:rgba(122,46,46,0.4); }
   .npc-name::placeholder { color:rgba(90,74,56,0.5); }
-  .npc-status { font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.06em; text-transform:uppercase; border-radius:2px; padding:0.2rem 0.4rem; cursor:pointer; border:1px solid; background:transparent; }
+  .npc-status { flex-shrink:0; font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.06em; text-transform:uppercase; border-radius:2px; padding:0.25rem 0.45rem; cursor:pointer; border:1px solid; background:transparent; }
   .st-allie   { color:#3d6b30; border-color:#3d6b30; }
   .st-ennemi  { color:#8a2020; border-color:#8a2020; }
   .st-neutre  { color:#7a5a20; border-color:#7a5a20; }
   .st-defunt  { color:#4a4a4a; border-color:#4a4a4a; }
   .st-inconnu { color:#5a4a70; border-color:#5a4a70; }
   .npc-status option { background:var(--pap); color:var(--encre); }
-  .npc-line { display:flex; align-items:center; gap:0.4rem; margin-top:0.5rem; }
+  .npc-del { flex-shrink:0; color:rgba(122,46,46,0.4); cursor:pointer; font-size:0.9rem; line-height:1; padding:0 0.15rem; transition:color 0.15s; user-select:none; }
+  .npc-del:hover { color:var(--acc); }
+  .npc-lines { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem 1.75rem; }
+  @media(max-width:520px){ .npc-lines { grid-template-columns:1fr; } }
+  .npc-line { display:flex; align-items:center; gap:0.5rem; }
   .npc-line .lbl { font-family:'Cinzel',serif; font-size:0.55rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--encre-soft); opacity:0.7; flex-shrink:0; width:38px; }
-  .npc-line input { flex:1; font-family:'Crimson Text',serif; font-size:0.9rem; color:var(--encre); background:transparent; border:none; border-bottom:1px solid rgba(60,40,20,0.15); padding:0.1rem 0; }
+  .npc-line input { flex:1; min-width:0; font-family:'Crimson Text',serif; font-size:0.95rem; color:var(--encre); background:transparent; border:none; border-bottom:1px solid rgba(60,40,20,0.15); padding:0.1rem 0; }
   .npc-line input:focus { outline:none; border-bottom-color:rgba(122,46,46,0.4); }
-  .npc-note { width:100%; margin-top:0.6rem; font-family:'IM Fell English',serif; font-size:0.95rem; line-height:1.5; color:var(--encre); background:transparent; border:none; border-top:1px solid rgba(60,40,20,0.15); padding-top:0.5rem; resize:none; overflow:hidden; min-height:1.5rem; }
+  .npc-note { width:100%; margin-top:0.75rem; font-family:'IM Fell English',serif; font-size:0.98rem; line-height:1.55; color:var(--encre); background:transparent; border:none; border-top:1px solid rgba(60,40,20,0.15); padding-top:0.55rem; resize:none; overflow:hidden; min-height:1.5rem; }
   .npc-note:focus { outline:none; }
   .npc-note::placeholder { color:rgba(90,74,56,0.45); font-style:italic; }
-  .npc-del { color:rgba(122,46,46,0.4); cursor:pointer; font-size:0.85rem; flex-shrink:0; line-height:1; padding:0 0.1rem; transition:color 0.15s; user-select:none; }
-  .npc-del:hover { color:var(--acc); }
 
   /* ══════ FILS ══════ */
   .thread { background:linear-gradient(160deg,var(--pap) 0%,var(--pap2) 100%); color:var(--encre); border-radius:3px; padding:0.85rem 1rem; margin-bottom:0.8rem; box-shadow:0 5px 15px rgba(0,0,0,0.4); border:1px solid rgba(60,40,20,0.25); border-left:4px solid var(--acc); display:flex; align-items:flex-start; gap:0.75rem; }
@@ -273,10 +275,10 @@ function renderNpcs(){
   const q = (document.getElementById('search-npcs').value || '').toLowerCase();
   const list = state.npcs.filter(n => !q || (n.name+' '+n.role+' '+n.place+' '+n.note).toLowerCase().includes(q));
   if (!state.npcs.length){
-    box.innerHTML = '<div class="empty" style="grid-column:1/-1"><span class="big">Personne pour l\'instant.</span>Ajoute les visages croisés en chemin.</div>';
+    box.innerHTML = '<div class="empty"><span class="big">Personne pour l\'instant.</span>Ajoute les visages croisés en chemin.</div>';
     return;
   }
-  if (!list.length){ box.innerHTML = '<div class="empty" style="grid-column:1/-1">Aucun personnage ne correspond.</div>'; return; }
+  if (!list.length){ box.innerHTML = '<div class="empty">Aucun personnage ne correspond.</div>'; return; }
   box.innerHTML = list.map(n => {
     const opts = Object.entries(NPC_STATUS).map(([k,v])=>`<option value="${k}" ${n.status===k?'selected':''}>${v}</option>`).join('');
     return `
@@ -286,8 +288,10 @@ function renderNpcs(){
         <select class="npc-status st-${n.status||'inconnu'}" data-f="status">${opts}</select>
         <span class="npc-del" title="Supprimer" onclick="delNpc('${n.id}')">✕</span>
       </div>
-      <div class="npc-line"><span class="lbl">Rôle</span><input value="${esc(n.role)}" data-f="role" placeholder="fonction, faction…"></div>
-      <div class="npc-line"><span class="lbl">Lieu</span><input value="${esc(n.place)}" data-f="place" placeholder="où on l'a vu…"></div>
+      <div class="npc-lines">
+        <div class="npc-line"><span class="lbl">Rôle</span><input value="${esc(n.role)}" data-f="role" placeholder="fonction, faction…"></div>
+        <div class="npc-line"><span class="lbl">Lieu</span><input value="${esc(n.place)}" data-f="place" placeholder="où on l'a vu…"></div>
+      </div>
       <textarea class="npc-note" data-f="note" placeholder="notes, ce qu'il sait, ce qu'il veut…">${esc(n.note)}</textarea>
     </div>`;
   }).join('');
