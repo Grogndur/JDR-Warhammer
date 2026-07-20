@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nouveau personnage — Fiche de personnage</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:#0a0a0f; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
+    --GLD:#B8922A; --VIO:#674EA7; --GRN:#5E804F; --SUB:#555566;
+    --acc:#8a6a3a; --acc2:#d4b45a;
+    --acc-border:rgba(184,146,42,0.2); --acc-border-s:rgba(184,146,42,0.4);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--ink); color:var(--parchment); font-family:'Crimson Text',serif; min-height:100vh; }
+  body::before { content:''; position:fixed; inset:0;
+    background: radial-gradient(ellipse at 30% 0%, rgba(184,112,42,0.09) 0%, transparent 55%),
+                radial-gradient(ellipse at 70% 100%, rgba(184,146,42,0.05) 0%, transparent 50%);
+    pointer-events:none; z-index:0; }
+
+  nav { position:sticky; top:0; z-index:100; background:rgba(10,10,15,0.93); backdrop-filter:blur(8px); border-bottom:1px solid var(--acc-border); padding:0.6rem 1.5rem; display:flex; align-items:center; gap:1rem; }
+  nav a { color:var(--SUB); text-decoration:none; font-size:0.82rem; font-style:italic; transition:color 0.2s; }
+  nav a:hover { color:var(--GLD); }
+  .nav-current { color:var(--acc2) !important; font-style:normal; font-family:'Cinzel',serif; font-size:0.82rem; }
+  .nav-sep { color:var(--SUB); opacity:0.3; }
+
+  .layout { position:relative; z-index:1; max-width:1050px; margin:0 auto; padding:1.5rem 1rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media(max-width:700px){ .layout { grid-template-columns:1fr; } }
+
+  .perso-header { grid-column:1/-1; display:flex; align-items:flex-end; gap:1.5rem; padding-bottom:1.25rem; border-bottom:1px solid var(--acc-border); flex-wrap:wrap; }
+  .perso-avatar { width:58px; height:58px; border-radius:2px; background:linear-gradient(135deg,rgba(184,112,42,0.15),rgba(85,85,102,0.25)); border:1px solid var(--acc-border-s); display:flex; align-items:center; justify-content:center; font-size:1.7rem; flex-shrink:0; }
+  .perso-info h1 { font-family:'Cinzel',serif; font-size:2rem; font-weight:700; line-height:1; letter-spacing:0.05em; }
+  .perso-info .sub { font-style:italic; color:var(--acc2); font-size:0.95rem; margin-top:0.2rem; }
+  .perso-info .player { color:var(--SUB); font-size:0.78rem; margin-top:0.15rem; }
+  .perso-meta { margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:0.3rem; font-size:0.8rem; color:var(--SUB); font-style:italic; }
+
+  .card { background:rgba(10,10,15,0.65); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:1.1rem; }
+  .card.acc { border-color:var(--acc-border); }
+  .card-title { font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.9rem; display:flex; align-items:center; gap:0.5rem; }
+  .card-title::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.05); }
+  .card-title.acc { color:var(--acc2); }
+  .card-title.gld { color:var(--GLD); }
+  .card-title.vio { color:#674EA7; }
+  .card-title.grn { color:var(--GRN); }
+  .card-title.red { color:#c0392b; }
+  .full { grid-column:1/-1; }
+
+  /* ── EDITABLE ── */
+  .editable-num {
+    background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08);
+    color:var(--GLD); font-family:'Cinzel',serif; font-size:0.95rem; font-weight:600;
+    text-align:center; width:44px; padding:0.1rem 0; transition:border-color 0.15s;
+  }
+  .editable-num:focus { outline:none; border-bottom-color:var(--GLD); }
+  .form-input { background:rgba(184,112,42,0.07); border:1px solid rgba(184,112,42,0.2); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.3rem 0.5rem; border-radius:1px; width:100%; }
+  .form-input:focus { outline:none; border-color:var(--acc2); }
+  .form-textarea { background:rgba(184,112,42,0.07); border:1px solid rgba(184,112,42,0.2); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.3rem 0.5rem; border-radius:1px; width:100%; resize:vertical; min-height:60px; line-height:1.45; }
+  .form-textarea:focus { outline:none; border-color:var(--acc2); }
+
+  /* ── STATS ── */
+  .stats-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:0.45rem; }
+  @media(max-width:500px){ .stats-grid { grid-template-columns:repeat(3,1fr); } }
+  .stat-box { background:rgba(184,112,42,0.05); border:1px solid rgba(184,112,42,0.12); border-radius:2px; padding:0.45rem 0.3rem; text-align:center; }
+  .stat-label { font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); display:block; margin-bottom:0.2rem; }
+  .stat-total { font-family:'Cinzel',serif; font-size:1.3rem; font-weight:700; color:var(--acc2); display:block; margin-top:0.1rem; }
+  .stat-bonus { font-size:0.6rem; color:var(--SUB); display:block; margin-top:0.05rem; }
+  .stat-edit-row { display:flex; gap:0.25rem; justify-content:center; align-items:center; margin-top:0.3rem; }
+  .stat-edit-row .editable-num { font-size:0.78rem; width:34px; color:var(--parchment-dark); border-bottom-color:rgba(255,255,255,0.06); }
+  .stat-edit-row .plus { color:var(--acc2); font-size:0.65rem; }
+
+  /* ── RESSOURCES ── */
+  .res-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:0.75rem; }
+  .res-box { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:0.6rem; text-align:center; }
+  .res-label { font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.3rem; display:block; }
+  .res-val { font-family:'Cinzel',serif; font-size:1.5rem; line-height:1; display:block; }
+  .res-sub { font-size:0.7rem; color:var(--SUB); margin-top:0.1rem; display:block; }
+  .wounds-ctrl { display:flex; align-items:center; gap:0.5rem; justify-content:center; margin-top:0.5rem; }
+  .btn-small { width:30px; height:30px; border-radius:2px; font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+  .btn-wound { background:rgba(139,26,26,0.2); border:1px solid rgba(139,26,26,0.4); color:#e08080; }
+  .btn-wound:hover { background:rgba(139,26,26,0.35); }
+  .btn-heal { background:rgba(94,128,79,0.15); border:1px solid rgba(94,128,79,0.35); color:var(--GRN); }
+  .btn-heal:hover { background:rgba(94,128,79,0.3); }
+
+  /* ── MONNAIE ── */
+  .money-row { display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap; margin-top:0.25rem; }
+  .money-item { display:flex; flex-direction:column; align-items:center; gap:0.1rem; }
+  .money-val { font-family:'Cinzel',serif; font-size:1.4rem; color:var(--GLD); }
+  .money-label { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); }
+  .money-btns { display:flex; gap:0.2rem; margin-top:0.2rem; }
+  .money-btn { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); color:var(--SUB); cursor:pointer; font-size:0.7rem; width:20px; height:20px; border-radius:1px; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+  .money-btn:hover { color:var(--GLD); border-color:rgba(184,146,42,0.3); }
+
+  /* ── COMPÉTENCES ── */
+  .skill-list { list-style:none; column-count:2; column-gap:1.5rem; }
+  .skill-list li { display:flex; align-items:center; padding:0.3rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.8rem; gap:0.4rem; break-inside:avoid; -webkit-column-break-inside:avoid; flex-wrap:wrap; }
+  .skill-list li:last-child { border-bottom:none; }
+  .skill-name { color:var(--parchment-dark); flex:1 1 0; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .skill-field { display:flex; flex-direction:column; align-items:center; flex-shrink:0; }
+  .skill-field-lbl { font-size:0.44rem; letter-spacing:0.04em; text-transform:uppercase; color:var(--SUB); opacity:0.7; line-height:1; margin-bottom:0.05rem; }
+  .skill-field .editable-num { width:28px; font-size:0.78rem; text-align:center; }
+  .skill-total { font-family:'Cinzel',serif; color:var(--GLD); font-size:0.9rem; font-weight:700; min-width:30px; text-align:right; flex-shrink:0; }
+  .skill-list li > .xp-badge { flex-basis:100%; margin-left:0; }
+  @media(max-width:700px){ .skill-list { column-count:1; } }
+  .del-btn { color:rgba(139,26,26,0.4); cursor:pointer; font-size:0.72rem; flex-shrink:0; transition:color 0.15s; }
+  .del-btn:hover { color:#e08080; }
+
+  /* ── TALENTS ── */
+  .talent-list { list-style:none; }
+  .talent-list li { padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.87rem; display:flex; align-items:flex-start; gap:0.5rem; }
+  .talent-list li:last-child { border-bottom:none; }
+  .talent-content { flex:1; }
+  .talent-name { color:var(--acc2); font-weight:600; }
+  .talent-desc { color:var(--SUB); font-size:0.8rem; font-style:italic; display:block; margin-top:0.1rem; }
+
+  /* ── ARMURE ── */
+  .armor-table { width:100%; border-collapse:collapse; font-size:0.82rem; margin-bottom:0.75rem; }
+  .armor-table th { text-align:left; color:var(--SUB); font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.2rem 0.4rem 0.4rem; font-weight:400; border-bottom:1px solid rgba(255,255,255,0.05); }
+  .armor-table td { padding:0.25rem 0.4rem; border-bottom:1px solid rgba(255,255,255,0.03); color:var(--parchment-dark); vertical-align:middle; }
+  .armor-pa-input { font-family:'Cinzel',serif; color:var(--GLD); font-weight:600; text-align:center; background:transparent; border:none; border-bottom:1px solid rgba(184,146,42,0.15); width:36px; font-size:0.9rem; padding:0.05rem 0; }
+  .armor-pa-input:focus { outline:none; border-bottom-color:var(--GLD); }
+
+  /* ── ARMES ── */
+  .weapon-item { padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.04); display:flex; align-items:flex-start; gap:0.5rem; }
+  .weapon-item:last-child { border-bottom:none; }
+  .weapon-content { flex:1; }
+  .weapon-name { color:var(--parchment); font-size:0.9rem; font-weight:600; }
+  .weapon-stats { display:flex; gap:0.75rem; margin-top:0.2rem; flex-wrap:wrap; }
+  .wstat { font-size:0.72rem; }
+  .wstat-l { color:var(--SUB); }
+  .wstat-v { color:var(--GLD); font-family:'Cinzel',serif; }
+
+  /* ── INVENTAIRE ── */
+  .inv-item { display:flex; align-items:center; padding:0.28rem 0; border-bottom:1px solid rgba(255,255,255,0.03); font-size:0.85rem; gap:0.4rem; }
+  .inv-item:last-child { border-bottom:none; }
+  .inv-name { color:var(--parchment-dark); flex:1; }
+  .inv-detail { font-size:0.72rem; color:var(--SUB); font-style:italic; white-space:nowrap; }
+
+  /* ── FORMULAIRES ── */
+  .form-panel { display:none; background:rgba(184,112,42,0.06); border:1px solid rgba(184,112,42,0.2); border-radius:2px; padding:0.65rem; margin-top:0.5rem; flex-direction:column; gap:0.4rem; }
+  .form-panel.visible { display:flex; }
+  .form-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:0.4rem; }
+  .btn-add { font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.35rem 0.75rem; border-radius:2px; cursor:pointer; transition:all 0.15s; display:inline-flex; align-items:center; gap:0.3rem; }
+  .btn-acc { background:rgba(184,112,42,0.1); border:1px solid rgba(184,112,42,0.35); color:var(--acc2); }
+  .btn-acc:hover { background:rgba(184,112,42,0.22); }
+  .btn-gld { background:rgba(184,146,42,0.08); border:1px solid rgba(184,146,42,0.3); color:var(--GLD); }
+  .btn-gld:hover { background:rgba(184,146,42,0.18); }
+  .btn-cancel { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); color:var(--SUB); font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.3rem 0.6rem; border-radius:2px; cursor:pointer; }
+
+  /* ── XP ── */
+  .xp-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem; text-align:center; margin-bottom:0.9rem; }
+  .xp-box { background:rgba(103,78,167,0.08); border:1px solid rgba(103,78,167,0.15); border-radius:2px; padding:0.5rem; }
+  .xp-label { font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:#674EA7; display:block; margin-bottom:0.2rem; opacity:0.8; }
+  .xp-val-input { font-family:'Cinzel',serif; font-size:1.2rem; color:var(--parchment); background:transparent; border:none; border-bottom:1px solid rgba(103,78,167,0.2); text-align:center; width:70px; }
+  .xp-val-input:focus { outline:none; border-bottom-color:#674EA7; }
+  .amb-label { font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:#674EA7; margin-bottom:0.2rem; display:block; opacity:0.9; }
+  .trait-block { font-size:0.86rem; line-height:1.55; color:var(--parchment-dark); margin-bottom:0.5rem; }
+  .trait-line { font-size:0.85rem; line-height:1.6; color:var(--parchment-dark); padding:0.1rem 0; }
+  .trait-line.plus { color:var(--GRN); }
+  .trait-line.minus { color:#c07060; }
+
+  /* ── CORRUPTION ── */
+  .cet-card { display:flex; flex-direction:column; }
+  .cet-card .cet-grid { flex:1; }
+  .cet-grid { display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:0.5rem; }
+  @media(max-width:500px){ .cet-grid { grid-template-columns:1fr; } }
+  .cet-box { background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:0.5rem 0.6rem; display:flex; flex-direction:column; }
+  .cet-label { font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.35rem; display:block; font-family:'Cinzel',serif; }
+  .cet-input { width:100%; background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.85rem; padding:0.2rem 0; resize:none; flex:1; min-height:52px; line-height:1.4; }
+  .cet-input:focus { outline:none; border-bottom-color:var(--acc2); }
+  .cet-input::placeholder { color:rgba(85,85,102,0.5); font-style:italic; }
+
+  /* ── IDENTITÉ ÉDITABLE ── */
+  .ident-nom { font-family:'Cinzel',serif; font-size:2rem; font-weight:700; line-height:1; letter-spacing:0.02em; color:var(--parchment); background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); padding:0 0 0.1rem 0; width:340px; max-width:100%; transition:border-color 0.15s; }
+  .ident-nom:focus { outline:none; border-bottom-color:var(--acc2); }
+  .ident-nom::placeholder { color:rgba(120,110,110,0.4); }
+  .ident-line { display:flex; align-items:center; gap:0.3rem; flex-wrap:wrap; margin-top:0.2rem; }
+  .ident-input { background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.07); color:var(--SUB); font-family:'Crimson Text',serif; font-size:0.8rem; padding:0.05rem 0.15rem; transition:border-color 0.15s; }
+  .ident-input:focus { outline:none; border-bottom-color:rgba(184,146,42,0.55); color:var(--parchment-dark); }
+  .ident-input::placeholder { color:rgba(120,110,110,0.45); font-style:italic; }
+  .ident-joueur { width:120px; } .ident-race { width:110px; } .ident-age { width:75px; }
+  .ident-meta { background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.07); color:var(--SUB); font-family:'Crimson Text',serif; font-size:0.78rem; font-style:italic; text-align:right; padding:0.05rem 0.15rem; width:265px; transition:border-color 0.15s; }
+  .ident-meta:focus { outline:none; border-bottom-color:rgba(184,146,42,0.55); color:var(--parchment-dark); }
+  .ident-meta::placeholder { color:rgba(120,110,110,0.45); }
+  /* ── ZONES DE TEXTE LIBRES ── */
+  .free-area { width:100%; background:rgba(10,10,15,0.4); border:1px solid rgba(255,255,255,0.06); border-radius:2px; color:var(--parchment-dark); font-family:'Crimson Text',serif; font-size:0.86rem; padding:0.5rem 0.6rem; resize:vertical; line-height:1.6; transition:border-color 0.15s; }
+  .free-area:focus { outline:none; border-color:rgba(184,146,42,0.4); }
+  .free-area::placeholder { color:rgba(85,85,102,0.6); font-style:italic; }
+  .free-area.plus:focus { border-color:rgba(94,128,79,0.5); }
+  .free-area.minus:focus { border-color:rgba(192,112,96,0.5); }
+  /* ── BANDEAU MODÈLE ── */
+  .tpl-warn { grid-column:1/-1; background:rgba(184,112,42,0.1); border:1px solid rgba(184,112,42,0.4); border-radius:2px; padding:0.6rem 0.85rem; font-size:0.8rem; color:var(--parchment-dark); line-height:1.5; margin-bottom:0.25rem; }
+  .tpl-warn strong { color:var(--acc2); font-family:'Cinzel',serif; letter-spacing:0.06em; }
+  .tpl-warn code { font-family:monospace; color:var(--GLD); background:rgba(184,146,42,0.12); padding:0.05rem 0.3rem; border-radius:2px; }
+
+  /* ── NOTES ── */
+  .notes-area { width:100%; background:rgba(10,10,15,0.5); border:1px solid rgba(255,255,255,0.07); border-radius:2px; color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.65rem; resize:vertical; min-height:70px; line-height:1.5; }
+  .notes-area:focus { outline:none; border-color:var(--acc-border-s); }
+  .btn-save { background:rgba(184,112,42,0.12); border:1px solid var(--acc-border-s); color:var(--acc2); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.35rem 0.75rem; border-radius:2px; cursor:pointer; margin-top:0.5rem; transition:background 0.15s; }
+  .btn-save:hover { background:rgba(184,112,42,0.22); }
+  .save-confirm { font-size:0.78rem; color:var(--GRN); margin-left:0.75rem; opacity:0; transition:opacity 0.5s; }
+
+  .histo { font-size:0.87rem; line-height:1.7; color:var(--parchment-dark); }
+  .histo p { margin-bottom:0.65rem; }
+  .citation { font-style:italic; color:var(--SUB); font-size:0.9rem; border-left:2px solid var(--acc-border-s); padding-left:0.75rem; margin-top:0.6rem; }
+
+  /* ── PIPS ICÔNES ── */
+  /* ── PIÈCES D'ARMURE ── */
+  .armor-piece { padding:0.45rem 0; border-bottom:1px solid rgba(255,255,255,0.04); display:flex; align-items:flex-start; gap:0.5rem; }
+  .armor-piece:last-child { border-bottom:none; }
+  .armor-piece-content { flex:1; }
+  .armor-piece-name { color:var(--parchment); font-size:0.88rem; font-weight:600; }
+  .armor-piece-stats { display:flex; gap:0.6rem; margin-top:0.15rem; flex-wrap:wrap; }
+  .astat { font-size:0.72rem; }
+  .astat-l { color:var(--SUB); }
+  .astat-v { color:var(--GLD); font-family:'Cinzel',serif; }
+
+  /* ── GITHUB SYNC ── */
+  .io-bar { display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; padding:0.6rem 0.9rem; background:rgba(36,41,47,0.6); border:1px solid rgba(255,255,255,0.07); border-radius:2px; margin-bottom:0.5rem; }
+  .io-btn { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.32rem 0.9rem; border-radius:2px; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .io-btn-export { background:rgba(36,160,96,0.15); border:1px solid rgba(36,160,96,0.4); color:#4caf82; }
+  .io-btn-export:hover { background:rgba(36,160,96,0.28); }
+  .io-btn-import { background:rgba(184,146,42,0.1); border:1px solid rgba(184,146,42,0.35); color:var(--GLD); }
+  .io-btn-import:hover { background:rgba(184,146,42,0.22); }
+  .io-status { font-size:0.75rem; font-style:italic; color:var(--SUB); flex:1; }
+  .io-status.ok  { color:#4caf82; }
+  .io-status.err { color:#e05050; }
+
+  /* ── ÉDITION INLINE ── */
+  .editable-field {
+    cursor: pointer;
+    border-bottom: 1px dashed transparent;
+    transition: border-color 0.15s;
+    display: inline-block;
+    min-width: 20px;
+  }
+  .editable-field:hover { border-bottom-color: rgba(255,255,255,0.2); }
+  .editable-field:focus {
+    outline: none;
+    border-bottom: 1px solid var(--GLD);
+    background: rgba(184,146,42,0.06);
+    border-radius: 1px;
+  }
+  .editable-field-area {
+    cursor: pointer;
+    border-bottom: 1px dashed transparent;
+    transition: border-color 0.15s;
+    display: inline-block;
+    min-width: 60px;
+    width: 100%;
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    font-style: inherit;
+    resize: none;
+    min-height: 1.4em;
+  }
+  .editable-field-area:hover { border-bottom-color: rgba(255,255,255,0.2); }
+  .editable-field-area:focus { outline: none; border-bottom: 1px solid var(--GLD); background: rgba(184,146,42,0.04); border-radius: 1px; }
+  .edit-hint { font-size: 0.58rem; color: var(--SUB); opacity: 0; transition: opacity 0.2s; letter-spacing: 0.08em; font-style: italic; margin-left: 0.3rem; }
+  .weapon-name:hover .edit-hint,
+  .armor-piece-name:hover .edit-hint,
+  .talent-name:hover .edit-hint,
+  .inv-name:hover .edit-hint { opacity: 0.5; }
+
+
+  /* ══ LIGNES NATIF / BONUS / AUGMENTATIONS (stat-box) ══ */
+  .stat-nba { margin-top:0.35rem; display:flex; flex-direction:column; gap:0.15rem; }
+  .stat-nba-row { display:flex; align-items:center; justify-content:space-between; gap:0.3rem; }
+  .stat-nba-lbl { font-size:0.5rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--SUB); }
+  .stat-nba-row input.editable-num { width:38px; font-size:0.74rem; text-align:center; }
+  .stat-nba-row .nba-natif { color:var(--parchment-dark); }
+  .stat-nba-row .nba-bonus { color:#cda64a; }
+  .stat-nba-row .nba-aug   { color:var(--acc2); }
+  .stat-nba-sep { height:1px; background:rgba(255,255,255,0.05); margin:0.05rem 0; }
+  /* ══ DESTIN/CHANCE · RÉSILIENCE/DÉTERMINATION ══ */
+  .fortune-row { display:flex; align-items:flex-start; gap:0.8rem; flex-wrap:wrap; }
+  .fortune-cell { display:flex; flex-direction:column; align-items:center; }
+  .fortune-lbl { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); height:1.5em; display:flex; align-items:center; text-align:center; }
+  .fortune-lbl-sub { opacity:0.55; font-size:0.85em; margin-left:0.2em; }
+  .fortune-input { width:54px; text-align:center; font-family:"Cinzel",serif; font-size:1.25rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:3px; padding:0.2rem 0; transition:border-color 0.15s; margin:0.25rem 0; }
+  .fortune-input:focus { outline:none; border-color:rgba(184,146,42,0.55); }
+  .fortune-input.fortune-max { color:var(--GLD); }
+  .fortune-input.fortune-cur { color:var(--parchment); }
+  .fortune-hint { font-size:0.62rem; color:var(--SUB); font-family:"Cinzel",serif; height:1.1em; }
+  .fortune-arrow { color:var(--SUB); font-size:1.1rem; align-self:center; margin-top:0.6rem; }
+  /* ══ AFFICHAGE PALIERS D'AUGMENTATION (XP) ══ */
+  .xp-badge { display:inline-flex; align-items:center; gap:0.3rem; font-family:"Cinzel",serif; font-size:0.56rem; letter-spacing:0.02em; padding:0.12rem 0.4rem; border-radius:2px; cursor:pointer; border:1px solid rgba(184,146,42,0.35); background:rgba(184,146,42,0.07); color:var(--SUB); white-space:nowrap; transition:all 0.15s; user-select:none; }
+  .xp-badge:hover { background:rgba(184,146,42,0.16); border-color:rgba(184,146,42,0.55); }
+  .xp-badge .xp-aug { color:var(--parchment-dark); }
+  .xp-badge .xp-cost { font-weight:700; color:#e8c45a; background:rgba(184,146,42,0.18); padding:0.02rem 0.3rem; border-radius:2px; }
+  .xp-badge .xp-caret { font-size:0.5rem; opacity:0.6; transition:transform 0.15s; }
+  .xp-badge.open .xp-caret { transform:rotate(180deg); }
+  .xp-grid-pop { display:none; margin-top:0.35rem; background:rgba(8,8,12,0.92); border:1px solid rgba(184,146,42,0.3); border-radius:3px; padding:0.5rem 0.6rem; }
+  .xp-grid-pop.open { display:block; }
+  .xp-grid-pop-title { font-family:"Cinzel",serif; font-size:0.56rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--GLD); margin-bottom:0.35rem; }
+  .xp-grid-table { width:100%; border-collapse:collapse; font-size:0.66rem; }
+  .xp-grid-table th { font-family:"Cinzel",serif; font-size:0.54rem; letter-spacing:0.04em; text-transform:uppercase; color:var(--SUB); padding:0.15rem 0.35rem; border-bottom:1px solid rgba(184,146,42,0.25); text-align:center; }
+  .xp-grid-table td { padding:0.13rem 0.35rem; text-align:center; color:var(--parchment-dark); border-bottom:1px solid rgba(255,255,255,0.035); }
+  .xp-grid-table td:first-child { color:var(--SUB); }
+  .xp-grid-table tr.cur td { background:rgba(184,146,42,0.16); color:#e8c45a; font-weight:700; }
+  .xp-grid-table tr.cur td:first-child { color:#e8c45a; }
+  .xp-grid-note { font-size:0.6rem; color:var(--SUB); font-style:italic; margin-top:0.3rem; line-height:1.4; }
+  /* ══ LIGNE CARRIÈRE ÉDITABLE ══ */
+  .career-line { display:flex; align-items:center; gap:0.35rem; flex-wrap:wrap; margin-top:0.15rem; }
+  .career-input { background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.1); color:var(--SUB); font-family:"Crimson Text",serif; font-size:0.85rem; font-style:italic; padding:0.05rem 0.15rem; transition:border-color 0.15s; }
+  .career-input:focus { outline:none; border-bottom-color:rgba(184,146,42,0.6); color:var(--parchment-dark); }
+  .career-input::placeholder { color:rgba(120,110,110,0.5); }
+  .career-input.career-carriere { width:210px; }
+  .career-input.career-num { width:34px; text-align:center; }
+  .career-input.career-echelon { width:150px; }
+  .career-sep { color:var(--SUB); opacity:0.5; }
+
+  /* ══ MOUVEMENT : COURSE / CHARGE ══ */
+  .move-sub { display:flex; justify-content:center; gap:1.1rem; margin-top:0.45rem; font-size:0.72rem; color:var(--SUB); letter-spacing:0.04em; }
+  .move-sub strong { color:var(--parchment-dark); font-family:'Cinzel',serif; font-size:1rem; font-weight:600; margin-left:0.2rem; }
+  /* ══ STATUT SOCIAL ══ */
+  .statut-box { margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:0.25rem; }
+  .statut-label { font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); }
+  .statut-fields { display:flex; align-items:stretch; gap:0.3rem; }
+  .statut-tier, .statut-rank { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:2px; font-family:'Cinzel',serif; transition:border-color 0.15s; }
+  .statut-tier { color:var(--GLD); font-size:0.85rem; padding:0.2rem 0.25rem; cursor:pointer; }
+  .statut-tier option { background:var(--ink); color:var(--parchment); }
+  .statut-rank { color:var(--parchment); font-size:1.15rem; width:44px; text-align:center; padding:0.1rem 0; }
+  .statut-tier:focus, .statut-rank:focus { outline:none; border-color:rgba(184,146,42,0.55); }
+</style>
+<!-- Firebase : sauvegarde en ligne, partagee entre tous les appareils -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<style>
+  .pdf-btn {
+    position:fixed; bottom:14px; right:14px; z-index:9999;
+    background:rgba(184,146,42,0.12); border:1px solid var(--GLD,#B8922A);
+    color:var(--GLD,#B8922A); font-family:'Cinzel',serif; font-size:0.7rem;
+    letter-spacing:0.12em; text-transform:uppercase; padding:0.45rem 0.75rem;
+    border-radius:2px; cursor:pointer; transition:all 0.15s; opacity:0.72;
+  }
+  .pdf-btn:hover { opacity:1; background:rgba(184,146,42,0.28); }
+  /* Plus de sauvegarde/export/import manuels : tout est en ligne et automatique. */
+  .io-bar, .btn-save, .save-confirm { display:none !important; }
+  @media print {
+    @page { margin:12mm; }
+    html, body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    body::before { display:none !important; }
+    nav, .pdf-btn, button { display:none !important; }
+    .editable, .editable-num { border:none !important; }
+    .sort-body { display:block !important; }
+    .card, .stat-box, .sort-item, .skill-list li, .talent-list li { break-inside:avoid; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="../index.html">← Accueil</a>
+  <span class="nav-sep">·</span>
+  <span class="nav-current" id="nav-current">Nouveau personnage</span>
+</nav>
+
+<div class="layout">
+
+  <div class="tpl-warn" id="tpl-warn" style="display:none;">
+    <strong>Fiche modèle</strong> — avant de la confier à un joueur, ouvre le fichier et remplace
+    <code>const FICHE_ID = "nouveau-perso"</code> (tout en bas du script) par un identifiant unique,
+    par exemple <code>"kevan"</code>. Sans ça, deux personnages écriraient dans la même sauvegarde en ligne.
+    Ce bandeau disparaîtra automatiquement.
+  </div>
+
+  <!-- HEADER -->
+  <div class="perso-header">
+    <div class="perso-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 58" width="32" height="42" fill="none"><path d="M22 6 L37 12 V30 Q37 44 22 52 Q7 44 7 30 V12 Z" fill="none" stroke="#d4b45a" stroke-width="2.2" stroke-linejoin="round"/><path d="M22 14 V44 M11 21 H33" stroke="#d4b45a" stroke-width="1.4" opacity="0.45"/><circle cx="22" cy="29" r="5.5" fill="#d4b45a" opacity="0.16"/><circle cx="22" cy="29" r="5.5" fill="none" stroke="#d4b45a" stroke-width="1.3"/></svg></div>
+    <div class="perso-info">
+      <input class="ident-nom" id="ident-nom" placeholder="Nom du personnage" onchange="identSave()" />
+      <div class="career-line"><input class="career-input career-carriere" id="career-carriere" value="" placeholder="Nom de carrière" onchange="careerSave()" /><span class="career-sep">·</span><input class="career-input career-num" id="career-num" value="" placeholder="N°" onchange="careerSave()" /><span class="career-sep">·</span><input class="career-input career-echelon" id="career-echelon" value="" placeholder="Nom d&#x2019;échelon" onchange="careerSave()" /></div>
+      <div class="ident-line">
+        <input class="ident-input ident-joueur" id="ident-joueur" placeholder="Joueur" onchange="identSave()" />
+        <span class="career-sep">·</span>
+        <input class="ident-input ident-race" id="ident-race" placeholder="Race" onchange="identSave()" />
+        <span class="career-sep">·</span>
+        <input class="ident-input ident-age" id="ident-age" placeholder="Âge" onchange="identSave()" />
+      </div>
+    </div>
+    <div class="perso-meta">
+      <input class="ident-meta" id="ident-physique" placeholder="Taille · Poids" onchange="identSave()" />
+      <input class="ident-meta" id="ident-signes" placeholder="Cheveux, yeux, signes particuliers" onchange="identSave()" />
+    </div>
+  </div>
+
+
+  <!-- CARACTÉRISTIQUES -->
+  <div class="card acc full">
+    <div class="card-title acc">Caractéristiques</div>
+    <div class="stats-grid" id="stats-grid"></div>
+    <div style="font-size:0.7rem;color:var(--SUB);margin-top:0.6rem;font-style:italic;">Natif = 20 + 2d10 (ou valeur choisie) · Bonus = natif + bonus racial et talents · Augm. = points d'expérience dépensés · Total et bonus de caractéristique se calculent seuls</div>
+  </div>
+
+
+  <!-- ÉTAT & RESSOURCES -->
+  <div class="card acc">
+    <div class="card-title red">État & Ressources</div>
+    <div class="res-grid">
+      <div class="res-box">
+        <span class="res-label">Blessures</span>
+        <span class="res-val" id="w-cur">12</span>
+        <span class="res-sub">/ <input type="number" id="w-max-input" value="12" min="1" max="99" onchange="updateWoundsMax(this.value)" style="background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.12);color:var(--SUB);font-family:'Cinzel',serif;font-size:0.7rem;width:28px;text-align:center;padding:0;cursor:pointer;" /> max</span>
+        <div class="wounds-ctrl">
+          <button class="btn-small btn-wound" onclick="chWound(-1)">−</button>
+          <button class="btn-small btn-heal" onclick="chWound(1)">+</button>
+        </div>
+      <div style="font-size:0.6rem;color:var(--SUB);font-style:italic;margin-top:0.35rem;line-height:1.4;">BF + 2×BE + BFM<br />(halfling : 2×BE + BFM)</div>
+      </div>
+      <div class="res-box">
+        <span class="res-label">Marche</span>
+        <span class="res-val">4<span style="font-size:0.6rem;color:var(--SUB);margin-left:0.15rem;">m</span></span>
+        <div class="move-sub">
+          <span>Course <strong>8 m</strong></span>
+          <span>Charge <strong>16 m</strong></span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:0.6rem;">
+      <div class="card-title" style="color:var(--GLD);margin-bottom:0.4rem;font-size:0.62rem;">Destin &amp; Chance</div>
+      <div class="fortune-row">
+        <div class="fortune-cell">
+          <span class="fortune-lbl">Destin <span class="fortune-lbl-sub">(max)</span></span>
+          <input class="fortune-input fortune-max" type="number" min="0" id="destin-input" value="4" onchange="updateFortune('destin',this.value)" />
+          <span class="fortune-hint">&nbsp;</span>
+        </div>
+        <div class="fortune-arrow">&#8594;</div>
+        <div class="fortune-cell">
+          <span class="fortune-lbl">Chance</span>
+          <input class="fortune-input fortune-cur" type="number" min="0" id="chance-input" value="4" onchange="updateFortune('chance',this.value)" />
+          <span class="fortune-hint" id="chance-hint">/ 4</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:0.75rem;">
+      <div class="card-title" style="color:var(--acc2);margin-bottom:0.4rem;font-size:0.62rem;">Résilience &amp; Détermination</div>
+      <div class="fortune-row">
+        <div class="fortune-cell">
+          <span class="fortune-lbl">Résilience <span class="fortune-lbl-sub">(max)</span></span>
+          <input class="fortune-input fortune-max" type="number" min="0" id="resil-input" value="2" onchange="updateFortune('resil',this.value)" />
+          <span class="fortune-hint">&nbsp;</span>
+        </div>
+        <div class="fortune-arrow">&#8594;</div>
+        <div class="fortune-cell">
+          <span class="fortune-lbl">Détermination</span>
+          <input class="fortune-input fortune-cur" type="number" min="0" id="determ-input" value="2" onchange="updateFortune('determ',this.value)" />
+          <span class="fortune-hint" id="determ-hint">/ 2</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card-title" style="margin-bottom:0.4rem;font-size:0.62rem;">Monnaie <span style="font-weight:400;opacity:0.5;font-family:'Crimson Text',serif;text-transform:none;letter-spacing:0;font-size:0.7rem;">1 Co = 20 Pa · 1 Pa = 12 Sc</span></div>
+      <div class="money-row">
+        <div class="money-item"><span class="money-val" id="m-or">10</span><span class="money-label">CO</span><div class="money-btns"><button class="money-btn" onclick="chMoney('or',-1)">−</button><button class="money-btn" onclick="chMoney('or',1)">+</button></div></div>
+        <div class="money-item"><span class="money-val" id="m-argent">3</span><span class="money-label">PA</span><div class="money-btns"><button class="money-btn" onclick="chMoney('argent',-1)">−</button><button class="money-btn" onclick="chMoney('argent',1)">+</button></div></div>
+        <div class="money-item"><span class="money-val" id="m-cuivre">0</span><span class="money-label">SC</span><div class="money-btns"><button class="money-btn" onclick="chMoney('cuivre',-1)">−</button><button class="money-btn" onclick="chMoney('cuivre',1)">+</button></div></div>
+        <div class="statut-box">
+          <span class="statut-label">Statut social</span>
+          <div class="statut-fields">
+            <select class="statut-tier" id="statut-tier" onchange="updateStatut()">
+              <option>Airain</option>
+              <option selected>Bronze</option>
+              <option>Argent</option>
+              <option>Or</option>
+            </select>
+            <input class="statut-rank" id="statut-rank" type="number" min="0" max="9" value="3" onchange="updateStatut()" />
+          </div>
+        </div>
+      </div>
+    </div>
+      <div id="m-convert-msg" style="font-size:0.68rem;font-style:italic;color:var(--GLD);margin-top:0.35rem;min-height:0.9rem;opacity:0;transition:opacity 0.4s;"></div>
+  </div>
+
+
+  <!-- CORRUPTION -->
+  <div class="card cet-card">
+    <div class="card-title red">Corruption · Mutations · Maladies · États</div>
+    <div class="cet-grid">
+      <div class="cet-box"><span class="cet-label">Corruption</span><textarea class="cet-input" id="cet-corruption" placeholder="—"></textarea></div>
+      <div class="cet-box"><span class="cet-label">Mutations</span><textarea class="cet-input" id="cet-mutations" placeholder="—"></textarea></div>
+      <div class="cet-box"><span class="cet-label">Maladies &amp; Blessures durables</span><textarea class="cet-input" id="cet-maladies" placeholder="—"></textarea></div>
+      <div class="cet-box"><span class="cet-label">États actifs</span><textarea class="cet-input" id="cet-etats" placeholder="Sonné, Exténué…"></textarea></div>
+    </div>
+  </div>
+
+
+  <!-- COMPÉTENCES DE BASE -->
+  <div class="card">
+    <div class="card-title gld">Compétences de base</div>
+    <ul class="skill-list" id="skills-base-list"></ul>
+  </div>
+
+
+  <!-- COMPÉTENCES AVANCÉES -->
+  <div class="card">
+    <div class="card-title vio">Compétences avancées</div>
+    <ul class="skill-list" id="skills-adv-list"></ul>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-acc" onclick="toggleForm('adv-form')">+ Ajouter</button>
+      <div class="form-panel" id="adv-form">
+        <input class="form-input" id="adv-name" placeholder="Nom de la compétence" />
+        <input class="form-input" id="adv-car" placeholder="Car. (Dex, Ag…)" />
+        <input class="form-input" id="adv-aug" placeholder="Aug. (ex: 5)" type="number" style="width:80px;" />
+        <div style="display:flex;gap:0.4rem;">
+          <button class="btn-add btn-acc" onclick="addAdvSkill()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleForm('adv-form')">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- TALENTS -->
+  <div class="card">
+    <div class="card-title acc">Talents & Capacités</div>
+    <ul class="talent-list" id="talent-list"></ul>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-acc" onclick="toggleForm('talent-form')">+ Ajouter</button>
+      <div class="form-panel" id="talent-form">
+        <input class="form-input" id="talent-name-new" placeholder="Nom du talent" />
+        <input class="form-input" id="talent-desc-new" placeholder="Description" />
+        <div style="display:flex;gap:0.4rem;">
+          <button class="btn-add btn-acc" onclick="addTalent()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleForm('talent-form')">Annuler</button>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:0.75rem;padding-top:0.6rem;border-top:1px solid rgba(255,255,255,0.05);">
+      <div class="card-title" style="color:var(--SUB);margin-bottom:0.5rem;font-size:0.62rem;">Traits raciaux & capacités spéciales</div>
+      <textarea class="free-area" id="traits-raciaux" rows="4" placeholder="Un par ligne — ex : Vision nocturne : voit dans la pénombre comme en plein jour." onchange="saveAll()"></textarea>
+    </div>
+  </div>
+
+
+  <!-- ARMURE -->
+  <div class="card">
+    <div class="card-title gld" style="margin-bottom:0.4rem;font-size:0.62rem;">Pièces d'armure portées</div>
+    <div id="armor-pieces-list"></div>
+    <div style="margin-top:0.3rem;margin-bottom:0.9rem;">
+      <button class="btn-add btn-gld" onclick="toggleForm('armor-piece-form')">+ Ajouter une pièce</button>
+      <div class="form-panel" id="armor-piece-form">
+        <div class="form-grid2">
+          <input class="form-input" id="ap-name" placeholder="Nom (Veste de cuir…)" style="grid-column:1/-1;" />
+          <input class="form-input" id="ap-pa"   placeholder="PA — ex: 1" type="number" />
+          <input class="form-input" id="ap-enc"  placeholder="ENC — ex: 0" type="number" />
+          <input class="form-input" id="ap-pen"  placeholder="Pénalité (−1 Ag…)" />
+          <input class="form-input" id="ap-attr" placeholder="Attributs (Résistante, Lourde…)" />
+        </div>
+        <div style="display:flex;gap:0.4rem;margin-top:0.3rem;">
+          <button class="btn-add btn-gld" onclick="addArmorPiece()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleForm('armor-piece-form')">Annuler</button>
+        </div>
+      </div>
+    </div>
+    <div class="card-title gld" style="margin-top:0.3rem;">Armure par localisation</div>
+    <table class="armor-table">
+      <thead><tr><th>Localisation</th><th>PA</th><th>Loc.</th></tr></thead>
+      <tbody id="armor-body"></tbody>
+    </table>
+    <div class="card-title gld" style="margin-top:0.75rem;margin-bottom:0.5rem;">Armes</div>
+    <div id="weapons-list"></div>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-gld" onclick="toggleForm('weapon-form')">+ Ajouter une arme</button>
+      <div class="form-panel" id="weapon-form">
+        <div class="form-grid2">
+          <input class="form-input" id="wep-name" placeholder="Nom" />
+          <input class="form-input" id="wep-all" placeholder="Allonge" />
+          <input class="form-input" id="wep-deg" placeholder="Dégâts (BF+4…)" />
+          <input class="form-input" id="wep-enc" placeholder="ENC — ex: 0" />
+          <input class="form-input" id="wep-attr" placeholder="Attributs" style="grid-column:1/-1;" />
+        </div>
+        <div style="display:flex;gap:0.4rem;margin-top:0.3rem;">
+          <button class="btn-add btn-gld" onclick="addWeapon()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleForm('weapon-form')">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- INVENTAIRE -->
+  <div class="card">
+    <div class="card-title grn">Inventaire</div>
+    <div id="inv-list"></div>
+    <div style="margin-top:0.5rem;">
+      <button class="btn-add btn-acc" onclick="toggleForm('inv-form')">+ Ajouter un objet</button>
+      <div class="form-panel" id="inv-form">
+        <input class="form-input" id="inv-name-new" placeholder="Nom de l'objet" />
+        <input class="form-input" id="inv-detail-new" placeholder="Emplacement / Note" />
+        <div style="display:flex;gap:0.4rem;">
+          <button class="btn-add btn-acc" onclick="addInvItem()">Ajouter</button>
+          <button class="btn-cancel" onclick="toggleForm('inv-form')">Annuler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- XP & AMBITIONS -->
+  <div class="card full">
+    <div class="card-title vio">Expérience & Ambitions</div>
+    <div class="xp-row">
+      <div class="xp-box"><span class="xp-label">Actuelle</span><input class="xp-val-input" id="xp-actuelle" type="number" value="0" onchange="saveAll()" /></div>
+      <div class="xp-box"><span class="xp-label">Dépensée</span><input class="xp-val-input" id="xp-depensee" type="number" value="0" onchange="saveAll()" /></div>
+      <div class="xp-box"><span class="xp-label">Totale</span><input class="xp-val-input" id="xp-totale" type="number" value="0" onchange="saveAll()" /></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:0.75rem;">
+      <div>
+        <span class="amb-label">Ambition courte</span>
+        <textarea class="free-area" id="amb-courte" rows="2" placeholder="Ce que le personnage veut accomplir maintenant." onchange="saveAll()"></textarea>
+        <span class="amb-label" style="margin-top:0.5rem;">Motivation</span>
+        <textarea class="free-area" id="amb-motivation" rows="2" placeholder="Ce qui le pousse à avancer." onchange="saveAll()"></textarea>
+      </div>
+      <div>
+        <span class="amb-label">Ambition longue</span>
+        <textarea class="free-area" id="amb-longue" rows="5" placeholder="Le rêve d'une vie. Rarement atteint, toujours poursuivi." onchange="saveAll()"></textarea>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div>
+        <span class="amb-label" style="color:var(--GRN);">Points forts</span>
+        <textarea class="free-area plus" id="traits-plus" rows="4" placeholder="Un par ligne." onchange="saveAll()"></textarea>
+      </div>
+      <div>
+        <span class="amb-label" style="color:#c07060;">Failles &amp; faiblesses</span>
+        <textarea class="free-area minus" id="traits-minus" rows="4" placeholder="Un par ligne. Ce sont elles qui font jouer." onchange="saveAll()"></textarea>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- HISTORIQUE -->
+  <div class="card full">
+    <div class="card-title acc">Historique</div>
+    <textarea class="free-area" id="histo" rows="10" placeholder="D'où vient le personnage, ce qui l'a formé, ce qu'il fuit, ce qu'il cherche.&#10;&#10;Une citation qui le résume, pour finir." onchange="saveAll()"></textarea>
+  </div>
+
+
+  <!-- NOTES SESSION -->
+  <div class="card full">
+    <div class="card-title">Notes de session</div>
+    <div style="font-size:0.82rem;color:var(--SUB);font-style:italic;margin-bottom:0.5rem;line-height:1.5;">
+      Arbalète à lames en cours · Fournisseur : Maître Artisan Nain de Nuln · Apothicaire Sofya −5% · Première mission Armand réussie
+    </div>
+    <textarea class="notes-area" id="session-notes" rows="5" placeholder="Plans, contacts, observations..."></textarea>
+    <span class="save-confirm" id="save-confirm">✓ Sauvegardé</span>
+  </div>
+
+</div>
+
+<script>
+// ══ LIGNE CARRIÈRE ÉDITABLE ══
+function careerSave() {
+  if(!state.career) state.career={};
+  ['carriere','num','echelon'].forEach(function(k){
+    var el=document.getElementById('career-'+k);
+    if(el) state.career[k]=el.value;
+  });
+  save();
+}
+function renderCareer() {
+  if(!state.career) return;
+  ['carriere','num','echelon'].forEach(function(k){
+    var el=document.getElementById('career-'+k);
+    if(el && state.career[k]!==undefined) el.value=state.career[k];
+  });
+}
+
+// ══ AFFICHAGE PALIERS D'AUGMENTATION (XP) ══
+var XP_GRILLE_CARAC = [25,30,40,50,70,90,120,150,190,230,280,330,390,450];
+var XP_GRILLE_COMP  = [10,15,20,30,40,60,80,110,140,180,220,270,320,380];
+// n = nombre d'augmentations déjà faites ; la prochaine est la (n+1)e
+function xpTrancheIdx(prochaineNum) { var idx=Math.floor((prochaineNum-1)/5); if(idx<0) idx=0; return idx; }
+function xpCoutProchaine(n, grille) {
+  var idx = xpTrancheIdx(n+1);
+  if(idx>=grille.length) idx=grille.length-1;
+  return grille[idx];
+}
+function xpOrdinal(num) {
+  if(num===1) return "1re";
+  return num+"e";
+}
+// Construit le HTML du badge + grille dépliable. type = 'carac' ou 'comp'. uid = identifiant unique.
+function xpBadgeHtml(n, type, uid) {
+  n = parseInt(n)||0;
+  var grille = (type==='carac') ? XP_GRILLE_CARAC : XP_GRILLE_COMP;
+  var cout = xpCoutProchaine(n, grille);
+  var prochaine = n+1;
+  var curIdx = xpTrancheIdx(prochaine);
+  if(curIdx>=grille.length) curIdx=grille.length-1;
+  var html = '<span class="xp-badge" id="xpb-'+uid+'" onclick="xpToggleGrid(\''+uid+'\')">'
+    + '<span class="xp-aug">'+n+' aug.</span>'
+    + '<span style="opacity:0.5;">\u00b7</span>'
+    + 'proch. ('+xpOrdinal(prochaine)+')\u202f: <span class="xp-cost">'+cout+' PX</span>'
+    + '<span class="xp-caret">\u25be</span>'
+    + '</span>';
+  var rows='';
+  for(var i=0;i<grille.length;i++) {
+    var lo = i*5+1, hi = i*5+5;
+    var loTxt = (i===0) ? '0' : lo;
+    var cls = (i===curIdx) ? ' class="cur"' : '';
+    rows += '<tr'+cls+'><td>'+loTxt+'\u2013'+hi+'</td><td>'+grille[i]+' PX</td></tr>';
+  }
+  html += '<div class="xp-grid-pop" id="xpg-'+uid+'">'
+    + '<div class="xp-grid-pop-title">Co\u00fbt par augmentation \u2014 '+(type==='carac'?'caract\u00e9ristiques':'comp\u00e9tences')+'</div>'
+    + '<table class="xp-grid-table"><thead><tr><th>Augmentations</th><th>Co\u00fbt</th></tr></thead><tbody>'
+    + rows
+    + '</tbody></table>'
+    + '<div class="xp-grid-note">La tranche surlign\u00e9e est celle de la prochaine augmentation. Le bonus de cr\u00e9ation (valeur de gauche) ne compte pas comme une augmentation.</div>'
+    + '</div>';
+  return html;
+}
+function xpToggleGrid(uid) {
+  var b=document.getElementById('xpb-'+uid);
+  var g=document.getElementById('xpg-'+uid);
+  if(b) b.classList.toggle('open');
+  if(g) g.classList.toggle('open');
+}
+// ══════ DONNÉES INITIALES ══════
+
+const STATS_DEF = [
+  { key:'cc',  label:'CC',  natif:0, bonus:0, avance:0  },
+  { key:'ct',  label:'CT',  natif:0, bonus:0, avance:0  },
+  { key:'f',   label:'F',   natif:0, bonus:0, avance:0  },
+  { key:'e',   label:'End', natif:0, bonus:0, avance:0  },
+  { key:'ini', label:'Ini', natif:0, bonus:0, avance:0  },
+  { key:'ag',  label:'Ag',  natif:0, bonus:0, avance:0 },
+  { key:'dex', label:'Dex', natif:0, bonus:0, avance:0  },
+  { key:'int', label:'Int', natif:0, bonus:0, avance:0  },
+  { key:'fm',  label:'FM',  natif:0, bonus:0, avance:0  },
+  { key:'soc', label:'Soc', natif:0, bonus:0, avance:0  },
+];
+
+const SKILLS_BASE_DEF = [
+  { name:'Art',                    car:'Dex', aug:0,  bonus:0 },
+  { name:'Athlétisme',             car:'Ag',  aug:0,  bonus:0 },
+  { name:'Calme',                  car:'FM',  aug:0,  bonus:0 },
+  { name:'Charme',                 car:'Soc', aug:0,  bonus:0 },
+  { name:'Commandement',           car:'Soc', aug:0,  bonus:0 },
+  { name:'Conduite',               car:'Ag',  aug:0,  bonus:0 },
+  { name:'Corps à Corps (Base)',   car:'CC',  aug:0,  bonus:0 },
+  { name:'Discrétion',             car:'Ag',  aug:0,  bonus:0 },
+  { name:'Dressage',               car:'FM',  aug:0,  bonus:0 },
+  { name:'Escalade',               car:'F',   aug:0,  bonus:0 },
+  { name:'Esquive',                car:'Ag',  aug:0,  bonus:0 },
+  { name:'Intimidation',           car:'F',   aug:0,  bonus:0 },
+  { name:'Intuition',              car:'Ini', aug:0,  bonus:0 },
+  { name:'Jeu',                    car:'Int', aug:0,  bonus:0 },
+  { name:'Manipulation',           car:'Soc', aug:0,  bonus:0 },
+  { name:'Marchandage',            car:'Soc', aug:0,  bonus:0 },
+  { name:'Monter',                 car:'Ag',  aug:0,  bonus:0 },
+  { name:'Navigation',             car:'Ini', aug:0,  bonus:0 },
+  { name:'Perception',             car:'Ini', aug:0,  bonus:0 },
+  { name:'Ragot',                  car:'Soc', aug:0,  bonus:0 },
+  { name:'Ramer',                  car:'F',   aug:0,  bonus:0 },
+  { name:'Représentation',         car:'Soc', aug:0,  bonus:0 },
+  { name:'Résistance à l\'alcool', car:'End', aug:0,  bonus:0 },
+  { name:'Résistance',             car:'End', aug:0,  bonus:0 },
+  { name:'Survie en extérieur',    car:'Int', aug:0,  bonus:0 },
+];
+
+const SKILLS_ADV_DEF = [];
+
+const TALENTS_DEF = [];
+
+const ARMOR_LOCS = [
+  { loc:'Tête',       range:'01-09', pa:0 },
+  { loc:'Bras droit', range:'10-24', pa:0 },
+  { loc:'Bras gauche',range:'25-44', pa:0 },
+  { loc:'Corps',      range:'45-79', pa:0 },
+  { loc:'Jambe dr.',  range:'80-89', pa:0 },
+  { loc:'Jambe gau.', range:'90-00', pa:0 },
+];
+
+const WEAPONS_DEF = [];
+
+const INV_DEF = [];
+
+// ══════ STATE ══════
+let state = {
+  identite: { nom:'', joueur:'', race:'', age:'', physique:'', signes:'' },
+  wounds: 10, woundsMax: 10,
+  destin: 0, chance: 0, resil: 0, determ: 0,
+  career: { carriere:'', num:'', echelon:'' },
+  statut: { tier:'Airain', rank:0 },
+  money: { or:0, argent:0, cuivre:0 },
+  notes: '', cet: { corruption:'', mutations:'', maladies:'', etats:'' },
+  libres: { 'traits-raciaux':'', 'amb-courte':'', 'amb-longue':'', 'amb-motivation':'', 'traits-plus':'', 'traits-minus':'', 'histo':'' },
+  xp: { actuelle:0, depensee:0, totale:0 },
+  stats: {},
+  skillsBase: JSON.parse(JSON.stringify(SKILLS_BASE_DEF)),
+  skillsAdv:  JSON.parse(JSON.stringify(SKILLS_ADV_DEF)),
+  talents:    JSON.parse(JSON.stringify(TALENTS_DEF)),
+  weapons:    JSON.parse(JSON.stringify(WEAPONS_DEF)),
+  inventory:   JSON.parse(JSON.stringify(INV_DEF)),
+  armor:       JSON.parse(JSON.stringify(ARMOR_LOCS)),
+  armorPieces: [],
+};
+
+STATS_DEF.forEach(s => { state.stats[s.key] = { natif:s.natif, bonus:s.bonus, avance:s.avance }; });
+
+function mergeStats(saved) {
+  // Migre les anciennes sauvegardes (init/avance) vers natif/bonus/avance
+  for(var k in saved) {
+    if(!state.stats[k]) continue;
+    var src = saved[k];
+    var dst = state.stats[k];
+    if(src.natif!==undefined) dst.natif = parseInt(src.natif)||0;
+    else if(src.init!==undefined) dst.natif = parseInt(src.init)||0;
+    if(src.bonus!==undefined) dst.bonus = parseInt(src.bonus)||0;
+    if(src.avance!==undefined) dst.avance = parseInt(src.avance)||0;
+  }
+}
+function getStatTotal(key) {
+  const s = state.stats[key];
+  return (parseInt(s.natif)||0) + (parseInt(s.bonus)||0) + (parseInt(s.avance)||0);
+}
+function getStatBonusVal(key) {
+  const s = state.stats[key];
+  return (parseInt(s.natif)||0) + (parseInt(s.bonus)||0);
+}
+function carKeyFromLabel(label) {
+  if(!label) return null;
+  var map = { 'cc':'cc','ct':'ct','f':'f','end':'e','e':'e','ini':'ini','i':'ini','ag':'ag','dex':'dex','int':'int','fm':'fm','soc':'soc' };
+  return map[String(label).trim().toLowerCase()] || null;
+}
+function carValeurFromLabel(label) {
+  var k = carKeyFromLabel(label);
+  if(!k || !state.stats[k]) return 0;
+  return getStatTotal(k);
+}
+
+// ══════ LOAD / SAVE ══════
+function load() {
+  const raw = localStorage.getItem('template_v1');
+  if (raw) try {
+    const saved = JSON.parse(raw);
+    ['wounds','woundsMax','destin','chance','resil','determ','notes'].forEach(k => { if (saved[k]!==undefined) state[k]=saved[k]; });
+    if (saved.money)     Object.assign(state.money, saved.money);
+    if (saved.cet)       Object.assign(state.cet, saved.cet);
+    if (saved.career) Object.assign(state.career, saved.career);
+    if (saved.statut) Object.assign(state.statut, saved.statut);
+    if (saved.identite) Object.assign(state.identite, saved.identite);
+    if (saved.libres) Object.assign(state.libres, saved.libres);
+    if (saved.xp)        Object.assign(state.xp, saved.xp);
+    if (saved.stats)     mergeStats(saved.stats);
+    if (saved.skillsBase) state.skillsBase = saved.skillsBase;
+    if (saved.skillsAdv)  state.skillsAdv  = saved.skillsAdv;
+    if (saved.talents)    state.talents     = saved.talents;
+    if (saved.weapons)    state.weapons     = saved.weapons;
+    if (saved.inventory)   state.inventory   = saved.inventory;
+    if (saved.armor)       state.armor       = saved.armor;
+    if (saved.armorPieces) state.armorPieces = saved.armorPieces;
+  } catch(e) {}
+  renderAll();
+}
+
+function save() { localStorage.setItem('template_v1', JSON.stringify(state)); }
+
+function saveAll() {
+
+  state.notes = document.getElementById('session-notes').value;
+  if (!state.cet) state.cet = {};
+  ['corruption','mutations','maladies','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) state.cet[k]=el.value; });
+  state.xp.actuelle = parseInt(document.getElementById('xp-actuelle').value)||0;
+  state.xp.depensee = parseInt(document.getElementById('xp-depensee').value)||0;
+  state.xp.totale   = parseInt(document.getElementById('xp-totale').value)||0;
+  save();
+  const c = document.getElementById('save-confirm');
+  c.style.opacity='1'; setTimeout(()=>c.style.opacity='0',2000);
+  if(!state.libres) state.libres={};
+  LIBRES_CHAMPS.forEach(function(k){ var el=document.getElementById(k); if(el) state.libres[k]=el.value; });
+}
+
+function renderAll() {
+  renderStats(); renderSkillsBase(); renderSkillsAdv(); renderTalents();
+  renderArmor(); renderArmorPieces(); renderWeapons(); renderInventory();
+  renderFortune(); renderCareer(); renderStatut(); renderIdent(); renderLibres();
+  document.getElementById('w-cur').textContent = state.wounds;
+  const wmi=document.getElementById('w-max-input'); if(wmi) wmi.value=state.woundsMax||12;
+  updateWC();
+  ['or','argent','cuivre'].forEach(k => document.getElementById('m-'+k).textContent = state.money[k]||0);
+  document.getElementById('session-notes').value = state.notes||'';
+  ['corruption','mutations','maladies','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) el.value=(state.cet&&state.cet[k])||''; });
+  document.getElementById('xp-actuelle').value = state.xp.actuelle;
+  document.getElementById('xp-depensee').value = state.xp.depensee;
+  document.getElementById('xp-totale').value   = state.xp.totale;
+}
+
+// ══════ STATS ══════
+function renderStats() {
+  const g = document.getElementById('stats-grid'); g.innerHTML='';
+  STATS_DEF.forEach(def => {
+    const s = state.stats[def.key];
+    const natif=parseInt(s.natif)||0; const bonusAff=natif+(parseInt(s.bonus)||0); const avance=parseInt(s.avance)||0; const total=bonusAff+avance;
+    const bf = Math.floor(total/10);
+    const div = document.createElement('div'); div.className='stat-box';
+    div.innerHTML=`
+      <span class="stat-label">${def.label}</span>
+      <span class="stat-total" id="stat-total-${def.key}">${total}</span>
+      <span class="stat-bonus" id="stat-bf-${def.key}">B:${bf}</span>
+      <div class="stat-nba">
+        <div class="stat-nba-row"><span class="stat-nba-lbl">Natif</span><input class="editable-num nba-natif" type="number" value="${natif}" onchange="updateStat('${def.key}','natif',this.value)" /></div>
+        <div class="stat-nba-row"><span class="stat-nba-lbl">Bonus</span><input class="editable-num nba-bonus" type="number" value="${bonusAff}" onchange="updateStat('${def.key}','bonusAff',this.value)" /></div>
+        <div class="stat-nba-sep"></div>
+        <div class="stat-nba-row"><span class="stat-nba-lbl">Augm.</span><input class="editable-num nba-aug" type="number" value="${avance}" onchange="updateStat('${def.key}','avance',this.value)" /></div>
+      </div>
+      <div style="margin-top:0.3rem;">${xpBadgeHtml(avance,'carac','st-'+def.key)}</div>`;
+    g.appendChild(div);
+  });
+}
+function updateStat(key,field,val) {
+  const s=state.stats[key]; const v=parseInt(val)||0;
+  if(field==='natif') s.natif=v;
+  else if(field==='bonusAff') s.bonus=v-(parseInt(s.natif)||0);
+  else if(field==='avance') s.avance=v;
+  save(); renderStats(); renderSkillsBase(); renderSkillsAdv();
+}
+
+// ══════ BLESSURES ══════
+function chWound(d) {
+  state.wounds = Math.max(0, Math.min(state.woundsMax, state.wounds+d));
+  document.getElementById('w-cur').textContent = state.wounds;
+  updateWC(); save();
+}
+function updateWC() {
+  const el=document.getElementById('w-cur');
+  const p=state.wounds/state.woundsMax;
+  el.style.color = p>0.6?'var(--parchment)':p>0.3?'#e8a040':'#e05050';
+}
+
+
+function updateWoundsMax(val) {
+  state.woundsMax = Math.max(1, parseInt(val)||1);
+  const inp = document.getElementById('w-max-input');
+  if(inp) inp.value = state.woundsMax;
+  save();
+}
+// ══════ MONNAIE ══════
+function chMoney(k, d) {
+  var m = state.money;
+  if (!m.or)     m.or     = 0;
+  if (!m.argent) m.argent = 0;
+  if (!m.cuivre) m.cuivre = 0;
+  m[k] = (m[k] || 0) + d;
+  var msg = '';
+  if (m.cuivre >= 12) { var gain = Math.floor(m.cuivre / 12); m.cuivre -= gain * 12; m.argent += gain; msg += '+' + gain + ' Pa '; }
+  if (m.argent >= 20) { var gain2 = Math.floor(m.argent / 20); m.argent -= gain2 * 20; m.or += gain2; msg += '+' + gain2 + ' Co'; }
+  if (m.cuivre < 0) { var need = Math.ceil(-m.cuivre / 12); if (m.argent >= need) { m.argent -= need; m.cuivre += need * 12; msg += '−' + need + ' Pa→Sc '; } else { m.cuivre = 0; } }
+  if (m.argent < 0) { var need2 = Math.ceil(-m.argent / 20); if (m.or >= need2) { m.or -= need2; m.argent += need2 * 20; msg += '−' + need2 + ' Co→Pa'; } else { m.argent = 0; } }
+  m.or = Math.max(0, m.or); m.argent = Math.max(0, m.argent); m.cuivre = Math.max(0, m.cuivre);
+  document.getElementById('m-or').textContent = m.or;
+  document.getElementById('m-argent').textContent = m.argent;
+  document.getElementById('m-cuivre').textContent = m.cuivre;
+  var msgEl = document.getElementById('m-convert-msg');
+  if (msgEl && msg.trim()) { msgEl.textContent = '⇄ ' + msg.trim(); msgEl.style.opacity = '1'; clearTimeout(msgEl._t); msgEl._t = setTimeout(function(){ msgEl.style.opacity='0'; }, 2500); }
+  save();
+}
+
+// ══════ IDENTITÉ ══════
+const IDENT_CHAMPS = ['nom','joueur','race','age','physique','signes'];
+function identSave() {
+  if(!state.identite) state.identite={};
+  IDENT_CHAMPS.forEach(function(k){
+    var el=document.getElementById('ident-'+k);
+    if(el) state.identite[k]=el.value;
+  });
+  save();
+  renderTitre();
+}
+function renderIdent() {
+  if(!state.identite) return;
+  IDENT_CHAMPS.forEach(function(k){
+    var el=document.getElementById('ident-'+k);
+    if(el && state.identite[k]!==undefined) el.value=state.identite[k];
+  });
+  renderTitre();
+}
+function renderTitre() {
+  var nom=(state.identite&&state.identite.nom)||'';
+  var el=document.getElementById('nav-current');
+  if(el) el.textContent = nom || 'Nouveau personnage';
+  document.title = (nom || 'Nouveau personnage') + ' — Fiche de personnage';
+}
+
+// ══════ ZONES DE TEXTE LIBRES ══════
+const LIBRES_CHAMPS = ['traits-raciaux','amb-courte','amb-longue','amb-motivation','traits-plus','traits-minus','histo'];
+function renderLibres() {
+  if(!state.libres) state.libres={};
+  LIBRES_CHAMPS.forEach(function(k){
+    var el=document.getElementById(k);
+    if(el) el.value = state.libres[k]||'';
+  });
+}
+
+// ══════ STATUT SOCIAL ══════
+function updateStatut() {
+  if(!state.statut) state.statut={};
+  var t=document.getElementById('statut-tier'), r=document.getElementById('statut-rank');
+  if(t) state.statut.tier=t.value;
+  if(r) state.statut.rank=Math.max(0,Math.min(9,parseInt(r.value)||0));
+  save(); renderStatut();
+}
+function renderStatut() {
+  if(!state.statut) return;
+  var t=document.getElementById('statut-tier'), r=document.getElementById('statut-rank');
+  if(t && state.statut.tier!==undefined) t.value=state.statut.tier;
+  if(r && state.statut.rank!==undefined) r.value=state.statut.rank;
+}
+
+// ══════ DESTIN/CHANCE · RÉSILIENCE/DÉTERMINATION ══════
+function renderFortune() {
+  if(state.destin===undefined) state.destin=1;
+  if(state.resil===undefined) state.resil=1;
+  if((parseInt(state.chance)||0) > (parseInt(state.destin)||0)) state.chance=state.destin;
+  if((parseInt(state.determ)||0) > (parseInt(state.resil)||0)) state.determ=state.resil;
+  var set=function(id,v){ var el=document.getElementById(id); if(el) el.value=v; };
+  set('destin-input', parseInt(state.destin)||0);
+  set('chance-input', parseInt(state.chance)||0);
+  set('resil-input',  parseInt(state.resil)||0);
+  set('determ-input', parseInt(state.determ)||0);
+  var ch=document.getElementById('chance-hint'); if(ch) ch.textContent='/ '+(parseInt(state.destin)||0);
+  var dh=document.getElementById('determ-hint'); if(dh) dh.textContent='/ '+(parseInt(state.resil)||0);
+}
+function updateFortune(field,val) {
+  var v=Math.max(0,parseInt(val)||0);
+  if(field==='destin') { state.destin=v; if((parseInt(state.chance)||0)>v) state.chance=v; }
+  else if(field==='chance') { state.chance=Math.min(v, parseInt(state.destin)||0); }
+  else if(field==='resil') { state.resil=v; if((parseInt(state.determ)||0)>v) state.determ=v; }
+  else if(field==='determ') { state.determ=Math.min(v, parseInt(state.resil)||0); }
+  save();
+  renderFortune();
+}
+
+// ══════ COMPÉTENCES BASE ══════
+function renderSkillsBase() {
+  const ul=document.getElementById('skills-base-list'); ul.innerHTML='';
+  state.skillsBase.forEach((sk,i)=>{
+    const carV=carValeurFromLabel(sk.car);
+    const bonus=parseInt(sk.bonus)||0;
+    const aug=parseInt(sk.aug)||0;
+    const total=carV+bonus+aug;
+    const li=document.createElement('li');
+    li.innerHTML=`
+      <span class="skill-name">${sk.name} <span style="color:var(--SUB);font-size:0.7rem;">(${sk.car})</span></span>
+      <div class="skill-field" title="Bonus (Talent, etc.) — ne compte pas dans les augmentations"><span class="skill-field-lbl">Bon.</span><input class="editable-num" type="number" value="${bonus}" style="width:28px;font-size:0.78rem;color:#cda64a;border-bottom-color:rgba(184,146,42,0.2);" onchange="updateSkillBaseField(${i},'bonus',this.value)" /></div>
+      <div class="skill-field" title="Augmentation (payée en XP)"><span class="skill-field-lbl">Aug.</span><input class="editable-num" type="number" value="${aug}" style="width:28px;font-size:0.78rem;color:var(--acc2);border-bottom-color:rgba(184,146,42,0.2);" onchange="updateSkillBaseField(${i},'aug',this.value)" /></div>
+      <span class="skill-total" id="sk-base-total-${i}">${total}</span>
+      <div style="flex-basis:100%;margin-top:0.25rem;">${xpBadgeHtml(aug,'comp','sb-'+i)}</div>`;
+    ul.appendChild(li);
+  });
+}
+function updateSkillBaseField(idx,field,val) {
+  state.skillsBase[idx][field]=parseInt(val)||0;
+  save();
+  renderSkillsBase();
+}
+
+// ══════ COMPÉTENCES AVANCÉES ══════
+function renderSkillsAdv() {
+  const ul=document.getElementById('skills-adv-list'); ul.innerHTML='';
+  state.skillsAdv.forEach((sk,i)=>{
+    const carV=carValeurFromLabel(sk.car);
+    const bonus=parseInt(sk.bonus)||0;
+    const aug=parseInt(sk.aug)||0;
+    const total=carV+bonus+aug;
+    const li=document.createElement('li');
+    li.innerHTML=`
+      <span class="skill-name">${sk.name} <span style="color:var(--SUB);font-size:0.7rem;">(${sk.car})</span></span>
+      <div class="skill-field" title="Bonus (Talent, etc.) — ne compte pas dans les augmentations"><span class="skill-field-lbl">Bon.</span><input class="editable-num" type="number" value="${bonus}" style="width:28px;font-size:0.78rem;color:#cda64a;border-bottom-color:rgba(184,146,42,0.2);" onchange="updateSkillAdvField(${i},'bonus',this.value)" /></div>
+      <div class="skill-field" title="Augmentation (payée en XP)"><span class="skill-field-lbl">Aug.</span><input class="editable-num" type="number" value="${aug}" style="width:28px;font-size:0.78rem;color:var(--acc2);border-bottom-color:rgba(184,146,42,0.2);" onchange="updateSkillAdvField(${i},'aug',this.value)" /></div>
+      <span class="skill-total" id="sk-adv-total-${i}">${total}</span>
+      <span class="del-btn" onclick="deleteAdvSkill(${i})" title="Supprimer">✕</span>
+      <div style="flex-basis:100%;margin-top:0.25rem;">${xpBadgeHtml(aug,'comp','sa-'+i)}</div>`;
+    ul.appendChild(li);
+  });
+}
+function updateSkillAdvField(idx,field,val) {
+  state.skillsAdv[idx][field]=parseInt(val)||0;
+  renderSkillsAdv();
+  save();
+}
+function deleteAdvSkill(idx) { if(confirm('Supprimer ?')){ state.skillsAdv.splice(idx,1); renderSkillsAdv(); save(); } }
+function addAdvSkill() {
+  const name=document.getElementById('adv-name').value.trim(); if(!name) return;
+  state.skillsAdv.push({ name, car:document.getElementById('adv-car').value.trim()||'?', aug:parseInt(document.getElementById('adv-aug').value)||0, carVal:0 });
+  document.getElementById('adv-name').value=''; document.getElementById('adv-aug').value='0';
+  renderSkillsAdv(); save(); toggleForm('adv-form');
+}
+
+// ══════ TALENTS ══════
+function renderTalents() {
+  const ul=document.getElementById('talent-list'); ul.innerHTML='';
+  state.talents.forEach((t,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML=`
+      <div class="talent-content"><span class="talent-name">${t.name}</span><span class="talent-desc">${t.desc}</span></div>
+      <span class="del-btn" onclick="deleteTalent(${i})">✕</span>
+    `;
+    ul.appendChild(li);
+  });
+}
+function deleteTalent(idx) { if(confirm('Supprimer ce talent ?')){ state.talents.splice(idx,1); renderTalents(); save(); } }
+function addTalent() {
+  const name=document.getElementById('talent-name-new').value.trim(); if(!name) return;
+  state.talents.push({name, desc:document.getElementById('talent-desc-new').value.trim()});
+  document.getElementById('talent-name-new').value=''; document.getElementById('talent-desc-new').value='';
+  renderTalents(); save(); toggleForm('talent-form');
+}
+
+// ══════ ARMURE ══════
+function renderArmor() {
+  const tbody=document.getElementById('armor-body'); tbody.innerHTML='';
+  state.armor.forEach((a,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td style="color:var(--parchment-dark);">${a.loc}</td>
+      <td><input class="armor-pa-input" type="number" value="${a.pa||0}" onchange="updateArmorPA(${i},this.value)" /></td>
+      <td style="color:var(--SUB);font-size:0.75rem;">${a.range}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+function updateArmorPA(idx,val) { state.armor[idx].pa=parseInt(val)||0; save(); }
+
+// ══════ ARMES ══════
+function renderWeapons() {
+  const c=document.getElementById('weapons-list'); c.innerHTML='';
+  state.weapons.forEach((w,i)=>{
+    const div=document.createElement('div'); div.className='weapon-item';
+    div.innerHTML=`
+      <div class="weapon-content">
+        <div class="weapon-name">${w.name}</div>
+        <div class="weapon-stats">
+          <span class="wstat"><span class="wstat-l">All. </span><span class="wstat-v">${w.all}</span></span>
+          <span class="wstat"><span class="wstat-l">Dég. </span><span class="wstat-v">${w.deg}</span></span>
+          ${w.enc!==undefined?`<span class="wstat"><span class="wstat-l">ENC </span><span class="wstat-v">${w.enc}</span></span>`:''}
+          ${w.attr?`<span class="wstat"><span class="wstat-l">Attr. </span><span class="wstat-v">${w.attr}</span></span>`:''}
+        </div>
+      </div>
+      <span class="del-btn" onclick="deleteWeapon(${i})">✕</span>
+    `;
+    c.appendChild(div);
+  });
+}
+function deleteWeapon(idx) { if(confirm('Supprimer ?')){ state.weapons.splice(idx,1); renderWeapons(); save(); } }
+function addWeapon() {
+  const name=document.getElementById('wep-name').value.trim(); if(!name) return;
+  state.weapons.push({ name, all:document.getElementById('wep-all').value.trim()||'—', deg:document.getElementById('wep-deg').value.trim()||'—', enc:parseInt(document.getElementById('wep-enc').value)||0, attr:document.getElementById('wep-attr').value.trim() });
+  ['wep-name','wep-all','wep-deg','wep-enc','wep-attr'].forEach(id=>document.getElementById(id).value='');
+  renderWeapons(); save(); toggleForm('weapon-form');
+}
+
+// ══════ INVENTAIRE ══════
+function renderInventory() {
+  const c=document.getElementById('inv-list'); c.innerHTML='';
+  state.inventory.forEach((item,i)=>{
+    const div=document.createElement('div'); div.className='inv-item';
+    div.innerHTML=`
+      <span class="inv-name">${item.name}</span>
+      <span class="inv-detail">${item.detail||''}</span>
+      <span class="del-btn" onclick="deleteInvItem(${i})">✕</span>
+    `;
+    c.appendChild(div);
+  });
+}
+function deleteInvItem(idx) { state.inventory.splice(idx,1); renderInventory(); save(); }
+function addInvItem() {
+  const name=document.getElementById('inv-name-new').value.trim(); if(!name) return;
+  state.inventory.push({ name, detail:document.getElementById('inv-detail-new').value.trim(), enc:0 });
+  ['inv-name-new','inv-detail-new'].forEach(id=>document.getElementById(id).value='');
+  renderInventory(); save(); toggleForm('inv-form');
+}
+
+
+// ══════ PIÈCES D'ARMURE ══════
+function renderArmorPieces() {
+  const c = document.getElementById('armor-pieces-list'); if(!c) return;
+  c.innerHTML = '';
+  if(!state.armorPieces) state.armorPieces = [];
+  if(state.armorPieces.length === 0){
+    c.innerHTML = '<div style="font-size:0.8rem;color:var(--SUB);font-style:italic;padding:0.2rem 0 0.5rem;">Aucune pièce portée.</div>';
+    return;
+  }
+  state.armorPieces.forEach((ap,i) => {
+    const div = document.createElement('div');
+    div.className = 'armor-piece';
+    div.innerHTML = `
+      <div class="armor-piece-content">
+        <div class="armor-piece-name">${ap.name}</div>
+        <div class="armor-piece-stats">
+          <span class="astat"><span class="astat-l">PA </span><span class="astat-v">${ap.pa||0}</span></span>
+          ${ap.enc?`<span class="astat"><span class="astat-l">ENC </span><span class="astat-v">${ap.enc}</span></span>`:''}
+          ${ap.pen?`<span class="astat"><span class="astat-l">Pén. </span><span class="astat-v">${ap.pen}</span></span>`:''}
+          ${ap.attr?`<span class="astat"><span class="astat-l">Attr. </span><span class="astat-v">${ap.attr}</span></span>`:''}
+        </div>
+      </div>
+      <span class="del-btn" onclick="deleteArmorPiece(${i})">✕</span>
+    `;
+    c.appendChild(div);
+  });
+}
+function deleteArmorPiece(idx) {
+  if(confirm('Retirer cette pièce ?')){ state.armorPieces.splice(idx,1); renderArmorPieces(); save(); }
+}
+function addArmorPiece() {
+  if(!state.armorPieces) state.armorPieces = [];
+  const name = document.getElementById('ap-name').value.trim(); if(!name) return;
+  state.armorPieces.push({
+    name,
+    pa:   parseInt(document.getElementById('ap-pa').value)||0,
+    enc:  parseInt(document.getElementById('ap-enc').value)||0,
+    pen:  document.getElementById('ap-pen').value.trim(),
+    attr: document.getElementById('ap-attr').value.trim(),
+  });
+  ['ap-name','ap-pen','ap-attr'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ap-pa').value=''; document.getElementById('ap-enc').value='';
+  renderArmorPieces(); save(); toggleForm('armor-piece-form');
+}
+// ══════ UTILS ══════
+function toggleForm(id) { document.getElementById(id).classList.toggle('visible'); }
+
+function ioStatus(msg, cls) {
+  const el = document.getElementById('io-status'); if (!el) return;
+  el.textContent = msg;
+  el.className = 'io-status' + (cls ? ' ' + cls : '');
+}
+
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = ((state.identite && state.identite.nom) ? state.identite.nom.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') : 'nouveau-perso') + '.json'; a.click();
+  ioStatus('✓ Exporté', 'ok'); setTimeout(()=>ioStatus('',''),3000);
+}
+function importJSON(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const saved = JSON.parse(e.target.result);
+      ['wounds','woundsMax','destin','chance','resil','determ','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
+      if(saved.money) Object.assign(state.money, saved.money);
+      if(saved.cet) Object.assign(state.cet, saved.cet);
+    if (saved.career) Object.assign(state.career, saved.career);
+    if (saved.statut) Object.assign(state.statut, saved.statut);
+    if (saved.identite) Object.assign(state.identite, saved.identite);
+    if (saved.libres) Object.assign(state.libres, saved.libres);
+      if(saved.xp) Object.assign(state.xp, saved.xp);
+      if(saved.stats) mergeStats(saved.stats);
+      if(saved.skillsBase) state.skillsBase=saved.skillsBase;
+      if(saved.skillsAdv) state.skillsAdv=saved.skillsAdv;
+      if(saved.talents) state.talents=saved.talents;
+      if(saved.weapons) state.weapons=saved.weapons;
+      if(saved.inventory) state.inventory=saved.inventory;
+      if(saved.armor) state.armor=saved.armor;
+      if(saved.armorPieces) state.armorPieces=saved.armorPieces;
+      save(); renderAll();
+      ioStatus('✓ Importé', 'ok'); setTimeout(()=>ioStatus('',''),3000);
+    } catch(err) { ioStatus('Erreur : ' + err.message, 'err'); }
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+// ══════ ÉDITION INLINE UNIVERSELLE ══════
+
+// Rend un span cliquable → input inline
+function makeEditable(el, onSave, opts) {
+  opts = opts || {};
+  const isArea = opts.multiline || false;
+  el.title = 'Double-cliquer pour modifier';
+  el.style.cursor = 'pointer';
+
+  el.addEventListener('dblclick', function(e) {
+    e.stopPropagation();
+    const current = el.textContent;
+    const tag = isArea ? 'textarea' : 'input';
+    const inp = document.createElement(tag);
+    inp.value = current;
+    inp.className = isArea ? 'editable-field-area' : 'editable-field';
+    if (isArea) { inp.rows = 2; inp.style.width = '100%'; }
+    inp.style.fontSize = window.getComputedStyle(el).fontSize;
+    inp.style.color = window.getComputedStyle(el).color;
+    inp.style.fontFamily = window.getComputedStyle(el).fontFamily;
+    inp.style.fontWeight = window.getComputedStyle(el).fontWeight;
+    el.replaceWith(inp);
+    inp.focus();
+    inp.select();
+
+    function commit() {
+      const val = inp.value.trim() || current;
+      el.textContent = val;
+      inp.replaceWith(el);
+      onSave(val);
+    }
+    inp.addEventListener('blur', commit);
+    inp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !isArea) { e.preventDefault(); commit(); }
+      if (e.key === 'Escape') { inp.value = current; commit(); }
+    });
+  });
+}
+
+// ── Armes : rend tous les champs éditables après render ──
+function applyWeaponEditable() {
+  document.querySelectorAll('.weapon-item').forEach((item, i) => {
+    const nameEl = item.querySelector('.weapon-name');
+    if (nameEl && !nameEl.dataset.editable) {
+      nameEl.dataset.editable = '1';
+      makeEditable(nameEl, val => { if(state.weapons[i]) { state.weapons[i].name = val; save(); } });
+    }
+    item.querySelectorAll('.wstat-v, .astat-v').forEach((el, j) => {
+      if (el.dataset.editable) return;
+      el.dataset.editable = '1';
+      const fields = ['all','deg','enc','attr'];
+      makeEditable(el, val => {
+        if (!state.weapons[i]) return;
+        // Détermine quel champ selon position
+        const stats = item.querySelectorAll('.wstat-v, .astat-v');
+        const idx = Array.from(stats).indexOf(el);
+        const key = fields[idx] !== undefined ? fields[idx] : 'attr';
+        state.weapons[i][key] = val; save();
+      });
+    });
+  });
+}
+
+// ── Pièces d'armure ──
+function applyArmorPieceEditable() {
+  document.querySelectorAll('.armor-piece').forEach((item, i) => {
+    const nameEl = item.querySelector('.armor-piece-name');
+    if (nameEl && !nameEl.dataset.editable) {
+      nameEl.dataset.editable = '1';
+      makeEditable(nameEl, val => { if(state.armorPieces[i]) { state.armorPieces[i].name = val; save(); } });
+    }
+    item.querySelectorAll('.astat-v').forEach((el) => {
+      if (el.dataset.editable) return;
+      el.dataset.editable = '1';
+      const label = el.previousElementSibling ? el.previousElementSibling.textContent.trim().toLowerCase() : '';
+      makeEditable(el, val => {
+        if (!state.armorPieces[i]) return;
+        if (label.startsWith('pa')) state.armorPieces[i].pa = parseInt(val)||0;
+        else if (label.startsWith('enc')) state.armorPieces[i].enc = parseInt(val)||0;
+        else if (label.startsWith('pén')) state.armorPieces[i].pen = val;
+        else state.armorPieces[i].attr = val;
+        save();
+      });
+    });
+  });
+}
+
+// ── Talents ──
+function applyTalentEditable() {
+  document.querySelectorAll('.talent-list li').forEach((li, i) => {
+    const nameEl = li.querySelector('.talent-name');
+    const descEl = li.querySelector('.talent-desc');
+    if (nameEl && !nameEl.dataset.editable) {
+      nameEl.dataset.editable = '1';
+      makeEditable(nameEl, val => { if(state.talents[i]) { state.talents[i].name = val; save(); } });
+    }
+    if (descEl && !descEl.dataset.editable) {
+      descEl.dataset.editable = '1';
+      makeEditable(descEl, val => { if(state.talents[i]) { state.talents[i].desc = val; save(); } }, { multiline: false });
+    }
+  });
+}
+
+// ── Inventaire ──
+function applyInventoryEditable() {
+  document.querySelectorAll('#inv-list .inv-item').forEach((item, i) => {
+    const nameEl = item.querySelector('.inv-name');
+    const detailEl = item.querySelector('.inv-detail');
+    if (nameEl && !nameEl.dataset.editable) {
+      nameEl.dataset.editable = '1';
+      makeEditable(nameEl, val => { if(state.inventory[i]) { state.inventory[i].name = val; save(); } });
+    }
+    if (detailEl && !detailEl.dataset.editable) {
+      detailEl.dataset.editable = '1';
+      makeEditable(detailEl, val => { if(state.inventory[i]) { state.inventory[i].detail = val; save(); } });
+    }
+  });
+}
+
+// ── Compétences avancées ──
+function applyAdvSkillEditable() {
+  document.querySelectorAll('#skills-adv-list li').forEach((li, i) => {
+    const nameEl = li.querySelector('.skill-name');
+    if (nameEl && !nameEl.dataset.editable) {
+      nameEl.dataset.editable = '1';
+      makeEditable(nameEl, val => {
+        if (state.skillsAdv[i]) {
+          // Extraire juste le nom sans la car entre parenthèses
+          const clean = val.replace(/\s*\([^)]*\)\s*$/, '').trim();
+          state.skillsAdv[i].name = clean;
+          renderSkillsAdv();
+          save();
+        }
+      });
+    }
+  });
+}
+
+// ── Hook dans les fonctions render existantes ──
+const _origRenderWeapons = renderWeapons;
+renderWeapons = function() { _origRenderWeapons(); applyWeaponEditable(); };
+
+const _origRenderArmorPieces = renderArmorPieces;
+renderArmorPieces = function() { _origRenderArmorPieces(); applyArmorPieceEditable(); };
+
+const _origRenderTalents = renderTalents;
+renderTalents = function() { _origRenderTalents(); applyTalentEditable(); };
+
+const _origRenderInventory = renderInventory;
+renderInventory = function() { _origRenderInventory(); applyInventoryEditable(); };
+
+const _origRenderSkillsAdv = renderSkillsAdv;
+renderSkillsAdv = function() { _origRenderSkillsAdv(); applyAdvSkillEditable(); };
+
+
+/* ============ SAUVEGARDE EN LIGNE (Firebase) ============
+   Remplace le localStorage. On reassigne save() et load() ;
+   le reste de la fiche n'est pas touche. */
+(function(){
+  /* ⚠ IDENTIFIANT DE LA FICHE — À CHANGER POUR CHAQUE NOUVEAU PERSONNAGE ⚠
+     C'est la clé de la sauvegarde en ligne. Deux fiches partageant le même
+     identifiant partagent la même sauvegarde et s'écrasent l'une l'autre.
+     Mets ici un identifiant unique en minuscules, sans espace ni accent. */
+  const FICHE_ID = "nouveau-perso";
+  const LS_KEY = "fiche_" + FICHE_ID + "_cache";
+  const FB_CONFIG = {
+    apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+    authDomain: "warhammer-table-jdr.firebaseapp.com",
+    databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "warhammer-table-jdr",
+    storageBucket: "warhammer-table-jdr.firebasestorage.app",
+    messagingSenderId: "347804803970",
+    appId: "1:347804803970:web:43e062299c53e59d20e59b"
+  };
+  let fbRef = null;
+  try {
+    if (typeof firebase !== "undefined") {
+      if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+      fbRef = firebase.database().ref("fiches/" + FICHE_ID);
+    }
+  } catch (e) { console.warn("Firebase indisponible, sauvegarde locale seule :", e); }
+
+  // Bandeau d'avertissement tant que l'identifiant par defaut n'a pas ete remplace.
+  if (FICHE_ID === "nouveau-perso") {
+    var warn = document.getElementById("tpl-warn");
+    if (warn) warn.style.display = "block";
+  }
+
+  // Fusionne une sauvegarde (locale ou en ligne) dans l'etat courant.
+  function fusion(saved) {
+    if (!saved || typeof saved !== "object") return;
+    for (var k in saved) {
+      var v = saved[k];
+      if (k === "stats") { mergeStats(v); continue; }
+      if (Array.isArray(v)) state[k] = v;
+      else if (v && typeof v === "object") {
+        if (state[k] && typeof state[k] === "object" && !Array.isArray(state[k])) Object.assign(state[k], v);
+        else state[k] = v;
+      } else state[k] = v;
+    }
+  }
+
+  // save() : cache local instantane + ecriture Firebase regroupee (600 ms).
+  var timer = null;
+  save = function() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {}
+    if (!fbRef) return;
+    clearTimeout(timer);
+    timer = setTimeout(function() {
+      fbRef.set(JSON.parse(JSON.stringify(state)))
+           .catch(function(e){ console.warn("Ecriture en ligne echouee (garde en local) :", e); });
+    }, 600);
+  };
+
+  // load() : cache local d'abord (affichage immediat), puis Firebase (source de verite).
+  load = function() {
+    try { var raw = localStorage.getItem(LS_KEY); if (raw) fusion(JSON.parse(raw)); } catch (e) {}
+    renderAll();
+    if (!fbRef) return;
+    fbRef.once("value").then(function(snap){
+      var enLigne = snap.val();
+      if (enLigne) { fusion(enLigne); renderAll(); }
+      else { fbRef.set(JSON.parse(JSON.stringify(state))); }
+    }).catch(function(e){ console.warn("Lecture en ligne echouee, cache local conserve :", e); });
+  };
+})();
+
+load();
+</script>
+<button class="pdf-btn" onclick="window.print()" title="Exporter cette fiche en PDF (etat actuel)">PDF</button>
+</body>
+</html>
