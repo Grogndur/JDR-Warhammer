@@ -351,6 +351,85 @@
 </style>
 </head>
 <body>
+
+<style id="pw-style">
+  #pw-gate { position:fixed; inset:0; z-index:99999; background:#0a0a0f;
+    display:flex; align-items:center; justify-content:center; padding:1.5rem;
+    font-family:'Crimson Text',serif; }
+  #pw-gate::before { content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at 30% 0%, rgba(184,112,42,0.10) 0%, transparent 55%),
+                radial-gradient(ellipse at 70% 100%, rgba(139,26,26,0.10) 0%, transparent 50%);
+    pointer-events:none; }
+  .pw-box { position:relative; width:100%; max-width:340px; text-align:center;
+    background:rgba(10,10,15,0.7); border:1px solid rgba(184,146,42,0.25);
+    border-top:3px solid #B8922A; border-radius:3px; padding:2.2rem 1.6rem 1.8rem; }
+  .pw-emblem { font-size:1.8rem; opacity:0.85; margin-bottom:0.6rem; }
+  .pw-title { font-family:'Cinzel',serif; font-weight:700; font-size:1.15rem;
+    letter-spacing:0.05em; color:#f0e8d8; }
+  .pw-sub { font-style:italic; color:#d4c8a8; font-size:0.85rem; margin:0.4rem 0 1.3rem; line-height:1.5; }
+  #pw-input { width:100%; background:rgba(184,112,42,0.07); border:1px solid rgba(184,146,42,0.3);
+    color:#f0e8d8; font-family:'Crimson Text',serif; font-size:0.95rem; text-align:center;
+    padding:0.55rem 0.6rem; border-radius:2px; }
+  #pw-input:focus { outline:none; border-color:#d4b45a; }
+  #pw-go { margin-top:0.9rem; width:100%; cursor:pointer; font-family:'Cinzel',serif;
+    font-size:0.72rem; letter-spacing:0.15em; text-transform:uppercase;
+    background:rgba(184,146,42,0.18); color:#e3c66e; border:1px solid rgba(184,146,42,0.45);
+    padding:0.55rem; border-radius:2px; transition:all 0.15s; }
+  #pw-go:hover { background:rgba(184,146,42,0.3); }
+  .pw-err { display:none; color:#e08080; font-size:0.82rem; font-style:italic; margin-top:0.8rem; }
+  #pw-gate.shake .pw-box { animation:pwshake 0.35s; }
+  @keyframes pwshake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px)} 75%{transform:translateX(7px)} }
+</style>
+<div id="pw-gate" role="dialog" aria-label="Fiche protegee">
+  <div class="pw-box">
+    <div class="pw-emblem">&#128274;</div>
+    <div class="pw-title">Fiche protégée</div>
+    <div class="pw-sub">Entre le mot de passe pour accéder à cette fiche.</div>
+    <input id="pw-input" type="password" autocomplete="off" placeholder="Mot de passe" />
+    <button id="pw-go" type="button">Ouvrir</button>
+    <div id="pw-err" class="pw-err">Mot de passe incorrect.</div>
+  </div>
+</div>
+<script>
+(function(){
+  var HASH = "227dhya6lya";
+  var KEY = "pw_ok_ines";
+  var gate = document.getElementById('pw-gate');
+  function cyrb53(str, seed){
+    seed = seed || 0;
+    var h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+    for (var i = 0, ch; i < str.length; i++) {
+      ch = str.charCodeAt(i);
+      h1 = Math.imul(h1 ^ ch, 2654435761);
+      h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+    h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+    h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+  }
+  try { if (sessionStorage.getItem(KEY) === '1') { gate.parentNode.removeChild(gate); return; } } catch(e){}
+  var input = document.getElementById('pw-input');
+  var err = document.getElementById('pw-err');
+  function tryPw(){
+    var v = (input.value || '').trim();
+    if (cyrb53(v) === HASH) {
+      try { sessionStorage.setItem(KEY, '1'); } catch(e){}
+      gate.parentNode.removeChild(gate);
+    } else {
+      err.style.display = 'block';
+      input.value = ''; input.focus();
+      gate.classList.add('shake');
+      setTimeout(function(){ gate.classList.remove('shake'); }, 360);
+    }
+  }
+  document.getElementById('pw-go').addEventListener('click', tryPw);
+  input.addEventListener('keydown', function(e){ if (e.key === 'Enter') tryPw(); });
+  setTimeout(function(){ input.focus(); }, 50);
+})();
+</script>
+
 <nav>
   <a href="../index.html">← Accueil</a>
   <span class="nav-sep">·</span>
