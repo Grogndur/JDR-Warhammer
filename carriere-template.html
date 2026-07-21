@@ -115,6 +115,14 @@
   .sub { margin-top:1.3rem; }
   .sub-title { font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--VIO2); margin-bottom:0.6rem; }
 
+  /* Pliage des échelons */
+  .fold-btn { background:transparent; border:none; color:var(--GLD-LT); cursor:pointer; font-size:0.8rem; line-height:1; padding:0.1rem 0.25rem; transition:transform 0.15s ease, color 0.15s; }
+  .fold-btn:hover { color:var(--parchment); }
+  .echelon-label { cursor:pointer; }
+  .echelon-card.collapsed .fold-btn { transform:rotate(-90deg); }
+  .echelon-card.collapsed .echelon-head { margin-bottom:0; border-bottom:none; }
+  .echelon-card.collapsed .sub { display:none; }
+
   .alerte { display:none; background:rgba(139,26,26,0.15); border:1px solid rgba(139,26,26,0.4); color:#e0a0a0; padding:0.6rem 0.9rem; border-radius:2px; margin-top:1rem; font-size:0.85rem; }
   .footnote { text-align:center; color:var(--SUB); font-size:0.72rem; font-style:italic; margin-top:2.5rem; opacity:0.8; }
 
@@ -149,6 +157,9 @@
     .statut-print { display:inline !important; color:#2a2114; font-style:normal; font-weight:600; }
     .sub-title { color:#6b5320; }
     .echelon-card { break-inside:auto; }
+    .fold-btn { display:none !important; }
+    .echelon-card.collapsed .sub { display:block; }
+    .echelon-card.collapsed .echelon-head { border-bottom:1px solid #d8caa0; margin-bottom:0.4rem; }
     .sub-empty, .echelon-empty { display:none !important; }
   }
 </style>
@@ -371,6 +382,7 @@ function construireSquelette() {
     card.id = 'echelon-card-' + ei;
     let html =
       '<div class="echelon-head">' +
+        '<button class="fold-btn" data-ech="' + ei + '" type="button" title="Plier / déplier">▾</button>' +
         '<span class="echelon-label">Échelon ' + ech + '</span>' +
         '<span class="statut-zone">' +
           '<span class="statut-lbl">Statut</span>' +
@@ -401,6 +413,12 @@ function construireSquelette() {
     });
     card.innerHTML = html;
     zone.appendChild(card);
+  });
+  zone.querySelectorAll('.fold-btn, .echelon-label').forEach(el => {
+    el.addEventListener('click', () => {
+      const card = el.closest('.echelon-card');
+      if (card) card.classList.toggle('collapsed');
+    });
   });
   zone.querySelectorAll('.carac-chip').forEach(chip => {
     chip.addEventListener('click', () => {
