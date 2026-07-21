@@ -167,7 +167,7 @@ function initHub() {
     e.preventDefault();
     if (!refCarrieres) { alert("Firebase indisponible."); return; }
     const r = push(refCarrieres);
-    set(r, { titre:"", soustitre:"", description:"", image:"", schema:{}, competences:[], talents:[], cree:Date.now() })
+    set(r, { titre:"", cree:Date.now() })
       .then(() => { location.href = "carriere-template.html?c=" + r.key; })
       .catch(err => alert("Création impossible : " + err.message));
   });
@@ -191,11 +191,22 @@ function initHub() {
       c = c || {};
       const titre = (c.titre && c.titre.trim()) ? c.titre : "Carrière sans titre";
       const sousT = (c.soustitre && c.soustitre.trim()) ? c.soustitre : "Carrière maison";
-      const nbComp = Array.isArray(c.competences) ? c.competences.length : 0;
-      const nbTal  = Array.isArray(c.talents) ? c.talents.length : 0;
+      let nbComp = 0, nbTal = 0, nbPos = 0;
+      if (Array.isArray(c.echelons)) {
+        c.echelons.forEach(e => {
+          if (!e) return;
+          nbComp += Array.isArray(e.competences) ? e.competences.length : 0;
+          nbTal  += Array.isArray(e.talents) ? e.talents.length : 0;
+          nbPos  += Array.isArray(e.possessions) ? e.possessions.length : 0;
+        });
+      } else {
+        nbComp = Array.isArray(c.competences) ? c.competences.length : 0;
+        nbTal  = Array.isArray(c.talents) ? c.talents.length : 0;
+      }
+      const compte = (n, mot) => n + " " + mot + (n > 1 ? "s" : "");
       const resume = (c.description && c.description.trim())
         ? c.description.trim().slice(0, 120) + (c.description.trim().length > 120 ? "…" : "")
-        : (nbComp + " compétence" + (nbComp > 1 ? "s" : "") + " · " + nbTal + " talent" + (nbTal > 1 ? "s" : ""));
+        : (compte(nbComp, "compétence") + " · " + compte(nbTal, "talent") + " · " + compte(nbPos, "possession"));
 
       const a = document.createElement("a");
       a.className = "portal portal-carriere carr-dyn";

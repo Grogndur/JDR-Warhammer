@@ -110,6 +110,18 @@
   .add-btn:hover { background:rgba(184,146,42,0.2); border-color:rgba(184,146,42,0.55); }
   .empty-hint { color:var(--SUB); font-style:italic; font-size:0.85rem; padding:0.3rem 0; }
 
+  /* ---- Échelons : compétences / talents / possessions par palier ---- */
+  .echelon-head { display:flex; align-items:center; gap:0.7rem; flex-wrap:wrap; padding-bottom:0.6rem; margin-bottom:0.4rem; border-bottom:1px solid rgba(184,146,42,0.28); }
+  .echelon-label { font-family:'Cinzel',serif; font-size:0.9rem; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--GLD-LT); }
+  .statut-zone { margin-left:auto; display:flex; align-items:center; gap:0.4rem; }
+  .statut-lbl { font-family:'Cinzel',serif; font-size:0.56rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--SUB); }
+  .statut-tier, .statut-rang { background:rgba(9,8,12,0.5); border:1px solid rgba(184,146,42,0.3); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.85rem; padding:0.25rem 0.4rem; border-radius:2px; }
+  .statut-tier:focus, .statut-rang:focus { outline:none; border-color:var(--GLD); }
+  .statut-rang { width:3.4rem; text-align:center; }
+  .statut-print { display:none; font-family:'Crimson Text',serif; font-style:italic; color:var(--parchment); }
+  .sub { margin-top:1.3rem; }
+  .sub-title { font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--VIO2); margin-bottom:0.6rem; }
+
   .alerte { display:none; background:rgba(139,26,26,0.15); border:1px solid rgba(139,26,26,0.4); color:#e0a0a0; padding:0.6rem 0.9rem; border-radius:2px; margin-top:1rem; font-size:0.85rem; }
   .footnote { text-align:center; color:var(--SUB); font-size:0.72rem; font-style:italic; margin-top:2.5rem; opacity:0.8; }
 
@@ -140,6 +152,14 @@
     .entry { border-color:#d8caa0; border-left-color:#b8922a; background:#fff; break-inside:avoid; }
     .entry-nom { color:#2a2114; border:none; font-weight:600; }
     .entry-desc { color:#332b18; }
+    .echelon-head { color:#8a6d2a; border-color:#d8caa0; }
+    .echelon-label { color:#8a6d2a; }
+    .statut-lbl { color:#6b5320; }
+    .statut-tier, .statut-rang { display:none !important; }
+    .statut-print { display:inline !important; color:#2a2114; font-style:normal; font-weight:600; }
+    .sub-title { color:#6b5320; }
+    .echelon-card { break-inside:auto; }
+    .sub-empty, .echelon-empty { display:none !important; }
   }
 </style>
 </head>
@@ -190,19 +210,8 @@
     <div class="schema-note">Cliquez une case pour indiquer à quel échelon (1 à 4) une caractéristique peut recevoir des augmentations d'XP. Une case dorée = augmentation possible à cet échelon.</div>
   </div>
 
-  <!-- COMPÉTENCES -->
-  <div class="card">
-    <div class="card-title">Compétences</div>
-    <div class="entry-list" id="list-competences"></div>
-    <button class="add-btn" id="add-competence">+ Ajouter une compétence</button>
-  </div>
-
-  <!-- TALENTS -->
-  <div class="card">
-    <div class="card-title">Talents</div>
-    <div class="entry-list" id="list-talents"></div>
-    <button class="add-btn" id="add-talent">+ Ajouter un talent</button>
-  </div>
+  <!-- COMPÉTENCES / TALENTS / POSSESSIONS, par échelon -->
+  <div id="echelons-zone"></div>
 
   <div class="footnote" id="foot">Enregistrement automatique · synchronisé en temps réel</div>
 
@@ -247,23 +256,45 @@ document.getElementById('export-pdf').addEventListener('click', () => window.pri
 let state = {
   titre:'', soustitre:'', description:'', image:'',
   schema:{},              // { CC:[false,false,false,false], ... }
-  competences:[],         // [ {nom, desc}, ... ]
-  talents:[]              // [ {nom, desc}, ... ]
+  echelons:[]             // 4 paliers : [{ competences:[], talents:[], possessions:[] }, ...]
 };
 CARACS.forEach(c => state.schema[c] = [false,false,false,false]);
+for (let i = 0; i < 4; i++) state.echelons.push({ stTier:'', stRang:'', competences:[], talents:[], possessions:[] });
+
+// Types de listes présents dans chaque échelon
+const TYPES = [
+  { key:'competences', label:'Compétences', article:'une', singulier:'compétence', vide:'Aucune compétence à cet échelon.' },
+  { key:'talents',     label:'Talents',     article:'un',  singulier:'talent',     vide:'Aucun talent à cet échelon.' },
+  { key:'possessions', label:'Possessions', article:'une', singulier:'possession', vide:'Aucune possession à cet échelon.' }
+];
 
 function normaliser(d) {
   d = d || {};
   const s = {
     titre: d.titre || '', soustitre: d.soustitre || '', description: d.description || '',
-    image: d.image || '', schema: {}, competences: [], talents: []
+    image: d.image || '', schema: {}, echelons: []
   };
   CARACS.forEach(c => {
     const src = (d.schema && d.schema[c]) || [];
     s.schema[c] = [0,1,2,3].map(i => !!src[i]);
   });
-  (Array.isArray(d.competences) ? d.competences : []).forEach(e => s.competences.push({ nom:(e&&e.nom)||'', desc:(e&&e.desc)||'' }));
-  (Array.isArray(d.talents) ? d.talents : []).forEach(e => s.talents.push({ nom:(e&&e.nom)||'', desc:(e&&e.desc)||'' }));
+  const nettoie = (arr) => (Array.isArray(arr) ? arr : [])
+    .map(e => ({ nom:(e && e.nom) || '', desc:(e && e.desc) || '' }));
+  for (let i = 0; i < 4; i++) {
+    const src = (Array.isArray(d.echelons) && d.echelons[i]) ? d.echelons[i] : {};
+    s.echelons.push({
+      stTier: (typeof src.stTier === 'string') ? src.stTier : '',
+      stRang: (src.stRang === 0 || src.stRang) ? String(src.stRang) : '',
+      competences: nettoie(src.competences),
+      talents: nettoie(src.talents),
+      possessions: nettoie(src.possessions)
+    });
+  }
+  // Rétrocompatibilité : ancien format (compétences/talents à plat) -> échelon 1
+  if (!Array.isArray(d.echelons)) {
+    if (Array.isArray(d.competences)) s.echelons[0].competences = nettoie(d.competences);
+    if (Array.isArray(d.talents))     s.echelons[0].talents = nettoie(d.talents);
+  }
   return s;
 }
 
@@ -323,8 +354,9 @@ function rendreTout() {
   dsc.value = state.description; autoGrow(dsc);
   rendreImage();
   rendreSchema();
-  rendreListe('competences');
-  rendreListe('talents');
+  if (!squeletteFait) construireSquelette();
+  ECHELONS.forEach((ech, ei) => TYPES.forEach(t => rendreListe(ei, t.key)));
+  appliquerStatuts();
   document.title = (state.titre ? state.titre + ' — ' : '') + 'Carrière · Warhammer';
 }
 
@@ -360,36 +392,139 @@ function rendreSchema() {
   });
 }
 
-function rendreListe(type) {
-  const cont = document.getElementById('list-' + type);
-  const items = state[type];
+let squeletteFait = false;
+
+// Construit les 4 cartes d'échelon (une fois), avec leurs sous-listes et boutons d'ajout.
+function construireSquelette() {
+  const zone = document.getElementById('echelons-zone');
+  zone.innerHTML = '';
+  ECHELONS.forEach((ech, ei) => {
+    const card = document.createElement('div');
+    card.className = 'card echelon-card';
+    card.id = 'echelon-card-' + ei;
+    let html =
+      '<div class="echelon-head">' +
+        '<span class="echelon-label">Échelon ' + ech + '</span>' +
+        '<span class="statut-zone">' +
+          '<span class="statut-lbl">Statut</span>' +
+          '<select class="statut-tier" id="st-tier-' + ei + '">' +
+            '<option value="">—</option>' +
+            '<option value="Bronze">Bronze</option>' +
+            '<option value="Argent">Argent</option>' +
+            '<option value="Or">Or</option>' +
+          '</select>' +
+          '<input class="statut-rang" id="st-rang-' + ei + '" type="number" min="0" placeholder="0">' +
+          '<span class="statut-print" id="st-print-' + ei + '"></span>' +
+        '</span>' +
+      '</div>';
+    TYPES.forEach(t => {
+      html +=
+        '<div class="sub">' +
+          '<div class="sub-title">' + t.label + '</div>' +
+          '<div class="entry-list" id="list-e' + ei + '-' + t.key + '"></div>' +
+          '<button class="add-btn" data-ech="' + ei + '" data-type="' + t.key + '">+ Ajouter ' + t.article + ' ' + t.singulier + '</button>' +
+        '</div>';
+    });
+    card.innerHTML = html;
+    zone.appendChild(card);
+  });
+  zone.querySelectorAll('.add-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const ei = +btn.dataset.ech, type = btn.dataset.type;
+      state.echelons[ei][type].push({ nom:'', desc:'' });
+      rendreListe(ei, type);
+      programmerSauvegarde();
+      const inputs = document.querySelectorAll('#list-e' + ei + '-' + type + ' .entry-nom');
+      if (inputs.length) inputs[inputs.length - 1].focus();
+    });
+  });
+  ECHELONS.forEach((ech, ei) => {
+    const tier = document.getElementById('st-tier-' + ei);
+    const rang = document.getElementById('st-rang-' + ei);
+    const maj = () => {
+      state.echelons[ei].stTier = tier.value;
+      state.echelons[ei].stRang = rang.value;
+      majStatutPrint(ei);
+      majEtatsVides();
+      programmerSauvegarde();
+    };
+    tier.addEventListener('change', maj);
+    rang.addEventListener('input', maj);
+  });
+  squeletteFait = true;
+}
+
+function rendreListe(ei, type) {
+  const cont = document.getElementById('list-e' + ei + '-' + type);
+  if (!cont) return;
+  const items = state.echelons[ei][type];
+  const meta = TYPES.find(t => t.key === type);
   cont.innerHTML = '';
   if (!items.length) {
-    const vide = (type === 'competences')
-      ? 'Aucune compétence pour l\'instant. Ajoutez-en une ci-dessous.'
-      : 'Aucun talent pour l\'instant. Ajoutez-en un ci-dessous.';
-    cont.innerHTML = '<div class="empty-hint">' + vide + '</div>';
+    cont.innerHTML = '<div class="empty-hint">' + meta.vide + '</div>';
+    majEtatsVides();
     return;
   }
   items.forEach((e, i) => {
     const row = document.createElement('div');
     row.className = 'entry';
+    const ph = (type === 'possessions')
+      ? 'Quantité, détail, état…'
+      : 'Description, spécialisation, condition d\'acquisition…';
     row.innerHTML =
       '<div class="entry-top">' +
         '<input class="entry-nom" placeholder="Nom">' +
         '<button class="entry-del" title="Supprimer">×</button>' +
       '</div>' +
-      '<textarea class="entry-desc" placeholder="Description, spécialisation, condition d\'acquisition…"></textarea>';
+      '<textarea class="entry-desc" placeholder="' + ph + '"></textarea>';
     const nom = row.querySelector('.entry-nom');
     const desc = row.querySelector('.entry-desc');
     nom.value = e.nom; desc.value = e.desc;
-    nom.addEventListener('input', () => { state[type][i].nom = nom.value; programmerSauvegarde(); });
-    desc.addEventListener('input', () => { state[type][i].desc = desc.value; autoGrow(desc); programmerSauvegarde(); });
+    nom.addEventListener('input', () => { state.echelons[ei][type][i].nom = nom.value; programmerSauvegarde(); });
+    desc.addEventListener('input', () => { state.echelons[ei][type][i].desc = desc.value; autoGrow(desc); programmerSauvegarde(); });
     row.querySelector('.entry-del').addEventListener('click', () => {
-      state[type].splice(i, 1); rendreListe(type); programmerSauvegarde();
+      state.echelons[ei][type].splice(i, 1); rendreListe(ei, type); programmerSauvegarde();
     });
     cont.appendChild(row);
     autoGrow(desc);
+  });
+  majEtatsVides();
+}
+
+// Met à jour le texte de statut affiché à l'impression pour un échelon.
+function majStatutPrint(ei) {
+  const el = document.getElementById('st-print-' + ei);
+  if (!el) return;
+  const t = state.echelons[ei].stTier, r = state.echelons[ei].stRang;
+  const txt = (t || (r !== '' && r != null)) ? ((t || '') + ((r !== '' && r != null) ? ' ' + r : '')).trim() : '—';
+  el.textContent = txt;
+}
+
+// Applique les valeurs de statut aux contrôles (au chargement / à la synchro).
+function appliquerStatuts() {
+  ECHELONS.forEach((ech, ei) => {
+    const tier = document.getElementById('st-tier-' + ei);
+    const rang = document.getElementById('st-rang-' + ei);
+    if (tier) tier.value = state.echelons[ei].stTier || '';
+    if (rang) rang.value = state.echelons[ei].stRang || '';
+    majStatutPrint(ei);
+  });
+}
+
+// Marque les sous-sections et échelons vides (utile pour l'export PDF, qui les masque).
+function majEtatsVides() {
+  ECHELONS.forEach((ech, ei) => {
+    let cardVide = !(state.echelons[ei].stTier || state.echelons[ei].stRang);
+    TYPES.forEach(t => {
+      const cont = document.getElementById('list-e' + ei + '-' + t.key);
+      if (!cont) return;
+      const vide = state.echelons[ei][t.key].length === 0;
+      const sub = cont.closest('.sub');
+      if (sub) sub.classList.toggle('sub-empty', vide);
+      if (!vide) cardVide = false;
+    });
+    const card = document.getElementById('echelon-card-' + ei);
+    if (card) card.classList.toggle('echelon-empty', cardVide);
   });
 }
 
@@ -403,16 +538,7 @@ document.getElementById('f-soustitre').addEventListener('input', function () { s
 document.getElementById('f-description').addEventListener('input', function () { state.description = this.value; autoGrow(this); programmerSauvegarde(); });
 
 // ---------- Ajout d'entrées ----------
-document.getElementById('add-competence').addEventListener('click', () => {
-  state.competences.push({ nom:'', desc:'' }); rendreListe('competences'); programmerSauvegarde();
-  const inputs = document.querySelectorAll('#list-competences .entry-nom');
-  if (inputs.length) inputs[inputs.length - 1].focus();
-});
-document.getElementById('add-talent').addEventListener('click', () => {
-  state.talents.push({ nom:'', desc:'' }); rendreListe('talents'); programmerSauvegarde();
-  const inputs = document.querySelectorAll('#list-talents .entry-nom');
-  if (inputs.length) inputs[inputs.length - 1].focus();
-});
+// Les boutons « + Ajouter » sont créés par échelon dans construireSquelette().
 
 // ---------- Image : upload + redimensionnement ----------
 document.getElementById('illus-file').addEventListener('change', function (ev) {
