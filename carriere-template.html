@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carrière — Warhammer Fantasy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+<!-- ================= CONFIG FIREBASE (identique aux fiches de perso) ================= -->
+<script>
+  window.FIREBASE_CONFIG = {
+    apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+    authDomain: "warhammer-table-jdr.firebaseapp.com",
+    databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "warhammer-table-jdr",
+    storageBucket: "warhammer-table-jdr.firebasestorage.app",
+    messagingSenderId: "347804803970",
+    appId: "1:347804803970:web:43e062299c53e59d20e59b"
+  };
+</script>
+
+<style>
+  :root {
+    --ink:#09080c; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
+    --GLD:#B8922A; --GLD-LT:#e3c66e; --VIO:#4a3a1a; --VIO2:#a07830;
+    --GRN:#5a6040; --SUB:#5a5040; --blood:#8B1A1A;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--ink); color:var(--parchment); font-family:'Crimson Text',serif; min-height:100vh; }
+  body::before { content:''; position:fixed; inset:0;
+    background: radial-gradient(ellipse at 25% 0%, rgba(184,146,42,0.07) 0%, transparent 55%),
+                radial-gradient(ellipse at 75% 100%, rgba(74,58,26,0.08) 0%, transparent 50%);
+    pointer-events:none; z-index:0; }
+
+  nav { position:sticky; top:0; z-index:100; background:rgba(9,8,12,0.93); backdrop-filter:blur(8px); border-bottom:1px solid rgba(184,146,42,0.2); padding:0.6rem 1.5rem; display:flex; align-items:center; gap:1rem; }
+  nav a { color:var(--SUB); text-decoration:none; font-size:0.82rem; font-style:italic; transition:color 0.2s; }
+  nav a:hover { color:var(--GLD); }
+  .nav-current { color:var(--VIO2) !important; font-style:normal; font-family:'Cinzel',serif; font-size:0.82rem; }
+  .nav-sep { color:var(--SUB); opacity:0.3; }
+  .sync-dot { margin-left:auto; display:flex; align-items:center; gap:0.4rem; font-size:0.7rem; color:var(--SUB); font-style:italic; }
+  .sync-dot .pip { width:8px; height:8px; border-radius:50%; background:#555; transition:background 0.3s; box-shadow:0 0 0 rgba(0,0,0,0); }
+  .sync-dot.ok .pip { background:var(--GRN); box-shadow:0 0 6px rgba(90,96,64,0.6); }
+  .sync-dot.save .pip { background:var(--GLD); box-shadow:0 0 6px rgba(184,146,42,0.6); }
+  .sync-dot.err .pip { background:var(--blood); }
+  .sync-dot { margin-left:0.8rem; }
+
+  .mj-btn { margin-left:auto; background:rgba(184,146,42,0.1); border:1px solid rgba(184,146,42,0.3); color:var(--SUB); font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.32rem 0.65rem; border-radius:2px; cursor:pointer; transition:all 0.15s; }
+  .mj-btn:hover { color:var(--GLD-LT); border-color:rgba(184,146,42,0.5); }
+  .mj-btn.on { color:var(--GLD-LT); border-color:rgba(184,146,42,0.6); background:rgba(184,146,42,0.2); }
+
+  /* Lecture seule (mode joueur) */
+  body.locked .add-btn,
+  body.locked .entry-del,
+  body.locked .illus-btns,
+  body.locked .illus-hint,
+  body.locked .schema-note,
+  body.locked .footnote { display:none; }
+  body.locked .schema-cell { cursor:default; }
+  body.locked .schema-cell:hover { background:transparent; }
+  body.locked .schema-cell.on:hover { background:rgba(184,146,42,0.09); }
+  body.locked .titre-input,
+  body.locked .soustitre-input,
+  body.locked .desc-input,
+  body.locked .entry-nom,
+  body.locked .entry-desc { border-color:transparent !important; }
+  body.locked .desc-input { padding-left:0; padding-right:0; }
+
+  .layout { position:relative; z-index:1; max-width:1000px; margin:0 auto; padding:1.5rem 1rem 4rem; }
+
+  /* ---- En-tête ---- */
+  .carr-header { display:flex; gap:1.6rem; align-items:flex-start; padding-bottom:1.4rem; border-bottom:1px solid rgba(184,146,42,0.18); flex-wrap:wrap; }
+  .carr-illus { width:190px; flex-shrink:0; }
+  .illus-frame { position:relative; width:190px; height:230px; border:1px solid rgba(184,146,42,0.4); border-radius:2px; background:linear-gradient(135deg,rgba(74,58,26,0.28),rgba(9,8,12,0.5)); overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  .illus-frame img { width:100%; height:100%; object-fit:cover; display:block; }
+  .illus-empty { color:var(--SUB); font-style:italic; font-size:0.8rem; text-align:center; padding:0 1rem; line-height:1.5; }
+  .illus-btns { display:flex; gap:0.4rem; margin-top:0.5rem; }
+  .illus-btns label, .illus-btns button { flex:1; text-align:center; cursor:pointer; background:rgba(184,146,42,0.12); border:1px solid rgba(184,146,42,0.32); color:var(--GLD-LT); font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; padding:0.4rem 0.3rem; border-radius:2px; transition:all 0.15s; }
+  .illus-btns label:hover, .illus-btns button:hover { background:rgba(184,146,42,0.24); border-color:rgba(184,146,42,0.55); }
+  .illus-btns input[type=file] { display:none; }
+  .illus-hint { font-size:0.66rem; color:var(--SUB); font-style:italic; margin-top:0.4rem; line-height:1.4; }
+
+  .carr-title-zone { flex:1; min-width:240px; }
+  .carr-eyebrow { font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.5rem; }
+  .titre-input { background:transparent; border:none; border-bottom:1px solid rgba(184,146,42,0.25); color:var(--parchment); font-family:'Cinzel',serif; font-size:2rem; font-weight:700; letter-spacing:0.04em; width:100%; padding:0.1rem 0; }
+  .titre-input:focus { outline:none; border-bottom-color:var(--GLD); }
+  .titre-input::placeholder { color:var(--SUB); opacity:0.5; }
+  .soustitre-input { background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.06); color:var(--VIO2); font-family:'Crimson Text',serif; font-style:italic; font-size:1rem; width:100%; margin-top:0.6rem; padding:0.1rem 0; }
+  .soustitre-input:focus { outline:none; border-bottom-color:var(--VIO2); }
+  .soustitre-input::placeholder { color:var(--SUB); opacity:0.5; }
+  .desc-input { background:transparent; border:1px solid rgba(255,255,255,0.06); border-radius:2px; color:var(--parchment-dark); font-family:'Crimson Text',serif; font-size:0.95rem; line-height:1.6; width:100%; margin-top:1rem; padding:0.7rem 0.8rem; resize:vertical; min-height:120px; }
+  .desc-input:focus { outline:none; border-color:rgba(184,146,42,0.3); }
+  .desc-input::placeholder { color:var(--SUB); opacity:0.6; font-style:italic; }
+
+  /* ---- Cartes ---- */
+  .card { background:rgba(9,8,12,0.6); border:1px solid rgba(184,146,42,0.15); border-radius:2px; padding:1.1rem 1.2rem; margin-top:1.5rem; }
+  .card-title { font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--GLD); margin-bottom:1rem; display:flex; align-items:center; gap:0.6rem; }
+  .card-title::after { content:''; flex:1; height:1px; background:rgba(184,146,42,0.15); }
+
+  /* ---- Schéma de progression (stat bloc) ---- */
+  .schema-wrap { overflow-x:auto; }
+  .schema { border-collapse:collapse; width:100%; min-width:520px; }
+  .schema th, .schema td { border:1px solid rgba(184,146,42,0.14); text-align:center; }
+  .schema thead th { font-family:'Cinzel',serif; font-size:0.72rem; color:var(--VIO2); padding:0.5rem 0.2rem; letter-spacing:0.04em; }
+  .schema thead th.corner { color:var(--SUB); font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; }
+  .schema tbody th { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--SUB); text-align:left; padding:0.4rem 0.6rem; white-space:nowrap; }
+  .schema-cell { width:44px; height:34px; cursor:pointer; transition:background 0.12s; position:relative; }
+  .schema-cell:hover { background:rgba(184,146,42,0.08); }
+  .schema-cell .mark { display:inline-block; width:14px; height:14px; border-radius:2px; background:transparent; transition:all 0.12s; }
+  .schema-cell.on .mark { background:var(--GLD); box-shadow:0 0 6px rgba(184,146,42,0.45); }
+  .schema-cell.on { background:rgba(184,146,42,0.09); }
+  .schema-note { font-size:0.72rem; color:var(--SUB); font-style:italic; margin-top:0.7rem; line-height:1.5; }
+
+  /* ---- Listes compétences / talents ---- */
+  .entry-list { display:flex; flex-direction:column; gap:0.7rem; }
+  .entry { border:1px solid rgba(255,255,255,0.05); border-left:2px solid rgba(184,146,42,0.35); border-radius:2px; padding:0.7rem 0.8rem; background:rgba(255,255,255,0.015); }
+  .entry-top { display:flex; gap:0.6rem; align-items:center; }
+  .entry-nom { flex:1; background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08); color:var(--parchment); font-family:'Crimson Text',serif; font-weight:600; font-size:0.95rem; padding:0.15rem 0.1rem; }
+  .entry-nom:focus { outline:none; border-bottom-color:var(--GLD); }
+  .entry-nom::placeholder { color:var(--SUB); opacity:0.55; }
+  .entry-del { flex-shrink:0; width:26px; height:26px; border-radius:2px; background:rgba(139,26,26,0.14); border:1px solid rgba(139,26,26,0.32); color:#c07070; cursor:pointer; font-size:0.95rem; line-height:1; transition:all 0.15s; }
+  .entry-del:hover { background:rgba(139,26,26,0.3); }
+  .entry-desc { width:100%; margin-top:0.5rem; background:transparent; border:none; color:var(--parchment-dark); font-family:'Crimson Text',serif; font-size:0.86rem; line-height:1.5; resize:vertical; min-height:20px; padding:0.1rem; }
+  .entry-desc:focus { outline:none; }
+  .entry-desc::placeholder { color:var(--SUB); opacity:0.6; font-style:italic; }
+  .add-btn { margin-top:0.9rem; background:rgba(184,146,42,0.1); border:1px dashed rgba(184,146,42,0.35); color:var(--GLD-LT); font-family:'Cinzel',serif; font-size:0.66rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.55rem 1rem; border-radius:2px; cursor:pointer; width:100%; transition:all 0.15s; }
+  .add-btn:hover { background:rgba(184,146,42,0.2); border-color:rgba(184,146,42,0.55); }
+  .empty-hint { color:var(--SUB); font-style:italic; font-size:0.85rem; padding:0.3rem 0; }
+
+  .alerte { display:none; background:rgba(139,26,26,0.15); border:1px solid rgba(139,26,26,0.4); color:#e0a0a0; padding:0.6rem 0.9rem; border-radius:2px; margin-top:1rem; font-size:0.85rem; }
+  .footnote { text-align:center; color:var(--SUB); font-size:0.72rem; font-style:italic; margin-top:2.5rem; opacity:0.8; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">◂ Accueil</a>
+  <span class="nav-sep">·</span>
+  <span class="nav-current">Carrière</span>
+  <button class="mj-btn" id="mj-toggle" type="button">🔒 Mode MJ</button>
+  <div class="sync-dot" id="sync"><span class="pip"></span><span id="sync-txt">connexion…</span></div>
+</nav>
+
+<div class="layout">
+
+  <!-- EN-TÊTE : titre + illustration -->
+  <div class="carr-header">
+    <div class="carr-illus">
+      <div class="illus-frame" id="illus-frame">
+        <div class="illus-empty" id="illus-empty">Aucune illustration.<br>Ajoutez une image.</div>
+        <img id="illus-img" style="display:none" alt="Illustration de la carrière">
+      </div>
+      <div class="illus-btns">
+        <label for="illus-file">Ajouter</label>
+        <button type="button" id="illus-remove">Retirer</button>
+      </div>
+      <input type="file" id="illus-file" accept="image/*">
+      <div class="illus-hint">Redimensionnée automatiquement, stockée avec la carrière (pas de fichier à téléverser sur GitHub).</div>
+    </div>
+
+    <div class="carr-title-zone">
+      <div class="carr-eyebrow">Carrière · Warhammer Fantasy 4e</div>
+      <input class="titre-input" id="f-titre" placeholder="Nom de la carrière">
+      <input class="soustitre-input" id="f-soustitre" placeholder="Classe, espèces autorisées, statut…">
+      <textarea class="desc-input" id="f-description" placeholder="Description de la carrière : son rôle, son ambiance, sa place dans le Vieux Monde, les opportunités d'aventure…"></textarea>
+    </div>
+  </div>
+
+  <div class="alerte" id="alerte"></div>
+
+  <!-- SCHÉMA DE PROGRESSION -->
+  <div class="card">
+    <div class="card-title">Schéma de progression</div>
+    <div class="schema-wrap">
+      <table class="schema" id="schema"></table>
+    </div>
+    <div class="schema-note">Cliquez une case pour indiquer à quel échelon (1 à 4) une caractéristique peut recevoir des augmentations d'XP. Une case dorée = augmentation possible à cet échelon.</div>
+  </div>
+
+  <!-- COMPÉTENCES -->
+  <div class="card">
+    <div class="card-title">Compétences</div>
+    <div class="entry-list" id="list-competences"></div>
+    <button class="add-btn" id="add-competence">+ Ajouter une compétence</button>
+  </div>
+
+  <!-- TALENTS -->
+  <div class="card">
+    <div class="card-title">Talents</div>
+    <div class="entry-list" id="list-talents"></div>
+    <button class="add-btn" id="add-talent">+ Ajouter un talent</button>
+  </div>
+
+  <div class="footnote" id="foot">Enregistrement automatique · synchronisé en temps réel</div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, set }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+// ---------- Identifiant de la carrière = nom du fichier ----------
+// carriere-template.html -> "carriere-template" ; chevalier.html -> "chevalier"
+// On peut aussi forcer une clé avec ?c=... dans l'URL.
+const fichier = (location.pathname.split('/').pop() || '').replace(/\.html?$/i, '');
+const slug = ((new URLSearchParams(location.search).get('c')) || fichier || 'carriere-template')
+  .replace(/[^a-z0-9_-]/gi, '').toLowerCase() || 'carriere-template';
+
+// ---------- Firebase ----------
+let db = null, refCarr = null;
+const cfg = window.FIREBASE_CONFIG || {};
+try {
+  const app = initializeApp(cfg);
+  db = getDatabase(app);
+  refCarr = ref(db, `carrieres/${slug}`);
+} catch (e) {
+  montrerAlerte("Firebase indisponible : " + e.message + ". Les modifications ne seront pas synchronisées.");
+}
+
+// ---------- État ----------
+const CARACS = ['CC','CT','F','E','I','Ag','Dex','Int','FM','Soc'];
+const ECHELONS = [1,2,3,4];
+
+// ---------- Verrou d'édition MJ (soft lock, comme la Table) ----------
+const MJ_PWD = "Von Carstein";
+let locked = sessionStorage.getItem('mjUnlock') !== '1';
+
+function appliquerVerrou() {
+  document.body.classList.toggle('locked', locked);
+  document.querySelectorAll('.titre-input, .soustitre-input, .desc-input, .entry-nom, .entry-desc')
+    .forEach(el => { el.readOnly = locked; });
+  const b = document.getElementById('mj-toggle');
+  b.textContent = locked ? '🔒 Mode MJ' : '🔓 MJ actif';
+  b.classList.toggle('on', !locked);
+}
+document.getElementById('mj-toggle').addEventListener('click', () => {
+  if (locked) {
+    const p = prompt("Mot de passe MJ pour déverrouiller l'édition :");
+    if (p === null) return;
+    if (p === MJ_PWD) { locked = false; sessionStorage.setItem('mjUnlock', '1'); appliquerVerrou(); }
+    else alert("Mot de passe incorrect.");
+  } else {
+    locked = true; sessionStorage.removeItem('mjUnlock'); appliquerVerrou();
+  }
+});
+
+let state = {
+  titre:'', soustitre:'', description:'', image:'',
+  schema:{},              // { CC:[false,false,false,false], ... }
+  competences:[],         // [ {nom, desc}, ... ]
+  talents:[]              // [ {nom, desc}, ... ]
+};
+CARACS.forEach(c => state.schema[c] = [false,false,false,false]);
+
+function normaliser(d) {
+  d = d || {};
+  const s = {
+    titre: d.titre || '', soustitre: d.soustitre || '', description: d.description || '',
+    image: d.image || '', schema: {}, competences: [], talents: []
+  };
+  CARACS.forEach(c => {
+    const src = (d.schema && d.schema[c]) || [];
+    s.schema[c] = [0,1,2,3].map(i => !!src[i]);
+  });
+  (Array.isArray(d.competences) ? d.competences : []).forEach(e => s.competences.push({ nom:(e&&e.nom)||'', desc:(e&&e.desc)||'' }));
+  (Array.isArray(d.talents) ? d.talents : []).forEach(e => s.talents.push({ nom:(e&&e.nom)||'', desc:(e&&e.desc)||'' }));
+  return s;
+}
+
+// ---------- Sync ----------
+let dernierEcrit = '';    // JSON de ce qu'on a envoyé, pour ignorer l'écho
+let hydrate = false;
+
+function jsonState() { return JSON.stringify(state); }
+
+const sync = document.getElementById('sync');
+const syncTxt = document.getElementById('sync-txt');
+function setSync(cls, txt) { sync.className = 'sync-dot ' + cls; syncTxt.textContent = txt; }
+
+let tSave = null;
+function programmerSauvegarde() {
+  if (!refCarr) return;
+  setSync('save', 'enregistrement…');
+  clearTimeout(tSave);
+  tSave = setTimeout(sauvegarder, 400);
+}
+function sauvegarder() {
+  if (!refCarr) return;
+  const payload = JSON.parse(jsonState());
+  dernierEcrit = JSON.stringify(payload);
+  set(refCarr, payload)
+    .then(() => setSync('ok', 'à jour'))
+    .catch(e => setSync('err', 'erreur : ' + e.message));
+}
+
+function unInputEstActif() {
+  const el = document.activeElement;
+  return el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA');
+}
+
+if (refCarr) {
+  onValue(refCarr, (snap) => {
+    const distant = snap.val();
+    const distantJson = JSON.stringify(normaliser(distant));
+    // ignore l'écho de notre propre écriture
+    if (distantJson === dernierEcrit) { setSync('ok', 'à jour'); return; }
+    // ne pas écraser pendant qu'on tape
+    if (hydrate && unInputEstActif() && distantJson !== jsonState()) { return; }
+    state = normaliser(distant);
+    rendreTout();
+    hydrate = true;
+    setSync('ok', 'à jour');
+  }, (e) => setSync('err', 'hors ligne'));
+} else {
+  rendreTout();
+}
+
+// ---------- Rendu ----------
+function rendreTout() {
+  document.getElementById('f-titre').value = state.titre;
+  document.getElementById('f-soustitre').value = state.soustitre;
+  document.getElementById('f-description').value = state.description;
+  rendreImage();
+  rendreSchema();
+  rendreListe('competences');
+  rendreListe('talents');
+  document.title = (state.titre ? state.titre + ' — ' : '') + 'Carrière · Warhammer';
+  appliquerVerrou();
+}
+
+function rendreImage() {
+  const img = document.getElementById('illus-img');
+  const empty = document.getElementById('illus-empty');
+  if (state.image) { img.src = state.image; img.style.display = 'block'; empty.style.display = 'none'; }
+  else { img.removeAttribute('src'); img.style.display = 'none'; empty.style.display = 'block'; }
+}
+
+function rendreSchema() {
+  const t = document.getElementById('schema');
+  let html = '<thead><tr><th class="corner">Caract.</th>';
+  CARACS.forEach(c => html += '<th>' + c + '</th>');
+  html += '</tr></thead><tbody>';
+  ECHELONS.forEach((ech, ri) => {
+    html += '<tr><th>Échelon ' + ech + '</th>';
+    CARACS.forEach(c => {
+      const on = state.schema[c][ri];
+      html += '<td class="schema-cell' + (on ? ' on' : '') + '" data-c="' + c + '" data-e="' + ri + '"><span class="mark"></span></td>';
+    });
+    html += '</tr>';
+  });
+  html += '</tbody>';
+  t.innerHTML = html;
+  t.querySelectorAll('.schema-cell').forEach(cell => {
+    cell.addEventListener('click', () => {
+      if (locked) return;
+      const c = cell.dataset.c, e = +cell.dataset.e;
+      state.schema[c][e] = !state.schema[c][e];
+      cell.classList.toggle('on', state.schema[c][e]);
+      programmerSauvegarde();
+    });
+  });
+}
+
+function rendreListe(type) {
+  const cont = document.getElementById('list-' + type);
+  const items = state[type];
+  cont.innerHTML = '';
+  if (!items.length) {
+    let vide;
+    if (locked) vide = (type === 'competences') ? 'Aucune compétence.' : 'Aucun talent.';
+    else vide = (type === 'competences')
+      ? 'Aucune compétence pour l\'instant. Ajoutez-en une ci-dessous.'
+      : 'Aucun talent pour l\'instant. Ajoutez-en un ci-dessous.';
+    cont.innerHTML = '<div class="empty-hint">' + vide + '</div>';
+    appliquerVerrou();
+    return;
+  }
+  items.forEach((e, i) => {
+    const row = document.createElement('div');
+    row.className = 'entry';
+    row.innerHTML =
+      '<div class="entry-top">' +
+        '<input class="entry-nom" placeholder="Nom">' +
+        '<button class="entry-del" title="Supprimer">×</button>' +
+      '</div>' +
+      '<textarea class="entry-desc" placeholder="Description, spécialisation, condition d\'acquisition…"></textarea>';
+    const nom = row.querySelector('.entry-nom');
+    const desc = row.querySelector('.entry-desc');
+    nom.value = e.nom; desc.value = e.desc;
+    nom.addEventListener('input', () => { state[type][i].nom = nom.value; programmerSauvegarde(); });
+    desc.addEventListener('input', () => { state[type][i].desc = desc.value; autoGrow(desc); programmerSauvegarde(); });
+    row.querySelector('.entry-del').addEventListener('click', () => {
+      state[type].splice(i, 1); rendreListe(type); programmerSauvegarde();
+    });
+    cont.appendChild(row);
+    autoGrow(desc);
+  });
+  appliquerVerrou();
+}
+
+function autoGrow(el) { el.style.height = 'auto'; el.style.height = (el.scrollHeight) + 'px'; }
+
+// ---------- Champs texte ----------
+document.getElementById('f-titre').addEventListener('input', function () {
+  state.titre = this.value; document.title = (this.value ? this.value + ' — ' : '') + 'Carrière · Warhammer'; programmerSauvegarde();
+});
+document.getElementById('f-soustitre').addEventListener('input', function () { state.soustitre = this.value; programmerSauvegarde(); });
+document.getElementById('f-description').addEventListener('input', function () { state.description = this.value; autoGrow(this); programmerSauvegarde(); });
+
+// ---------- Ajout d'entrées ----------
+document.getElementById('add-competence').addEventListener('click', () => {
+  state.competences.push({ nom:'', desc:'' }); rendreListe('competences'); programmerSauvegarde();
+  const inputs = document.querySelectorAll('#list-competences .entry-nom');
+  if (inputs.length) inputs[inputs.length - 1].focus();
+});
+document.getElementById('add-talent').addEventListener('click', () => {
+  state.talents.push({ nom:'', desc:'' }); rendreListe('talents'); programmerSauvegarde();
+  const inputs = document.querySelectorAll('#list-talents .entry-nom');
+  if (inputs.length) inputs[inputs.length - 1].focus();
+});
+
+// ---------- Image : upload + redimensionnement ----------
+document.getElementById('illus-file').addEventListener('change', function (ev) {
+  const file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const img = new Image();
+    img.onload = function () {
+      const MAX = 1000;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) { const r = Math.min(MAX / w, MAX / h); w = Math.round(w * r); h = Math.round(h * r); }
+      const cv = document.createElement('canvas');
+      cv.width = w; cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      const data = cv.toDataURL('image/jpeg', 0.82);
+      const ko = Math.round(data.length / 1024);
+      if (ko > 900) montrerAlerte("Image assez lourde (" + ko + " Ko). Elle fonctionnera, mais une image plus petite se synchronise plus vite.");
+      else masquerAlerte();
+      state.image = data;
+      rendreImage();
+      programmerSauvegarde();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+  ev.target.value = '';
+});
+document.getElementById('illus-remove').addEventListener('click', () => {
+  state.image = ''; rendreImage(); masquerAlerte(); programmerSauvegarde();
+});
+
+// ---------- Alertes ----------
+function montrerAlerte(msg) { const a = document.getElementById('alerte'); a.textContent = msg; a.style.display = 'block'; }
+function masquerAlerte() { document.getElementById('alerte').style.display = 'none'; }
+
+// premier rendu (avant la première réponse Firebase)
+rendreTout();
+</script>
+</body>
+</html>

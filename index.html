@@ -192,6 +192,21 @@
   .portal-table::before { background: linear-gradient(135deg, rgba(227,198,110,0.12) 0%, transparent 60%); }
   .portal-table:hover { border-color: rgba(227,198,110,0.65); background: rgba(184,146,42,0.22); box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(227,198,110,0.14); }
 
+  /* Carrières */
+  .portal-carriere {
+    background: rgba(74,58,26,0.16);
+    border: 1px solid rgba(184,146,42,0.3);
+    border-top: 3px solid rgba(184,146,42,0.7);
+  }
+  .portal-carriere::before { background: linear-gradient(135deg, rgba(227,198,110,0.10) 0%, transparent 60%); }
+  .portal-carriere:hover { border-color: rgba(227,198,110,0.55); background: rgba(184,146,42,0.2); box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(227,198,110,0.12); }
+  .portal-carriere .portal-symbol { color: var(--GLD-LT); }
+  .portal-carriere .portal-system { color: rgba(200,165,90,0.85); }
+  .portal-carriere .portal-enter { background: rgba(184,146,42,0.16); color: var(--GLD-LT); border: 1px solid rgba(184,146,42,0.35); }
+  .portal-carriere:hover .portal-enter { background: rgba(184,146,42,0.28); border-color: rgba(227,198,110,0.55); }
+  /* carte modèle en pointillés, pour dupliquer */
+  .portal-modele { border-style: dashed; opacity: 0.9; }
+
   .portal-symbol { display: block; width: 2.5rem; height: 2.5rem; margin-bottom: 1rem; line-height: 1; }
   .portal-symbol svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); }
   .portal-eclipse .portal-symbol { color: #9b7fd4; }
@@ -325,6 +340,31 @@
       <div class="portal-desc">L'espace de jeu en ligne : caméras, lancers de dés partagés, images et son d'ambiance.</div>
       <span class="portal-enter">Ouvrir →</span>
     </a>
+  </div>
+
+  <div class="section-title">Carrières</div>
+
+  <div class="portals">
+
+    <!-- Modèle à dupliquer sur GitHub pour chaque nouvelle carrière -->
+    <a class="portal portal-carriere portal-modele" href="carriere-template.html">
+      <span class="portal-symbol" style="font-size:2rem;">✚</span>
+      <div class="portal-system">Modèle · à dupliquer</div>
+      <div class="portal-name">Nouvelle carrière</div>
+      <div class="portal-desc">La fiche vierge : titre, illustration, compétences, talents et schéma de progression. Duplique ce fichier sur GitHub et renomme-le pour créer une carrière.</div>
+      <span class="portal-enter">Ouvrir →</span>
+    </a>
+
+    <!-- Exemples : décommente et adapte au fur et à mesure que tu crées tes carrières.
+    <a class="portal portal-carriere" href="chevalier.html">
+      <span class="portal-symbol" style="font-size:2rem;">⚔</span>
+      <div class="portal-system">Carrière maison</div>
+      <div class="portal-name">Chevalier</div>
+      <div class="portal-desc">Elfe sylvain, Haut Elfe, Humain.</div>
+      <span class="portal-enter">Entrer →</span>
+    </a>
+    -->
+
   </div>
 
   <footer>
