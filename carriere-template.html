@@ -44,26 +44,8 @@
   .sync-dot.err .pip { background:var(--blood); }
   .sync-dot { margin-left:0.8rem; }
 
-  .mj-btn { margin-left:auto; background:rgba(184,146,42,0.1); border:1px solid rgba(184,146,42,0.3); color:var(--SUB); font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.32rem 0.65rem; border-radius:2px; cursor:pointer; transition:all 0.15s; }
-  .mj-btn:hover { color:var(--GLD-LT); border-color:rgba(184,146,42,0.5); }
-  .mj-btn.on { color:var(--GLD-LT); border-color:rgba(184,146,42,0.6); background:rgba(184,146,42,0.2); }
-
-  /* Lecture seule (mode joueur) */
-  body.locked .add-btn,
-  body.locked .entry-del,
-  body.locked .illus-btns,
-  body.locked .illus-hint,
-  body.locked .schema-note,
-  body.locked .footnote { display:none; }
-  body.locked .schema-cell { cursor:default; }
-  body.locked .schema-cell:hover { background:transparent; }
-  body.locked .schema-cell.on:hover { background:rgba(184,146,42,0.09); }
-  body.locked .titre-input,
-  body.locked .soustitre-input,
-  body.locked .desc-input,
-  body.locked .entry-nom,
-  body.locked .entry-desc { border-color:transparent !important; }
-  body.locked .desc-input { padding-left:0; padding-right:0; }
+  .tool-btn { margin-left:auto; background:rgba(184,146,42,0.12); border:1px solid rgba(184,146,42,0.35); color:var(--GLD-LT); font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.32rem 0.7rem; border-radius:2px; cursor:pointer; transition:all 0.15s; }
+  .tool-btn:hover { border-color:rgba(227,198,110,0.6); background:rgba(184,146,42,0.24); }
 
   .layout { position:relative; z-index:1; max-width:1000px; margin:0 auto; padding:1.5rem 1rem 4rem; }
 
@@ -76,7 +58,7 @@
   .illus-btns { display:flex; gap:0.4rem; margin-top:0.5rem; }
   .illus-btns label, .illus-btns button { flex:1; text-align:center; cursor:pointer; background:rgba(184,146,42,0.12); border:1px solid rgba(184,146,42,0.32); color:var(--GLD-LT); font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; padding:0.4rem 0.3rem; border-radius:2px; transition:all 0.15s; }
   .illus-btns label:hover, .illus-btns button:hover { background:rgba(184,146,42,0.24); border-color:rgba(184,146,42,0.55); }
-  .illus-btns input[type=file] { display:none; }
+  .illus-btns input[type=file], #illus-file { display:none; }
   .illus-hint { font-size:0.66rem; color:var(--SUB); font-style:italic; margin-top:0.4rem; line-height:1.4; }
 
   .carr-title-zone { flex:1; min-width:240px; }
@@ -128,6 +110,35 @@
 
   .alerte { display:none; background:rgba(139,26,26,0.15); border:1px solid rgba(139,26,26,0.4); color:#e0a0a0; padding:0.6rem 0.9rem; border-radius:2px; margin-top:1rem; font-size:0.85rem; }
   .footnote { text-align:center; color:var(--SUB); font-size:0.72rem; font-style:italic; margin-top:2.5rem; opacity:0.8; }
+
+  /* ---- Impression / export PDF : version claire pour le joueur ---- */
+  @media print {
+    * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+    @page { margin:14mm; }
+    nav, .tool-btn, .sync-dot, .add-btn, .entry-del,
+    .illus-btns, .illus-hint, .schema-note, .footnote,
+    .alerte, .empty-hint, .illus-empty { display:none !important; }
+    body { background:#fff !important; color:#221c10; }
+    body::before { display:none !important; }
+    .layout { max-width:100%; margin:0; padding:0; }
+    .carr-header { border-color:#c9b98a; padding-bottom:1rem; }
+    .carr-eyebrow { color:#8a6d2a; }
+    .titre-input { color:#2a2114; border:none; font-size:1.9rem; }
+    .soustitre-input { color:#6b5320; border:none; margin-top:0.3rem; }
+    .desc-input { color:#2a2416; border:none; padding:0; min-height:0; resize:none; margin-top:0.7rem; }
+    .illus-frame { border-color:#c9b98a; background:#faf6ea !important; }
+    .card { background:#fff; border:1px solid #d8caa0; margin-top:1rem; break-inside:avoid; }
+    .card-title { color:#8a6d2a; }
+    .card-title::after { background:#e0d4ab; }
+    .schema th, .schema td { border-color:#cdbd90; }
+    .schema thead th { color:#6b5320; }
+    .schema thead th.corner, .schema tbody th { color:#5a4a20; }
+    .schema-cell.on { background:#f3ecd6; }
+    .schema-cell.on .mark { background:#7a5f18; box-shadow:none; }
+    .entry { border-color:#d8caa0; border-left-color:#b8922a; background:#fff; break-inside:avoid; }
+    .entry-nom { color:#2a2114; border:none; font-weight:600; }
+    .entry-desc { color:#332b18; }
+  }
 </style>
 </head>
 <body>
@@ -136,7 +147,7 @@
   <a href="index.html">◂ Accueil</a>
   <span class="nav-sep">·</span>
   <span class="nav-current">Carrière</span>
-  <button class="mj-btn" id="mj-toggle" type="button">🔒 Mode MJ</button>
+  <button class="tool-btn" id="export-pdf" type="button">⭳ Exporter en PDF</button>
   <div class="sync-dot" id="sync"><span class="pip"></span><span id="sync-txt">connexion…</span></div>
 </nav>
 
@@ -221,28 +232,8 @@ try {
 const CARACS = ['CC','CT','F','E','I','Ag','Dex','Int','FM','Soc'];
 const ECHELONS = [1,2,3,4];
 
-// ---------- Verrou d'édition MJ (soft lock, comme la Table) ----------
-const MJ_PWD = "Von Carstein";
-let locked = sessionStorage.getItem('mjUnlock') !== '1';
-
-function appliquerVerrou() {
-  document.body.classList.toggle('locked', locked);
-  document.querySelectorAll('.titre-input, .soustitre-input, .desc-input, .entry-nom, .entry-desc')
-    .forEach(el => { el.readOnly = locked; });
-  const b = document.getElementById('mj-toggle');
-  b.textContent = locked ? '🔒 Mode MJ' : '🔓 MJ actif';
-  b.classList.toggle('on', !locked);
-}
-document.getElementById('mj-toggle').addEventListener('click', () => {
-  if (locked) {
-    const p = prompt("Mot de passe MJ pour déverrouiller l'édition :");
-    if (p === null) return;
-    if (p === MJ_PWD) { locked = false; sessionStorage.setItem('mjUnlock', '1'); appliquerVerrou(); }
-    else alert("Mot de passe incorrect.");
-  } else {
-    locked = true; sessionStorage.removeItem('mjUnlock'); appliquerVerrou();
-  }
-});
+// ---------- Export PDF (impression du navigateur -> Enregistrer en PDF) ----------
+document.getElementById('export-pdf').addEventListener('click', () => window.print());
 
 let state = {
   titre:'', soustitre:'', description:'', image:'',
@@ -319,13 +310,13 @@ if (refCarr) {
 function rendreTout() {
   document.getElementById('f-titre').value = state.titre;
   document.getElementById('f-soustitre').value = state.soustitre;
-  document.getElementById('f-description').value = state.description;
+  const dsc = document.getElementById('f-description');
+  dsc.value = state.description; autoGrow(dsc);
   rendreImage();
   rendreSchema();
   rendreListe('competences');
   rendreListe('talents');
   document.title = (state.titre ? state.titre + ' — ' : '') + 'Carrière · Warhammer';
-  appliquerVerrou();
 }
 
 function rendreImage() {
@@ -352,7 +343,6 @@ function rendreSchema() {
   t.innerHTML = html;
   t.querySelectorAll('.schema-cell').forEach(cell => {
     cell.addEventListener('click', () => {
-      if (locked) return;
       const c = cell.dataset.c, e = +cell.dataset.e;
       state.schema[c][e] = !state.schema[c][e];
       cell.classList.toggle('on', state.schema[c][e]);
@@ -366,13 +356,10 @@ function rendreListe(type) {
   const items = state[type];
   cont.innerHTML = '';
   if (!items.length) {
-    let vide;
-    if (locked) vide = (type === 'competences') ? 'Aucune compétence.' : 'Aucun talent.';
-    else vide = (type === 'competences')
+    const vide = (type === 'competences')
       ? 'Aucune compétence pour l\'instant. Ajoutez-en une ci-dessous.'
       : 'Aucun talent pour l\'instant. Ajoutez-en un ci-dessous.';
     cont.innerHTML = '<div class="empty-hint">' + vide + '</div>';
-    appliquerVerrou();
     return;
   }
   items.forEach((e, i) => {
@@ -395,7 +382,6 @@ function rendreListe(type) {
     cont.appendChild(row);
     autoGrow(desc);
   });
-  appliquerVerrou();
 }
 
 function autoGrow(el) { el.style.height = 'auto'; el.style.height = (el.scrollHeight) + 'px'; }

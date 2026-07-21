@@ -347,9 +347,9 @@
   <div class="portals">
 
     <!-- Modèle à dupliquer sur GitHub pour chaque nouvelle carrière -->
-    <a class="portal portal-carriere portal-modele" href="carriere-template.html">
+    <a class="portal portal-carriere portal-modele" href="carriere-template.html" data-mj>
       <span class="portal-symbol" style="font-size:2rem;">✚</span>
-      <div class="portal-system">Modèle · à dupliquer</div>
+      <div class="portal-system">Modèle · MJ · à dupliquer</div>
       <div class="portal-name">Nouvelle carrière</div>
       <div class="portal-desc">La fiche vierge : titre, illustration, compétences, talents et schéma de progression. Duplique ce fichier sur GitHub et renomme-le pour créer une carrière.</div>
       <span class="portal-enter">Ouvrir →</span>
@@ -372,5 +372,23 @@
   </footer>
 
 </div>
+
+<script>
+// Verrou MJ (soft lock) : tout lien avec l'attribut data-mj demande le mot de passe.
+// Ajoute simplement data-mj à un <a> pour le protéger. Déverrouillé pour la session ensuite.
+(function () {
+  var MJ = "Von Carstein";
+  document.querySelectorAll('a[data-mj]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      if (sessionStorage.getItem('mjUnlock') === '1') return;
+      e.preventDefault();
+      var p = prompt("Espace MJ. Mot de passe :");
+      if (p === null) return;
+      if (p === MJ) { sessionStorage.setItem('mjUnlock', '1'); window.location.href = a.getAttribute('href'); }
+      else alert("Mot de passe incorrect.");
+    });
+  });
+})();
+</script>
 </body>
 </html>
