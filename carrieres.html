@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les carrières — Espace MJ</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script>
+  window.FIREBASE_CONFIG = {
+    apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+    authDomain: "warhammer-table-jdr.firebaseapp.com",
+    databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "warhammer-table-jdr",
+    storageBucket: "warhammer-table-jdr.firebasestorage.app",
+    messagingSenderId: "347804803970",
+    appId: "1:347804803970:web:43e062299c53e59d20e59b"
+  };
+</script>
+<style>
+  :root {
+    --ink:#09080c; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
+    --GLD:#B8922A; --GLD-LT:#e3c66e; --VIO2:#a07830; --SUB:#5a5040; --blood:#8B1A1A;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--ink); color:var(--parchment); font-family:'Crimson Text',serif; min-height:100vh; }
+  body::before { content:''; position:fixed; inset:0;
+    background: radial-gradient(ellipse at 25% 0%, rgba(184,146,42,0.07) 0%, transparent 55%),
+                radial-gradient(ellipse at 75% 100%, rgba(74,58,26,0.08) 0%, transparent 50%);
+    pointer-events:none; z-index:0; }
+
+  nav { position:sticky; top:0; z-index:100; background:rgba(9,8,12,0.93); backdrop-filter:blur(8px); border-bottom:1px solid rgba(184,146,42,0.2); padding:0.6rem 1.5rem; display:flex; align-items:center; gap:1rem; }
+  nav a { color:var(--SUB); text-decoration:none; font-size:0.82rem; font-style:italic; transition:color 0.2s; }
+  nav a:hover { color:var(--GLD); }
+  .nav-current { color:var(--VIO2) !important; font-style:normal; font-family:'Cinzel',serif; font-size:0.82rem; }
+  .nav-sep { color:var(--SUB); opacity:0.3; }
+
+  .wrap { position:relative; z-index:1; max-width:1050px; margin:0 auto; padding:2rem 1rem 4rem; }
+
+  /* En-tête de l'espace */
+  .hub-eyebrow { font-family:'Cinzel',serif; font-size:0.66rem; letter-spacing:0.24em; text-transform:uppercase; color:var(--SUB); }
+  .hub-title { font-family:'Cinzel',serif; font-size:2.1rem; font-weight:700; letter-spacing:0.04em; margin:0.4rem 0 0.3rem; color:var(--GLD-LT); }
+  .hub-sub { font-style:italic; color:var(--parchment-dark); font-size:1rem; }
+  .hub-head { border-bottom:1px solid rgba(184,146,42,0.18); padding-bottom:1.4rem; margin-bottom:2rem; }
+
+  .portals { display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:1.5rem; }
+  @media (max-width:680px) { .portals { grid-template-columns:1fr; } }
+
+  .portal { position:relative; display:block; text-decoration:none; border-radius:3px; padding:2rem 1.75rem; transition:all 0.3s ease; overflow:hidden; cursor:pointer; }
+  .portal::before { content:''; position:absolute; inset:0; opacity:0; transition:opacity 0.3s; }
+  .portal:hover { transform:translateY(-3px); }
+  .portal:hover::before { opacity:1; }
+  .portal-carriere { background:rgba(74,58,26,0.16); border:1px solid rgba(184,146,42,0.3); border-top:3px solid rgba(184,146,42,0.7); }
+  .portal-carriere::before { background:linear-gradient(135deg, rgba(227,198,110,0.10) 0%, transparent 60%); }
+  .portal-carriere:hover { border-color:rgba(227,198,110,0.55); background:rgba(184,146,42,0.2); box-shadow:0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(227,198,110,0.12); }
+  .portal-modele { border-style:dashed; opacity:0.92; }
+
+  .portal-symbol { display:block; margin-bottom:1rem; line-height:1; color:var(--GLD-LT); }
+  .portal-system { font-family:'Crimson Text',serif; font-style:italic; font-size:0.8rem; letter-spacing:0.1em; margin-bottom:0.4rem; color:rgba(200,165,90,0.85); }
+  .portal-name { font-family:'Cinzel',serif; font-size:clamp(1.2rem, 3vw, 1.6rem); font-weight:700; color:var(--parchment); letter-spacing:0.04em; margin-bottom:0.3rem; line-height:1.15; overflow:hidden; text-overflow:ellipsis; }
+  .portal-desc { font-size:0.9rem; color:var(--parchment-dark); line-height:1.55; font-style:italic; margin-bottom:1.25rem; }
+  .portal-enter { display:inline-flex; align-items:center; gap:0.5rem; font-family:'Cinzel',serif; font-size:0.72rem; letter-spacing:0.15em; text-transform:uppercase; padding:0.45rem 1rem; border-radius:2px; transition:all 0.2s; background:rgba(184,146,42,0.16); color:var(--GLD-LT); border:1px solid rgba(184,146,42,0.35); }
+  .portal-carriere:hover .portal-enter { background:rgba(184,146,42,0.28); border-color:rgba(227,198,110,0.55); }
+
+  .carr-del { position:absolute; top:0.6rem; right:0.6rem; width:26px; height:26px; border-radius:2px; background:rgba(139,26,26,0.18); border:1px solid rgba(139,26,26,0.4); color:#d08a8a; font-size:1rem; line-height:1; cursor:pointer; z-index:3; opacity:0; transition:opacity 0.15s, background 0.15s; }
+  .portal-carriere:hover .carr-del { opacity:1; }
+  .carr-del:hover { background:rgba(139,26,26,0.35); }
+  .carr-empty { grid-column:1 / -1; color:var(--SUB); font-style:italic; font-size:0.9rem; padding:0.5rem 0.2rem; }
+
+  /* Porte d'entrée (mot de passe) */
+  .gate { display:flex; align-items:center; justify-content:center; min-height:60vh; }
+  .gate-card { text-align:center; max-width:420px; padding:2.5rem 2rem; border:1px solid rgba(184,146,42,0.25); border-radius:3px; background:rgba(9,8,12,0.6); }
+  .gate-icon { font-size:2rem; margin-bottom:0.8rem; opacity:0.8; }
+  .gate-card h1 { font-family:'Cinzel',serif; font-size:1.5rem; letter-spacing:0.08em; color:var(--GLD-LT); margin-bottom:0.6rem; }
+  .gate-card p { color:var(--parchment-dark); font-style:italic; line-height:1.6; margin-bottom:1.5rem; }
+  .gate-btn { background:rgba(184,146,42,0.16); border:1px solid rgba(184,146,42,0.4); color:var(--GLD-LT); font-family:'Cinzel',serif; font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; padding:0.6rem 1.4rem; border-radius:2px; cursor:pointer; transition:all 0.15s; }
+  .gate-btn:hover { background:rgba(184,146,42,0.28); border-color:rgba(227,198,110,0.55); }
+  .gate-back { display:block; margin-top:1.2rem; color:var(--SUB); font-style:italic; font-size:0.82rem; text-decoration:none; }
+  .gate-back:hover { color:var(--GLD); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">◂ Accueil</a>
+  <span class="nav-sep">·</span>
+  <span class="nav-current">Les carrières</span>
+</nav>
+
+<div class="wrap">
+
+  <!-- PORTE : mot de passe -->
+  <div class="gate" id="gate">
+    <div class="gate-card">
+      <div class="gate-icon">🔒</div>
+      <h1>Espace MJ</h1>
+      <p>Espace dédié au meneur de jeu, pour créer et gérer les carrières. Un mot de passe est requis.</p>
+      <button class="gate-btn" id="gate-btn" type="button">Entrer le mot de passe</button>
+      <a href="index.html" class="gate-back">Retour à l'accueil</a>
+    </div>
+  </div>
+
+  <!-- ESPACE (masqué tant que non déverrouillé) -->
+  <div id="hub" style="display:none">
+    <div class="hub-head">
+      <div class="hub-eyebrow">Espace MJ · Warhammer FRP 4e</div>
+      <div class="hub-title">Les carrières</div>
+      <div class="hub-sub">Créer, éditer et gérer les carrières maison et officielles. Chaque fiche s'exporte en PDF pour les joueurs.</div>
+    </div>
+
+    <div class="portals" id="carrieres-grid">
+      <a class="portal portal-carriere portal-modele" id="btn-new" href="#">
+        <span class="portal-symbol" style="font-size:2rem;">✚</span>
+        <div class="portal-system">Nouvelle fiche</div>
+        <div class="portal-name">Nouvelle carrière</div>
+        <div class="portal-desc">Crée une carrière vierge et l'ouvre pour la remplir. Elle apparaît ensuite ici, prête à l'emploi.</div>
+        <span class="portal-enter">Créer →</span>
+      </a>
+      <!-- Les carrières existantes sont injectées ici -->
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, set, push, child }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const MJ_PWD = "Von Carstein";
+const gate = document.getElementById("gate");
+const hub  = document.getElementById("hub");
+let inited = false;
+
+function entrer() {
+  gate.style.display = "none";
+  hub.style.display = "";
+  if (!inited) { inited = true; initHub(); }
+}
+document.getElementById("gate-btn").addEventListener("click", () => {
+  const p = prompt("Mot de passe MJ :");
+  if (p === null) return;
+  if (p === MJ_PWD) { sessionStorage.setItem("carrieresMJ", "1"); entrer(); }
+  else alert("Mot de passe incorrect.");
+});
+// Déjà déverrouillé cette session (venant de l'accueil) : on entre directement.
+if (sessionStorage.getItem("carrieresMJ") === "1") entrer();
+
+// ---------------- Espace carrières ----------------
+function initHub() {
+  let db = null, refCarrieres = null;
+  try {
+    const app = initializeApp(window.FIREBASE_CONFIG || {});
+    db = getDatabase(app);
+    refCarrieres = ref(db, "carrieres");
+  } catch (e) { console.error(e); }
+
+  const grid = document.getElementById("carrieres-grid");
+  const btnNew = document.getElementById("btn-new");
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  // Créer
+  btnNew.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (!refCarrieres) { alert("Firebase indisponible."); return; }
+    const r = push(refCarrieres);
+    set(r, { titre:"", soustitre:"", description:"", image:"", schema:{}, competences:[], talents:[], cree:Date.now() })
+      .then(() => { location.href = "carriere-template.html?c=" + r.key; })
+      .catch(err => alert("Création impossible : " + err.message));
+  });
+
+  // Liste
+  function rendre(data) {
+    grid.querySelectorAll(".carr-dyn, .carr-empty").forEach(el => el.remove());
+    const entries = Object.entries(data || {})
+      .filter(([k]) => k !== "carriere-template")
+      .sort((a, b) => ((b[1] && b[1].cree) || 0) - ((a[1] && a[1].cree) || 0));
+
+    if (!entries.length) {
+      const d = document.createElement("div");
+      d.className = "carr-empty";
+      d.textContent = "Aucune carrière pour l'instant. Clique sur « Nouvelle carrière » pour en créer une.";
+      grid.appendChild(d);
+      return;
+    }
+
+    entries.forEach(([key, c]) => {
+      c = c || {};
+      const titre = (c.titre && c.titre.trim()) ? c.titre : "Carrière sans titre";
+      const sousT = (c.soustitre && c.soustitre.trim()) ? c.soustitre : "Carrière maison";
+      const nbComp = Array.isArray(c.competences) ? c.competences.length : 0;
+      const nbTal  = Array.isArray(c.talents) ? c.talents.length : 0;
+      const resume = (c.description && c.description.trim())
+        ? c.description.trim().slice(0, 120) + (c.description.trim().length > 120 ? "…" : "")
+        : (nbComp + " compétence" + (nbComp > 1 ? "s" : "") + " · " + nbTal + " talent" + (nbTal > 1 ? "s" : ""));
+
+      const a = document.createElement("a");
+      a.className = "portal portal-carriere carr-dyn";
+      a.href = "carriere-template.html?c=" + encodeURIComponent(key);
+      a.innerHTML =
+        '<button class="carr-del" title="Supprimer cette carrière" data-key="' + esc(key) + '">×</button>' +
+        '<span class="portal-symbol" style="font-size:2rem;">⚔</span>' +
+        '<div class="portal-system">' + esc(sousT) + '</div>' +
+        '<div class="portal-name">' + esc(titre) + '</div>' +
+        '<div class="portal-desc">' + esc(resume) + '</div>' +
+        '<span class="portal-enter">Ouvrir →</span>';
+      grid.appendChild(a);
+    });
+  }
+
+  // Supprimer
+  grid.addEventListener("click", (e) => {
+    const del = e.target.closest(".carr-del");
+    if (!del) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (!confirm("Supprimer définitivement cette carrière ? Cette action est irréversible.")) return;
+    set(child(refCarrieres, del.dataset.key), null).catch(err => alert("Suppression impossible : " + err.message));
+  });
+
+  if (refCarrieres) onValue(refCarrieres, snap => rendre(snap.val()));
+  else rendre(null);
+}
+</script>
+</body>
+</html>

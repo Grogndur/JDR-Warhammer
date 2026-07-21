@@ -6,17 +6,6 @@
 <title>Campagnes — Warhammer Fantasy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<script>
-  window.FIREBASE_CONFIG = {
-    apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
-    authDomain: "warhammer-table-jdr.firebaseapp.com",
-    databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "warhammer-table-jdr",
-    storageBucket: "warhammer-table-jdr.firebasestorage.app",
-    messagingSenderId: "347804803970",
-    appId: "1:347804803970:web:43e062299c53e59d20e59b"
-  };
-</script>
 <style>
   :root {
     --ink: #0a0a0f;
@@ -217,12 +206,6 @@
   .portal-carriere:hover .portal-enter { background: rgba(184,146,42,0.28); border-color: rgba(227,198,110,0.55); }
   /* carte modèle en pointillés, pour dupliquer */
   .portal-modele { border-style: dashed; opacity: 0.9; }
-  /* carte carrière dynamique : bouton supprimer + état vide */
-  .portal-carriere { position: relative; }
-  .carr-del { position: absolute; top: 0.6rem; right: 0.6rem; width: 26px; height: 26px; border-radius: 2px; background: rgba(139,26,26,0.18); border: 1px solid rgba(139,26,26,0.4); color: #d08a8a; font-size: 1rem; line-height: 1; cursor: pointer; z-index: 3; opacity: 0; transition: opacity 0.15s, background 0.15s; }
-  .portal-carriere:hover .carr-del { opacity: 1; }
-  .carr-del:hover { background: rgba(139,26,26,0.35); }
-  .carr-empty { grid-column: 1 / -1; color: var(--SUB); font-style: italic; font-size: 0.9rem; padding: 0.5rem 0.2rem; }
 
   .portal-symbol { display: block; width: 2.5rem; height: 2.5rem; margin-bottom: 1rem; line-height: 1; }
   .portal-symbol svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); }
@@ -359,21 +342,16 @@
     </a>
   </div>
 
-  <div class="section-title">Carrières</div>
+  <div class="section-title">Les carrières</div>
 
-  <div class="portals" id="carrieres-grid">
-
-    <!-- Bouton MJ : crée une nouvelle carrière (stockée dans Firebase, pas de fichier à créer) -->
-    <a class="portal portal-carriere portal-modele" id="btn-new" href="#">
-      <span class="portal-symbol" style="font-size:2rem;">✚</span>
-      <div class="portal-system">Espace MJ · mot de passe</div>
-      <div class="portal-name">Nouvelle carrière</div>
-      <div class="portal-desc">Crée une carrière vierge et l'ouvre pour la remplir. Elle apparaît ensuite ici, prête à l'emploi. Aucun fichier à créer sur GitHub.</div>
-      <span class="portal-enter">Créer →</span>
+  <div class="portals">
+    <a class="portal portal-carriere" id="lien-carrieres" href="carrieres.html">
+      <span class="portal-symbol" style="font-size:2rem;">⚔</span>
+      <div class="portal-system">Espace MJ · verrouillé</div>
+      <div class="portal-name">Les carrières</div>
+      <div class="portal-desc">Espace dédié au MJ, pour créer et gérer les carrières maison et officielles. Les fiches terminées s'exportent en PDF pour les joueurs.</div>
+      <span class="portal-enter">🔒 Entrer →</span>
     </a>
-
-    <!-- Les carrières existantes sont injectées ici par le script -->
-
   </div>
 
   <footer>
@@ -382,100 +360,22 @@
 
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, set, push, child }
-  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-const MJ_PWD = "Von Carstein";
-let mjOk = false;                       // en mémoire seulement : on redemande à chaque chargement de page
-function ensureMJ() {
-  if (mjOk) return true;
-  const p = prompt("Espace MJ. Mot de passe pour créer ou supprimer une carrière :");
-  if (p === MJ_PWD) { mjOk = true; return true; }
-  if (p !== null) alert("Mot de passe incorrect.");
-  return false;
-}
-
-let db = null, refCarrieres = null;
-try {
-  const app = initializeApp(window.FIREBASE_CONFIG || {});
-  db = getDatabase(app);
-  refCarrieres = ref(db, "carrieres");
-} catch (e) { console.error(e); }
-
-const grid = document.getElementById("carrieres-grid");
-const btnNew = document.getElementById("btn-new");
-
-function esc(s) {
-  return String(s == null ? "" : s)
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-}
-
-// ---- Créer une nouvelle carrière (protégé) ----
-btnNew.addEventListener("click", (e) => {
-  e.preventDefault();
-  if (!ensureMJ()) return;
-  if (!refCarrieres) { alert("Firebase indisponible."); return; }
-  const r = push(refCarrieres);
-  set(r, { titre: "", soustitre: "", description: "", image: "", schema: {}, competences: [], talents: [], cree: Date.now() })
-    .then(() => { location.href = "carriere-template.html?c=" + r.key; })
-    .catch(err => alert("Création impossible : " + err.message));
-});
-
-// ---- Liste dynamique des carrières ----
-function rendre(data) {
-  grid.querySelectorAll(".carr-dyn, .carr-empty").forEach(el => el.remove());
-  const entries = Object.entries(data || {})
-    .filter(([k]) => k !== "carriere-template")          // ignore la fiche "brouillon" ouverte sans ?c=
-    .sort((a, b) => (b[1] && b[1].cree || 0) - (a[1] && a[1].cree || 0));
-
-  if (!entries.length) {
-    const d = document.createElement("div");
-    d.className = "carr-empty";
-    d.textContent = "Aucune carrière pour l'instant. Clique sur « Nouvelle carrière » pour en créer une.";
-    grid.appendChild(d);
-    return;
-  }
-
-  entries.forEach(([key, c]) => {
-    c = c || {};
-    const titre = (c.titre && c.titre.trim()) ? c.titre : "Carrière sans titre";
-    const sousT = (c.soustitre && c.soustitre.trim()) ? c.soustitre : "Carrière maison";
-    const nbComp = Array.isArray(c.competences) ? c.competences.length : 0;
-    const nbTal = Array.isArray(c.talents) ? c.talents.length : 0;
-    const resume = (c.description && c.description.trim())
-      ? c.description.trim().slice(0, 120) + (c.description.trim().length > 120 ? "…" : "")
-      : (nbComp + " compétence" + (nbComp > 1 ? "s" : "") + " · " + nbTal + " talent" + (nbTal > 1 ? "s" : ""));
-
-    const a = document.createElement("a");
-    a.className = "portal portal-carriere carr-dyn";
-    a.href = "carriere-template.html?c=" + encodeURIComponent(key);
-    a.innerHTML =
-      '<button class="carr-del" title="Supprimer cette carrière" data-key="' + esc(key) + '">×</button>' +
-      '<span class="portal-symbol" style="font-size:2rem;">⚔</span>' +
-      '<div class="portal-system">' + esc(sousT) + '</div>' +
-      '<div class="portal-name">' + esc(titre) + '</div>' +
-      '<div class="portal-desc">' + esc(resume) + '</div>' +
-      '<span class="portal-enter">Ouvrir →</span>';
-    grid.appendChild(a);
+<script>
+// Verrou d'accès à l'espace MJ « Les carrières ».
+(function () {
+  var lien = document.getElementById('lien-carrieres');
+  lien.addEventListener('click', function (e) {
+    e.preventDefault();
+    var p = prompt("Espace MJ. Mot de passe :");
+    if (p === null) return;
+    if (p === "Von Carstein") {
+      sessionStorage.setItem('carrieresMJ', '1');
+      location.href = lien.getAttribute('href');
+    } else {
+      alert("Mot de passe incorrect.");
+    }
   });
-}
-
-// ---- Supprimer (protégé) ----
-grid.addEventListener("click", (e) => {
-  const del = e.target.closest(".carr-del");
-  if (!del) return;
-  e.preventDefault();
-  e.stopPropagation();
-  if (!ensureMJ()) return;
-  const key = del.dataset.key;
-  if (!confirm("Supprimer définitivement cette carrière ? Cette action est irréversible.")) return;
-  set(child(refCarrieres, key), null).catch(err => alert("Suppression impossible : " + err.message));
-});
-
-if (refCarrieres) onValue(refCarrieres, snap => rendre(snap.val()));
-else rendre(null);
+})();
 </script>
 </body>
 </html>
