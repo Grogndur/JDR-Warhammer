@@ -80,19 +80,12 @@
   .card-title { font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--GLD); margin-bottom:1rem; display:flex; align-items:center; gap:0.6rem; }
   .card-title::after { content:''; flex:1; height:1px; background:rgba(184,146,42,0.15); }
 
-  /* ---- Schéma de progression (stat bloc) ---- */
-  .schema-wrap { overflow-x:auto; }
-  .schema { border-collapse:collapse; width:100%; min-width:520px; }
-  .schema th, .schema td { border:1px solid rgba(184,146,42,0.14); text-align:center; }
-  .schema thead th { font-family:'Cinzel',serif; font-size:0.72rem; color:var(--VIO2); padding:0.5rem 0.2rem; letter-spacing:0.04em; }
-  .schema thead th.corner { color:var(--SUB); font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; }
-  .schema tbody th { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--SUB); text-align:left; padding:0.4rem 0.6rem; white-space:nowrap; }
-  .schema-cell { width:44px; height:34px; cursor:pointer; transition:background 0.12s; position:relative; }
-  .schema-cell:hover { background:rgba(184,146,42,0.08); }
-  .schema-cell .mark { display:inline-block; width:14px; height:14px; border-radius:2px; background:transparent; transition:all 0.12s; }
-  .schema-cell.on .mark { background:var(--GLD); box-shadow:0 0 6px rgba(184,146,42,0.45); }
-  .schema-cell.on { background:rgba(184,146,42,0.09); }
-  .schema-note { font-size:0.72rem; color:var(--SUB); font-style:italic; margin-top:0.7rem; line-height:1.5; }
+  /* ---- Caractéristiques qui progressent (chips par échelon) ---- */
+  .zone-hint { color:var(--SUB); font-style:italic; font-size:0.8rem; margin:1.4rem 0 0; line-height:1.5; }
+  .carac-row { display:flex; flex-wrap:wrap; gap:0.4rem; }
+  .carac-chip { min-width:2.7rem; text-align:center; padding:0.35rem 0.5rem; border:1px solid rgba(184,146,42,0.25); border-radius:2px; font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.04em; color:var(--SUB); cursor:pointer; transition:all 0.12s; background:transparent; user-select:none; }
+  .carac-chip:hover { border-color:rgba(184,146,42,0.5); color:var(--parchment-dark); }
+  .carac-chip.on { background:rgba(184,146,42,0.18); border-color:rgba(184,146,42,0.6); color:var(--GLD-LT); box-shadow:0 0 6px rgba(184,146,42,0.25); }
 
   /* ---- Listes compétences / talents ---- */
   .entry-list { display:flex; flex-direction:column; gap:0.7rem; }
@@ -130,7 +123,7 @@
     * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
     @page { margin:14mm; }
     nav, .tool-btn, .sync-dot, .add-btn, .entry-del,
-    .illus-btns, .illus-hint, .schema-note, .footnote,
+    .illus-btns, .illus-hint, .zone-hint, .footnote,
     .alerte, .empty-hint, .illus-empty { display:none !important; }
     body { background:#fff !important; color:#221c10; }
     body::before { display:none !important; }
@@ -144,11 +137,8 @@
     .card { background:#fff; border:1px solid #d8caa0; margin-top:1rem; break-inside:avoid; }
     .card-title { color:#8a6d2a; }
     .card-title::after { background:#e0d4ab; }
-    .schema th, .schema td { border-color:#cdbd90; }
-    .schema thead th { color:#6b5320; }
-    .schema thead th.corner, .schema tbody th { color:#5a4a20; }
-    .schema-cell.on { background:#f3ecd6; }
-    .schema-cell.on .mark { background:#7a5f18; box-shadow:none; }
+    .carac-chip { display:none !important; }
+    .carac-chip.on { display:inline-block !important; background:#f3ecd6 !important; border-color:#b8922a; color:#2a2114; box-shadow:none; }
     .entry { border-color:#d8caa0; border-left-color:#b8922a; background:#fff; break-inside:avoid; }
     .entry-nom { color:#2a2114; border:none; font-weight:600; }
     .entry-desc { color:#332b18; }
@@ -200,15 +190,6 @@
   </div>
 
   <div class="alerte" id="alerte"></div>
-
-  <!-- SCHÉMA DE PROGRESSION -->
-  <div class="card">
-    <div class="card-title">Schéma de progression</div>
-    <div class="schema-wrap">
-      <table class="schema" id="schema"></table>
-    </div>
-    <div class="schema-note">Cliquez une case pour indiquer à quel échelon (1 à 4) une caractéristique peut recevoir des augmentations d'XP. Une case dorée = augmentation possible à cet échelon.</div>
-  </div>
 
   <!-- COMPÉTENCES / TALENTS / POSSESSIONS, par échelon -->
   <div id="echelons-zone"></div>
@@ -353,9 +334,9 @@ function rendreTout() {
   const dsc = document.getElementById('f-description');
   dsc.value = state.description; autoGrow(dsc);
   rendreImage();
-  rendreSchema();
   if (!squeletteFait) construireSquelette();
   ECHELONS.forEach((ech, ei) => TYPES.forEach(t => rendreListe(ei, t.key)));
+  appliquerSchema();
   appliquerStatuts();
   document.title = (state.titre ? state.titre + ' — ' : '') + 'Carrière · Warhammer';
 }
@@ -367,29 +348,11 @@ function rendreImage() {
   else { img.removeAttribute('src'); img.style.display = 'none'; empty.style.display = 'block'; }
 }
 
-function rendreSchema() {
-  const t = document.getElementById('schema');
-  let html = '<thead><tr><th class="corner">Caract.</th>';
-  CARACS.forEach(c => html += '<th>' + c + '</th>');
-  html += '</tr></thead><tbody>';
-  ECHELONS.forEach((ech, ri) => {
-    html += '<tr><th>Échelon ' + ech + '</th>';
-    CARACS.forEach(c => {
-      const on = state.schema[c][ri];
-      html += '<td class="schema-cell' + (on ? ' on' : '') + '" data-c="' + c + '" data-e="' + ri + '"><span class="mark"></span></td>';
-    });
-    html += '</tr>';
-  });
-  html += '</tbody>';
-  t.innerHTML = html;
-  t.querySelectorAll('.schema-cell').forEach(cell => {
-    cell.addEventListener('click', () => {
-      const c = cell.dataset.c, e = +cell.dataset.e;
-      state.schema[c][e] = !state.schema[c][e];
-      cell.classList.toggle('on', state.schema[c][e]);
-      programmerSauvegarde();
-    });
-  });
+function appliquerSchema() {
+  CARACS.forEach(c => ECHELONS.forEach((ech, ei) => {
+    const chip = document.querySelector('.carac-chip[data-c="' + c + '"][data-e="' + ei + '"]');
+    if (chip) chip.classList.toggle('on', !!state.schema[c][ei]);
+  }));
 }
 
 let squeletteFait = false;
@@ -398,6 +361,10 @@ let squeletteFait = false;
 function construireSquelette() {
   const zone = document.getElementById('echelons-zone');
   zone.innerHTML = '';
+  const hint = document.createElement('div');
+  hint.className = 'zone-hint';
+  hint.textContent = "Chaque échelon regroupe son statut, ses caractéristiques qui progressent, ses compétences, talents et possessions. Cliquez une caractéristique pour l'activer à cet échelon.";
+  zone.appendChild(hint);
   ECHELONS.forEach((ech, ei) => {
     const card = document.createElement('div');
     card.className = 'card echelon-card';
@@ -417,6 +384,13 @@ function construireSquelette() {
           '<span class="statut-print" id="st-print-' + ei + '"></span>' +
         '</span>' +
       '</div>';
+    html +=
+      '<div class="sub sub-schema" id="sub-schema-' + ei + '">' +
+        '<div class="sub-title">Caractéristiques qui progressent</div>' +
+        '<div class="carac-row" id="schema-e' + ei + '">' +
+          CARACS.map(c => '<span class="carac-chip" data-c="' + c + '" data-e="' + ei + '">' + c + '</span>').join('') +
+        '</div>' +
+      '</div>';
     TYPES.forEach(t => {
       html +=
         '<div class="sub">' +
@@ -427,6 +401,15 @@ function construireSquelette() {
     });
     card.innerHTML = html;
     zone.appendChild(card);
+  });
+  zone.querySelectorAll('.carac-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const c = chip.dataset.c, ei = +chip.dataset.e;
+      state.schema[c][ei] = !state.schema[c][ei];
+      chip.classList.toggle('on', state.schema[c][ei]);
+      majEtatsVides();
+      programmerSauvegarde();
+    });
   });
   zone.querySelectorAll('.add-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -514,7 +497,10 @@ function appliquerStatuts() {
 // Marque les sous-sections et échelons vides (utile pour l'export PDF, qui les masque).
 function majEtatsVides() {
   ECHELONS.forEach((ech, ei) => {
-    let cardVide = !(state.echelons[ei].stTier || state.echelons[ei].stRang);
+    const caracVide = CARACS.every(c => !state.schema[c][ei]);
+    let cardVide = !(state.echelons[ei].stTier || state.echelons[ei].stRang) && caracVide;
+    const subSch = document.getElementById('sub-schema-' + ei);
+    if (subSch) subSch.classList.toggle('sub-empty', caracVide);
     TYPES.forEach(t => {
       const cont = document.getElementById('list-e' + ei + '-' + t.key);
       if (!cont) return;
