@@ -207,15 +207,21 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, set }
+import { getDatabase, ref, onValue, update }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// ---------- Identifiant de la carrière = nom du fichier ----------
-// carriere-template.html -> "carriere-template" ; chevalier.html -> "chevalier"
-// On peut aussi forcer une clé avec ?c=... dans l'URL.
-const fichier = (location.pathname.split('/').pop() || '').replace(/\.html?$/i, '');
-const slug = ((new URLSearchParams(location.search).get('c')) || fichier || 'carriere-template')
-  .replace(/[^a-z0-9_-]/gi, '').toLowerCase() || 'carriere-template';
+// ---------- Identifiant de la carrière ----------
+// Priorité au paramètre ?c=<clé> (créé depuis l'accueil). Sinon, nom du fichier.
+const cParam = new URLSearchParams(location.search).get('c');
+let slug;
+if (cParam) {
+  // clé Firebase (sensible à la casse) : on retire seulement les caractères interdits
+  slug = cParam.replace(/[.#$/\[\]\s]/g, '').slice(0, 128);
+} else {
+  const fichier = (location.pathname.split('/').pop() || '').replace(/\.html?$/i, '');
+  slug = (fichier || 'carriere-template').replace(/[^a-z0-9_-]/gi, '').toLowerCase();
+}
+if (!slug) slug = 'carriere-template';
 
 // ---------- Firebase ----------
 let db = null, refCarr = null;
@@ -279,7 +285,7 @@ function sauvegarder() {
   if (!refCarr) return;
   const payload = JSON.parse(jsonState());
   dernierEcrit = JSON.stringify(payload);
-  set(refCarr, payload)
+  update(refCarr, payload)
     .then(() => setSync('ok', 'à jour'))
     .catch(e => setSync('err', 'erreur : ' + e.message));
 }
