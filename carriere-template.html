@@ -35,6 +35,8 @@
   nav { position:sticky; top:0; z-index:100; background:rgba(9,8,12,0.93); backdrop-filter:blur(8px); border-bottom:1px solid rgba(184,146,42,0.2); padding:0.6rem 1.5rem; display:flex; align-items:center; gap:1rem; }
   nav a { color:var(--SUB); text-decoration:none; font-size:0.82rem; font-style:italic; transition:color 0.2s; }
   nav a:hover { color:var(--GLD); }
+  .nav-back { color:var(--GLD-LT) !important; font-style:normal !important; font-family:'Cinzel',serif; font-size:0.68rem !important; letter-spacing:0.08em; text-transform:uppercase; padding:0.32rem 0.7rem; border:1px solid rgba(184,146,42,0.4); border-radius:2px; background:rgba(184,146,42,0.12); transition:all 0.15s; }
+  .nav-back:hover { color:var(--GLD-LT) !important; border-color:rgba(227,198,110,0.6); background:rgba(184,146,42,0.24); }
   .nav-current { color:var(--VIO2) !important; font-style:normal; font-family:'Cinzel',serif; font-size:0.82rem; }
   .nav-sep { color:var(--SUB); opacity:0.3; }
   .sync-dot { margin-left:auto; display:flex; align-items:center; gap:0.4rem; font-size:0.7rem; color:var(--SUB); font-style:italic; }
@@ -144,8 +146,7 @@
 <body>
 
 <nav>
-  <a href="carrieres.html">◂ Les carrières</a>
-  <span class="nav-sep">·</span>
+  <a href="carrieres.html" class="nav-back">◂ Les carrières</a>
   <a href="index.html">Accueil</a>
   <span class="nav-sep">·</span>
   <span class="nav-current">Carrière</span>
