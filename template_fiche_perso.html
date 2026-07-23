@@ -333,8 +333,8 @@
 
   .gauge-row { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.4rem; }
   .gauge-lbl { font-family:'Cinzel',serif; font-size:0.66rem; letter-spacing:0.08em; color:var(--parchment-dark); width:42px; flex-shrink:0; }
-  .gauge-track { flex:1; height:9px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.06); border-radius:5px; overflow:hidden; }
-  .gauge-fill { height:100%; border-radius:5px; width:0; transition:width 0.35s ease, background-color 0.35s ease; }
+  .gauge-track { flex:1; display:block; height:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.06); border-radius:5px; overflow:hidden; }
+  .gauge-fill { display:block; height:100%; border-radius:5px; width:0; min-width:2px; transition:width 0.35s ease, background-color 0.35s ease; }
   .gauge-val { font-family:'Cinzel',serif; font-size:0.72rem; color:var(--parchment); width:44px; text-align:right; flex-shrink:0; }
   .gauge-sep { height:1px; background:rgba(255,255,255,0.06); margin:0.7rem 0 0.6rem; }
   .gauge-note { font-size:0.62rem; color:var(--SUB); font-style:italic; margin-top:0.5rem; line-height:1.4; }
