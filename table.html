@@ -465,6 +465,7 @@
     <div class="cams-tete" id="cams-drag">
       <span class="pt">Caméras</span>
       <span class="spacer"></span>
+      <button id="cams-detacher" class="mini" title="Ouvrir les caméras dans une fenêtre séparée (déplaçable sur un autre écran)">⧉</button>
       <button id="cams-rejoindre" class="mini" title="Rejoindre / reconnecter">⟳</button>
     </div>
     <div class="jitsi" id="callframe"></div>
@@ -1325,6 +1326,7 @@ $("#mj").addEventListener("change", e=>{
 let callFrame = null;
 function lancerCams(){
   const cont = document.getElementById("callframe");
+  if(typeof camsDetachees === "function" && camsDetachees()){ messageCamsDetachees(); return; }
   if(!window.DailyIframe){ cont.innerHTML = "<div class='cams-msg'>Module caméras non chargé.</div>"; return; }
   const url = window.DAILY_ROOM_URL;
   if(!url){ cont.innerHTML = "<div class='cams-msg'>Caméras non configurées : colle l'adresse de ta salle Daily en haut du fichier.</div>"; return; }
@@ -1338,6 +1340,94 @@ function lancerCams(){
   });
   callFrame.join({ url, userName: nom() });
 }
+
+// ---------- Caméras dans une fenêtre séparée (déplaçable sur un autre écran) ----------
+// Un élément de la page ne peut jamais sortir de la fenêtre du navigateur : c'est une
+// limite du navigateur lui-même. Pour poser les caméras sur un deuxième écran, il faut
+// donc une VRAIE fenêtre, que le système d'exploitation peut déplacer où l'on veut.
+let fenCams = null, veilleCams = null;
+
+function camsDetachees(){ return !!(fenCams && !fenCams.closed); }
+
+function pageFenetreCams(url, pseudo){
+  return '<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8" />'
+   + '<title>Caméras — Table Warhammer</title>'
+   + '<style>html,body{margin:0;height:100%;background:#12100c;color:#e8dcc0;'
+   + 'font-family:Georgia,serif;overflow:hidden}'
+   + '#zone{position:absolute;inset:0}'
+   + '#zone iframe{width:100%;height:100%;border:0;display:block}'
+   + '#mot{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;'
+   + 'text-align:center;padding:20px;font-size:14px;color:#c9b98f}</style></head><body>'
+   + '<div id="mot">Connexion aux caméras…</div><div id="zone"></div>'
+   + '<scr' + 'ipt src="https://unpkg.com/@daily-co/daily-js"></scr' + 'ipt>'
+   + '<scr' + 'ipt>(function(){'
+   + 'var SALLE=' + JSON.stringify(url) + ',PSEUDO=' + JSON.stringify(pseudo) + ';'
+   + 'function demarrer(){'
+   + ' var mot=document.getElementById("mot");'
+   + ' if(!window.DailyIframe){ mot.textContent="Module caméras non chargé. Vérifie ta connexion."; return; }'
+   + ' mot.style.display="none";'
+   + ' var f=window.DailyIframe.createFrame(document.getElementById("zone"),{'
+   + '  iframeStyle:{width:"100%",height:"100%",border:"0"},'
+   + '  showLeaveButton:false, showFullscreenButton:true,'
+   + '  activeSpeakerMode:false, layoutConfig:{grid:{maxTilesPerPage:25}} });'
+   + ' f.join({url:SALLE, userName:PSEUDO});'
+   + '}'
+   + 'if(window.DailyIframe){demarrer();}else{window.addEventListener("load",demarrer);}'
+   + '})();</scr' + 'ipt></body></html>';
+}
+
+function messageCamsDetachees(){
+  const cont = document.getElementById("callframe");
+  if(!cont) return;
+  cont.innerHTML = "<div class='cams-msg'>Caméras ouvertes dans une fenêtre séparée."
+    + "<br /><br /><button class='mini' id='cams-ramener'>Ramener dans la page</button></div>";
+  const b = document.getElementById("cams-ramener");
+  if(b) b.addEventListener("click", reintegrerCams);
+}
+
+function detacherCams(){
+  if(camsDetachees()){ fenCams.focus(); return; }
+  const url = window.DAILY_ROOM_URL;
+  const cont = document.getElementById("callframe");
+  if(!url){ if(cont) cont.innerHTML = "<div class='cams-msg'>Caméras non configurées.</div>"; return; }
+
+  const f = window.open("", "camsWarhammer", "width=560,height=420,menubar=no,toolbar=no,location=no,status=no");
+  if(!f){
+    if(cont) cont.innerHTML = "<div class='cams-msg'>Le navigateur a bloqué la fenêtre."
+      + "<br />Autorise les fenêtres surgissantes pour ce site, puis réessaie.</div>";
+    setTimeout(lancerCams, 2500);
+    return;
+  }
+  fenCams = f;
+
+  // On quitte l'appel dans la page : sinon on serait présent deux fois (écho, doublon).
+  try{ if(callFrame){ callFrame.destroy(); callFrame = null; } }catch(e){}
+  messageCamsDetachees();
+
+  f.document.open();
+  f.document.write(pageFenetreCams(url, nom()));
+  f.document.close();
+  try{ f.focus(); }catch(e){}
+
+  // Quand la fenêtre est fermée, on remet les caméras dans la page.
+  clearInterval(veilleCams);
+  veilleCams = setInterval(()=>{
+    if(!fenCams || fenCams.closed){
+      clearInterval(veilleCams); veilleCams = null; fenCams = null;
+      lancerCams();
+    }
+  }, 800);
+}
+
+function reintegrerCams(){
+  try{ if(camsDetachees()) fenCams.close(); }catch(e){}
+  fenCams = null;
+  clearInterval(veilleCams); veilleCams = null;
+  lancerCams();
+}
+
+// Si on quitte la table, on ne laisse pas une fenêtre orpheline.
+window.addEventListener("pagehide", ()=>{ try{ if(camsDetachees()) fenCams.close(); }catch(e){} });
 // ---------- Écran d'entrée ----------
 const gate = $("#gate");
 const gateNom = $("#gate-nom");
@@ -1379,7 +1469,11 @@ $("#ouvrir-cams").addEventListener("click", ()=>{
   const c = $("#cams");
   c.style.display = (c.style.display === "none") ? "flex" : "none";
 });
-$("#cams-rejoindre").addEventListener("click", lancerCams);
+$("#cams-rejoindre").addEventListener("click", ()=>{
+  if(camsDetachees()){ fenCams.focus(); return; }   // déjà dans une fenêtre : on la ramène au premier plan
+  lancerCams();
+});
+$("#cams-detacher").addEventListener("click", detacherCams);
 
 // ---------- Journal : afficher/masquer ----------
 $("#ouvrir-journal").addEventListener("click", ()=>{ $("#journal-panel").classList.toggle("replie"); zoneDes(); });
