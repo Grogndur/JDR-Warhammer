@@ -923,7 +923,6 @@
   <!-- NOTES SESSION -->
   <div class="card full">
     <div class="card-title">Notes de session</div>
-    <div style="font-size:0.82rem;color:var(--SUB);font-style:italic;margin-bottom:0.5rem;line-height:1.5;">Objectif : trouver une bonne arme à deux mains, de préférence une épée · Garder un œil sur le jeunot</div>
     <textarea class="notes-area" id="session-notes" rows="4" placeholder="Plans, contacts, observations..."></textarea>
     <span class="save-confirm" id="save-confirm">✓ Sauvegardé</span>
   </div>
@@ -1141,7 +1140,7 @@ function load() {
   const raw = localStorage.getItem('denl_v3');
   if (raw) try {
     const saved = JSON.parse(raw);
-    ['wounds','woundsMax','marche','destin','chance','resil','determ','notes'].forEach(k => { if (saved[k]!==undefined) state[k]=saved[k]; });
+    ['wounds','woundsMax','marche','destin','chance','resil','determ','notes','notesReprises'].forEach(k => { if (saved[k]!==undefined) state[k]=saved[k]; });
     if (saved.money)     Object.assign(state.money, saved.money);
     if (saved.cet)       Object.assign(state.cet, saved.cet);
     if (saved.career) Object.assign(state.career, saved.career);
@@ -1684,7 +1683,7 @@ function importJSON(input) {
   reader.onload = e => {
     try {
       const saved = JSON.parse(e.target.result);
-      ['wounds','woundsMax','marche','destin','chance','resil','determ','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
+      ['wounds','woundsMax','marche','destin','chance','resil','determ','notes','notesReprises'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
       if(saved.money) Object.assign(state.money, saved.money);
       if(saved.cet) Object.assign(state.cet, saved.cet);
     if (saved.career) Object.assign(state.career, saved.career);
@@ -2576,6 +2575,22 @@ const _origRenderSkillsAdv = renderSkillsAdv;
 renderSkillsAdv = function() { _origRenderSkillsAdv(); applyAdvSkillEditable(); };
 
 
+// ══════ REPRISE DES NOTES AUTREFOIS FIGEES DANS LE CODE ══════
+// Ces notes etaient ecrites en dur, donc ni modifiables ni effacables.
+// On les bascule UNE SEULE FOIS dans le vrai champ de notes, et seulement
+// s'il est encore vide, pour ne jamais ecraser ce que le joueur a saisi.
+var NOTES_HERITEES = "Objectif : trouver une bonne arme à deux mains, de préférence une épée · Garder un œil sur le jeunot";
+function reprendreNotesHeritees() {
+  if (state.notesReprises) return;
+  state.notesReprises = true;
+  if (!String(state.notes || '').trim()) {
+    state.notes = NOTES_HERITEES;
+    var z = document.getElementById('session-notes');
+    if (z) z.value = state.notes;
+  }
+  save();
+}
+
 /* ============ SAUVEGARDE EN LIGNE (Firebase) ============
    Remplace le localStorage. On reassigne save() et load() ;
    le reste de la fiche n'est pas touche. */
@@ -2629,12 +2644,14 @@ renderSkillsAdv = function() { _origRenderSkillsAdv(); applyAdvSkillEditable(); 
   load = function() {
     try { var raw = localStorage.getItem(LS_KEY); if (raw) fusion(JSON.parse(raw)); } catch (e) {}
     renderAll();
-    if (!fbRef) return;
+    if (!fbRef) { reprendreNotesHeritees(); return; }
     fbRef.once("value").then(function(snap){
       var enLigne = snap.val();
       if (enLigne) { fusion(enLigne); renderAll(); }
-      else { fbRef.set(JSON.parse(JSON.stringify(state))); }
-    }).catch(function(e){ console.warn("Lecture en ligne echouee, cache local conserve :", e); });
+      reprendreNotesHeritees();
+      if (!enLigne) { fbRef.set(JSON.parse(JSON.stringify(state))); }
+    }).catch(function(e){ console.warn("Lecture en ligne echouee, cache local conserve :", e);
+                          reprendreNotesHeritees(); });
   };
 })();
 
