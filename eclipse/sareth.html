@@ -27,7 +27,14 @@
   @media(max-width:700px){ .layout { grid-template-columns:1fr; } }
 
   .perso-header { grid-column:1/-1; display:flex; align-items:flex-end; gap:1.5rem; padding-bottom:1.25rem; border-bottom:1px solid rgba(103,78,167,0.22); flex-wrap:wrap; }
-  .perso-avatar { width:58px; height:58px; border-radius:2px; background:linear-gradient(135deg,rgba(103,78,167,0.25),rgba(28,58,90,0.4)); border:1px solid rgba(103,78,167,0.45); display:flex; align-items:center; justify-content:center; font-size:1.7rem; flex-shrink:0; }
+  .perso-portrait { width:112px; flex-shrink:0; }
+  .portrait-frame { position:relative; width:112px; height:140px; border-radius:2px; border:1px solid rgba(103,78,167,0.45); background:linear-gradient(135deg,rgba(103,78,167,0.25),rgba(28,58,90,0.4)); overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  .portrait-frame img { width:100%; height:100%; object-fit:cover; display:block; }
+  .portrait-empty { color:var(--SUB); font-style:italic; font-size:0.72rem; text-align:center; padding:0 0.4rem; line-height:1.4; }
+  .portrait-btns { display:flex; gap:0.3rem; margin-top:0.35rem; }
+  .portrait-btns label, .portrait-btns button { flex:1; text-align:center; cursor:pointer; background:rgba(103,78,167,0.12); border:1px solid rgba(103,78,167,0.45); color:#9b7fd4; font-family:'Cinzel',serif; font-size:0.55rem; letter-spacing:0.06em; text-transform:uppercase; padding:0.3rem 0.15rem; border-radius:2px; transition:all 0.15s; }
+  .portrait-btns label:hover, .portrait-btns button:hover { background:rgba(103,78,167,0.24); }
+  #portrait-file { display:none; }
   .perso-info h1 { font-family:'Cinzel',serif; font-size:2rem; font-weight:700; line-height:1; letter-spacing:0.05em; }
   .perso-info .sub { font-style:italic; color:var(--VIO2); font-size:0.95rem; margin-top:0.2rem; }
   .perso-info .player { color:var(--SUB); font-size:0.78rem; margin-top:0.15rem; letter-spacing:0.05em; }
@@ -437,6 +444,7 @@
     html, body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     body::before { display:none !important; }
     nav, .pdf-btn, button { display:none !important; }
+    .portrait-btns, .portrait-empty { display:none !important; }
     .editable, .editable-num { border:none !important; }
     .sort-body { display:block !important; }
     .card, .stat-box, .sort-item, .skill-list li, .talent-list li { break-inside:avoid; }
@@ -456,7 +464,17 @@
 
   <!-- HEADER -->
   <div class="perso-header">
-    <div class="perso-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 48" width="32" height="32" fill="none"><path d="M20 44 C18 38, 10 34, 12 26 C14 18, 22 20, 20 12 C18 6, 13 4, 15 0" stroke="#4a2d6e" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.5"/><path d="M20 44 C22 36, 30 32, 27 23 C24 14, 15 17, 18 9 C20 3, 26 2, 24 0" stroke="#674EA7" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.85"/><path d="M20 44 C19 37, 14 33, 16 25 C18 17, 25 19, 22 11 C20 5, 16 3, 18 0" stroke="#9b82d4" stroke-width="2" stroke-linecap="round" fill="none" opacity="1"/></svg></div>
+    <div class="perso-portrait">
+      <div class="portrait-frame" id="portrait-frame">
+        <div class="portrait-empty" id="portrait-empty">Portrait</div>
+        <img id="portrait-img" alt="Portrait du personnage" style="display:none">
+      </div>
+      <div class="portrait-btns">
+        <label for="portrait-file">Ajouter</label>
+        <button type="button" id="portrait-remove">Retirer</button>
+      </div>
+      <input type="file" id="portrait-file" accept="image/*">
+    </div>
     <div class="perso-info">
       <h1>Sareth Liamah</h1>
       <div class="career-line"><input class="career-input career-carriere" id="career-carriere" value="Sorcière de l'Ombre (Ulgu) · Lettrée" placeholder="Nom de carrière" onchange="careerSave()" /><span class="career-sep">·</span><input class="career-input career-num" id="career-num" value="2" placeholder="N°" onchange="careerSave()" /><span class="career-sep">·</span><input class="career-input career-echelon" id="career-echelon" value="" placeholder="Nom d&#x2019;échelon" onchange="careerSave()" /></div>
@@ -987,6 +1005,7 @@ const SORTS_DEF = [
 
 // ══════ STATE ══════
 let state = {
+  portrait: '',
   marche: 4,
   profOpen: { radar:false, gauge:false },
   wounds: 14, woundsMax: 14,
@@ -1047,7 +1066,7 @@ function load() {
   if (raw) try {
     const saved = JSON.parse(raw);
     // Deep merge
-    ['wounds','woundsMax','marche','destin','chance','resil','determ','traces','notes','notesReprises'].forEach(k => { if (saved[k]!==undefined) state[k]=saved[k]; });
+    ['portrait','wounds','woundsMax','marche','destin','chance','resil','determ','traces','notes','notesReprises'].forEach(k => { if (saved[k]!==undefined) state[k]=saved[k]; });
     if (saved.money) Object.assign(state.money, saved.money);
     if (saved.cet)   Object.assign(state.cet, saved.cet);
     if (saved.career) Object.assign(state.career, saved.career);
@@ -1083,6 +1102,7 @@ function saveAll() {
 }
 
 function renderAll() {
+  renderPortrait();
   renderStats();
   renderSkillsBase();
   renderSkillsAdv();
@@ -1819,7 +1839,7 @@ function importJSON(input) {
   reader.onload = e => {
     try {
       const saved = JSON.parse(e.target.result);
-      ['wounds','woundsMax','marche','destin','chance','resil','determ','traces','notes','notesReprises'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
+      ['portrait','wounds','woundsMax','marche','destin','chance','resil','determ','traces','notes','notesReprises'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
       if(saved.money) Object.assign(state.money, saved.money);
       if(saved.cet) Object.assign(state.cet, saved.cet);
     if (saved.career) Object.assign(state.career, saved.career);
@@ -2112,6 +2132,58 @@ function reprendreNotesHeritees() {
     }).catch(function(e){ console.warn("Lecture en ligne echouee, cache local conserve :", e);
                           reprendreNotesHeritees(); });
   };
+})();
+
+
+// ══════ PORTRAIT DU PERSONNAGE ══════
+// Image redimensionnee puis stockee en base64 dans state.portrait,
+// donc sauvegardee avec le reste de la fiche (Firebase + cache local).
+function renderPortrait() {
+  var img = document.getElementById('portrait-img');
+  var vide = document.getElementById('portrait-empty');
+  if (!img || !vide) return;
+  if (state.portrait) { img.src = state.portrait; img.style.display = 'block'; vide.style.display = 'none'; }
+  else { img.removeAttribute('src'); img.style.display = 'none'; vide.style.display = 'block'; }
+}
+
+(function(){
+  var input = document.getElementById('portrait-file');
+  var btnDel = document.getElementById('portrait-remove');
+  if (!input || !btnDel) return;
+
+  input.addEventListener('change', function(ev){
+    var file = ev.target.files && ev.target.files[0];
+    ev.target.value = '';
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var img = new Image();
+      img.onload = function(){
+        var MAX = 500;
+        var w = img.width, h = img.height;
+        if (w > MAX || h > MAX) { var r = Math.min(MAX/w, MAX/h); w = Math.round(w*r); h = Math.round(h*r); }
+        var cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        cv.getContext('2d').drawImage(img, 0, 0, w, h);
+        // Compression progressive : on baisse la qualite tant que c'est trop lourd.
+        var data = cv.toDataURL('image/jpeg', 0.8);
+        if (data.length > 400000) data = cv.toDataURL('image/jpeg', 0.6);
+        if (data.length > 400000) data = cv.toDataURL('image/jpeg', 0.42);
+        state.portrait = data;
+        renderPortrait();
+        save();
+      };
+      img.onerror = function(){ alert("Image illisible. Essaie un JPEG ou un PNG."); };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  btnDel.addEventListener('click', function(){
+    state.portrait = '';
+    renderPortrait();
+    save();
+  });
 })();
 
 load();
