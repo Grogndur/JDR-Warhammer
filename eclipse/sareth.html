@@ -17,8 +17,8 @@
                 radial-gradient(ellipse at 70% 100%, rgba(28,58,90,0.08) 0%, transparent 50%);
     pointer-events:none; z-index:0; }
 
-  nav { position:sticky; top:0; z-index:100; background:rgba(10,10,15,0.93); backdrop-filter:blur(8px); border-bottom:1px solid rgba(103,78,167,0.25); padding:0.6rem 1.5rem; display:flex; align-items:center; gap:1rem; }
-  nav a { color:var(--SUB); text-decoration:none; font-size:0.82rem; font-style:italic; transition:color 0.2s; }
+  nav { position:sticky; top:0; z-index:100; background:rgba(10,10,15,0.93); backdrop-filter:blur(8px); border-bottom:1px solid rgba(103,78,167,0.25); padding:0.6rem 1.5rem; display:flex; align-items:center; flex-wrap:wrap; gap:0.35rem 1rem; }
+  nav a { white-space:nowrap; color:var(--SUB); text-decoration:none; font-size:0.82rem; font-style:italic; transition:color 0.2s; }
   nav a:hover { color:var(--GLD); }
   .nav-current { color:var(--VIO2) !important; font-style:normal; font-family:'Cinzel',serif; font-size:0.82rem; }
   .nav-sep { color:var(--SUB); opacity:0.3; }
