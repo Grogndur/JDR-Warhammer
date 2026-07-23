@@ -1447,7 +1447,8 @@ function importJSON(input) {
   reader.onload = e => {
     try {
       const saved = JSON.parse(e.target.result);
-      ['wounds','woundsMax','destin','chance','resil','determ','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
+      ['wounds','woundsMax','marche','destin','chance','resil','determ','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
+      if(saved.profOpen) Object.assign(state.profOpen, saved.profOpen);
       if(saved.money) Object.assign(state.money, saved.money);
       if(saved.cet) Object.assign(state.cet, saved.cet);
     if (saved.career) Object.assign(state.career, saved.career);
