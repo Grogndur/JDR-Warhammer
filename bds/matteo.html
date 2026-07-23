@@ -312,7 +312,38 @@
   .career-input.career-echelon { width:150px; }
   .career-sep { color:var(--SUB); opacity:0.5; }
 
+  /* ══ PROFIL : TOILE + JAUGES (blocs repliables) ══ */
+  .prof-head { display:flex; align-items:center; gap:0.5rem; cursor:pointer; user-select:none; }
+  .prof-head .card-title { margin-bottom:0; flex:1; }
+  .prof-arrow { font-size:0.55rem; color:var(--SUB); transition:transform 0.2s; flex-shrink:0; }
+  .prof-head.open .prof-arrow { transform:rotate(90deg); }
+  .prof-body { display:none; padding-top:0.9rem; }
+  .prof-body.open { display:block; }
+
+  .radar-wrap { display:flex; justify-content:center; }
+  .radar-wrap svg { width:100%; max-width:420px; height:auto; }
+  .radar-grid { fill:none; stroke:rgba(255,255,255,0.07); stroke-width:1; }
+  .radar-axis { stroke:rgba(255,255,255,0.06); stroke-width:1; }
+  .radar-shape { fill:rgba(212,180,90,0.16); stroke:var(--acc2); stroke-width:1.6; stroke-linejoin:round; }
+  .radar-dot { fill:var(--acc2); }
+  .radar-lbl { fill:var(--parchment-dark); font-family:'Cinzel',serif; font-size:10px; text-anchor:middle; dominant-baseline:middle; }
+  .radar-num { fill:var(--SUB); font-family:'Cinzel',serif; font-size:8.5px; text-anchor:middle; dominant-baseline:middle; }
+  .radar-ring-lbl { fill:rgba(255,255,255,0.16); font-family:'Cinzel',serif; font-size:7px; text-anchor:middle; dominant-baseline:middle; }
+  .radar-empty { fill:var(--SUB); font-family:'Crimson Text',serif; font-style:italic; font-size:11px; text-anchor:middle; }
+
+  .gauge-row { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.4rem; }
+  .gauge-lbl { font-family:'Cinzel',serif; font-size:0.66rem; letter-spacing:0.08em; color:var(--parchment-dark); width:42px; flex-shrink:0; }
+  .gauge-track { flex:1; display:block; height:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.06); border-radius:5px; overflow:hidden; }
+  .gauge-fill { display:block; height:100%; border-radius:5px; width:0; min-width:2px; transition:width 0.35s ease, background-color 0.35s ease; }
+  .gauge-val { font-family:'Cinzel',serif; font-size:0.72rem; color:var(--parchment); width:44px; text-align:right; flex-shrink:0; }
+  .gauge-sep { height:1px; background:rgba(255,255,255,0.06); margin:0.7rem 0 0.6rem; }
+  .gauge-note { font-size:0.62rem; color:var(--SUB); font-style:italic; margin-top:0.5rem; line-height:1.4; }
+
   /* ══ MOUVEMENT : COURSE / CHARGE ══ */
+  .move-input { background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.12); color:var(--parchment); font-family:'Cinzel',serif; font-size:1.5rem; line-height:1; width:48px; text-align:center; padding:0; cursor:pointer; transition:border-color 0.15s; }
+  .move-input:focus { outline:none; border-bottom-color:rgba(184,146,42,0.6); }
+  .move-input::-webkit-outer-spin-button, .move-input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+  .move-input { -moz-appearance:textfield; }
   .move-sub { display:flex; justify-content:center; gap:1.1rem; margin-top:0.45rem; font-size:0.72rem; color:var(--SUB); letter-spacing:0.04em; }
   .move-sub strong { color:var(--parchment-dark); font-family:'Cinzel',serif; font-size:1rem; font-weight:600; margin-left:0.2rem; }
   /* ══ STATUT SOCIAL ══ */
@@ -466,6 +497,29 @@
   </div>
 
 
+  <!-- PROFIL : TOILE DES CARACTÉRISTIQUES -->
+  <div class="card acc full">
+    <div class="prof-head" id="radar-head" onclick="profToggle('radar')">
+      <span class="prof-arrow">&#9654;</span>
+      <div class="card-title acc">Profil du personnage</div>
+    </div>
+    <div class="prof-body" id="radar-body">
+      <div class="radar-wrap" id="radar-wrap"></div>
+    </div>
+  </div>
+
+  <!-- PROFIL : JAUGES -->
+  <div class="card acc full">
+    <div class="prof-head" id="gauge-head" onclick="profToggle('gauge')">
+      <span class="prof-arrow">&#9654;</span>
+      <div class="card-title acc">Jauges</div>
+    </div>
+    <div class="prof-body" id="gauge-body">
+      <div id="gauge-list"></div>
+      <div class="gauge-note">Caractéristiques sur 100, blessures sur 30. La couleur va du rouge au vert selon la valeur.</div>
+    </div>
+  </div>
+
   <!-- CARACTÉRISTIQUES -->
   <div class="card acc full">
     <div class="card-title acc">Caractéristiques</div>
@@ -490,11 +544,12 @@
       </div>
       <div class="res-box">
         <span class="res-label">Marche</span>
-        <span class="res-val">4<span style="font-size:0.6rem;color:var(--SUB);margin-left:0.15rem;">m</span></span>
+        <span class="res-val"><input class="move-input" type="number" id="marche-input" value="4" min="1" max="20" onchange="updateMarche(this.value)" title="Mouvement du personnage (nain et halfling : 3, humain : 4, elfe : 5)" /><span style="font-size:0.6rem;color:var(--SUB);margin-left:0.15rem;">m</span></span>
         <div class="move-sub">
-          <span>Course <strong>8 m</strong></span>
-          <span>Charge <strong>16 m</strong></span>
+          <span>Course <strong id="marche-course">8 m</strong></span>
+          <span>Charge <strong id="marche-charge">16 m</strong></span>
         </div>
+        <div style="font-size:0.6rem;color:var(--SUB);font-style:italic;margin-top:0.35rem;line-height:1.4;">Nain, halfling : 3<br />Humain : 4 &nbsp;/&nbsp; Elfe : 5</div>
       </div>
     </div>
     <div style="margin-bottom:0.6rem;">
@@ -861,6 +916,8 @@ const INV_DEF = [];
 let state = {
   identite: { nom:'', joueur:'Mattéo', race:'', age:'', physique:'', signes:'' },
   wounds: 10, woundsMax: 10,
+  marche: 4,
+  profOpen: { radar:false, gauge:false },
   destin: 0, chance: 0, resil: 0, determ: 0,
   career: { carriere:'', num:'', echelon:'' },
   statut: { tier:'Airain', rank:0 },
@@ -916,7 +973,8 @@ function load() {
   const raw = localStorage.getItem('template_v1');
   if (raw) try {
     const saved = JSON.parse(raw);
-    ['wounds','woundsMax','destin','chance','resil','determ','notes'].forEach(k => { if (saved[k]!==undefined) state[k]=saved[k]; });
+    ['wounds','woundsMax','marche','destin','chance','resil','determ','notes'].forEach(k => { if (saved[k]!==undefined) state[k]=saved[k]; });
+    if (saved.profOpen)  Object.assign(state.profOpen, saved.profOpen);
     if (saved.money)     Object.assign(state.money, saved.money);
     if (saved.cet)       Object.assign(state.cet, saved.cet);
     if (saved.career) Object.assign(state.career, saved.career);
@@ -959,6 +1017,8 @@ function renderAll() {
   renderFortune(); renderCareer(); renderStatut(); renderIdent(); renderLibres();
   document.getElementById('w-cur').textContent = state.wounds;
   const wmi=document.getElementById('w-max-input'); if(wmi) wmi.value=state.woundsMax||12;
+  renderMarche();
+  profAppliqueOuverture(); renderProfil();
   updateWC();
   ['or','argent','cuivre'].forEach(k => document.getElementById('m-'+k).textContent = state.money[k]||0);
   document.getElementById('session-notes').value = state.notes||'';
@@ -995,14 +1055,14 @@ function updateStat(key,field,val) {
   if(field==='natif') s.natif=v;
   else if(field==='bonusAff') s.bonus=v-(parseInt(s.natif)||0);
   else if(field==='avance') s.avance=v;
-  save(); renderStats(); renderSkillsBase(); renderSkillsAdv();
+  save(); renderStats(); renderSkillsBase(); renderSkillsAdv(); renderProfil();
 }
 
 // ══════ BLESSURES ══════
 function chWound(d) {
   state.wounds = Math.max(0, Math.min(state.woundsMax, state.wounds+d));
   document.getElementById('w-cur').textContent = state.wounds;
-  updateWC(); save();
+  updateWC(); renderProfil(); save();
 }
 function updateWC() {
   const el=document.getElementById('w-cur');
@@ -1015,6 +1075,153 @@ function updateWoundsMax(val) {
   state.woundsMax = Math.max(1, parseInt(val)||1);
   const inp = document.getElementById('w-max-input');
   if(inp) inp.value = state.woundsMax;
+  if(state.wounds > state.woundsMax) state.wounds = state.woundsMax;
+  const wc = document.getElementById('w-cur');
+  if(wc) wc.textContent = state.wounds;
+  updateWC(); renderProfil();
+  save();
+}
+
+// ══════ PROFIL : TOILE + JAUGES ══════
+// Deux blocs d'affichage purement visuels. Ils ne stockent aucune donnee propre :
+// tout est recalcule depuis state.stats et state.wounds.
+
+var PROF_MAX_CAR = 100;   // echelle des caracteristiques
+var PROF_MAX_BLESS = 30;  // echelle des blessures
+
+// Couleur rouge -> orange -> jaune -> vert selon un ratio 0..1
+function profCouleur(ratio) {
+  var r = Math.max(0, Math.min(1, ratio));
+  return 'hsl(' + Math.round(r * 120) + ',55%,45%)';
+}
+
+function profToggle(which) {
+  var head = document.getElementById(which + '-head');
+  var body = document.getElementById(which + '-body');
+  if (!head || !body) return;
+  var ouvert = !body.classList.contains('open');
+  head.classList.toggle('open', ouvert);
+  body.classList.toggle('open', ouvert);
+  if (!state.profOpen) state.profOpen = {};
+  state.profOpen[which] = ouvert;
+  save();
+  if (ouvert) renderProfil();
+}
+
+function profAppliqueOuverture() {
+  ['radar', 'gauge'].forEach(function(w) {
+    var ouvert = !!(state.profOpen && state.profOpen[w]);
+    var head = document.getElementById(w + '-head');
+    var body = document.getElementById(w + '-body');
+    if (head) head.classList.toggle('open', ouvert);
+    if (body) body.classList.toggle('open', ouvert);
+  });
+}
+
+function renderRadar() {
+  var wrap = document.getElementById('radar-wrap');
+  if (!wrap) return;
+
+  var W = 420, H = 360, cx = W / 2, cy = 188, R = 118;
+  var n = STATS_DEF.length;
+  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">';
+
+  // Anneaux de fond a 25 / 50 / 75 / 100
+  [0.25, 0.5, 0.75, 1].forEach(function(f) {
+    var pts = [];
+    for (var i = 0; i < n; i++) {
+      var a = -Math.PI / 2 + i * 2 * Math.PI / n;
+      pts.push((cx + Math.cos(a) * R * f).toFixed(1) + ',' + (cy + Math.sin(a) * R * f).toFixed(1));
+    }
+    svg += '<polygon class="radar-grid" points="' + pts.join(' ') + '" />';
+    svg += '<text class="radar-ring-lbl" x="' + cx + '" y="' + (cy - R * f - 4).toFixed(1) + '">' + Math.round(f * PROF_MAX_CAR) + '</text>';
+  });
+
+  // Axes
+  for (var i = 0; i < n; i++) {
+    var a = -Math.PI / 2 + i * 2 * Math.PI / n;
+    svg += '<line class="radar-axis" x1="' + cx + '" y1="' + cy + '" x2="' + (cx + Math.cos(a) * R).toFixed(1) + '" y2="' + (cy + Math.sin(a) * R).toFixed(1) + '" />';
+  }
+
+  // Polygone des valeurs
+  var pts = [], total = 0;
+  for (var i = 0; i < n; i++) {
+    var v = getStatTotal(STATS_DEF[i].key);
+    total += v;
+    var f = Math.max(0, Math.min(1, v / PROF_MAX_CAR));
+    var a = -Math.PI / 2 + i * 2 * Math.PI / n;
+    pts.push({ x: cx + Math.cos(a) * R * f, y: cy + Math.sin(a) * R * f, a: a, v: v });
+  }
+
+  if (total === 0) {
+    svg += '<text class="radar-empty" x="' + cx + '" y="' + cy + '">Renseigne les caractéristiques pour voir le profil</text>';
+  } else {
+    svg += '<polygon class="radar-shape" points="' + pts.map(function(p) { return p.x.toFixed(1) + ',' + p.y.toFixed(1); }).join(' ') + '" />';
+    pts.forEach(function(p) { svg += '<circle class="radar-dot" cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="2.6" />'; });
+  }
+
+  // Etiquettes et valeurs autour de la toile
+  for (var i = 0; i < n; i++) {
+    var a = -Math.PI / 2 + i * 2 * Math.PI / n;
+    var lx = cx + Math.cos(a) * (R + 24), ly = cy + Math.sin(a) * (R + 24);
+    svg += '<text class="radar-lbl" x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '">' + STATS_DEF[i].label + '</text>';
+    svg += '<text class="radar-num" x="' + lx.toFixed(1) + '" y="' + (ly + 11).toFixed(1) + '">' + pts[i].v + '</text>';
+  }
+
+  svg += '</svg>';
+  wrap.innerHTML = svg;
+}
+
+function renderGauges() {
+  var list = document.getElementById('gauge-list');
+  if (!list) return;
+  var html = '';
+
+  STATS_DEF.forEach(function(def) {
+    var v = getStatTotal(def.key);
+    var r = Math.max(0, Math.min(1, v / PROF_MAX_CAR));
+    html += '<div class="gauge-row">'
+          + '<span class="gauge-lbl">' + def.label + '</span>'
+          + '<span class="gauge-track"><span class="gauge-fill" style="width:' + (r * 100).toFixed(1) + '%;background-color:' + profCouleur(r) + ';"></span></span>'
+          + '<span class="gauge-val">' + v + '</span>'
+          + '</div>';
+  });
+
+  html += '<div class="gauge-sep"></div>';
+
+  // Blessures : longueur sur 30, couleur selon l'etat de sante (actuel / max)
+  var bl = parseInt(state.wounds) || 0;
+  var blMax = parseInt(state.woundsMax) || 1;
+  var rLong = Math.max(0, Math.min(1, bl / PROF_MAX_BLESS));
+  var rSante = Math.max(0, Math.min(1, bl / blMax));
+  html += '<div class="gauge-row">'
+        + '<span class="gauge-lbl">Bless.</span>'
+        + '<span class="gauge-track"><span class="gauge-fill" style="width:' + (rLong * 100).toFixed(1) + '%;background-color:' + profCouleur(rSante) + ';"></span></span>'
+        + '<span class="gauge-val">' + bl + '/' + blMax + '</span>'
+        + '</div>';
+
+  list.innerHTML = html;
+}
+
+function renderProfil() {
+  if (document.getElementById('radar-body') && document.getElementById('radar-body').classList.contains('open')) renderRadar();
+  if (document.getElementById('gauge-body') && document.getElementById('gauge-body').classList.contains('open')) renderGauges();
+}
+
+// ══════ MOUVEMENT ══════
+// Regle WFRP 4e : Course = 2 x Mouvement, Charge = 4 x Mouvement.
+function renderMarche() {
+  const m = parseInt(state.marche)||4;
+  const inp = document.getElementById('marche-input');
+  if(inp) inp.value = m;
+  const c = document.getElementById('marche-course');
+  if(c) c.textContent = (m*2) + ' m';
+  const ch = document.getElementById('marche-charge');
+  if(ch) ch.textContent = (m*4) + ' m';
+}
+function updateMarche(val) {
+  state.marche = Math.max(1, Math.min(20, parseInt(val)||4));
+  renderMarche();
   save();
 }
 // ══════ MONNAIE ══════
@@ -1319,7 +1526,8 @@ function importJSON(input) {
   reader.onload = e => {
     try {
       const saved = JSON.parse(e.target.result);
-      ['wounds','woundsMax','destin','chance','resil','determ','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
+      ['wounds','woundsMax','marche','destin','chance','resil','determ','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
+      if(saved.profOpen) Object.assign(state.profOpen, saved.profOpen);
       if(saved.money) Object.assign(state.money, saved.money);
       if(saved.cet) Object.assign(state.cet, saved.cet);
     if (saved.career) Object.assign(state.career, saved.career);
