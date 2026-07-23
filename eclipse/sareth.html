@@ -386,8 +386,8 @@
   .radar-wrap svg { width:100%; max-width:420px; height:auto; }
   .radar-grid { fill:none; stroke:rgba(255,255,255,0.07); stroke-width:1; }
   .radar-axis { stroke:rgba(255,255,255,0.06); stroke-width:1; }
-  .radar-shape { fill:rgba(212,180,90,0.16); stroke:var(--acc2); stroke-width:1.6; stroke-linejoin:round; }
-  .radar-dot { fill:var(--acc2); }
+  .radar-shape { fill:rgba(155,127,212,0.18); stroke:var(--VIO2); stroke-width:1.8; stroke-linejoin:round; }
+  .radar-dot { fill:var(--VIO2); }
   .radar-lbl { fill:var(--parchment-dark); font-family:'Cinzel',serif; font-size:10px; text-anchor:middle; dominant-baseline:middle; }
   .radar-num { fill:var(--SUB); font-family:'Cinzel',serif; font-size:8.5px; text-anchor:middle; dominant-baseline:middle; }
   .radar-ring-lbl { fill:rgba(255,255,255,0.16); font-family:'Cinzel',serif; font-size:7px; text-anchor:middle; dominant-baseline:middle; }
@@ -402,7 +402,7 @@
   .gauge-note { font-size:0.62rem; color:var(--SUB); font-style:italic; margin-top:0.5rem; line-height:1.4; }
 
   .move-input { background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.12); color:var(--parchment); font-family:'Cinzel',serif; font-size:1.5rem; line-height:1; width:48px; text-align:center; padding:0; cursor:pointer; transition:border-color 0.15s; }
-  .move-input:focus { outline:none; border-bottom-color:rgba(184,146,42,0.6); }
+  .move-input:focus { outline:none; border-bottom-color:rgba(155,127,212,0.7); }
   .move-input::-webkit-outer-spin-button, .move-input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
   .move-input { -moz-appearance:textfield; }
   /* ══ MOUVEMENT : COURSE / CHARGE ══ */
@@ -470,10 +470,10 @@
 
 
   <!-- PROFIL : TOILE DES CARACTÉRISTIQUES -->
-  <div class="card acc full">
+  <div class="card vio full">
     <div class="prof-head" id="radar-head" onclick="profToggle('radar')">
       <span class="prof-arrow">&#9654;</span>
-      <div class="card-title acc">Profil du personnage</div>
+      <div class="card-title vio">Profil du personnage</div>
     </div>
     <div class="prof-body" id="radar-body">
       <div class="radar-wrap" id="radar-wrap"></div>
@@ -481,10 +481,10 @@
   </div>
 
   <!-- PROFIL : JAUGES -->
-  <div class="card acc full">
+  <div class="card vio full">
     <div class="prof-head" id="gauge-head" onclick="profToggle('gauge')">
       <span class="prof-arrow">&#9654;</span>
-      <div class="card-title acc">Jauges</div>
+      <div class="card-title vio">Jauges</div>
     </div>
     <div class="prof-body" id="gauge-body">
       <div id="gauge-list"></div>
