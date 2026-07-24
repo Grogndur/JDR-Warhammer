@@ -4529,6 +4529,9 @@ function crayon(quoi, ident){
 }
 
 function poserCrayons(){
+  /* filet : un crayon qui aurait ete enregistre par megarde est retire
+     avant d'en poser un neuf, pour eviter les doublons */
+  document.querySelectorAll(".scene-title > .crayon + .crayon, .section-title > .crayon + .crayon, .toc-part .crayon + .crayon, .toc-scene .crayon + .crayon").forEach(function(e){ e.remove(); });
   document.querySelectorAll(".scene-panel > .scene-title-bar > .scene-title").forEach(function(t){
     if (t.querySelector(":scope > .crayon")) return;
     var p = t.closest(".scene-panel");
