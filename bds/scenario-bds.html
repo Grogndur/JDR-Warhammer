@@ -273,6 +273,21 @@ body.editing [contenteditable="true"]:focus{outline:1px solid rgba(184,146,42,0.
 .bt-cible{outline:1px dashed rgba(184,146,42,0.55);outline-offset:3px;}
 .bt-doomed{outline:1px solid var(--blood-light)!important;outline-offset:3px;background:rgba(139,26,26,0.14)!important;}
 @media(max-width:640px){.bt button{padding:0.42rem 0.5rem;min-width:32px;font-size:0.75rem;}}
+
+/* ══════ FICHES PARTAGÉES (renvoi dépliable) ══════ */
+.fiche-ref{margin:0.5rem 0;}
+.fr-b{width:100%;text-align:left;background:rgba(169,113,59,0.10);border:1px solid rgba(169,113,59,0.38);border-left:3px solid var(--CUI);border-radius:2px;color:var(--parchment-dark);font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.04em;padding:0.45rem 0.7rem;cursor:pointer;display:flex;align-items:center;gap:0.5rem;}
+.fr-b:hover{background:rgba(169,113,59,0.2);color:var(--parchment);border-color:var(--CUI-light);}
+.fr-i{display:inline-block;transition:transform 0.18s;color:var(--CUI-light);font-size:0.6rem;}
+.fiche-ref.open .fr-i{transform:rotate(90deg);}
+.fr-n{flex:1;}
+.fr-k{font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(212,200,168,0.45);}
+.fr-b.absent{border-color:rgba(139,26,26,0.6);border-left-color:var(--blood);color:var(--blood-light);}
+.fr-slot{display:none;padding-left:0.4rem;border-left:1px dotted rgba(169,113,59,0.35);margin-top:0.35rem;}
+.fiche-ref.open .fr-slot{display:block;}
+.fr-slot .stat-card,.fr-slot .pnj-card{margin-top:0.3rem;}
+.fr-go{display:block;margin:0.3rem 0 0.1rem;background:none;border:none;color:rgba(212,200,168,0.5);font-family:'Cinzel',serif;font-size:0.56rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;padding:0.2rem 0;}
+.fr-go:hover{color:var(--CUI-light);text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -518,12 +533,12 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <ul class="scene-list"><li><strong>Ce qu'il pense au départ :</strong> Son émissaire envoyé vers Gromnil-Bak est compétent et tous apprécieront la réactivité diplomatique.</li></ul>
 <ul class="scene-list"><li><strong>Ce qu'il apprend à Hochsleben :</strong> Via pigeon de sa guilde vers la tour de vol de Hochsleben : le corps retrouvé, rasé, avec une lettre d'insulte signée Gromnil-Bak. Vorrn était le commanditaire de l'attaque et du vol de la missive, c'est terrible et signifie que l'extrémisme est devenu assez fort pour agir.</li></ul>
 <ul class="scene-list"><li><strong>Sa réaction :</strong> Deux coups durs simultanés : le corps du diplomate ET la reconnaissance du marteau de Vorrn. Des guerres ont éclaté pour moins que cela, mais il sait que le mot du Roi retiendra les pires emportements. Il doute fort que Gromnil-Bak soit responsable du sort du premier émissaire et de cette lettre. Les extrémistes... Autre chose ?</li></ul>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Karkiss Tonnerek</span><span class="stat-kind">Nain, maître diplomate · ne se bat pas, mais peut être attaqué</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Karkiss Tonnerek</td><td>3</td><td>35</td><td>25</td><td>35</td><td>45</td><td>30</td><td>25</td><td>40</td><td>55</td><td>60</td><td>60</td><td>14</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Une hache de cérémonie qu'il porte sans y penser · Courte · BF+4. Vêtements de qualité, aucune armure. Il n'a pas tenu une arme sérieusement depuis quarante ans.</p><span class="stat-line">Compétences</span><p>Marchandage 65, Charme 60, Intuition 55, Commandement 55, Langue (Khazalid, Reikspiel, Bretonnien) 60, Savoir (Nains, Généalogie, Héraldique) 60, Calme 60, Corps à corps (Base) 35.</p><span class="stat-line">Traits</span><p><span class="trait">Robustesse naine</span> <span class="trait">Vision nocturne</span> <span class="trait">Rancunier</span> <span class="trait">L'autorité du registre</span> Face à un nain, ses jets sociaux sont à <span class="mod mod-pos">(+20)</span> : il ne demande jamais rien, il rappelle ce qui est écrit.</p><span class="stat-line">S'il tombe</span><p>La campagne s'arrête. Pas au sens dramatique : au sens littéral. C'est lui le mandat, le jeton, la charnière et la moitié des échos. Il ne doit jamais se retrouver dans une situation où sa survie dépend d'un jet de dés. Le profil est là pour que tu saches ce qu'il vaut si quelqu'un le prend au collet, pas pour qu'il se batte.</p></div></div>
+<div class="stat-card" data-fiche="karkiss-tonnerek"><div class="stat-head"><span class="stat-name">Karkiss Tonnerek</span><span class="stat-kind">Nain, maître diplomate · ne se bat pas, mais peut être attaqué</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Karkiss Tonnerek</td><td>3</td><td>35</td><td>25</td><td>35</td><td>45</td><td>30</td><td>25</td><td>40</td><td>55</td><td>60</td><td>60</td><td>14</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Une hache de cérémonie qu'il porte sans y penser · Courte · BF+4. Vêtements de qualité, aucune armure. Il n'a pas tenu une arme sérieusement depuis quarante ans.</p><span class="stat-line">Compétences</span><p>Marchandage 65, Charme 60, Intuition 55, Commandement 55, Langue (Khazalid, Reikspiel, Bretonnien) 60, Savoir (Nains, Généalogie, Héraldique) 60, Calme 60, Corps à corps (Base) 35.</p><span class="stat-line">Traits</span><p><span class="trait">Robustesse naine</span> <span class="trait">Vision nocturne</span> <span class="trait">Rancunier</span> <span class="trait">L'autorité du registre</span> Face à un nain, ses jets sociaux sont à <span class="mod mod-pos">(+20)</span> : il ne demande jamais rien, il rappelle ce qui est écrit.</p><span class="stat-line">S'il tombe</span><p>La campagne s'arrête. Pas au sens dramatique : au sens littéral. C'est lui le mandat, le jeton, la charnière et la moitié des échos. Il ne doit jamais se retrouver dans une situation où sa survie dépend d'un jet de dés. Le profil est là pour que tu saches ce qu'il vaut si quelqu'un le prend au collet, pas pour qu'il se batte.</p></div></div>
 </div>
 <div class="scene-panel" id="P3_sc2" style="display:none">
 <div class="scene-title-bar"><h2 class="scene-title">Darrik Nozg : Assistant Diplomate de Karkiss</h2><div class="scene-nav"></div></div>
 <p>Nain plus jeune, barbe châtain, chevelure courte bien entretenue, bonnes joues, air un peu endormi. Secrétaire et homme de confiance de Karkiss. Rédige les contrats, gère la logistique. Loyauté totale, une certaine expérience et beaucoup de capacité de tempérance (pour un nain). Il ne fait pas confiance à Rogen Zirl et ne s'en cache pas auprès de Karkiss, sans succès. Karkiss balaie ses réserves d'un revers de main.</p>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Darrik Nozg</span><span class="stat-kind">Nain, assistant diplomate · à protéger</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Darrik Nozg</td><td>3</td><td>35</td><td>30</td><td>40</td><td>45</td><td>30</td><td>25</td><td>40</td><td>45</td><td>50</td><td>40</td><td>13</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Une hache courte de voyage qu'il n'a sortie qu'une fois · Courte · BF+4. Vêtements épais, aucune armure. Un sac trop lourd de registres.</p><span class="stat-line">Compétences</span><p>Marchandage 50, Langue (Khazalid, Reikspiel) 55, Savoir (Nains, Généalogie) 50, Calme 45, Empathie 40, Perception 35, Corps à corps (Base) 35.</p><span class="stat-line">Traits</span><p><span class="trait">Robustesse naine</span> <span class="trait">Vision nocturne</span> <span class="trait">Rancunier</span> <span class="trait">Pas un combattant</span> Il ne prend jamais l'initiative d'un combat et se met à couvert dès qu'il y en a un. Le profil est là pour qu'il survive à une embuscade, pas pour qu'il en gagne une.</p><span class="stat-line">Où on le trouve</span><p>Partout, et c'est pour ça que son profil est ici et pas dans une scène. Dans la calèche en Acte I, sur la route du nord en charnière, et en navette entre les deux arcs ensuite. Voir <strong>La Route du Nord</strong> pour son rôle complet à partir de 2512.</p><span class="stat-line">S'il meurt</span><p>Vraie perte, et il faut que ça pèse. Le mandat survit (le pli est écrit), mais la navette vers le sud s'arrête net, et avec elle la moitié des échos croisés. Ne le tue pas pour montrer que le nord est dangereux. Tue-le, si tu dois, quand les PJ auront eu l'occasion de le protéger et l'auront ratée.</p></div></div>
+<div class="stat-card" data-fiche="darrik-nozg"><div class="stat-head"><span class="stat-name">Darrik Nozg</span><span class="stat-kind">Nain, assistant diplomate · à protéger</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Darrik Nozg</td><td>3</td><td>35</td><td>30</td><td>40</td><td>45</td><td>30</td><td>25</td><td>40</td><td>45</td><td>50</td><td>40</td><td>13</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Une hache courte de voyage qu'il n'a sortie qu'une fois · Courte · BF+4. Vêtements épais, aucune armure. Un sac trop lourd de registres.</p><span class="stat-line">Compétences</span><p>Marchandage 50, Langue (Khazalid, Reikspiel) 55, Savoir (Nains, Généalogie) 50, Calme 45, Empathie 40, Perception 35, Corps à corps (Base) 35.</p><span class="stat-line">Traits</span><p><span class="trait">Robustesse naine</span> <span class="trait">Vision nocturne</span> <span class="trait">Rancunier</span> <span class="trait">Pas un combattant</span> Il ne prend jamais l'initiative d'un combat et se met à couvert dès qu'il y en a un. Le profil est là pour qu'il survive à une embuscade, pas pour qu'il en gagne une.</p><span class="stat-line">Où on le trouve</span><p>Partout, et c'est pour ça que son profil est ici et pas dans une scène. Dans la calèche en Acte I, sur la route du nord en charnière, et en navette entre les deux arcs ensuite. Voir <strong>La Route du Nord</strong> pour son rôle complet à partir de 2512.</p><span class="stat-line">S'il meurt</span><p>Vraie perte, et il faut que ça pèse. Le mandat survit (le pli est écrit), mais la navette vers le sud s'arrête net, et avec elle la moitié des échos croisés. Ne le tue pas pour montrer que le nord est dangereux. Tue-le, si tu dois, quand les PJ auront eu l'occasion de le protéger et l'auront ratée.</p></div></div>
 </div>
 <div class="scene-panel" id="P3_sc3" style="display:none">
 <div class="scene-title-bar"><h2 class="scene-title">Rogen Zirl : L'Espion de Koppar-Dumm</h2><div class="scene-nav"></div></div>
@@ -531,14 +546,14 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <ul class="scene-list"><li><strong>Son rôle réel :</strong> Rogen Zirl a été grassement payé ou idéologiquement corrompu par un groupe séparatiste extrémiste en pleine montée en puissance à Koppar-Dumm. Ce groupe considère que la diplomatie avec Gromnil-Bak est une capitulation, et aspire à une émancipation violente du clan. Rogen Zirl ne partage pas forcément toutes leurs convictions ; mais il a accepté de recommander Dietr Vanz à Karkiss, sabotant ainsi de l'intérieur la mission diplomatique.</li></ul>
 <ul class="scene-list"><li><strong>Ce que Karkiss croit :</strong> Karkiss connaît Rogen Zirl depuis longtemps. Il voit dans sa réputation équivoque le simple revers d'un métier qui noircit forcément la perception que l'on a de lui. Il balaie les mises en garde de Darrik d'un revers de main ; avec bienveillance, mais fermement. Cette confiance aveugle est une faille : si les PJ découvrent le rôle de Rogen Zirl, elle sera douloureuse à accepter pour le diplomate.</li></ul>
 <ul class="scene-list"><li><strong>Pour l'Arc II :</strong> Rogen Zirl est un fil à tirer. Les PJ peuvent ignorer son existence durant tout l'Acte I. Mais s'ils enquêtent à Hochsleben ou à Koppar-Dumm, son nom peut surgir. Darrik sera un allié précieux pour faire ce lien ; lui a toujours senti quelque chose.</li></ul>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Rogen Zirl</span><span class="stat-kind">Nain, espion · dangereux surtout hors combat</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Rogen Zirl</td><td>3</td><td>35</td><td>35</td><td>35</td><td>40</td><td>45</td><td>40</td><td>45</td><td>50</td><td>50</td><td>50</td><td>13</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Deux dagues, dont une qu'on ne trouve pas à la fouille · Très courte · BF+3. Cuir souple sous des habits quelconques (torse) PA 1.</p><span class="stat-line">Compétences</span><p>Ragot 60, Intuition 55, Baratin 50, Discrétion (Urbain) 50, Escamotage 50, Filature 50, Perception 50, Marchandage 45, Corps à corps (Base) 35.</p><span class="stat-line">Traits</span><p><span class="trait">Robustesse naine</span> <span class="trait">Vision nocturne</span> <span class="trait">Rancunier</span> <span class="trait">Personne ne le regarde</span> <span class="mod mod-pos">(+20)</span> à toute Discrétion ou Filature en milieu urbain : c'est un vieux nain quelconque, et personne ne se méfie d'un vieux nain quelconque.</p><span class="stat-line">Conduite</span><p>Il ne se bat pas. Il n'est jamais là quand ça commence, et il est toujours là quand ça finit. Un PJ qui le prend en filature obtient un résultat, mais pas celui qu'il espère : Zirl le laisse le suivre jusqu'à un endroit choisi.</p></div></div>
+<div class="stat-card" data-fiche="rogen-zirl"><div class="stat-head"><span class="stat-name">Rogen Zirl</span><span class="stat-kind">Nain, espion · dangereux surtout hors combat</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Rogen Zirl</td><td>3</td><td>35</td><td>35</td><td>35</td><td>40</td><td>45</td><td>40</td><td>45</td><td>50</td><td>50</td><td>50</td><td>13</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Deux dagues, dont une qu'on ne trouve pas à la fouille · Très courte · BF+3. Cuir souple sous des habits quelconques (torse) PA 1.</p><span class="stat-line">Compétences</span><p>Ragot 60, Intuition 55, Baratin 50, Discrétion (Urbain) 50, Escamotage 50, Filature 50, Perception 50, Marchandage 45, Corps à corps (Base) 35.</p><span class="stat-line">Traits</span><p><span class="trait">Robustesse naine</span> <span class="trait">Vision nocturne</span> <span class="trait">Rancunier</span> <span class="trait">Personne ne le regarde</span> <span class="mod mod-pos">(+20)</span> à toute Discrétion ou Filature en milieu urbain : c'est un vieux nain quelconque, et personne ne se méfie d'un vieux nain quelconque.</p><span class="stat-line">Conduite</span><p>Il ne se bat pas. Il n'est jamais là quand ça commence, et il est toujours là quand ça finit. Un PJ qui le prend en filature obtient un résultat, mais pas celui qu'il espère : Zirl le laisse le suivre jusqu'à un endroit choisi.</p></div></div>
 </div>
 <div class="scene-panel" id="P3_sc4" style="display:none">
 <div class="scene-title-bar"><h2 class="scene-title">Guérand Laraud : L'Homme à la Cape</h2><div class="scene-nav"></div></div>
 <p>Bretonnien, taille moyenne, brun aux cheveux courts en brosse, yeux marrons, armure de cuir souple, cape sombre à capuche repliée. Parle calmement, voix basse, décontracté et presque chaleureux. Subtile scarification dans le sourcil gauche : ce n'est pas tout à fait une cicatrice ordinaire, comme un petit poinçonnage.</p>
 <p>Agent impérial indépendant, opérant sans rattachement formel à une organisation. Discret, bien introduit dans les milieux qui comptent. Sait se rendre joignable, sait disparaître.</p>
 <ul class="scene-list"><li><strong>Son agenda :</strong> Investiguer discrètement pour éviter un conflit majeur entre les clans Nains. Il surveillait le voyage de Karkiss à son insu, dans le cadre d'une mission impériale. Peut recruter les PJ avec leur consentement, mais ne dévoilera rien de ses commanditaires pour le moment.</li></ul>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Guérand Laraud</span><span class="stat-kind">Bretonnien, agent · compétent, et ce n'est pas rassurant</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Guérand Laraud</td><td>4</td><td>50</td><td>45</td><td>40</td><td>40</td><td>45</td><td>45</td><td>40</td><td>45</td><td>45</td><td>45</td><td>14</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Épée · Moyenne · BF+4 — Arbalète de poing · 20m · Dégâts +7 · Rechargement 1, dissimulable — Deux dagues · Très courte · BF+3 — Armure de cuir souple (torse et bras) PA 1, sous une cape sombre.</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 50, Projectiles (Arbalète) 45, Discrétion (Rural, Urbain) 50, Perception 50, Intuition 50, Baratin 45, Charme 45, Filature 45, Survie 40, Calme 45.</p><span class="stat-line">Traits</span><p><span class="trait">Professionnel</span> <span class="trait">Il se bat mieux qu'il ne le montre</span> En Acte I, il combat à hauteur du groupe et pas au-dessus. C'est un choix de sa part, pas une limite. <span class="trait">La scarification</span> Un PJ qui l'a vue sait qu'elle veut dire quelque chose. Personne ne dira jamais quoi. <span class="trait">Sens du danger</span> Il peut relancer gratuitement un test de Perception raté, comme en cas d'embuscade : qui a survécu dans ce métier a un instinct que la plupart des gens n'ont pas. <span class="trait">Réseau discret</span> Dans toute ville d'importance, un jet d'Intelligence lui dit s'il dispose d'un contact utilisable sur place. Succès : une information ou un service. Échec : rien, sans se griller. C'est l'infrastructure invisible derrière lui.</p><span class="stat-line">Ne le fais pas combattre les PJ</span><p>Ni maintenant, ni plus tard, si tu peux l'éviter. Sa valeur tient entièrement à ce qu'on ignore de lui, et un combat répond à toutes les questions d'un coup. Le profil existe pour le cas où tes joueurs forceraient la main, et pour que tu saches, toi, ce qu'il vaut.</p></div></div>
+<div class="stat-card" data-fiche="guerand-laraud"><div class="stat-head"><span class="stat-name">Guérand Laraud</span><span class="stat-kind">Bretonnien, agent · compétent, et ce n'est pas rassurant</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Guérand Laraud</td><td>4</td><td>50</td><td>45</td><td>40</td><td>40</td><td>45</td><td>45</td><td>40</td><td>45</td><td>45</td><td>45</td><td>14</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Épée · Moyenne · BF+4 — Arbalète de poing · 20m · Dégâts +7 · Rechargement 1, dissimulable — Deux dagues · Très courte · BF+3 — Armure de cuir souple (torse et bras) PA 1, sous une cape sombre.</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 50, Projectiles (Arbalète) 45, Discrétion (Rural, Urbain) 50, Perception 50, Intuition 50, Baratin 45, Charme 45, Filature 45, Survie 40, Calme 45.</p><span class="stat-line">Traits</span><p><span class="trait">Professionnel</span> <span class="trait">Il se bat mieux qu'il ne le montre</span> En Acte I, il combat à hauteur du groupe et pas au-dessus. C'est un choix de sa part, pas une limite. <span class="trait">La scarification</span> Un PJ qui l'a vue sait qu'elle veut dire quelque chose. Personne ne dira jamais quoi. <span class="trait">Sens du danger</span> Il peut relancer gratuitement un test de Perception raté, comme en cas d'embuscade : qui a survécu dans ce métier a un instinct que la plupart des gens n'ont pas. <span class="trait">Réseau discret</span> Dans toute ville d'importance, un jet d'Intelligence lui dit s'il dispose d'un contact utilisable sur place. Succès : une information ou un service. Échec : rien, sans se griller. C'est l'infrastructure invisible derrière lui.</p><span class="stat-line">Ne le fais pas combattre les PJ</span><p>Ni maintenant, ni plus tard, si tu peux l'éviter. Sa valeur tient entièrement à ce qu'on ignore de lui, et un combat répond à toutes les questions d'un coup. Le profil existe pour le cas où tes joueurs forceraient la main, et pour que tu saches, toi, ce qu'il vaut.</p></div></div>
 </div>
 <div class="scene-panel" id="P3_sc5" style="display:none">
 <div class="scene-title-bar"><h2 class="scene-title">Dietr Vanz : Le Garde Traître</h2><div class="scene-nav"></div></div>
@@ -547,6 +562,18 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <ul class="scene-list"><li><strong>Scène 3 :</strong> il fait mine de se battre pour bloquer les bandits, encaisse une blessure simulée ou réelle, puis profite du chaos pour glisser la missive sous son manteau et fuir avec les Dents Jaunes. Personne ne le voit partir. C'est le plan depuis le début.</li></ul>
 <ul class="scene-list"><li><strong>Scène 9 :</strong> présent dans la pièce principale aux côtés de Sébastian et des brigands. Il ne cherche pas le combat ; il préfère fuir si la situation tourne mal. Si les PJ l'interpellent, il peut tenter de bluffer une seconde avant que tout s'effondre. Son trait <strong>Double jeu</strong> lui donne un avantage initial face à des PJ déstabilisés par la surprise.</li></ul>
 <div class="mj-box"><span class="mj-label">Profil</span><span class="mj-text"><strong>Son profil de combat est dans la scène où on l'affronte</strong>, la <strong>Scène 9 : Le Repaire Souterrain</strong>, parce qu'il ne se bat que là et qu'on n'a pas envie de naviguer en plein combat.</span></div>
+
+<div class="stat-card" data-fiche="dietr-vanz"><div class="stat-head"><span class="stat-name">Dietr Vanz</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><thead><tr>
+<th>TYPE</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th>
+</tr></thead><tbody>
+<tr><td>Dietr Vanz</td><td>4</td><td>40</td><td>30</td><td>40</td><td>35</td><td>35</td><td>40</td><td>25</td><td>30</td><td>35</td><td>25</td><td>13</td></tr>
+</tbody></table></div>
+<p>I 41</p>
+<p>Cuir (Partout sauf tête) PA 1</p>
+<p>Arme simple (épée) · Moyenne · BF+4</p>
+<p>Dague · Très courte · BF+2</p>
+<span class="stat-line">Double jeu</span><p><em>Dietr bénéficie d'un bonus de +20 aux jets de Tromperie et Charme face aux PJ, qui l'ont vu se battre pour eux et ont du mal à intégrer la trahison. Un PJ qui tente de l'intimider ou de le déstabiliser doit réussir un jet d'Intuition au préalable pour briser cet avantage.</em></p>
+<span class="stat-line">Comp&eacute;tences</span><p>Corps à corps (Base) 42, Projectiles (Arbalète) 38, Esquive 35, Discrétion (Urbaine) 40, Subterfuge 45, Intuition 38, Calme 35.</p></div></div>
 </div>
 <div class="scene-panel" id="P3_sc6" style="display:none">
 <div class="scene-title-bar"><h2 class="scene-title">Vorrn l'Immense : Le Nain Renégat</h2><div class="scene-nav"></div></div>
@@ -556,6 +583,20 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <ul class="scene-list"><li><strong>Son projet :</strong> Vorrn veut plus que tout punir Gromnil-Bak et rendre gloire à Koppar-Dumm. Il charge les mercenaires des Dents Jaunes de voler la missive de Karkiss pour bloquer le rapprochement des deux clans. Il ignore totalement le lien avec les peaux-vertes, le meurtre du diplomate, la fausse lettre et les plans de Gariz visant en priorité Koppar-Dumm.</li></ul>
 <ul class="scene-list"><li><strong>Son arme :</strong> Marteau à deux mains de qualité remarquable : seule chose qu'il lui reste. Clé de son identification par Karkiss. Il fut forgé par le meilleur artisan de Koppar-Dumm.</li></ul>
 <div class="mj-box"><span class="mj-label">Profil</span><span class="mj-text"><strong>Son profil de combat est dans la scène où on l'affronte</strong>, la <strong>Scène 9 : Le Repaire Souterrain</strong>, sous ses deux cas de figure, parce qu'il ne se bat que là et qu'on n'a pas envie de naviguer en plein combat.</span></div>
+
+<div class="stat-card" data-fiche="vorrn-l-immense"><div class="stat-head"><span class="stat-name">Vorrn l'Immense</span><span class="stat-kind">Cas A</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><thead><tr>
+<th>TYPE</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th>
+</tr></thead><tbody>
+<tr><td>Vorrn l'Immense</td><td>3</td><td>50</td><td>25</td><td>45</td><td>50</td><td>25</td><td>20</td><td>30</td><td>30</td><td>45</td><td>20</td><td>18</td></tr>
+</tbody></table></div>
+<p>I 34</p>
+<p>Cuir (Partout sauf tête) PA 1</p>
+<p>Marteau de guerre · Moyenne · BF+6 · Assommante, Dévastatrice, Lente</p>
+<span class="stat-line">Inarrêtable</span><p><em>lorsqu'il descend à 0B, il se comporte comme s'il était encore à 1B pendant 1 round.</em></p>
+<span class="stat-line">Corps d'acier</span><p><em>subit -1 dégât, jusqu'à ce qu'il ait subi 3 blessures lors d'un combat.</em></p>
+<span class="stat-line">Coup de sang</span><p><em>2ème attaque possible à partir du 3ème round de combat, puis 1 round sur 2 désormais.</em></p>
+<span class="stat-line">Marteau de l'orphelin</span><p><em>+1 dégât en espace ouvert et si face à un seul adversaire engagé en mêlée. Actif ici (combat en plein air).</em></p>
+<span class="stat-line">Comp&eacute;tences</span><p>Corps à corps (Base) 58, Intimidation 60, Résistance 55, Calme 50, Commandement 45, Perception 40, Athétisme 45.</p></div></div>
 </div>
 <div class="scene-panel" id="P3_sc7" style="display:none">
 <div class="scene-title-bar"><h2 class="scene-title">Les Dents Jaunes</h2><div class="scene-nav"></div></div>
@@ -564,7 +605,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <p>Sébastian le sudiste, chef du clan, est l'homme de terrain. C'est lui qui a repéré, approché et corrompu Dietr Vanz depuis quelques mois déjà. Dietr est promis à entrer dans le groupe « meneur » du clan ; celui qui surveille, contrôle, et survit. Une carotte suffisamment belle pour convaincre un jeune homme ambitieux en quête d'ascension.</p>
 <p>C'est précisément pour cela que Gariz manigance, observe et manipule les Dents Jaunes.</p>
 <p>Il reste prêt à faire éliminer Karkiss, si la situation lui échappait. Au pire, les coupables désignés seraient tout trouvés : des nains extrémistes de Koppar-Dumm qui auraient mandaté ce clan de mercenaires pour faire leur sale boulot...</p>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Mercenaire des Dents Jaunes</span><span class="stat-kind">Troupe · ×4 à ×10</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Mercenaire des Dents Jaunes</td><td>4</td><td>40</td><td>35</td><td>40</td><td>40</td><td>35</td><td>35</td><td>30</td><td>30</td><td>35</td><td>30</td><td>13</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Arme simple · Moyenne · BF+4 — Arc ou arbalète légère · 20-60m · BF+2 à +7 — Cuir dépareillé (torse) PA 1.</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 40, Projectiles 35, Intimidation 40, Survie 35, Ragot 35.</p><span class="stat-line">Traits</span><p><span class="trait">Payés, pas fanatiques</span> Test de Moral à <span class="mod mod-neg">(-10)</span> quand un quart d'entre eux tombe. Ils négocient volontiers : c'est un métier, pas une cause.</p><span class="stat-line">Ce qui les rend spéciaux</span><p>Rien, et c'est le sujet. Ce sont des hommes ordinaires qui travaillent pour quelqu'un dont ils ne savent rien. Le second groupe, en revanche, élimine le premier quand une opération tourne mal (voir la fiche des <strong>Dents Jaunes</strong> ci-dessus).</p></div></div><div class="stat-card"><div class="stat-head"><span class="stat-name">Ogre des Dents Jaunes</span><span class="stat-kind">Troupe · ×1 à ×3 · Peur 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Ogre des Dents Jaunes</td><td>6</td><td>45</td><td>25</td><td>45</td><td>55</td><td>25</td><td>25</td><td>20</td><td>20</td><td>30</td><td>20</td><td>40</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Gourdin, ferraille clouée, ou ce qui traîne · Grande · BF+5 — Peaux et plaques mal fixées PA 1.</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 45, Intimidation 55, Athlétisme 45.</p><span class="stat-line">Traits</span><p><span class="trait">Énorme</span> <span class="trait">Peur 1</span> <span class="trait">Armure 1</span> <span class="trait">Coriace</span> <span class="trait">Frappe brutale</span> Une attaque réussie qui dépasse de 2 SL projette une cible de taille Moyenne : test d'Agilité ou condition <em>À terre</em>.</p><span class="stat-line">Usage</span><p>Un seul suffit à changer une scène. Trois transforment une escarmouche en désastre. Gariz leur a fait céder une dizaine de gobelins : les ogres n'ont pas posé de question, et c'est exactement ce qu'on attend d'eux.</p></div></div>
+<div class="stat-card" data-fiche="mercenaire-des-dents-jaunes"><div class="stat-head"><span class="stat-name">Mercenaire des Dents Jaunes</span><span class="stat-kind">Troupe · ×4 à ×10</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Mercenaire des Dents Jaunes</td><td>4</td><td>40</td><td>35</td><td>40</td><td>40</td><td>35</td><td>35</td><td>30</td><td>30</td><td>35</td><td>30</td><td>13</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Arme simple · Moyenne · BF+4 — Arc ou arbalète légère · 20-60m · BF+2 à +7 — Cuir dépareillé (torse) PA 1.</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 40, Projectiles 35, Intimidation 40, Survie 35, Ragot 35.</p><span class="stat-line">Traits</span><p><span class="trait">Payés, pas fanatiques</span> Test de Moral à <span class="mod mod-neg">(-10)</span> quand un quart d'entre eux tombe. Ils négocient volontiers : c'est un métier, pas une cause.</p><span class="stat-line">Ce qui les rend spéciaux</span><p>Rien, et c'est le sujet. Ce sont des hommes ordinaires qui travaillent pour quelqu'un dont ils ne savent rien. Le second groupe, en revanche, élimine le premier quand une opération tourne mal (voir la fiche des <strong>Dents Jaunes</strong> ci-dessus).</p></div></div><div class="stat-card" data-fiche="ogre-des-dents-jaunes"><div class="stat-head"><span class="stat-name">Ogre des Dents Jaunes</span><span class="stat-kind">Troupe · ×1 à ×3 · Peur 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Ogre des Dents Jaunes</td><td>6</td><td>45</td><td>25</td><td>45</td><td>55</td><td>25</td><td>25</td><td>20</td><td>20</td><td>30</td><td>20</td><td>40</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Gourdin, ferraille clouée, ou ce qui traîne · Grande · BF+5 — Peaux et plaques mal fixées PA 1.</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 45, Intimidation 55, Athlétisme 45.</p><span class="stat-line">Traits</span><p><span class="trait">Énorme</span> <span class="trait">Peur 1</span> <span class="trait">Armure 1</span> <span class="trait">Coriace</span> <span class="trait">Frappe brutale</span> Une attaque réussie qui dépasse de 2 SL projette une cible de taille Moyenne : test d'Agilité ou condition <em>À terre</em>.</p><span class="stat-line">Usage</span><p>Un seul suffit à changer une scène. Trois transforment une escarmouche en désastre. Gariz leur a fait céder une dizaine de gobelins : les ogres n'ont pas posé de question, et c'est exactement ce qu'on attend d'eux.</p></div></div>
 </div>
 <div class="scene-panel" id="P3_sc8" style="display:none">
 <div class="scene-title-bar"><h2 class="scene-title">Le nord — la milice</h2><div class="scene-nav"></div></div>
@@ -575,7 +616,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 
 <div class="mj-box"><span class="mj-label">Côté milice</span><span class="mj-text">Ceux qui tiennent le fouet au nom de la peur légitime. Leur force n'est pas au combat, elle est <em>après</em> : ils savent où vous dormez.</span></div>
 
-<div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Maître Vehlen</div><div class="pnj-role">Notable de Dorfmark, chef de la milice · visage du fil séparatiste</div></div><div class="pnj-body">
+<div class="pnj-card" data-fiche="maitre-vehlen"><div class="pnj-head"><div class="pnj-name">Maître Vehlen</div><div class="pnj-role">Notable de Dorfmark, chef de la milice · visage du fil séparatiste</div></div><div class="pnj-body">
 <span class="pnj-line">Ce qu'il est</span>
 <p>Sincèrement convaincu de protéger les siens, et c'est ce qui le rend dangereux. Il a commencé par traquer de vrais bandits et de vraies bêtes ; il finit par faire brûler des innocents sans voir la bascule. Pas un monstre : un homme que la peur a fait glisser, et qui ne peut plus reculer sans se renier. À manier comme un adversaire qu'on comprend, pas qu'on hait facilement.</p>
 <span class="pnj-line">Ce que les PJ voient</span>
@@ -584,7 +625,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <p>Il est courtois. Il s'excuse presque du spectacle. Il explique que le village a perdu trente-quatre âmes en un an et que les étrangers n'ont pas à juger. Et il a raison sur les trente-quatre âmes. C'est ce qui rend la scène insupportable.</p>
 </div></div>
 
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Maître Vehlen</span><span class="stat-kind">Unique · à ne pas résoudre au combat</span></div><div class="stat-body">
+<div class="stat-card" data-fiche="maitre-vehlen"><div class="stat-head"><span class="stat-name">Maître Vehlen</span><span class="stat-kind">Unique · à ne pas résoudre au combat</span></div><div class="stat-body">
 <div class="statblock-wrap"><table class="statblock">
 <tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr>
 <tr><td>Vehlen</td><td>4</td><td>30</td><td>30</td><td>30</td><td>35</td><td>35</td><td>30</td><td>35</td><td>45</td><td>50</td><td>55</td><td>12</td></tr>
@@ -599,7 +640,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <p>Facile, et c'est un piège. Il n'est pas la cause, il est le symptôme : la lisière n'attend qu'un martyr pour finir de basculer, et Salzenmund n'aura plus personne à qui parler. Si tes joueurs y vont quand même, laisse-les faire et joue les conséquences honnêtement. Elles sont énormes.</p>
 </div></div>
 
-<div class="pnj-card"><div class="pnj-head"><div class="pnj-name">L'arquebusier balafré</div><div class="pnj-role">La main dure de Vehlen · revient tout au long du prologue</div></div><div class="pnj-body">
+<div class="pnj-card" data-fiche="l-arquebusier-balafre"><div class="pnj-head"><div class="pnj-name">L'arquebusier balafré</div><div class="pnj-role">La main dure de Vehlen · revient tout au long du prologue</div></div><div class="pnj-body">
 <span class="pnj-line">Ce qu'il est</span>
 <p>Le zèle sans le doute. Exécute, poursuit, ne questionne jamais l'ordre. C'est lui qui abat l'homme à la marque, au Chapitre 1, sans attendre. Utile pour incarner la peur devenue violence, sans avoir à la commenter.</p>
 <span class="pnj-line">Ce qui se joue avec lui</span>
@@ -608,7 +649,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <p>Il n'en a pas encore. Laisse-le anonyme aussi longtemps que possible : une brute qui a un nom devient un personnage, et une brute qui n'en a pas reste la milice tout entière. Si les joueurs finissent par l'apprendre, que ce soit d'une bouche qui tremble.</p>
 </div></div>
 
-<div class="stat-card"><div class="stat-head"><span class="stat-name">L'arquebusier balafré</span><span class="stat-kind">Meneur de la traque · unique</span></div><div class="stat-body">
+<div class="stat-card" data-fiche="l-arquebusier-balafre"><div class="stat-head"><span class="stat-name">L'arquebusier balafré</span><span class="stat-kind">Meneur de la traque · unique</span></div><div class="stat-body">
 <div class="statblock-wrap"><table class="statblock">
 <tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr>
 <tr><td>Le balafré</td><td>4</td><td>45</td><td>50</td><td>40</td><td>40</td><td>35</td><td>35</td><td>30</td><td>30</td><td>45</td><td>30</td><td>14</td></tr>
@@ -634,15 +675,15 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <li><strong>Une liste</strong> · sans valeur marchande · onze noms d'une écriture qui n'est pas la sienne, dont quatre rayés. Aucun n'est celui d'un PJ. Pas encore.</li>
 </ul></span></div>
 
-<div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Le jeune milicien</div><div class="pnj-role">Graine d'allié · la seule main tendue du prologue</div></div><div class="pnj-body">
+<div class="pnj-card" data-fiche="le-jeune-milicien"><div class="pnj-head"><div class="pnj-name">Le jeune milicien</div><div class="pnj-role">Graine d'allié · la seule main tendue du prologue</div></div><div class="pnj-body">
 <span class="pnj-line">Ce qu'il est</span>
 <p>Un gamin en brassard, l'estomac visiblement retourné par ce qu'il vient de faire. S'il le peut sans risque, il détourne les yeux plutôt que de dénoncer. Profil de <strong>Milicien de lisière</strong> (voir le bestiaire), avec CC 25 et une envie de vomir.</p>
 <span class="pnj-line">Son usage</span>
 <p>Informateur, déserteur, ou remords vivant de la milice, selon ce que les PJ en font. C'est la seule main tendue du prologue, et elle est tendue par le mauvais camp. S'ils la saisissent, il devient la preuve que la milice est faite d'hommes. S'ils la refusent, il devient la preuve du contraire, et c'est de leur faute.</p>
 </div></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Le jeune milicien</span><span class="stat-kind">Humain, milicien de Dorfmark · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Le jeune milicien</td><td>4</td><td>30</td><td>25</td><td>30</td><td>30</td><td>30</td><td>35</td><td>30</td><td>30</td><td>30</td><td>30</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Lance de milice · Moyenne · BF+4. Casque de cuir bouilli (1 PA, tête).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 30, Esquive 35, Perception 30, Athétisme 35, Métier (Fermier) 40, Calme 25.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Coriace</span> <span class="trait">Sixième sens</span></p><span class="stat-line">En jeu</span><p>Il obéit de mauvaise grâce et cherche une raison de ne plus le faire. Si les PJ la lui donnent, il la prend.</p></div></div>
+<div class="stat-card" data-fiche="le-jeune-milicien"><div class="stat-head"><span class="stat-name">Le jeune milicien</span><span class="stat-kind">Humain, milicien de Dorfmark · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Le jeune milicien</td><td>4</td><td>30</td><td>25</td><td>30</td><td>30</td><td>30</td><td>35</td><td>30</td><td>30</td><td>30</td><td>30</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Lance de milice · Moyenne · BF+4. Casque de cuir bouilli (1 PA, tête).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 30, Esquive 35, Perception 30, Athétisme 35, Métier (Fermier) 40, Calme 25.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Coriace</span> <span class="trait">Sixième sens</span></p><span class="stat-line">En jeu</span><p>Il obéit de mauvaise grâce et cherche une raison de ne plus le faire. Si les PJ la lui donnent, il la prend.</p></div></div>
 
-<div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Le vieil homme au bonnet rouge</div><div class="pnj-role">La diversion du Chapitre 1 · ne jamais expliquer</div></div><div class="pnj-body">
+<div class="pnj-card" data-fiche="le-vieil-homme-au-bonnet-rouge"><div class="pnj-head"><div class="pnj-name">Le vieil homme au bonnet rouge</div><div class="pnj-role">La diversion du Chapitre 1 · ne jamais expliquer</div></div><div class="pnj-body">
 <span class="pnj-line">Ce qu'il fait</span>
 <p>Il achète aux PJ dix secondes, exactement dix, et il le fait exprès. Il n'y a pas de chèvre. S'ils s'en sortent, il aura disparu. S'ils le cherchent plus tard, personne à Dorfmark ne saura de qui ils parlent, ou tout le monde saura et personne ne dira.</p>
 <span class="pnj-line">Ce qu'il est</span>
@@ -650,14 +691,14 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <span class="pnj-line">Profil</span>
 <p>Aucun, délibérément. S'il devait se battre, il ne serait plus lui.</p>
 </div></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Le vieil homme au bonnet rouge</span><span class="stat-kind">Humain âgé · ne se bat pas</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Le vieil homme au bonnet rouge</td><td>3</td><td>25</td><td>20</td><td>25</td><td>30</td><td>30</td><td>25</td><td>30</td><td>35</td><td>45</td><td>35</td><td>10</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Un bâton de marche. Aucune armure.</p><span class="stat-line">Compétences</span><p>Perception 45, Intuition 45, Discrétion 35, Savoir (Contrée) 40, Charme 35, Calme 40.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Insaisissable</span></p><span class="stat-line">En jeu</span><p>Il détourne l'attention et disparaît. Ne jamais expliquer comment. S'il est retenu de force, il n'oppose rien : c'est ce qui dérange.</p></div></div>
+<div class="stat-card" data-fiche="le-vieil-homme-au-bonnet-rouge"><div class="stat-head"><span class="stat-name">Le vieil homme au bonnet rouge</span><span class="stat-kind">Humain âgé · ne se bat pas</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Le vieil homme au bonnet rouge</td><td>3</td><td>25</td><td>20</td><td>25</td><td>30</td><td>30</td><td>25</td><td>30</td><td>35</td><td>45</td><td>35</td><td>10</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Un bâton de marche. Aucune armure.</p><span class="stat-line">Compétences</span><p>Perception 45, Intuition 45, Discrétion 35, Savoir (Contrée) 40, Charme 35, Calme 40.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Insaisissable</span></p><span class="stat-line">En jeu</span><p>Il détourne l'attention et disparaît. Ne jamais expliquer comment. S'il est retenu de force, il n'oppose rien : c'est ce qui dérange.</p></div></div>
 </div>
 <div class="scene-panel" id="P3_sc9" style="display:none">
 <div class="scene-title-bar"><h2 class="scene-title">Le nord — les bandes</h2><div class="scene-nav"></div></div>
 
 <div class="mj-box"><span class="mj-label">Côté bande</span><span class="mj-text">La pourriture qui profite et alimente le soupçon. <strong>Deux souches distinctes, qui ne s'aiment pas :</strong> les opportunistes pillent pour le butin, les cultistes se cachent dans le banditisme pour semer la terreur. Cette rivalité est un levier : un opportuniste capturé jurera que « les horreurs, c'est pas nous », et il dira vrai.</span></div>
 
-<div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Ilse Groth, dite la Fossoyeuse</div><div class="pnj-role">Ancienne garde-chasse du comte · chef des pillards opportunistes</div></div><div class="pnj-body">
+<div class="pnj-card" data-fiche="ilse-groth-dite-la-fossoyeuse"><div class="pnj-head"><div class="pnj-name">Ilse Groth, dite la Fossoyeuse</div><div class="pnj-role">Ancienne garde-chasse du comte · chef des pillards opportunistes</div></div><div class="pnj-body">
 <span class="pnj-line">Ce qu'elle était</span>
 <p>Garde-chasse du comte sur ces terres, et bonne. Vingt ans à connaître chaque coulée, chaque sente, chaque famille de braconniers. Quand les incursions ont changé de nature, elle a demandé des hommes. Salzenmund a répondu par une lettre. Elle a redemandé. Son hameau a brûlé pendant qu'elle attendait la seconde réponse, et elle a compris qu'il n'y aurait jamais personne.</p>
 <span class="pnj-line">Ce qu'elle est</span>
@@ -670,7 +711,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <p>Elle n'a pas de loyauté à sa bande, elle a une dette envers eux. Ce qui la retourne n'est pas l'or ni la menace : c'est qu'on lui montre que la milice, elle, ne fait pas semblant. Elle a maquillé des pillages ; elle n'a jamais brûlé un nourrisson.</p>
 </div></div>
 
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Ilse Groth</span><span class="stat-kind">Unique · ancienne garde-chasse</span></div><div class="stat-body">
+<div class="stat-card" data-fiche="ilse-groth"><div class="stat-head"><span class="stat-name">Ilse Groth</span><span class="stat-kind">Unique · ancienne garde-chasse</span></div><div class="stat-body">
 <div class="statblock-wrap"><table class="statblock">
 <tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr>
 <tr><td>Ilse Groth</td><td>4</td><td>40</td><td>55</td><td>40</td><td>45</td><td>45</td><td>45</td><td>35</td><td>40</td><td>45</td><td>35</td><td>14</td></tr>
@@ -697,7 +738,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <li>Vivres, cordage, quatre chevaux corrects</li>
 </ul></span></div>
 
-<div class="pnj-card"><div class="pnj-head"><div class="pnj-name">La bande marquée</div><div class="pnj-role">Faux bandits, le bras armé du culte · information de meneur pure</div></div><div class="pnj-body">
+<div class="pnj-card" data-fiche="la-bande-marquee"><div class="pnj-head"><div class="pnj-name">La bande marquée</div><div class="pnj-role">Faux bandits, le bras armé du culte · information de meneur pure</div></div><div class="pnj-body">
 <span class="pnj-line">Ce qu'ils sont</span>
 <p>Ils ressemblent à des brigands et n'en sont pas. Leurs « raids » sont des massacres à peine déguisés : ils tuent avec un excès que ni le butin ni les bêtes n'expliquent, mutilent, répandent le sang comme une offrande, et emportent les têtes. Pas de finesse, pas de plan retors : de la fureur, encore et encore, parce que c'est ce que leur dieu réclame. Leur passage laisse des survivants « changés », gagnés par la même rage. C'est ainsi que le culte croît, sans jamais recruter personne.</p>
 <span class="pnj-line">Comment on les découvre</span>
@@ -705,9 +746,9 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <span class="pnj-line">Profil</span>
 <p>Voir <strong>Boucher marqué</strong> au bestiaire, avec la règle de <em>Contagion</em>. Une rencontre frontale avant le milieu de l'Arc II est une erreur : ils ne sont pas un défi calibré, ils sont une chose qu'on découvre d'abord par ce qu'elle laisse derrière elle.</p>
 </div></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">La bande marquée</span><span class="stat-kind">Humains, faux bandits · 4 à 6</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>La bande marquée</td><td>4</td><td>40</td><td>35</td><td>40</td><td>40</td><td>35</td><td>35</td><td>30</td><td>30</td><td>40</td><td>30</td><td>13</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Épée · Moyenne · BF+4. Arbalète légère · 50 m · BF+7, recharge 1. Cuir clouté (2 PA, corps et bras).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 40, Projectiles (Arbalète) 35, Discrétion (Rurale) 40, Perception 35, Esquive 35, Intimidation 35.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Combattant né</span> <span class="trait">Discipline</span></p><span class="stat-line">En jeu</span><p>Ils se battent trop bien pour des bandits et rompent trop proprement. C'est le seul indice qu'on leur laisse.</p></div></div>
+<div class="stat-card" data-fiche="la-bande-marquee"><div class="stat-head"><span class="stat-name">La bande marquée</span><span class="stat-kind">Humains, faux bandits · 4 à 6</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>La bande marquée</td><td>4</td><td>40</td><td>35</td><td>40</td><td>40</td><td>35</td><td>35</td><td>30</td><td>30</td><td>40</td><td>30</td><td>13</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Épée · Moyenne · BF+4. Arbalète légère · 50 m · BF+7, recharge 1. Cuir clouté (2 PA, corps et bras).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 40, Projectiles (Arbalète) 35, Discrétion (Rurale) 40, Perception 35, Esquive 35, Intimidation 35.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Combattant né</span> <span class="trait">Discipline</span></p><span class="stat-line">En jeu</span><p>Ils se battent trop bien pour des bandits et rompent trop proprement. C'est le seul indice qu'on leur laisse.</p></div></div>
 
-<div class="pnj-card"><div class="pnj-head"><div class="pnj-name">« Le Saigneur »</div><div class="pnj-role">Chef de la bande marquée · pas de profil, et c'est volontaire</div></div><div class="pnj-body">
+<div class="pnj-card" data-fiche="le-saigneur"><div class="pnj-head"><div class="pnj-name">« Le Saigneur »</div><div class="pnj-role">Chef de la bande marquée · pas de profil, et c'est volontaire</div></div><div class="pnj-body">
 <span class="pnj-line">Pourquoi pas de chiffres</span>
 <p>Parce que lui donner des chiffres, c'est décider qu'on peut le combattre, et ce n'est pas encore vrai. Pour l'instant il est un surnom murmuré, un jeu de mots que personne ne trouve drôle, et une hauteur de hache sur un linteau. Son identité réelle appartient à la couche 3, et tu la fixeras quand tu écriras la clôture de l'Arc.</p>
 <span class="pnj-line">Ce qu'on en voit</span>
@@ -715,7 +756,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <span class="pnj-line">Le tenir simple</span>
 <p>Pas de plan retors, pas de manipulation fine, pas de double jeu. De la fureur. La finesse de la campagne est ailleurs : elle est dans le fait que cette fureur brute suffit à faire brûler des innocents à cinq lieues de là, par des gens qui n'ont jamais entendu parler de lui. Lui est simple ; ce qui le tient ne l'est pas. Le Saigneur croit servir le sang, et il a tort : cette ironie est pour toi seul.</p>
 </div></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">« Le Saigneur »</span><span class="stat-kind">Humain, chef de la bande marquée · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>« Le Saigneur »</td><td>4</td><td>50</td><td>40</td><td>45</td><td>45</td><td>40</td><td>40</td><td>35</td><td>40</td><td>50</td><td>40</td><td>15</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Épée lourde · Moyenne · BF+5. Cotte de mailles sous le manteau (4 PA, corps).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 50, Esquive 40, Commandement 45, Intimidation 50, Discrétion 40, Perception 40.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Combattant né</span> <span class="trait">Frappe puissante</span> <span class="trait">Sang-froid</span></p><span class="stat-line">En jeu</span><p>Le document dit expressément qu'il n'a pas de profil, et c'est un choix. Celui-ci n'est là que si la table force la rencontre : à supprimer si tu tiens à l'intention d'origine.</p></div></div>
+<div class="stat-card" data-fiche="le-saigneur"><div class="stat-head"><span class="stat-name">« Le Saigneur »</span><span class="stat-kind">Humain, chef de la bande marquée · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>« Le Saigneur »</td><td>4</td><td>50</td><td>40</td><td>45</td><td>45</td><td>40</td><td>40</td><td>35</td><td>40</td><td>50</td><td>40</td><td>15</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Épée lourde · Moyenne · BF+5. Cotte de mailles sous le manteau (4 PA, corps).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 50, Esquive 40, Commandement 45, Intimidation 50, Discrétion 40, Perception 40.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Combattant né</span> <span class="trait">Frappe puissante</span> <span class="trait">Sang-froid</span></p><span class="stat-line">En jeu</span><p>Le document dit expressément qu'il n'a pas de profil, et c'est un choix. Celui-ci n'est là que si la table force la rencontre : à supprimer si tu tiens à l'intention d'origine.</p></div></div>
 
 <div class="mj-box"><span class="mj-label">Sous les deux</span><span class="mj-text"><strong>À ne pas jouer maintenant.</strong> Le culte lui-même reste hors-champ : on n'en voit encore que le bras déguisé en bandits. Simple graine. Le hameau brûlé du prologue peut être, au choix ou en mélange, un coup des opportunistes maquillé, une purge de milice, ou l'œuvre de la bande marquée, plus sauvage et démesurée. Garde l'ambiguïté : c'est elle qui, plus tard, fera basculer les PJ vers la couche 3.</span></div>
 </div>
@@ -724,7 +765,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 
 <div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Ceux qui ne sont d'aucun camp, ou qui prétendent ne l'être d'aucun. Ce sont eux qui donnent à l'Arc II ses portes de sortie.</span></div>
 
-<div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Berthold Kroll</div><div class="pnj-role">L'oreille au village · ne se bat pas, n'en a pas besoin</div></div><div class="pnj-body">
+<div class="pnj-card" data-fiche="berthold-kroll"><div class="pnj-head"><div class="pnj-name">Berthold Kroll</div><div class="pnj-role">L'oreille au village · ne se bat pas, n'en a pas besoin</div></div><div class="pnj-body">
 <span class="pnj-line">Ce qu'il est</span>
 <p>Respectable en surface, marchand ou aubergiste selon ton village. Vend des noms à la milice pour détourner les soupçons de ses propres trafics et régler de vieux comptes. La saloperie intérieure incarnée : celui qui transforme la peur en dénonciations, et par qui une accusation en entraîne dix. Le genre de PNJ qui accueille chaleureusement les PJ avant de les livrer.</p>
 <span class="pnj-line">Profil</span>
@@ -733,7 +774,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <p>Il est purement opportuniste et ignore sans doute qu'il fait le jeu du culte. C'est précisément ce qui le rend si utile à celui-ci. Ne le fais jamais devenir cultiste : il est bien plus effrayant en petit salaud ordinaire.</p>
 <div class="jet-roll"><span class="jet-label">Jet — Intuition</span><span class="jet-detail"><span class="mod mod-neg">(-20)</span> · Sentir que sa chaleur est un outil. Il est bon. Il fait ça depuis des années et il y croit lui-même à moitié.</span></div>
 </div></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Berthold Kroll</span><span class="stat-kind">Humain, informateur · ne se bat pas</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Berthold Kroll</td><td>4</td><td>25</td><td>25</td><td>30</td><td>30</td><td>30</td><td>30</td><td>35</td><td>45</td><td>35</td><td>55</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Un couteau qu'il n'a jamais sorti. Aucune armure.</p><span class="stat-line">Compétences</span><p>Charme 55, Intuition 55, Marchandage 50, Ragot 60, Perception 40, Subterfuge 45, Savoir (Contrée) 45.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Beau parleur</span> <span class="trait">Sixième sens</span></p><span class="stat-line">En jeu</span><p>Il vend ce qu'il sait et sait ce qu'il vend. Menacé, il cède vite et fait payer plus tard, par un tiers.</p></div></div>
+<div class="stat-card" data-fiche="berthold-kroll"><div class="stat-head"><span class="stat-name">Berthold Kroll</span><span class="stat-kind">Humain, informateur · ne se bat pas</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Berthold Kroll</td><td>4</td><td>25</td><td>25</td><td>30</td><td>30</td><td>30</td><td>30</td><td>35</td><td>45</td><td>35</td><td>55</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Un couteau qu'il n'a jamais sorti. Aucune armure.</p><span class="stat-line">Compétences</span><p>Charme 55, Intuition 55, Marchandage 50, Ragot 60, Perception 40, Subterfuge 45, Savoir (Contrée) 45.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Beau parleur</span> <span class="trait">Sixième sens</span></p><span class="stat-line">En jeu</span><p>Il vend ce qu'il sait et sait ce qu'il vend. Menacé, il cède vite et fait payer plus tard, par un tiers.</p></div></div>
 
 <div class="butin-box"><span class="butin-label">Butin</span><span class="butin-text"><strong>Chez Kroll, si les PJ vont jusque-là.</strong>
 <ul class="butin-list">
@@ -742,14 +783,14 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <li><strong>Ce qui le pend</strong> · un paquet de billets de dénonciation en brouillon, de sa main, dont trois concernent des gens déjà morts. Entre de bonnes mains, ça brise la milice. Entre les mauvaises, ça brise les PJ.</li>
 </ul></span></div>
 
-<div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Konrad Ostwald</div><div class="pnj-role">Répurgateur en chasse · ni allié ni ennemi, par conception</div></div><div class="pnj-body">
+<div class="pnj-card" data-fiche="konrad-ostwald"><div class="pnj-head"><div class="pnj-name">Konrad Ostwald</div><div class="pnj-role">Répurgateur en chasse · ni allié ni ennemi, par conception</div></div><div class="pnj-body">
 <span class="pnj-line">Ce qu'il est</span>
 <p>Froid, courtois, effrayant de calme. Il ne hurle pas au bûcher : il observe, recoupe, et ne frappe que sûr de son fait. Il croit les PJ sans naïveté, parce que leur récit recoupe ce qu'il traque déjà : sous la chasse aux marqués, il soupçonne un drame chaotique en lame de fond, une corruption qui se sert de la peur des gens. Il ne les rassure pas. Il les arme de méfiance.</p>
 <span class="pnj-line">Sa fonction</span>
 <p>C'est lui qui transforme un groupe de fuyards en enquêteurs de l'Arc II. Sa méfiance est lucide et contagieuse, mais rien ne garantit que ses méthodes soient tendres. Il voit dans les PJ des témoins commodes et des instruments potentiels.</p>
 </div></div>
 
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Konrad Ostwald</span><span class="stat-kind">Unique · Peur 1 quand il le veut</span></div><div class="stat-body">
+<div class="stat-card" data-fiche="konrad-ostwald"><div class="stat-head"><span class="stat-name">Konrad Ostwald</span><span class="stat-kind">Unique · Peur 1 quand il le veut</span></div><div class="stat-body">
 <div class="statblock-wrap"><table class="statblock">
 <tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr>
 <tr><td>Ostwald</td><td>4</td><td>50</td><td>45</td><td>40</td><td>45</td><td>45</td><td>40</td><td>35</td><td>50</td><td>60</td><td>45</td><td>15</td></tr>
@@ -772,7 +813,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <li><strong>Son sceau</strong> · sans prix et sans usage · s'en servir est un crime capital, le porter sur soi l'est presque autant, et le jeter est encore le plus intelligent</li>
 </ul></span></div>
 
-<div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Sœur Mathilde Loniale</div><div class="pnj-role">Prêtresse de Shallya, rescapée du hameau · ne se bat sous aucun prétexte</div></div><div class="pnj-body">
+<div class="pnj-card" data-fiche="s-ur-mathilde-loniale"><div class="pnj-head"><div class="pnj-name">Sœur Mathilde Loniale</div><div class="pnj-role">Prêtresse de Shallya, rescapée du hameau · ne se bat sous aucun prétexte</div></div><div class="pnj-body">
 <span class="pnj-line">Ce qu'elle est</span>
 <p>Douce, brisée, mais tenace dans sa foi en la justice. Ne veut pas de vengeance, veut un témoignage entendu. Soigne gratis, ce qui installe Shallya et la compassion dans un monde qui en manque. Détient des noms et des faits précis sur le massacre, à distiller.</p>
 <span class="pnj-line">Profil</span>
@@ -782,9 +823,9 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <span class="pnj-line">Ce qu'elle apporte</span>
 <p>Des Soins gratuits, et une lettre scellée de témoignage pour une autorité de l'ouest : c'est le seul objectif clair et propre du prologue. Porter la vérité quelque part. Le fait que ce soit un objectif <em>naïf</em> ne se révélera que plus tard.</p>
 </div></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Sœur Mathilde Loniale</span><span class="stat-kind">Humaine, prêtresse de Shallya · ne se bat sous aucun prétexte</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Sœur Mathilde Loniale</td><td>4</td><td>20</td><td>20</td><td>30</td><td>35</td><td>35</td><td>30</td><td>40</td><td>45</td><td>55</td><td>50</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Rien. Elle refuse de porter une arme, même pour la donner à quelqu'un d'autre.</p><span class="stat-line">Compétences</span><p>Guérison 55, Charme 50, Empathie 55, Calme 55, Savoir (Théologie) 45, Langue (Classique) 40, Résistance 40.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Foi (Shallya)</span> <span class="trait">Bénedictions mineures</span> <span class="trait">Sang-froid</span></p><span class="stat-line">En jeu</span><p>Elle se met entre les coups et les blessés. Elle ne fuit pas. Si un PJ la met en danger pour avancer, elle s'en souviendra sans jamais le lui reprocher, ce qui est pire.</p></div></div>
+<div class="stat-card" data-fiche="s-ur-mathilde-loniale"><div class="stat-head"><span class="stat-name">Sœur Mathilde Loniale</span><span class="stat-kind">Humaine, prêtresse de Shallya · ne se bat sous aucun prétexte</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Sœur Mathilde Loniale</td><td>4</td><td>20</td><td>20</td><td>30</td><td>35</td><td>35</td><td>30</td><td>40</td><td>45</td><td>55</td><td>50</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Rien. Elle refuse de porter une arme, même pour la donner à quelqu'un d'autre.</p><span class="stat-line">Compétences</span><p>Guérison 55, Charme 50, Empathie 55, Calme 55, Savoir (Théologie) 45, Langue (Classique) 40, Résistance 40.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Foi (Shallya)</span> <span class="trait">Bénedictions mineures</span> <span class="trait">Sang-froid</span></p><span class="stat-line">En jeu</span><p>Elle se met entre les coups et les blessés. Elle ne fuit pas. Si un PJ la met en danger pour avancer, elle s'en souviendra sans jamais le lui reprocher, ce qui est pire.</p></div></div>
 
-<div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Brokk</div><div class="pnj-role">Dernier de la lignée de Kazad Varr · l'auteur de la lettre · la charnière incarnée</div></div><div class="pnj-body">
+<div class="pnj-card" data-fiche="brokk"><div class="pnj-head"><div class="pnj-name">Brokk</div><div class="pnj-role">Dernier de la lignée de Kazad Varr · l'auteur de la lettre · la charnière incarnée</div></div><div class="pnj-body">
 <span class="pnj-line">Ce qu'il est</span>
 <p>Vieux prospecteur nain, campé à l'écart du village qui borde la montagne, mal vu des hommes du cru, plus mal vu encore de la Korp qu'il tente de dissuader depuis son arrivée. Il connaît le vrai nom de la colonie. Il sait qu'au plus profond, les siens ont muré quelque chose <strong>par l'intérieur</strong> avant de l'abandonner. Il refuse de dire quoi : soit parce qu'il l'ignore, soit parce que c'est une honte qu'on ne dit pas à des hommes.</p>
 <span class="pnj-line">Sa fonction</span>
@@ -794,9 +835,9 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <span class="pnj-line">Profil</span>
 <p>Vieux nain solide : M 3, CC 40, F 45, E 50, FM 55, B 14, PA 1 (cuir de travail), pic de mineur · Moyenne · BF+4. Savoir (Nains, Géologie, Métallurgie) 60, Survie 50, Perception 45, Rancunier, Vision nocturne. Il ne se battra pas aux côtés des PJ, mais il ne fuira pas non plus : c'est sa montagne.</p>
 </div></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Brokk</span><span class="stat-kind">Nain, dernier de la lignée de Kazad Varr · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Brokk</td><td>3</td><td>45</td><td>30</td><td>40</td><td>50</td><td>30</td><td>25</td><td>40</td><td>40</td><td>50</td><td>35</td><td>15</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Hache naine · Moyenne · BF+4. Maille naine usée (4 PA, corps).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 45, Résistance 50, Calme 50, Savoir (Généalogie, Nains) 50, Métier (Mineur) 45, Perception 40, Langue (Khazalid) 60.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Robustesse naine</span> <span class="trait">Vision nocturne</span> <span class="trait">Rancunier</span> <span class="trait">Sang-froid</span></p><span class="stat-line">En jeu</span><p>C'est la charnière de l'arc : il ne doit pas tomber sur un jet de dés. Le profil dit ce qu'il vaut si on le prend au collet, pas ce qu'il fait à l'initiative.</p></div></div>
+<div class="stat-card" data-fiche="brokk"><div class="stat-head"><span class="stat-name">Brokk</span><span class="stat-kind">Nain, dernier de la lignée de Kazad Varr · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Brokk</td><td>3</td><td>45</td><td>30</td><td>40</td><td>50</td><td>30</td><td>25</td><td>40</td><td>40</td><td>50</td><td>35</td><td>15</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Hache naine · Moyenne · BF+4. Maille naine usée (4 PA, corps).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 45, Résistance 50, Calme 50, Savoir (Généalogie, Nains) 50, Métier (Mineur) 45, Perception 40, Langue (Khazalid) 60.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Robustesse naine</span> <span class="trait">Vision nocturne</span> <span class="trait">Rancunier</span> <span class="trait">Sang-froid</span></p><span class="stat-line">En jeu</span><p>C'est la charnière de l'arc : il ne doit pas tomber sur un jet de dés. Le profil dit ce qu'il vaut si on le prend au collet, pas ce qu'il fait à l'initiative.</p></div></div>
 
-<div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Albrecht Trenler</div><div class="pnj-role">Facteur du Konsortium Korbach · l'employeur</div></div><div class="pnj-body">
+<div class="pnj-card" data-fiche="albrecht-trenler"><div class="pnj-head"><div class="pnj-name">Albrecht Trenler</div><div class="pnj-role">Facteur du Konsortium Korbach · l'employeur</div></div><div class="pnj-body">
 <span class="pnj-line">Ce qu'il est</span>
 <p>L'homme de la Korp sur place. Il a une charte, un budget, un calendrier, et une première équipe de relevé qui n'est pas remontée. Il embauche des étrangers parce que personne du cru ne veut descendre. Ce n'est pas un méchant : c'est un employé qui a des comptes à rendre à Altdorf, et c'est bien pire.</p>
 <span class="pnj-line">Profil</span>
@@ -804,7 +845,78 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <span class="pnj-line">Détail qui change tout</span>
 <p>Si les PJ ont posé des questions au comptoir de la Korp à Altdorf pendant la charnière, <strong>il est prévenu</strong> et il sait leurs noms avant de les voir. L'embauche prend alors un tout autre ton. Voir <strong>Kazad Varr</strong>, scène de l'embauche.</p>
 </div></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Albrecht Trenler</span><span class="stat-kind">Humain, facteur du Konsortium Korbach · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Albrecht Trenler</td><td>4</td><td>30</td><td>25</td><td>30</td><td>35</td><td>35</td><td>30</td><td>40</td><td>50</td><td>40</td><td>55</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Rapière de ville · Moyenne · BF+4, portée sans conviction. Aucune armure.</p><span class="stat-line">Compétences</span><p>Marchandage 60, Charme 55, Intuition 45, Évaluation 55, Lecture/Écriture 50, Langue (Reikspiel, Bretonnien) 50, Commandement 40.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Beau parleur</span> <span class="trait">Négociateur</span> <span class="trait">Lire et écrire</span></p><span class="stat-line">En jeu</span><p>L'employeur. Il paie ce qui est convenu, jamais plus, et note tout. Trahir le contrat coûte plus cher que le rompre proprement.</p></div></div>
+<div class="stat-card" data-fiche="albrecht-trenler"><div class="stat-head"><span class="stat-name">Albrecht Trenler</span><span class="stat-kind">Humain, facteur du Konsortium Korbach · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Albrecht Trenler</td><td>4</td><td>30</td><td>25</td><td>30</td><td>35</td><td>35</td><td>30</td><td>40</td><td>50</td><td>40</td><td>55</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Rapière de ville · Moyenne · BF+4, portée sans conviction. Aucune armure.</p><span class="stat-line">Compétences</span><p>Marchandage 60, Charme 55, Intuition 45, Évaluation 55, Lecture/Écriture 50, Langue (Reikspiel, Bretonnien) 50, Commandement 40.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Beau parleur</span> <span class="trait">Négociateur</span> <span class="trait">Lire et écrire</span></p><span class="stat-line">En jeu</span><p>L'employeur. Il paie ce qui est convenu, jamais plus, et note tout. Trahir le contrat coûte plus cher que le rompre proprement.</p></div></div>
+</div>
+
+<div class="scene-panel" id="P3_sc11" style="display:none"><div class="scene-title-bar"><div class="scene-title">Greta Holfmann : L’Aubergiste du Sanglier Gris</div><div class="scene-nav"></div></div>
+<div class="stat-card" data-fiche="greta-holfmann"><div class="stat-head"><span class="stat-name">Greta Holfmann</span><span class="stat-kind">Humaine, aubergiste du Sanglier Gris · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Greta Holfmann</td><td>4</td><td>25</td><td>20</td><td>35</td><td>35</td><td>30</td><td>30</td><td>40</td><td>35</td><td>35</td><td>50</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Un gourdin sous le comptoir · Moyenne · BF+3. Aucune armure.</p><span class="stat-line">Compétences</span><p>Charme 50, Ragot 55, Marchandage 45, Métier (Cuisinier) 50, Intuition 45, Perception 40, Intimidation 35.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Ragot</span> <span class="trait">Sixième sens</span></p><span class="stat-line">En jeu</span><p>Elle sait qui dort chez elle et qui est reparti avant l'aube. Elle le dit à qui paie sa tournée, pas à qui hausse le ton.</p></div></div>
+</div>
+
+<div class="scene-panel" id="P3_sc12" style="display:none"><div class="scene-title-bar"><div class="scene-title">Aldun Hesselmann : La Garde Municipale</div><div class="scene-nav"></div></div>
+<div class="stat-card" data-fiche="capitaine-aldun-hesselmann"><div class="stat-head"><span class="stat-name">Capitaine Aldun Hesselmann</span><span class="stat-kind">Humain, garde municipale · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Capitaine Aldun Hesselmann</td><td>4</td><td>45</td><td>35</td><td>40</td><td>40</td><td>35</td><td>35</td><td>30</td><td>30</td><td>40</td><td>40</td><td>14</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Épée · Moyenne · BF+4. Brigandine et casque (3 PA, corps ; 2 PA, tête).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 45, Esquive 35, Commandement 45, Intimidation 45, Perception 40, Intuition 40, Savoir (Loi) 35.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Combattant né</span> <span class="trait">Discipline</span> <span class="trait">Autorité</span></p><span class="stat-line">En jeu</span><p>Il applique le règlement tant qu'on le respecte, et l'oublie intégralement si on l'humilie devant ses hommes.</p></div></div>
+</div>
+
+<div class="scene-panel" id="P3_sc13" style="display:none"><div class="scene-title-bar"><div class="scene-title">Frère Otmar : Le Prêtre de Sigmar</div><div class="scene-nav"></div></div>
+<div class="stat-card" data-fiche="frere-otmar"><div class="stat-head"><span class="stat-name">Frère Otmar</span><span class="stat-kind">Humain, prêtre de Sigmar · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Frère Otmar</td><td>4</td><td>35</td><td>25</td><td>35</td><td>40</td><td>30</td><td>30</td><td>30</td><td>45</td><td>50</td><td>45</td><td>13</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Marteau de guerre · Moyenne · BF+5. Robe et plastron simple (2 PA, corps).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 35, Savoir (Théologie) 50, Charme 45, Commandement 40, Calme 50, Intuition 45, Lecture/Écriture 45.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Foi (Sigmar)</span> <span class="trait">Bénedictions mineures</span> <span class="trait">Sang-froid</span></p><span class="stat-line">En jeu</span><p>Il aide sincèrement et rapporte tout aussi sincèrement. Les deux, dans cet ordre.</p></div></div>
+</div>
+
+<div class="scene-panel" id="P3_sc14" style="display:none"><div class="scene-title-bar"><div class="scene-title">Lothar Reinhardt : Le Marchand</div><div class="scene-nav"></div></div>
+<div class="stat-card" data-fiche="lothar-reinhardt"><div class="stat-head"><span class="stat-name">Lothar Reinhardt</span><span class="stat-kind">Humain, marchand de tissus et de fournitures · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Lothar Reinhardt</td><td>4</td><td>25</td><td>20</td><td>30</td><td>30</td><td>30</td><td>30</td><td>40</td><td>40</td><td>35</td><td>50</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Un coutelas de commerce. Aucune armure.</p><span class="stat-line">Compétences</span><p>Marchandage 55, Évaluation 50, Charme 45, Ragot 45, Intuition 40, Lecture/Écriture 40, Métier (Marchand) 50.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Beau parleur</span> <span class="trait">Évaluation</span></p><span class="stat-line">En jeu</span><p>Il fournit tout ce qui n'est pas une arme, et connaît celui qui fournit le reste.</p></div></div>
+</div>
+
+<div class="scene-panel" id="P3_sc15" style="display:none"><div class="scene-title-bar"><div class="scene-title">« Le Vieux Hans » : Le Voisin de Palier</div><div class="scene-nav"></div></div>
+<div class="stat-card" data-fiche="le-vieux-hans"><div class="stat-head"><span class="stat-name">« Le Vieux Hans »</span><span class="stat-kind">Humain, voisin de palier au Sanglier Gris · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>« Le Vieux Hans »</td><td>4</td><td>20</td><td>20</td><td>25</td><td>30</td><td>25</td><td>25</td><td>30</td><td>30</td><td>30</td><td>35</td><td>10</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Rien. Aucune armure.</p><span class="stat-line">Compétences</span><p>Ragot 50, Perception 40, Intuition 35, Métier (Journalier) 35, Résistance 35.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Ragot</span></p><span class="stat-line">En jeu</span><p>Il parle beaucoup, se trompe souvent et tombe juste une fois. Le problème du groupe est de savoir laquelle.</p></div></div>
+</div>
+
+<div class="scene-panel" id="P3_sc16" style="display:none"><div class="scene-title-bar"><div class="scene-title">Aldric Voss : Le Chef de Bande</div><div class="scene-nav"></div></div>
+<div class="stat-card" data-fiche="aldric-voss"><div class="stat-head"><span class="stat-name">Aldric Voss</span><span class="stat-kind">chef de bande, ancien sergent</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Aldric Voss</td><td>4</td><td>50</td><td>45</td><td>40</td><td>40</td><td>40</td><td>40</td><td>30</td><td>40</td><td>45</td><td>40</td><td>16</td></tr></table></div><span class="stat-line">Armure</span><p>cuir clout&eacute; (corps et bras, PA 1)</p><p><span class="stat-line">Comp&eacute;tences</span>Athl&eacute;tisme 50, Combat de m&ecirc;l&eacute;e (escrime) 60, Combat &agrave; distance (arc) 65, Esquive 50, Furtivit&eacute; (rural) 55, Intuition 50, Perception 50, Survie 55, Commandement 50, Intimidation 50.<br>
+<span class="stat-line">Talents</span>Coup &eacute;tourdissant, Tireur d&#x2019;&eacute;lite, Voir la fuite, Chef-n&eacute;, Pr&eacute;sence d&#x2019;esprit, Frappe pr&eacute;cise.<br>
+<span class="stat-line">Armes</span>&eacute;p&eacute;e militaire (Moyenne, BF+4, D&eacute;fensive) &middot; arbal&egrave;te l&eacute;g&egrave;re (60m, BF+3, Recharge 1) &middot; dague (Tr&egrave;s courte, BF+2).<br>
+<span class="stat-line">Discipline militaire</span>+10 &agrave; tous les tests de Moral et de Sang-Froid. Tant qu&#x2019;il est debout, ses hommes ne testent pas le Moral.<br>
+<span class="stat-line">Commandement</span>une fois par combat, donne un bonus de +10 &agrave; un de ses hommes pour un test crucial.<br>
+<span class="stat-line">Calcul froid</span>s&#x2019;il descend sous 5 Blessures et voit le combat perdu, il tente de se rendre ou de fuir plut&ocirc;t que mourir b&ecirc;tement. Bonne occasion pour le capturer vivant.<br>
+<span class="stat-line">Tactique</span>vise les jambes &agrave; l&#x2019;arc pour ralentir et permettre la fuite de ses hommes. Engage l&#x2019;&eacute;p&eacute;e seulement s&#x2019;il est accul&eacute; ou si la victoire est assur&eacute;e. Sait reconna&icirc;tre quand fuir : si 3 hommes tombent, il d&eacute;croche par le versant ouest escarp&eacute;, &agrave; l&#x2019;arri&egrave;re du camp, terrain qu&#x2019;il conna&icirc;t et que peu peuvent suivre vite.</p></div></div>
+</div>
+
+<div class="scene-panel" id="P3_sc17" style="display:none"><div class="scene-title-bar"><div class="scene-title">Marek le Reikslandais : Le Lieutenant de Voss</div><div class="scene-nav"></div></div>
+<div class="stat-card" data-fiche="marek-le-reikslandais"><div class="stat-head"><span class="stat-name">Marek le Reikslandais</span><span class="stat-kind">lieutenant de Voss</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Marek le Reikslandais</td><td>4</td><td>45</td><td>35</td><td>40</td><td>40</td><td>35</td><td>35</td><td>30</td><td>30</td><td>35</td><td>25</td><td>14</td></tr></table></div><span class="stat-line">Armure</span><p>cuir (torse et membres, PA 1)</p><p><span class="stat-line">Comp&eacute;tences</span>Athl&eacute;tisme 45, Combat de m&ecirc;l&eacute;e (escrime) 55, Intimidation 45, Intuition 40, Perception 40, R&eacute;sistance 45.<br>
+<span class="stat-line">Talents</span>Coup puissant, Combattant aguerri, Sang-froid.<br>
+<span class="stat-line">Armes</span>lame longue (Moyenne, BF+5, Dommageable) &middot; dague (Tr&egrave;s courte, BF+2).<br>
+<span class="stat-line">Garde du corps</span>quand Voss est attaqu&eacute; et que Marek lui est adjacent, il peut intercepter l&#x2019;attaque (test d&#x2019;Ag standard).<br>
+<span class="stat-line">Personnalit&eacute;</span>lieutenant fid&egrave;le, accent reikslandais marqu&eacute;, cheveux longs. Disciplin&eacute;, taciturne, frappe sans bravade. Capturable, mais parle peu m&ecirc;me sous pression.</p></div></div>
+</div>
+
+<div class="scene-panel" id="P3_sc18" style="display:none"><div class="scene-title-bar"><div class="scene-title">Wesley Fairbottom : Le Halfling de Voss</div><div class="scene-nav"></div></div>
+<div class="stat-card" data-fiche="wesley-fairbottom"><div class="stat-head"><span class="stat-name">Wesley Fairbottom</span><span class="stat-kind">&eacute;claireur halfling</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Wesley Fairbottom</td><td>4</td><td>30</td><td>50</td><td>25</td><td>30</td><td>45</td><td>50</td><td>40</td><td>30</td><td>35</td><td>40</td><td>10</td></tr></table></div><span class="stat-line">Armure</span><p>cuir l&eacute;ger (PA 1)</p><p><span class="stat-line">Comp&eacute;tences</span>Combat &agrave; distance (arc) 50, Discr&eacute;tion (rural) 55, Escalade 45, Perception 50, Survie 45.<br>
+<span class="stat-line">Talents</span>Tir rapide, Sixi&egrave;me sens, Tr&egrave;s dou&eacute; (Combat &agrave; distance).<br>
+<span class="stat-line">Armes</span>arc court (30m, BF+2, Tir Rapide) &middot; dague (Tr&egrave;s courte, BF+1).<br>
+<span class="stat-line">Tir pr&eacute;cis</span>tireur &eacute;m&eacute;rite. Vise les jambes pour ralentir, pas pour tuer.<br>
+<span class="stat-line">Petite cible</span>-10 pour le toucher en m&ecirc;l&eacute;e.<br>
+<span class="stat-line">Fuite instantan&eacute;e</span>tente de fuir d&egrave;s que le combat tourne mal. Si captur&eacute;, parle vite.</p></div></div>
+</div>
+
+<div class="scene-panel" id="P3_sc19" style="display:none"><div class="scene-title-bar"><div class="scene-title">Mère Holst : La Meneuse</div><div class="scene-nav"></div></div>
+<div class="stat-card" data-fiche="mere-holst"><div class="stat-head"><span class="stat-name">M&egrave;re Holst</span><span class="stat-kind">ravitailleuse, ferme isol&eacute;e</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>M&egrave;re Holst</td><td>4</td><td>25</td><td>20</td><td>30</td><td>35</td><td>25</td><td>25</td><td>35</td><td>35</td><td>40</td><td>40</td><td>11</td></tr></table></div><p><span class="stat-line">Comp&eacute;tences</span>Charme 50, Cuisine 50, &Eacute;valuation 45, Intuition 45, Perception 40.<br>
+<span class="stat-line">Personnalit&eacute;</span>vieille paysanne dure, veuve, ravitaille Voss en &eacute;change de protection (et d&#x2019;un peu d&#x2019;argent). Sa ferme isol&eacute;e est &agrave; ~2 km du camp. Si interrog&eacute;e et bris&eacute;e (Empathie ou Intimidation), elle l&acirc;che la localisation. <span class="stat-line">Ne la tuer qu&#x2019;en dernier recours</span>t&eacute;moin pr&eacute;cieux pour le proc&egrave;s si Voss est livr&eacute; vivant.</p></div></div>
+</div>
+
+<div class="scene-panel" id="P3_sc20" style="display:none"><div class="scene-title-bar"><div class="scene-title">Chef de griffe Skritt’tch</div><div class="scene-nav"></div></div>
+<div class="stat-card" data-fiche="chef-de-griffe-skritt-tch"><div class="stat-head"><span class="stat-name">Chef de griffe Skritt'tch</span><span class="stat-kind">x1, vague 2, en retrait</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><thead><tr>
+<th>TYPE</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th>
+</tr></thead><tbody>
+<tr><td>Esclave skaven</td><td>4</td><td>25</td><td>20</td><td>25</td><td>25</td><td>30</td><td>40</td><td>20</td><td>15</td><td>20</td><td>10</td><td>3</td></tr>
+<tr><td>Clanrat</td><td>5</td><td>35</td><td>30</td><td>30</td><td>30</td><td>35</td><td>40</td><td>30</td><td>25</td><td>30</td><td>20</td><td>9</td></tr>
+<tr><td>Stormvermin</td><td>5</td><td>45</td><td>35</td><td>40</td><td>40</td><td>40</td><td>40</td><td>30</td><td>30</td><td>40</td><td>25</td><td>14</td></tr>
+<tr><td>Chef Skritt'tch</td><td>5</td><td>55</td><td>40</td><td>45</td><td>45</td><td>45</td><td>50</td><td>40</td><td>40</td><td>45</td><td>35</td><td>18</td></tr>
+</tbody></table></div>
+<p>I 45 · Cuir noir renforcé + chaîne aux épaules PA 3 (torse), PA 2 (reste)</p>
+<p>Lame d'os courbe · Moyenne · BF+5 · Dommageable, Pénétrante</p>
+<p>Dague jetable · 8m · BF+3 · Inoffensive sur cuirasse</p>
+<span class="stat-line">Commande de meute</span><p><em>tant que le chef est debout, tous les skavens (clanrats et stormvermin) gagnent +10 en CC et +10 en Moral.</em></p>
+<span class="stat-line">Sang-froid de skaven</span><p><em>le chef ne fuit pas tant que la situation lui paraît gérable. Mais dès qu'il pense que le combat tourne mal (moins de 3 stormvermin debout), il <strong>fuit par l'escalier sud-est</strong> vers les souterrains. Il ne se bat pas inutilement.</em></p>
+<span class="stat-line">Frappe au visage</span><p><em>quand il touche en mêlée et dépasse de 3 SL, il vise le visage : test d'Ag pour le PJ ou -10 à toutes les actions impliquant la vue pendant 1d10 rounds (sang dans les yeux).</em></p>
+
+<span class="stat-line">Comp&eacute;tences</span><p>Corps à corps (Base) 45, Esquive 45, Discrétion (Souterraine) 55, Perception 45, Commandement 40, Escalade 45.</p></div></div>
 </div>
 </div>
 
@@ -893,18 +1005,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <ul class="scene-list"><li><strong>Test de Perception collectif :</strong> Reflet dans les buissons à ~30m, craquements de branches, pas de pénalité d'Initiative si réussie.</li></ul>
 <div class="lecture"><p>Le jeune homme mince pose la main sur son pommeau et durcit les traits. Au moins une vingtaine de silhouettes émergent et foncent sur la cohorte ! Cor d'alerte. Le cocher se fait abattre d'une flèche en pleine poitrine. Les quelques cavaliers sont mis à terre et frappés, les chevaux et les chiens s'agitent et hurlent, les gens courent vers l'arrière en hurlant, et six bandits se dirigent directement vers la calèche. Le premier commence à monter à bord, suivi de très près par les autres ! Dietr se lève d'un bond et fait obstruction, pousse pour que le passage soit impossible. Aucun assaillant ne parvient à monter. Mais dans le chaos qui suit, les cris, les chevaux, les gens qui fuient, Dietr disparaît. Quand la poussière retombe, il n'est plus là. Ni blessé au sol. Ni en vue. Plus là, simplement.</p></div>
 
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Brigands</span><span class="stat-kind">×6</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><thead><tr>
-<th>TYPE</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th>
-</tr></thead><tbody>
-<tr><td>Brigand</td><td>4</td><td>35</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>25</td><td>25</td><td>30</td><td>20</td><td>12</td></tr>
-</tbody></table></div>
-<p>I 37</p>
-<p>Cuir (torse uniquement) PA 1</p>
-<p>Arme simple (épée, hache, masse...) · Moyenne · BF+4</p>
-<p>Couteau · Très courte · BF+1 · Inoffensive</p>
-<p>Arc court · 20m · BF+2</p>
-<span class="stat-line">Moral fragile</span><p><em>un test de Moral à -20 dès que l'un d'eux tombe. Ils ne meurent pas pour une missive qu'ils ne comprennent pas.</em></p>
-</div></div>
+<div class="fiche-ref" data-ref="brigands" contenteditable="false"><button class="fr-b" type="button"><span class="fr-i">&#9656;</span><span class="fr-n">Brigands</span><span class="fr-k">profil complet</span></button><div class="fr-slot"></div></div>
 <p>Aucun ennemi ne parvient à s'en prendre aux nains, qui se réfugient au fond de la calèche. Les assaillants sont six dehors, au départ du moins, mais pas collés, ils se gêneraient eux-mêmes, ce qui permet aux PJ de descendre et d'intervenir en rangs tout de même serrés. Le MJ doit veiller à ce que les PJ ne restent pas en 1v2 ou plus, quitte à faire s'éloigner des ennemis, prétextant l'espace de combat ou une tentative d'escalade de la calèche par un côté etc.</p>
 <p>La contre-attaque des forces armées et des voyageurs compétents, pousse les bandits à battre en retraite rapidement et ils sonnent un cor au son strident et fébrile (lorsque la situation est clairement en faveur des PJ, ou qu'au contraire ils peinent trop, auquel cas, ils comprendront que l'objectif réel de l'attaque avait dû être rempli). Impossible d'en capturer : le MJ force leur mort si possible, ou des archers de leur propre camp les abat (ce qui montrerait aussi que l'objectif ne se résume probablement pas à une simple attaque...).</p>
 <p>Tous se ruent dans les bosquets dont ils sont sortis et semblent filer vers le sud ouest, en direction de Hochsleben.</p>
@@ -970,18 +1071,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <div class="jet-roll" style="border-color:rgba(184,146,42,0.3);background:rgba(184,146,42,0.05)"><span class="jet-label" style="color:var(--GLD)"><strong>Option B :</strong></span><span class="jet-detail">Le plus agile saute par la fenêtre : course-poursuite dans les ruelles.</span></div>
 <div class="jet-roll" style="border-color:rgba(184,146,42,0.3);background:rgba(184,146,42,0.05)"><span class="jet-label" style="color:var(--GLD)"><strong>Option C :</strong></span><span class="jet-detail">Attaquer / se défendre...</span></div>
 <div class="jet-roll" style="border-color:rgba(184,146,42,0.3);background:rgba(184,146,42,0.05)"><span class="jet-label" style="color:var(--GLD)"><strong>Option D :</strong></span><span class="jet-detail">Un combo de tout cela.</span></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Brigands</span><span class="stat-kind">×3</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><thead><tr>
-<th>TYPE</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th>
-</tr></thead><tbody>
-<tr><td>Brigand</td><td>4</td><td>35</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>25</td><td>25</td><td>30</td><td>20</td><td>12</td></tr>
-</tbody></table></div>
-<p>I 40</p>
-<p>Cuir (torse uniquement) PA 1</p>
-<p>Arme simple (épée, hache, masse...) · Moyenne · BF+4</p>
-<p>Couteau · Très courte · BF+1 · Inoffensive</p>
-<p>Arc court · 20m · BF+2</p>
-<span class="stat-line">Moral fragile</span><p><em>un test de Moral à -20 dès que l'un d'eux tombe. Ils ne meurent pas pour une missive qu'ils ne comprennent pas.</em></p>
-</div></div>
+<div class="fiche-ref" data-ref="brigands" contenteditable="false"><button class="fr-b" type="button"><span class="fr-i">&#9656;</span><span class="fr-n">Brigands</span><span class="fr-k">profil complet</span></button><div class="fr-slot"></div></div>
 <p><strong>Après le combat</strong></p>
 <p>Une fois les bandits neutralisés ou en fuite, la fouille est rapide et le constat tombe vite : pas de sacoche diplomatique, pas de missive. Juste des affaires de voyage, quelques pièces, une flasque. Le silence qui suit ce constat vaut mieux que n'importe quelle réplique. Laisser ce moment respirer.</p>
 <p>Le survivant ne parle pas spontanément. Il calcule très vite ses chances et comprend qu'il n'en a plus ; mais il a aussi peur de ce qu'il sait. Test d'Intimidation ou d'Empathie selon l'approche des PJ : succès = il parle directement ; échec = il faut insister, mais il finit par céder. Ce n'est pas de la résistance héroïque.</p>
@@ -1036,31 +1126,8 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <p>Couteau · Très courte · BF+1 · Inoffensive</p>
 <p>Arc court · 20m · BF+2</p>
 <div class="dialogue"><span class="dialogue-who">Moral fragile :</span><span class="dialogue-text"><em>un test de Moral à -20 dès que l'un d'eux tombe. Ils ne meurent pas pour une missive qu'ils ne comprennent pas.</em></span></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Chef de Brigands</span><span class="stat-kind">Sébastian le sudiste</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><thead><tr>
-<th>TYPE</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th>
-</tr></thead><tbody>
-<tr><td>Chef de Brigands</td><td>4</td><td>45</td><td>30</td><td>40</td><td>40</td><td>35</td><td>35</td><td>25</td><td>35</td><td>40</td><td>35</td><td>16</td></tr>
-<tr><td>Brigand</td><td>4</td><td>35</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>25</td><td>25</td><td>30</td><td>20</td><td>12</td></tr>
-</tbody></table></div>
-<p>I 43</p>
-<p>Cuir (Partout sauf tête) PA 1</p>
-<p>Plastron de cuir renforcé (torse) PA 2</p>
-<p>Arme simple (épée, hache, masse...) · Moyenne · BF+4</p>
-<p>Dague · Très courte · BF+2</p>
-<p>Arc · 50m · BF+3</p>
-<span class="stat-line">Meneur</span><p><em>Une fois par combat, offre un bonus de +20 en FM pour d'éventuels test de Moral et provoque un test de ralliement.</em></p>
-</div></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Dietr Vanz</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><thead><tr>
-<th>TYPE</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th>
-</tr></thead><tbody>
-<tr><td>Dietr Vanz</td><td>4</td><td>40</td><td>30</td><td>40</td><td>35</td><td>35</td><td>40</td><td>25</td><td>30</td><td>35</td><td>25</td><td>13</td></tr>
-</tbody></table></div>
-<p>I 41</p>
-<p>Cuir (Partout sauf tête) PA 1</p>
-<p>Arme simple (épée) · Moyenne · BF+4</p>
-<p>Dague · Très courte · BF+2</p>
-<span class="stat-line">Double jeu</span><p><em>Dietr bénéficie d'un bonus de +20 aux jets de Tromperie et Charme face aux PJ, qui l'ont vu se battre pour eux et ont du mal à intégrer la trahison. Un PJ qui tente de l'intimider ou de le déstabiliser doit réussir un jet d'Intuition au préalable pour briser cet avantage.</em></p>
-</div></div>
+<div class="fiche-ref" data-ref="chef-de-brigands" contenteditable="false"><button class="fr-b" type="button"><span class="fr-i">&#9656;</span><span class="fr-n">Chef de Brigands</span><span class="fr-k">profil complet</span></button><div class="fr-slot"></div></div>
+<div class="fiche-ref" data-ref="dietr-vanz" contenteditable="false"><button class="fr-b" type="button"><span class="fr-i">&#9656;</span><span class="fr-n">Dietr Vanz</span><span class="fr-k">profil complet</span></button><div class="fr-slot"></div></div>
 <p class="section-head">⚠ Deux cas de figure possibles</p>
 <div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text"><strong>Cas A, Les PJ arrivent pendant que Vorrn est présent.</strong> Confrontation directe dans la pièce principale : Sébastian, ses brigands, Dietr Vanz et Vorrn lui-même. Vorrn fuit par le boyau du fond et le combat se termine en plein air, sous la pluie. <strong>Pas de rangers nains dans ce cas.</strong> Vorrn est venu seul à la livraison, l'escorte séparatiste n'a pas eu le temps de se mettre en position, elle était encore en approche périphérique au moment où l'action s'est déclenchée. C'est le scénario standard, décrit ci-dessous.</span></div>
 <div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text"><strong>Cas B, Les PJ arrivent avant Vorrn et nettoient le tunnel.</strong> Embuscade tactique, pièges, neutralisation des occupants (Sébastian, ses hommes, Dietr) avant l'aube. La missive est récupérée prématurément. Vorrn arrivera plus tard, à l'heure prévue, <strong>accompagné de 3 rangers de Koppar-Dumm</strong> qui ont eu le temps de prendre position en surveillance périphérique pendant la nuit. Carrefour décisionnel, intervention de Guérand, jet d'Intelligence sur les représailles, puis combat en pièce close contre Vorrn et son escorte. Détaillé plus bas.</span></div>
@@ -1078,19 +1145,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <ul class="scene-list"><li><strong>Le groupe scindé :</strong> ceux restés en bas gèrent les mercenaires et Dietr, ceux ici affrontent Vorrn avec ce qu'ils ont de Fatigue cumulée. L'aide arrivera, mais pas immédiatement. C'est voulu : laisser la pression monter.</li></ul>
 <ul class="scene-list"><li><strong>Comportement de Vorrn :</strong> il se bat. Sans paroles, sans négociation, sans capitulation : un nain banni qui n'a plus rien à perdre sauf sa cause. Il protège la missive comme si c'était Koppar-Dumm elle-même. Si les PJ parviennent à l'immobiliser ou à le blesser gravement, il peut lâcher une seule phrase avant de perdre connaissance : « Brûlez... Brûlez dans l'antre d'Ashut. Que les pires vous emmènent. » Il ne dévoile rien de plus. Il ne sait rien de Gariz.</li></ul>
 
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Vorrn l'Immense</span><span class="stat-kind">Cas A</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><thead><tr>
-<th>TYPE</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th>
-</tr></thead><tbody>
-<tr><td>Vorrn l'Immense</td><td>3</td><td>50</td><td>25</td><td>45</td><td>50</td><td>25</td><td>20</td><td>30</td><td>30</td><td>45</td><td>20</td><td>18</td></tr>
-</tbody></table></div>
-<p>I 34</p>
-<p>Cuir (Partout sauf tête) PA 1</p>
-<p>Marteau de guerre · Moyenne · BF+6 · Assommante, Dévastatrice, Lente</p>
-<span class="stat-line">Inarrêtable</span><p><em>lorsqu'il descend à 0B, il se comporte comme s'il était encore à 1B pendant 1 round.</em></p>
-<span class="stat-line">Corps d'acier</span><p><em>subit -1 dégât, jusqu'à ce qu'il ait subi 3 blessures lors d'un combat.</em></p>
-<span class="stat-line">Coup de sang</span><p><em>2ème attaque possible à partir du 3ème round de combat, puis 1 round sur 2 désormais.</em></p>
-<span class="stat-line">Marteau de l'orphelin</span><p><em>+1 dégât en espace ouvert et si face à un seul adversaire engagé en mêlée. Actif ici (combat en plein air).</em></p>
-</div></div>
+<div class="fiche-ref" data-ref="vorrn-l-immense" contenteditable="false"><button class="fr-b" type="button"><span class="fr-i">&#9656;</span><span class="fr-n">Vorrn l'Immense</span><span class="fr-k">profil complet</span></button><div class="fr-slot"></div></div>
 
 <div class="butin-box"><span class="butin-label">Butin</span><span class="butin-text"><strong>Butin et indices (Cas A)</strong><ul class="butin-list"><li>Sur Vorrn (s'il est neutralisé) : son marteau à deux mains personnel (clé de l'identification par Karkiss) + 1D10+5 Pa.</li><li>Sur le chef humain : 1D10 Pa. Fouille générale : ficelle, allumettes, deux parchemins vierges, corde de 5 mètres.</li><li>Par interrogatoire : les mercenaires appartiennent au clan des Dents Jaunes. À noter sans comprendre pour l'instant.</li></ul></span></div>
 
@@ -1325,19 +1380,19 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <p><strong>PNJ récurrents de Hochsleben</strong></p>
 
 <div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Greta Holfmann</div><div class="pnj-role">aubergiste du Sanglier Gris</div></div><div class="pnj-body"><p>La cinquantaine sèche, veuve, cheveux gris noués serrés, tablier toujours propre malgré l'activité. Tient l'auberge depuis 22 ans, connaît tout le monde. Voix grave, peu de mots, sourires rares mais sincères. Le Sanglier Gris est l'auberge des résidents et des habitués, plus modeste et plus discrète que l'Auberge du Bien Portant de Marta Heulen (qui, elle, reçoit les gens de passage et les hôtes de marque comme les nains de Koppar-Dumm). Greta sait que les PJ ont la réputation de la route, et tant qu'ils paient correctement leurs repas et se tiennent bien, elle <strong>leur fait crédit</strong> et leur garde toujours une table près du feu. Si un PJ est poli et régulier, elle finit par lui lâcher des bribes : qui couche avec qui, qui doit de l'argent à qui, qui boit trop. <em>« J'écoute, je vois, je dis rien. Mais à vous, je peux dire. »</em> Bon contact pour un PJ qui tient un carnet d'enquête.</p></div></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Greta Holfmann</span><span class="stat-kind">Humaine, aubergiste du Sanglier Gris · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Greta Holfmann</td><td>4</td><td>25</td><td>20</td><td>35</td><td>35</td><td>30</td><td>30</td><td>40</td><td>35</td><td>35</td><td>50</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Un gourdin sous le comptoir · Moyenne · BF+3. Aucune armure.</p><span class="stat-line">Compétences</span><p>Charme 50, Ragot 55, Marchandage 45, Métier (Cuisinier) 50, Intuition 45, Perception 40, Intimidation 35.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Ragot</span> <span class="trait">Sixième sens</span></p><span class="stat-line">En jeu</span><p>Elle sait qui dort chez elle et qui est reparti avant l'aube. Elle le dit à qui paie sa tournée, pas à qui hausse le ton.</p></div></div>
+<div class="fiche-ref" data-ref="greta-holfmann" contenteditable="false"><button class="fr-b" type="button"><span class="fr-i">&#9656;</span><span class="fr-n">Greta Holfmann</span><span class="fr-k">profil complet</span></button><div class="fr-slot"></div></div>
 
 <div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Capitaine Aldun Hesselmann</div><div class="pnj-role">garde municipale</div></div><div class="pnj-body"><p>Quarantaine, militaire de carrière (ancien de l'armée d'Averland, désormais en charge de la garde de ville), barbe poivre et sel taillée court, uniforme impeccable. Direct, pragmatique, peu enclin aux discours. Tient son poste depuis 8 ans, connaît son monde. <strong>Respecte d'emblée un PJ de la patrouille ou de la garde</strong>, qui peut s'asseoir à sa table sans demander. Reçoit les PJ avec courtoisie professionnelle mais sans chaleur, il évalue. Si on lui demande un service, il pèse : <em>« Qu'est-ce que ça vous rapporte ? Et à moi ? »</em> Pas corrompu : juste réaliste. Bon allié si on sait y faire, sinon obstacle.</p></div></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Capitaine Aldun Hesselmann</span><span class="stat-kind">Humain, garde municipale · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Capitaine Aldun Hesselmann</td><td>4</td><td>45</td><td>35</td><td>40</td><td>40</td><td>35</td><td>35</td><td>30</td><td>30</td><td>40</td><td>40</td><td>14</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Épée · Moyenne · BF+4. Brigandine et casque (3 PA, corps ; 2 PA, tête).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 45, Esquive 35, Commandement 45, Intimidation 45, Perception 40, Intuition 40, Savoir (Loi) 35.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Combattant né</span> <span class="trait">Discipline</span> <span class="trait">Autorité</span></p><span class="stat-line">En jeu</span><p>Il applique le règlement tant qu'on le respecte, et l'oublie intégralement si on l'humilie devant ses hommes.</p></div></div>
+<div class="fiche-ref" data-ref="capitaine-aldun-hesselmann" contenteditable="false"><button class="fr-b" type="button"><span class="fr-i">&#9656;</span><span class="fr-n">Capitaine Aldun Hesselmann</span><span class="fr-k">profil complet</span></button><div class="fr-slot"></div></div>
 
 <div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Frère Otmar</div><div class="pnj-role">prêtre de Sigmar</div></div><div class="pnj-body"><p>Soixantaine, voûté, mains noueuses, robe brune élimée. Tient la petite chapelle Sigmar du quartier ouest, un édifice modeste, deux bancs, un autel, une statue ébréchée. Pieux mais lassé : il a vu trop de paysans repartir sans réponse. Parle bas, articule. <strong>Reconnaît un Répurgateur</strong> s'il se présente, et le traite avec un mélange de respect canonique et de prudence (il a vu des Répurgateurs sombrer). Connaît les superstitions locales, les cas de « possession » récents (généralement explicables), les histoires de la région. Donne accès à des registres paroissiaux si on demande poliment et qu'on prie un peu. Pour un PJ dévot ou répurgateur : <strong>contact essentiel</strong>.</p></div></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Frère Otmar</span><span class="stat-kind">Humain, prêtre de Sigmar · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Frère Otmar</td><td>4</td><td>35</td><td>25</td><td>35</td><td>40</td><td>30</td><td>30</td><td>30</td><td>45</td><td>50</td><td>45</td><td>13</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Marteau de guerre · Moyenne · BF+5. Robe et plastron simple (2 PA, corps).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 35, Savoir (Théologie) 50, Charme 45, Commandement 40, Calme 50, Intuition 45, Lecture/Écriture 45.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Foi (Sigmar)</span> <span class="trait">Bénedictions mineures</span> <span class="trait">Sang-froid</span></p><span class="stat-line">En jeu</span><p>Il aide sincèrement et rapporte tout aussi sincèrement. Les deux, dans cet ordre.</p></div></div>
+<div class="fiche-ref" data-ref="frere-otmar" contenteditable="false"><button class="fr-b" type="button"><span class="fr-i">&#9656;</span><span class="fr-n">Frère Otmar</span><span class="fr-k">profil complet</span></button><div class="fr-slot"></div></div>
 
 <div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Lothar Reinhardt</div><div class="pnj-role">marchand de tissus et de fournitures</div></div><div class="pnj-body"><p>Quarantaine, gras, jovial mais calculateur, accent du sud. Tient la plus grosse échoppe de Hochsleben (textiles, cuir, équipement de voyage, sangles, sacoches). Voit passer tout le monde, sait qui paye comptant, qui demande crédit. <strong>Très bavard avec qui achète</strong>. Source de rumeurs commerciales : qui voyage où, qui s'équipe pour quoi, qui a fait fortune et qui a perdu sa chemise. Apprécie les connaisseurs : il vend la bonne marchandise à qui sait la reconnaître. Peut commander spécifiquement pour un PJ moyennant délai (3-5 jours pour des équipements rares). Bon contact pour un PJ qui monte un cabinet d'enquête ou une officine.</p></div></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Lothar Reinhardt</span><span class="stat-kind">Humain, marchand de tissus et de fournitures · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Lothar Reinhardt</td><td>4</td><td>25</td><td>20</td><td>30</td><td>30</td><td>30</td><td>30</td><td>40</td><td>40</td><td>35</td><td>50</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Un coutelas de commerce. Aucune armure.</p><span class="stat-line">Compétences</span><p>Marchandage 55, Évaluation 50, Charme 45, Ragot 45, Intuition 40, Lecture/Écriture 40, Métier (Marchand) 50.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Beau parleur</span> <span class="trait">Évaluation</span></p><span class="stat-line">En jeu</span><p>Il fournit tout ce qui n'est pas une arme, et connaît celui qui fournit le reste.</p></div></div>
+<div class="fiche-ref" data-ref="lothar-reinhardt" contenteditable="false"><button class="fr-b" type="button"><span class="fr-i">&#9656;</span><span class="fr-n">Lothar Reinhardt</span><span class="fr-k">profil complet</span></button><div class="fr-slot"></div></div>
 
 <div class="pnj-card"><div class="pnj-head"><div class="pnj-name">« Le Vieux Hans »</div><div class="pnj-role">voisin de palier au Sanglier Gris</div></div><div class="pnj-body"><p>Soixante-dix ans, ancien batelier de l'Aver, plus de famille, vit dans la chambre la plus modeste de l'auberge. Greta le tolère parce qu'il paye une fois par mois sans rater. Cassé, marche avec une canne, bat son chien (un vieux molosse maigre qui s'appelle Kessel et qui ne fait plus de mal à une mouche). Parle aux murs, parfois aux PJ s'ils le croisent dans le couloir le matin. Délire mais lucide par éclairs. Mention possible : <em>« Y'a des yeux rouges dans les ruelles. J'les ai vus. Tout le monde dit que j'suis fou. P't-être. »</em> <strong>Lien Gariz dormant</strong> : si les PJ s'y intéressent, il a vraiment vu quelque chose.</p></div></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">« Le Vieux Hans »</span><span class="stat-kind">Humain, voisin de palier au Sanglier Gris · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>« Le Vieux Hans »</td><td>4</td><td>20</td><td>20</td><td>25</td><td>30</td><td>25</td><td>25</td><td>30</td><td>30</td><td>30</td><td>35</td><td>10</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Rien. Aucune armure.</p><span class="stat-line">Compétences</span><p>Ragot 50, Perception 40, Intuition 35, Métier (Journalier) 35, Résistance 35.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Ragot</span></p><span class="stat-line">En jeu</span><p>Il parle beaucoup, se trompe souvent et tombe juste une fois. Le problème du groupe est de savoir laquelle.</p></div></div>
+<div class="fiche-ref" data-ref="le-vieux-hans" contenteditable="false"><button class="fr-b" type="button"><span class="fr-i">&#9656;</span><span class="fr-n">« Le Vieux Hans »</span><span class="fr-k">profil complet</span></button><div class="fr-slot"></div></div>
 
 <p><strong>Rumeurs en circulation (à piocher 1-2 par session)</strong></p>
 <ul class="scene-list">
@@ -1530,34 +1585,15 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 
 <p class="section-head">Statblocks</p>
 
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Aldric Voss</span><span class="stat-kind">chef de bande, ancien sergent</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Aldric Voss</td><td>4</td><td>50</td><td>45</td><td>40</td><td>40</td><td>40</td><td>40</td><td>30</td><td>40</td><td>45</td><td>40</td><td>16</td></tr></table></div><span class="stat-line">Armure</span><p>cuir clout&eacute; (corps et bras, PA 1)</p><p><span class="stat-line">Comp&eacute;tences</span>Athl&eacute;tisme 50, Combat de m&ecirc;l&eacute;e (escrime) 60, Combat &agrave; distance (arc) 65, Esquive 50, Furtivit&eacute; (rural) 55, Intuition 50, Perception 50, Survie 55, Commandement 50, Intimidation 50.<br>
-<span class="stat-line">Talents</span>Coup &eacute;tourdissant, Tireur d&#x2019;&eacute;lite, Voir la fuite, Chef-n&eacute;, Pr&eacute;sence d&#x2019;esprit, Frappe pr&eacute;cise.<br>
-<span class="stat-line">Armes</span>&eacute;p&eacute;e militaire (Moyenne, BF+4, D&eacute;fensive) &middot; arbal&egrave;te l&eacute;g&egrave;re (60m, BF+3, Recharge 1) &middot; dague (Tr&egrave;s courte, BF+2).<br>
-<span class="stat-line">Discipline militaire</span>+10 &agrave; tous les tests de Moral et de Sang-Froid. Tant qu&#x2019;il est debout, ses hommes ne testent pas le Moral.<br>
-<span class="stat-line">Commandement</span>une fois par combat, donne un bonus de +10 &agrave; un de ses hommes pour un test crucial.<br>
-<span class="stat-line">Calcul froid</span>s&#x2019;il descend sous 5 Blessures et voit le combat perdu, il tente de se rendre ou de fuir plut&ocirc;t que mourir b&ecirc;tement. Bonne occasion pour le capturer vivant.<br>
-<span class="stat-line">Tactique</span>vise les jambes &agrave; l&#x2019;arc pour ralentir et permettre la fuite de ses hommes. Engage l&#x2019;&eacute;p&eacute;e seulement s&#x2019;il est accul&eacute; ou si la victoire est assur&eacute;e. Sait reconna&icirc;tre quand fuir : si 3 hommes tombent, il d&eacute;croche par le versant ouest escarp&eacute;, &agrave; l&#x2019;arri&egrave;re du camp, terrain qu&#x2019;il conna&icirc;t et que peu peuvent suivre vite.</p></div></div>
+<div class="fiche-ref" data-ref="aldric-voss" contenteditable="false"><button class="fr-b" type="button"><span class="fr-i">&#9656;</span><span class="fr-n">Aldric Voss</span><span class="fr-k">profil complet</span></button><div class="fr-slot"></div></div>
 
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Marek le Reikslandais</span><span class="stat-kind">lieutenant de Voss</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Marek le Reikslandais</td><td>4</td><td>45</td><td>35</td><td>40</td><td>40</td><td>35</td><td>35</td><td>30</td><td>30</td><td>35</td><td>25</td><td>14</td></tr></table></div><span class="stat-line">Armure</span><p>cuir (torse et membres, PA 1)</p><p><span class="stat-line">Comp&eacute;tences</span>Athl&eacute;tisme 45, Combat de m&ecirc;l&eacute;e (escrime) 55, Intimidation 45, Intuition 40, Perception 40, R&eacute;sistance 45.<br>
-<span class="stat-line">Talents</span>Coup puissant, Combattant aguerri, Sang-froid.<br>
-<span class="stat-line">Armes</span>lame longue (Moyenne, BF+5, Dommageable) &middot; dague (Tr&egrave;s courte, BF+2).<br>
-<span class="stat-line">Garde du corps</span>quand Voss est attaqu&eacute; et que Marek lui est adjacent, il peut intercepter l&#x2019;attaque (test d&#x2019;Ag standard).<br>
-<span class="stat-line">Personnalit&eacute;</span>lieutenant fid&egrave;le, accent reikslandais marqu&eacute;, cheveux longs. Disciplin&eacute;, taciturne, frappe sans bravade. Capturable, mais parle peu m&ecirc;me sous pression.</p></div></div>
+<div class="fiche-ref" data-ref="marek-le-reikslandais" contenteditable="false"><button class="fr-b" type="button"><span class="fr-i">&#9656;</span><span class="fr-n">Marek le Reikslandais</span><span class="fr-k">profil complet</span></button><div class="fr-slot"></div></div>
 
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Wesley Fairbottom</span><span class="stat-kind">&eacute;claireur halfling</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Wesley Fairbottom</td><td>4</td><td>30</td><td>50</td><td>25</td><td>30</td><td>45</td><td>50</td><td>40</td><td>30</td><td>35</td><td>40</td><td>10</td></tr></table></div><span class="stat-line">Armure</span><p>cuir l&eacute;ger (PA 1)</p><p><span class="stat-line">Comp&eacute;tences</span>Combat &agrave; distance (arc) 50, Discr&eacute;tion (rural) 55, Escalade 45, Perception 50, Survie 45.<br>
-<span class="stat-line">Talents</span>Tir rapide, Sixi&egrave;me sens, Tr&egrave;s dou&eacute; (Combat &agrave; distance).<br>
-<span class="stat-line">Armes</span>arc court (30m, BF+2, Tir Rapide) &middot; dague (Tr&egrave;s courte, BF+1).<br>
-<span class="stat-line">Tir pr&eacute;cis</span>tireur &eacute;m&eacute;rite. Vise les jambes pour ralentir, pas pour tuer.<br>
-<span class="stat-line">Petite cible</span>-10 pour le toucher en m&ecirc;l&eacute;e.<br>
-<span class="stat-line">Fuite instantan&eacute;e</span>tente de fuir d&egrave;s que le combat tourne mal. Si captur&eacute;, parle vite.</p></div></div>
+<div class="fiche-ref" data-ref="wesley-fairbottom" contenteditable="false"><button class="fr-b" type="button"><span class="fr-i">&#9656;</span><span class="fr-n">Wesley Fairbottom</span><span class="fr-k">profil complet</span></button><div class="fr-slot"></div></div>
 
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Brigands aguerris de Voss, profil g&eacute;n&eacute;rique</span><span class="stat-kind">&times;5</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Brigands aguerris de Voss, profil g&eacute;n&eacute;rique</td><td>4</td><td>40</td><td>35</td><td>35</td><td>35</td><td>35</td><td>35</td><td>25</td><td>30</td><td>35</td><td>25</td><td>13</td></tr></table></div><span class="stat-line">Armure</span><p>cuir (torse, PA 1)</p><p><span class="stat-line">Comp&eacute;tences</span>Athl&eacute;tisme 40, Combat de m&ecirc;l&eacute;e (basique) 45, Combat &agrave; distance (arc) 45, Furtivit&eacute; (rural) 40, Perception 40.<br>
-<span class="stat-line">Armes</span>arme simple, &eacute;p&eacute;e ou hache (Moyenne, BF+4) &middot; arc court (20m, BF+2).<br>
-<span class="stat-line">Ex-militaires</span>+10 en CC et en Moral par rapport aux brigands ordinaires. Tactique de groupe coordonn&eacute;e.<br>
-<span class="stat-line">Tactique</span>embuscade &agrave; l&#x2019;arc puis charge si la situation est favorable, fuite si plus d&#x2019;un tombe. Voss leur a martel&eacute; : <em>&laquo;&nbsp;Vivant, on continue. Mort, on est tous morts.&nbsp;&raquo;</em></p></div></div>
+<div class="fiche-ref" data-ref="brigands-aguerris-de-voss-profil-generique" contenteditable="false"><button class="fr-b" type="button"><span class="fr-i">&#9656;</span><span class="fr-n">Brigands aguerris de Voss, profil générique</span><span class="fr-k">profil complet</span></button><div class="fr-slot"></div></div>
 
-<div class="stat-card"><div class="stat-head"><span class="stat-name">M&egrave;re Holst</span><span class="stat-kind">ravitailleuse, ferme isol&eacute;e</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>M&egrave;re Holst</td><td>4</td><td>25</td><td>20</td><td>30</td><td>35</td><td>25</td><td>25</td><td>35</td><td>35</td><td>40</td><td>40</td><td>11</td></tr></table></div><p><span class="stat-line">Comp&eacute;tences</span>Charme 50, Cuisine 50, &Eacute;valuation 45, Intuition 45, Perception 40.<br>
-<span class="stat-line">Personnalit&eacute;</span>vieille paysanne dure, veuve, ravitaille Voss en &eacute;change de protection (et d&#x2019;un peu d&#x2019;argent). Sa ferme isol&eacute;e est &agrave; ~2 km du camp. Si interrog&eacute;e et bris&eacute;e (Empathie ou Intimidation), elle l&acirc;che la localisation. <span class="stat-line">Ne la tuer qu&#x2019;en dernier recours</span>t&eacute;moin pr&eacute;cieux pour le proc&egrave;s si Voss est livr&eacute; vivant.</p></div></div>
+<div class="fiche-ref" data-ref="mere-holst" contenteditable="false"><button class="fr-b" type="button"><span class="fr-i">&#9656;</span><span class="fr-n">Mère Holst</span><span class="fr-k">profil complet</span></button><div class="fr-slot"></div></div>
 
 <p class="section-head">Le camp de Voss : récapitulatif MJ</p>
 
@@ -1733,46 +1769,7 @@ Un PJ de la patrouille accède aux dossiers via Yorick (test de Charme standard,
 <ul class="scene-list"><li><strong>Sol</strong> : glissant par endroits, surtout près du lac. Un PJ qui rate un jet d'Ag peut tomber, ou pire, glisser dans l'eau (un round perdu à remonter, et le troll peut s'y trouver).</li></ul>
 
 <div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text"><strong>Ce que ce profil apprend aux joueurs, et c'est tout le sujet du fil.</strong> Trois mécaniques poussent dans la même direction sans qu'un mot soit prononcé : la <em>viscosité</em> punit la mêlée pure, la <em>régénération</em> annule l'attrition, l'<em>eau</em> rend la victoire impossible. La seule réponse est le feu, et le seul terrain qui compte est la berge. Ne le leur dis pas. Laisse-les le trouver au troisième round, quand ils auront compris que taper plus fort ne sert à rien.</span></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Le Troll d'Eau de la Combe aux Saulaies</span><span class="stat-kind">Créature solitaire · unique · Peur 3</span></div><div class="stat-body">
-<div class="statblock-wrap"><table class="statblock">
-<tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr>
-<tr><td>Troll d'Eau</td><td>5</td><td>35</td><td>15</td><td>45</td><td>50</td><td>20</td><td>25</td><td>15</td><td>20</td><td>20</td><td>5</td><td>32</td></tr>
-</table></div>
-<p>Trois mètres, quatre cents kilos, une gueule trop large, et de la vapeur qui monte de sa peau quand il sort de l'eau.</p>
-
-<span class="stat-line">Le socle — commun à tous les trolls</span>
-<p><span class="trait">Arme +9</span> <span class="trait">Morsure +8</span> <span class="trait">Armure 2</span> <span class="trait">Coriace</span> <span class="trait">Insensible à la douleur</span> <span class="trait">Régénération</span> <span class="trait">Vomissement</span> <span class="trait">Infecté</span> <span class="trait">Vision nocturne</span> <span class="trait">Peur 3</span> <span class="trait">Taille (Grande)</span> <span class="trait">Stupide</span></p>
-<p>Un troll est un troll : lent d'esprit, maladroit, increvable, et il frappe comme une avalanche. <strong>Sa CC de 35 n'est pas une erreur.</strong> Il n'est pas habile et n'a jamais eu besoin de l'être : ce qui le rend mortel, c'est ce qui arrive quand il touche. Arme +9 contre des PJ en cuir, ça envoie sur la table de Critiques, et la table de Critiques ne pardonne pas.</p>
-<p><strong>Insensible à la douleur</strong> mérite un rappel, parce qu'on l'oublie toujours : il ignore les malus liés aux Blessures. Il tape aussi fort au dernier round qu'au premier. Il n'y a pas de moment où il faiblit.</p>
-
-<span class="stat-line">Ce qui en fait un troll d'eau, et rien d'autre</span>
-<p><span class="trait">Aquatique</span> <span class="trait">Viscosité</span> <span class="trait">Vomi acide</span> <span class="trait">Pourriture des Eaux</span></p>
-<p>Quatre écarts sur le socle. Tout le reste est du troll standard : si tu en as déjà mené un, tu sais mener celui-là.</p>
-
-<span class="stat-line">Aquatique</span>
-<p>Il respire sous l'eau et s'y déplace à pleine vitesse. Le lac n'est pas un décor : c'est sa maison, son refuge et son avantage. Blessé sérieusement, il plonge, et il a raison de plonger.</p>
-
-<span class="stat-line">Régénération, et pourquoi l'eau change tout</span>
-<p>Base : il récupère <strong>5 Blessures</strong> (son Bonus d'Endurance) au début de chacun de ses tours. <strong>Les blessures de feu et d'acide ne se régénèrent pas.</strong> À 0 Blessure il s'effondre sans mourir et continue de se refaire : seul le feu prolongé sur la carcasse en vient à bout.</p>
-<p><strong>Sa particularité :</strong> immergé, il régénère <strong>le double, soit 10 par round</strong>, et l'eau <strong>éteint toute combustion en cours</strong>. Autrement dit, dès qu'il touche le lac, il annule à la fois vos dégâts et le seul moyen que vous ayez de le tuer. <strong>Le combat ne porte pas sur ses 32 Blessures. Il porte sur trois mètres de berge.</strong></p>
-
-<span class="stat-line">Viscosité</span>
-<p>Sa peau suinte une humeur froide et gluante. <strong>Toute attaque de mêlée contre lui subit <span class="mod mod-neg">(-10)</span> en CC</strong> : les armes glissent, les prises se défont, on hésite au contact. Les attaques à distance ne sont pas affectées. Une attaque de feu (torche, sort, alchimie) <strong>annule ce malus pour le tour</strong> : la chaleur sèche la peau.</p>
-<p>C'est le second doigt qui pointe vers le feu, après la régénération. Deux mécaniques, une seule réponse, et pas un mot d'explication.</p>
-
-<span class="stat-line">Vomi acide</span>
-<p>Sa version du trait <em>Vomissement</em>. Une fois par combat, action complète : cône de 4 mètres. Tous les PJ dedans testent leur Agilité. Échec = <strong>1d10 dégâts perforants ignorant l'armure non métallique</strong>, plus 1d10 au tour suivant si l'acide n'est pas neutralisé (eau, alcool, sort, prière). À déclencher quand trois cibles au moins sont alignées, et qu'il est à mi-Blessures. La végétation alentour se flétrit en sifflant.</p>
-
-<span class="stat-line">Pourriture des Eaux</span>
-<p>Sa version du trait <em>Infecté</em>. Sur une réussite critique de sa morsure, le PJ touché teste son Endurance ou contracte la maladie : <span class="mod mod-neg">(-10)</span> en E et en Ag pendant 1d10 jours, traitable par Shallya. La conséquence dure bien après le combat, et c'est le but.</p>
-
-<span class="stat-line">Stupide, et manipulable</span>
-<p>Intelligence d'un enfant rageur. Il se concentre sur la cible qui lui a fait le plus mal au tour précédent. Il ne comprend pas la ruse, mais il ne capitule jamais. Un test de Charme à <span class="mod mod-neg">(-20)</span> ou de Marchandage à <span class="mod mod-neg">(-30)</span> le distrait un round : on parle à un mur affamé. Bien plus efficace : agiter quelque chose qui sent fort (viande, sang, alcool) pour le faire dévier. De la berge, si possible.</p>
-
-<span class="stat-line">Peur 3</span>
-<p>Test de Sang-froid au moment où il émerge pleinement de l'eau, ou bondit du sommet de la combe. Une seule fois par combat : au second jet, la familiarisation joue, et s'ils ont vu des dessins ou entendu des témoignages avant, ils y échappent.</p>
-<p><strong>C'est brutal, et c'est voulu.</strong> Avec des FM autour de 35-40, une bonne moitié du groupe démarre <em>Effrayé 3</em>. Ne compense pas, ne l'adoucis pas : c'est un troll, et les deux premiers rounds sont censés être une déroute. Le fil n'a de sens que si le groupe se reprend ensuite : c'est là qu'est la victoire, pas dans les dégâts.</p>
-</div></div>
+<div class="fiche-ref" data-ref="le-troll-d-eau-de-la-combe-aux-saulaies" contenteditable="false"><button class="fr-b" type="button"><span class="fr-i">&#9656;</span><span class="fr-n">Le Troll d'Eau de la Combe aux Saulaies</span><span class="fr-k">profil complet</span></button><div class="fr-slot"></div></div>
 
 
 <p><strong>Stratégies gagnantes pour les PJ</strong></p>
@@ -2051,22 +2048,7 @@ Plus : un pendentif de Shallya, une hache de bûcheron de qualité, des objets s
 <div class="dialogue"><span class="dialogue-who">Coordination :</span><span class="dialogue-text"><em>quand deux stormvermin sont adjacents à un même PJ, ils gagnent +10 supplémentaire chacun (coordination de garde noire).</em></span></div>
 <div class="dialogue"><span class="dialogue-who">Frappe ciblée :</span><span class="dialogue-text"><em>les stormvermin identifient et visent prioritairement les cibles dangereuses, le magicien en premier s'il a lancé un sort visible, puis les archers ennemis, puis les leaders.</em></span></div>
 
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Chef de griffe Skritt'tch</span><span class="stat-kind">x1, vague 2, en retrait</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><thead><tr>
-<th>TYPE</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th>
-</tr></thead><tbody>
-<tr><td>Esclave skaven</td><td>4</td><td>25</td><td>20</td><td>25</td><td>25</td><td>30</td><td>40</td><td>20</td><td>15</td><td>20</td><td>10</td><td>3</td></tr>
-<tr><td>Clanrat</td><td>5</td><td>35</td><td>30</td><td>30</td><td>30</td><td>35</td><td>40</td><td>30</td><td>25</td><td>30</td><td>20</td><td>9</td></tr>
-<tr><td>Stormvermin</td><td>5</td><td>45</td><td>35</td><td>40</td><td>40</td><td>40</td><td>40</td><td>30</td><td>30</td><td>40</td><td>25</td><td>14</td></tr>
-<tr><td>Chef Skritt'tch</td><td>5</td><td>55</td><td>40</td><td>45</td><td>45</td><td>45</td><td>50</td><td>40</td><td>40</td><td>45</td><td>35</td><td>18</td></tr>
-</tbody></table></div>
-<p>I 45 · Cuir noir renforcé + chaîne aux épaules PA 3 (torse), PA 2 (reste)</p>
-<p>Lame d'os courbe · Moyenne · BF+5 · Dommageable, Pénétrante</p>
-<p>Dague jetable · 8m · BF+3 · Inoffensive sur cuirasse</p>
-<span class="stat-line">Commande de meute</span><p><em>tant que le chef est debout, tous les skavens (clanrats et stormvermin) gagnent +10 en CC et +10 en Moral.</em></p>
-<span class="stat-line">Sang-froid de skaven</span><p><em>le chef ne fuit pas tant que la situation lui paraît gérable. Mais dès qu'il pense que le combat tourne mal (moins de 3 stormvermin debout), il <strong>fuit par l'escalier sud-est</strong> vers les souterrains. Il ne se bat pas inutilement.</em></p>
-<span class="stat-line">Frappe au visage</span><p><em>quand il touche en mêlée et dépasse de 3 SL, il vise le visage : test d'Ag pour le PJ ou -10 à toutes les actions impliquant la vue pendant 1d10 rounds (sang dans les yeux).</em></p>
-
-</div></div>
+<div class="fiche-ref" data-ref="chef-de-griffe-skritt-tch" contenteditable="false"><button class="fr-b" type="button"><span class="fr-i">&#9656;</span><span class="fr-n">Chef de griffe Skritt'tch</span><span class="fr-k">profil complet</span></button><div class="fr-slot"></div></div>
 
 <p><strong>Conditions de combat dans la grande salle</strong></p>
 <ul class="scene-list"><li><strong>Espace saturé :</strong> 25-30 corps dans une salle de 20x12m. Les PJ ne peuvent pas tous se battre confortablement. Risque de tir fratricide (-10 si une cible est adjacente à un allié). Les sorts de zone risquent de toucher les soldats du contingent (à toi de jouer comment).</li></ul>
@@ -2580,7 +2562,7 @@ Les adversaires de l'Arc I sont restés dans leurs scènes, parce qu'on ne les a
 
 <div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text"><strong>Trois façons de mourir sous les coups d'un homme, dans l'Arc II.</strong> Le milicien est un voisin effrayé : nombreux, mauvais, il casse au premier revers. Le pillard est un professionnel tiède : il fuit et il négocie. Ils tiennent parce qu'une ancienne garde-chasse les tient. Le boucher ne fait ni l'un ni l'autre. Les distinguer à la table, sans les nommer, est tout le travail.</span></div>
 <div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Ce ne sont pas des soldats et ils ne doivent jamais se comporter comme tels. Ce sont des voisins effrayés. Leur meneur, <strong>l'arquebusier balafré</strong>, et leur chef, <strong>Maître Vehlen</strong>, sont dans <em>Personnages Non-Joueurs · Le nord — la milice</em>.</span></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Milicien de lisière</span><span class="stat-kind">Villageois armé · ×5 à ×15</span></div><div class="stat-body">
+<div class="stat-card" data-fiche="milicien-de-lisiere"><div class="stat-head"><span class="stat-name">Milicien de lisière</span><span class="stat-kind">Villageois armé · ×5 à ×15</span></div><div class="stat-body">
 <div class="statblock-wrap"><table class="statblock">
 <tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr>
 <tr><td>Milicien</td><td>4</td><td>30</td><td>25</td><td>35</td><td>35</td><td>25</td><td>25</td><td>25</td><td>25</td><td>25</td><td>25</td><td>11</td></tr>
@@ -2602,7 +2584,7 @@ Les adversaires de l'Arc I sont restés dans leurs scènes, parce qu'on ne les a
 <li>Parfois : un objet manifestement pris chez quelqu'un d'autre. Une alliance de femme sur un homme jeune. Ne le commente pas.</li>
 </ul></span></div>
 <div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Toute leur tenue vient d'<strong>Ilse Groth</strong>, dont la fiche et le profil sont dans <em>Personnages Non-Joueurs · Le nord — les bandes</em>. Elle debout, ils tiennent. Elle tombée, ils cassent au round suivant.</span></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Pillard de Groth</span><span class="stat-kind">Bande · ×4 à ×8</span></div><div class="stat-body">
+<div class="stat-card" data-fiche="pillard-de-groth"><div class="stat-head"><span class="stat-name">Pillard de Groth</span><span class="stat-kind">Bande · ×4 à ×8</span></div><div class="stat-body">
 <div class="statblock-wrap"><table class="statblock">
 <tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr>
 <tr><td>Pillard</td><td>4</td><td>35</td><td>35</td><td>35</td><td>35</td><td>30</td><td>30</td><td>25</td><td>25</td><td>30</td><td>25</td><td>12</td></tr>
@@ -2613,14 +2595,14 @@ Les adversaires de l'Arc I sont restés dans leurs scènes, parce qu'on ne les a
 <p><span class="trait">Discipline empruntée</span> Tant que Groth est debout et visible, ils tiennent : pas de test de Moral. Elle tombée ou en fuite, ils cassent immédiatement, test à <span class="mod mod-neg">(-20)</span>. Toute leur tenue vient de lui.</p>
 <span class="stat-line">Conduite</span>
 <p>Ils fuient volontiers, et ils négocient encore plus volontiers. Un pillard capturé parle : pas par lâcheté, par calcul. Il sait exactement ce qu'il risque et ce que vaut une information.</p>
-</div></div>
+<span class="stat-line">Comp&eacute;tences</span><p>Corps à corps (Base) 38, Projectiles (Arc) 35, Esquive 33, Discrétion (Rurale) 40, Perception 35, Intimidation 35.</p></div></div>
 <div class="butin-box"><span class="butin-label">Butin</span><span class="butin-text"><strong>Sur un pillard.</strong>
 <ul class="butin-list">
 <li>1D10 sous, une arme quelconque, du cuir usé</li>
 <li>Presque toujours : un objet volé encore identifiable, parce qu'ils sont trop bêtes pour les écouler vite. Rendre cet objet à qui de droit dans un village de lisière est le meilleur jet social que les PJ feront de tout l'arc.</li>
 </ul></span></div>
 <div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text"><strong>Avertissement.</strong> Ce profil est ici pour que tu saches ce qui rôde, pas pour que tu le sortes. Une rencontre frontale avant le milieu de l'Arc II est une erreur : ils ne sont pas un défi calibré, ils sont une chose que les PJ doivent d'abord découvrir <strong>par ce qu'elle laisse derrière elle</strong>. Le viscéral, pas l'énigme. Contexte complet et leur chef, <strong>« le Saigneur »</strong>, dans <em>Personnages Non-Joueurs · Le nord — les bandes</em>.</span></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Boucher marqué</span><span class="stat-kind">Faux bandit · ×3 à ×6 · Peur 1</span></div><div class="stat-body">
+<div class="stat-card" data-fiche="boucher-marque"><div class="stat-head"><span class="stat-name">Boucher marqué</span><span class="stat-kind">Faux bandit · ×3 à ×6 · Peur 1</span></div><div class="stat-body">
 <div class="statblock-wrap"><table class="statblock">
 <tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr>
 <tr><td>Boucher</td><td>4</td><td>55</td><td>25</td><td>50</td><td>45</td><td>40</td><td>35</td><td>25</td><td>25</td><td>45</td><td>20</td><td>16</td></tr>
@@ -2633,7 +2615,7 @@ Les adversaires de l'Arc I sont restés dans leurs scènes, parce qu'on ne les a
 <p>La règle qui les définit, et la seule qui compte. À la fin de chaque round de combat contre eux, tout PJ engagé teste sa FM <span class="mod mod-neg">(-10)</span>. Échec : il gagne <span class="mod mod-pos">(+10)</span> aux dégâts et <span class="mod mod-neg">(-20)</span> à tout jet visant à s'arrêter, se replier, épargner, ou seulement réfléchir. Cela se cumule. Ce n'est pas une possession : c'est que la rage se transmet, et que c'est <em>agréable</em>. Un PJ qui finit le combat en frappant un mort n'a pas raté un jet. Il a compris quelque chose. <em>(MJ : cette contagion n'est pas un décor, c'est l'arme réelle de la couche 3, une rage semée pour se répandre, de round en round et de village en village, jusqu'à ce qu'une province se purge elle-même. Les bouchers ne recrutent pas : ils ensemencent.)</em></p>
 <span class="stat-line">Conduite</span>
 <p>Ils ne pillent pas, ne rançonnent pas, ne prennent pas d'otages. Ils tuent, ils mutilent, ils répandent le sang comme une offrande, et ils emportent les têtes. Leur passage laisse des survivants « changés », gagnés par la même rage : c'est ainsi que le culte croît, sans jamais recruter personne.</p>
-</div></div>
+<span class="stat-line">Comp&eacute;tences</span><p>Corps à corps (Base) 45, Intimidation 50, Résistance 45, Esquive 30, Perception 32.</p></div></div>
 <div class="butin-box"><span class="butin-label">Butin</span><span class="butin-text"><strong>Sur un boucher.</strong>
 <ul class="butin-list">
 <li>Rien. Pas une pièce. Pas un objet volé. <strong>C'est la preuve la plus accablante du document</strong> : un bandit sans butin n'est pas un bandit, et un groupe qui fouille trois cadavres pour ne rien trouver comprend avant qu'on lui explique.</li>
@@ -2644,7 +2626,7 @@ Les adversaires de l'Arc I sont restés dans leurs scènes, parce qu'on ne les a
 </div>
 <div class="scene-panel" id="P11_sc2" style="display:none">
 <div class="scene-title-bar"><h2 class="scene-title">Les bêtes</h2><div class="scene-nav"></div></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Loup des hauteurs</span><span class="stat-kind">Meute · ×4 à ×8</span></div><div class="stat-body">
+<div class="stat-card" data-fiche="loup-des-hauteurs"><div class="stat-head"><span class="stat-name">Loup des hauteurs</span><span class="stat-kind">Meute · ×4 à ×8</span></div><div class="stat-body">
 <div class="statblock-wrap"><table class="statblock">
 <tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr>
 <tr><td>Loup</td><td>6</td><td>45</td><td>—</td><td>35</td><td>35</td><td>40</td><td>40</td><td>—</td><td>15</td><td>35</td><td>10</td><td>9</td></tr>
@@ -2657,7 +2639,7 @@ Les adversaires de l'Arc I sont restés dans leurs scènes, parce qu'on ne les a
 <p>Descendre. Voilà le vrai sujet. Une meute qui chasse à cette altitude, en cette saison, à découvert, sur une route, c'est une anomalie. Quelque chose les a poussés hors de la forêt. Ne le dis jamais : laisse-les l'observer.</p>
 <span class="stat-line">Deux couches, à tenir ensemble</span>
 <p>Le loup est l'animal d'Ulric. En abattre choque les gens du nord et pourra leur être reproché, y compris par des gens qui se moquent des dieux le reste du temps. Un PJ qui laisse la meute partir plutôt que de l'exterminer gagne quelque chose qui ne se note pas sur une feuille.</p>
-</div></div>
+<span class="stat-line">Comp&eacute;tences</span><p>Perception 45, Pistage 50, Discrétion (Rurale) 45, Athétisme 45.</p></div></div>
 <div class="butin-box"><span class="butin-label">Butin</span><span class="butin-text"><strong>Sur la meute.</strong>
 <ul class="butin-list">
 <li>Peaux · 8 sous pièce, si on prend le temps de les tanner, ce qu'on n'a pas</li>
@@ -2665,7 +2647,7 @@ Les adversaires de l'Arc I sont restés dans leurs scènes, parce qu'on ne les a
 <li><strong>Un collier</strong> · sans valeur · sur le plus vieux : lanière de cuir tressé, travail de berger, coupée net. Ce loup a appartenu à quelqu'un. Il y a longtemps, ou pas.</li>
 <li>Vendre une peau de loup dans un village d'Ulric : jet de Marchandage à <span class="mod mod-neg">(-30)</span> et on se souviendra de vous</li>
 </ul></span></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">La matriarche</span><span class="stat-kind">Kazad Varr · unique · Peur 2</span></div><div class="stat-body">
+<div class="stat-card" data-fiche="la-matriarche"><div class="stat-head"><span class="stat-name">La matriarche</span><span class="stat-kind">Kazad Varr · unique · Peur 2</span></div><div class="stat-body">
 <div class="statblock-wrap"><table class="statblock">
 <tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr>
 <tr><td>La matriarche</td><td>6</td><td>50</td><td>—</td><td>45</td><td>50</td><td>45</td><td>45</td><td>—</td><td>10</td><td>40</td><td>10</td><td>32</td></tr>
@@ -2678,7 +2660,7 @@ Les adversaires de l'Arc I sont restés dans leurs scènes, parce qu'on ne les a
 <p>Elle ne charge pas bêtement. Elle frappe depuis la voûte et le noir, <strong>vise d'abord les lanternes</strong>, se replie dans les nappes (terrain difficile, risque d'<em>Entrave</em>) pour isoler une proie. Elle a des siècles de pratique dans un hall qu'elle connaît par cœur. Elle ne se laissera pas prendre au centre.</p>
 <span class="stat-line">Le terrain est le vrai adversaire</span>
 <p>Le hall joue contre les PJ s'ils restent groupés au centre, et pour eux s'ils trouvent un goulet à dos de mur. Le feu est leur meilleure arme et leur pire idée, vu les nappes et l'air. Sans lumière : malus partout, et elle voit très bien.</p>
-</div></div>
+<span class="stat-line">Comp&eacute;tences</span><p>Corps à corps (Base) 50, Perception 50, Pistage 55, Intimidation 50, Discrétion (Rurale) 45.</p></div></div>
 <div class="butin-box"><span class="butin-label">Butin</span><span class="butin-text"><strong>Dans le nid.</strong>
 <ul class="butin-list">
 <li>Le matériel de la première équipe de relevé · lanternes, huile, deux marteaux de géologue, une chaîne d'arpentage · ~15 Co</li>
@@ -2686,7 +2668,7 @@ Les adversaires de l'Arc I sont restés dans leurs scènes, parce qu'on ne les a
 <li><strong>L'appât empoisonné</strong> · de l'ouvrage nain marqué de runes, gardes ancestraux d'une lignée · valeur marchande considérable, coût réel plus considérable encore. Le ramasser est tentant et lourd de sens : Brokk ne le pardonnera pas, un marchand nain le flairera, et Karkiss vous a envoyés chercher un livre, pas dépouiller des morts. Tu tiens là le fil d'une dette ou d'une malédiction de tombe pour plus tard.</li>
 <li>Glandes à venin · 10 Co auprès de qui sait quoi en faire · et une réputation</li>
 </ul></span></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Araignée de galerie</span><span class="stat-kind">Couvée · ×3 à ×6</span></div><div class="stat-body">
+<div class="stat-card" data-fiche="araignee-de-galerie"><div class="stat-head"><span class="stat-name">Araignée de galerie</span><span class="stat-kind">Couvée · ×3 à ×6</span></div><div class="stat-body">
 <div class="statblock-wrap"><table class="statblock">
 <tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr>
 <tr><td>Araignée</td><td>6</td><td>35</td><td>—</td><td>30</td><td>30</td><td>35</td><td>40</td><td>—</td><td>10</td><td>25</td><td>5</td><td>8</td></tr>
@@ -2695,9 +2677,9 @@ Les adversaires de l'Arc I sont restés dans leurs scènes, parce qu'on ne les a
 <p><span class="trait">Arme +5</span> <span class="trait">Venin (faible)</span> <span class="trait">Escalade</span> <span class="trait">Vision nocturne</span> <span class="trait">Bête</span></p>
 <span class="stat-line">Usage</span>
 <p>Elles ne sont pas là pour tuer les PJ. Elles sont là pour user l'huile, la lumière et les nerfs avant le hall. Deux ou trois par rencontre, jamais plus, et toujours depuis un angle mort.</p>
-</div></div>
+<span class="stat-line">Comp&eacute;tences</span><p>Discrétion (Souterraine) 55, Perception 45, Escalade 60, Athétisme 40.</p></div></div>
 <div class="butin-box"><span class="butin-label">Butin</span><span class="butin-text"><strong>Sur la couvée.</strong> Rien. Ce sont des bêtes. Et c'est une information : dans cette montagne, ce qui vous tue ne veut pas vos affaires.</span></div>
-<div class="stat-card"><div class="stat-head"><span class="stat-name">Ungor</span><span class="stat-kind">Forêt des Ombres · ×4 à ×10 · Peur 1 en nombre</span></div><div class="stat-body">
+<div class="stat-card" data-fiche="ungor"><div class="stat-head"><span class="stat-name">Ungor</span><span class="stat-kind">Forêt des Ombres · ×4 à ×10 · Peur 1 en nombre</span></div><div class="stat-body">
 <div class="statblock-wrap"><table class="statblock">
 <tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr>
 <tr><td>Ungor</td><td>4</td><td>30</td><td>35</td><td>30</td><td>35</td><td>35</td><td>35</td><td>30</td><td>25</td><td>30</td><td>20</td><td>11</td></tr>
@@ -2708,12 +2690,97 @@ Les adversaires de l'Arc I sont restés dans leurs scènes, parce qu'on ne les a
 <p><span class="trait">Vision nocturne</span> <span class="trait">Instable</span> Ils harcèlent, tirent, refluent, reviennent. Ils ne tiennent jamais une ligne sans un gor derrière eux.</p>
 <span class="stat-line">Ce qu'il ne faut jamais dire à la table</span>
 <p>Que les villageois n'ont peut-être pas complètement tort. Les ungors naissent, ils ne se fabriquent pas à partir de nourrissons abandonnés. Mais la croyance est ancienne, tenace, et personne ici n'a jamais eu de raison de la vérifier. Toute la campagne tient sur cet écart-là. Ne le comble pas.</p>
-</div></div>
+<span class="stat-line">Comp&eacute;tences</span><p>Corps à corps (Base) 35, Projectiles (Arc) 30, Esquive 33, Discrétion (Rurale) 40, Perception 35.</p></div></div>
 <div class="butin-box"><span class="butin-label">Butin</span><span class="butin-text"><strong>Sur les ungors.</strong>
 <ul class="butin-list">
 <li>Rien de vendable. Des armes qui ne valent pas le port.</li>
 <li><strong>Ce qu'ils portent d'autre</strong> · et c'est là que ça fait mal : des objets d'hommes. Une boucle de ceinturon, une timbale d'étain gravée d'initiales, une chaussure d'enfant. Pris sur des morts, ou pris dans une maison. Les PJ décideront eux-mêmes si c'est un butin.</li>
 </ul></span></div>
+</div>
+
+<div class="scene-panel" id="P11_sc3" style="display:none"><div class="scene-title-bar"><div class="scene-title">Troupes et créatures de l’Acte I</div><div class="scene-nav"></div></div>
+<div class="stat-card" data-fiche="brigands"><div class="stat-head"><span class="stat-name">Brigands</span><span class="stat-kind">×6</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><thead><tr>
+<th>TYPE</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th>
+</tr></thead><tbody>
+<tr><td>Brigand</td><td>4</td><td>35</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>25</td><td>25</td><td>30</td><td>20</td><td>12</td></tr>
+</tbody></table></div>
+<p>I 37</p>
+<p>Cuir (torse uniquement) PA 1</p>
+<p>Arme simple (épée, hache, masse...) · Moyenne · BF+4</p>
+<p>Couteau · Très courte · BF+1 · Inoffensive</p>
+<p>Arc court · 20m · BF+2</p>
+<span class="stat-line">Moral fragile</span><p><em>un test de Moral à -20 dès que l'un d'eux tombe. Ils ne meurent pas pour une missive qu'ils ne comprennent pas.</em></p>
+<span class="stat-line">Comp&eacute;tences</span><p>Corps à corps (Base) 35, Projectiles (Arc) 30, Esquive 32, Discrétion (Rurale) 35, Perception 32, Intimidation 30.</p></div></div>
+<div class="stat-card" data-fiche="brigands"><div class="stat-head"><span class="stat-name">Brigands</span><span class="stat-kind">×3</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><thead><tr>
+<th>TYPE</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th>
+</tr></thead><tbody>
+<tr><td>Brigand</td><td>4</td><td>35</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>25</td><td>25</td><td>30</td><td>20</td><td>12</td></tr>
+</tbody></table></div>
+<p>I 40</p>
+<p>Cuir (torse uniquement) PA 1</p>
+<p>Arme simple (épée, hache, masse...) · Moyenne · BF+4</p>
+<p>Couteau · Très courte · BF+1 · Inoffensive</p>
+<p>Arc court · 20m · BF+2</p>
+<span class="stat-line">Moral fragile</span><p><em>un test de Moral à -20 dès que l'un d'eux tombe. Ils ne meurent pas pour une missive qu'ils ne comprennent pas.</em></p>
+<span class="stat-line">Comp&eacute;tences</span><p>Corps à corps (Base) 35, Projectiles (Arc) 30, Esquive 32, Discrétion (Rurale) 35, Perception 32, Intimidation 30.</p></div></div>
+<div class="stat-card" data-fiche="chef-de-brigands"><div class="stat-head"><span class="stat-name">Chef de Brigands</span><span class="stat-kind">Sébastian le sudiste</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><thead><tr>
+<th>TYPE</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th>
+</tr></thead><tbody>
+<tr><td>Chef de Brigands</td><td>4</td><td>45</td><td>30</td><td>40</td><td>40</td><td>35</td><td>35</td><td>25</td><td>35</td><td>40</td><td>35</td><td>16</td></tr>
+<tr><td>Brigand</td><td>4</td><td>35</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>25</td><td>25</td><td>30</td><td>20</td><td>12</td></tr>
+</tbody></table></div>
+<p>I 43</p>
+<p>Cuir (Partout sauf tête) PA 1</p>
+<p>Plastron de cuir renforcé (torse) PA 2</p>
+<p>Arme simple (épée, hache, masse...) · Moyenne · BF+4</p>
+<p>Dague · Très courte · BF+2</p>
+<p>Arc · 50m · BF+3</p>
+<span class="stat-line">Meneur</span><p><em>Une fois par combat, offre un bonus de +20 en FM pour d'éventuels test de Moral et provoque un test de ralliement.</em></p>
+<span class="stat-line">Comp&eacute;tences</span><p>Corps à corps (Base) 45, Esquive 38, Commandement 40, Intimidation 45, Perception 38, Discrétion (Rurale) 38.</p></div></div>
+<div class="stat-card" data-fiche="brigands-aguerris-de-voss-profil-generique"><div class="stat-head"><span class="stat-name">Brigands aguerris de Voss, profil g&eacute;n&eacute;rique</span><span class="stat-kind">&times;5</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Brigands aguerris de Voss, profil g&eacute;n&eacute;rique</td><td>4</td><td>40</td><td>35</td><td>35</td><td>35</td><td>35</td><td>35</td><td>25</td><td>30</td><td>35</td><td>25</td><td>13</td></tr></table></div><span class="stat-line">Armure</span><p>cuir (torse, PA 1)</p><p><span class="stat-line">Comp&eacute;tences</span>Athl&eacute;tisme 40, Combat de m&ecirc;l&eacute;e (basique) 45, Combat &agrave; distance (arc) 45, Furtivit&eacute; (rural) 40, Perception 40.<br>
+<span class="stat-line">Armes</span>arme simple, &eacute;p&eacute;e ou hache (Moyenne, BF+4) &middot; arc court (20m, BF+2).<br>
+<span class="stat-line">Ex-militaires</span>+10 en CC et en Moral par rapport aux brigands ordinaires. Tactique de groupe coordonn&eacute;e.<br>
+<span class="stat-line">Tactique</span>embuscade &agrave; l&#x2019;arc puis charge si la situation est favorable, fuite si plus d&#x2019;un tombe. Voss leur a martel&eacute; : <em>&laquo;&nbsp;Vivant, on continue. Mort, on est tous morts.&nbsp;&raquo;</em></p></div></div>
+<div class="stat-card" data-fiche="le-troll-d-eau-de-la-combe-aux-saulaies"><div class="stat-head"><span class="stat-name">Le Troll d'Eau de la Combe aux Saulaies</span><span class="stat-kind">Créature solitaire · unique · Peur 3</span></div><div class="stat-body">
+<div class="statblock-wrap"><table class="statblock">
+<tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr>
+<tr><td>Troll d'Eau</td><td>5</td><td>35</td><td>15</td><td>45</td><td>50</td><td>20</td><td>25</td><td>15</td><td>20</td><td>20</td><td>5</td><td>32</td></tr>
+</table></div>
+<p>Trois mètres, quatre cents kilos, une gueule trop large, et de la vapeur qui monte de sa peau quand il sort de l'eau.</p>
+
+<span class="stat-line">Le socle — commun à tous les trolls</span>
+<p><span class="trait">Arme +9</span> <span class="trait">Morsure +8</span> <span class="trait">Armure 2</span> <span class="trait">Coriace</span> <span class="trait">Insensible à la douleur</span> <span class="trait">Régénération</span> <span class="trait">Vomissement</span> <span class="trait">Infecté</span> <span class="trait">Vision nocturne</span> <span class="trait">Peur 3</span> <span class="trait">Taille (Grande)</span> <span class="trait">Stupide</span></p>
+<p>Un troll est un troll : lent d'esprit, maladroit, increvable, et il frappe comme une avalanche. <strong>Sa CC de 35 n'est pas une erreur.</strong> Il n'est pas habile et n'a jamais eu besoin de l'être : ce qui le rend mortel, c'est ce qui arrive quand il touche. Arme +9 contre des PJ en cuir, ça envoie sur la table de Critiques, et la table de Critiques ne pardonne pas.</p>
+<p><strong>Insensible à la douleur</strong> mérite un rappel, parce qu'on l'oublie toujours : il ignore les malus liés aux Blessures. Il tape aussi fort au dernier round qu'au premier. Il n'y a pas de moment où il faiblit.</p>
+
+<span class="stat-line">Ce qui en fait un troll d'eau, et rien d'autre</span>
+<p><span class="trait">Aquatique</span> <span class="trait">Viscosité</span> <span class="trait">Vomi acide</span> <span class="trait">Pourriture des Eaux</span></p>
+<p>Quatre écarts sur le socle. Tout le reste est du troll standard : si tu en as déjà mené un, tu sais mener celui-là.</p>
+
+<span class="stat-line">Aquatique</span>
+<p>Il respire sous l'eau et s'y déplace à pleine vitesse. Le lac n'est pas un décor : c'est sa maison, son refuge et son avantage. Blessé sérieusement, il plonge, et il a raison de plonger.</p>
+
+<span class="stat-line">Régénération, et pourquoi l'eau change tout</span>
+<p>Base : il récupère <strong>5 Blessures</strong> (son Bonus d'Endurance) au début de chacun de ses tours. <strong>Les blessures de feu et d'acide ne se régénèrent pas.</strong> À 0 Blessure il s'effondre sans mourir et continue de se refaire : seul le feu prolongé sur la carcasse en vient à bout.</p>
+<p><strong>Sa particularité :</strong> immergé, il régénère <strong>le double, soit 10 par round</strong>, et l'eau <strong>éteint toute combustion en cours</strong>. Autrement dit, dès qu'il touche le lac, il annule à la fois vos dégâts et le seul moyen que vous ayez de le tuer. <strong>Le combat ne porte pas sur ses 32 Blessures. Il porte sur trois mètres de berge.</strong></p>
+
+<span class="stat-line">Viscosité</span>
+<p>Sa peau suinte une humeur froide et gluante. <strong>Toute attaque de mêlée contre lui subit <span class="mod mod-neg">(-10)</span> en CC</strong> : les armes glissent, les prises se défont, on hésite au contact. Les attaques à distance ne sont pas affectées. Une attaque de feu (torche, sort, alchimie) <strong>annule ce malus pour le tour</strong> : la chaleur sèche la peau.</p>
+<p>C'est le second doigt qui pointe vers le feu, après la régénération. Deux mécaniques, une seule réponse, et pas un mot d'explication.</p>
+
+<span class="stat-line">Vomi acide</span>
+<p>Sa version du trait <em>Vomissement</em>. Une fois par combat, action complète : cône de 4 mètres. Tous les PJ dedans testent leur Agilité. Échec = <strong>1d10 dégâts perforants ignorant l'armure non métallique</strong>, plus 1d10 au tour suivant si l'acide n'est pas neutralisé (eau, alcool, sort, prière). À déclencher quand trois cibles au moins sont alignées, et qu'il est à mi-Blessures. La végétation alentour se flétrit en sifflant.</p>
+
+<span class="stat-line">Pourriture des Eaux</span>
+<p>Sa version du trait <em>Infecté</em>. Sur une réussite critique de sa morsure, le PJ touché teste son Endurance ou contracte la maladie : <span class="mod mod-neg">(-10)</span> en E et en Ag pendant 1d10 jours, traitable par Shallya. La conséquence dure bien après le combat, et c'est le but.</p>
+
+<span class="stat-line">Stupide, et manipulable</span>
+<p>Intelligence d'un enfant rageur. Il se concentre sur la cible qui lui a fait le plus mal au tour précédent. Il ne comprend pas la ruse, mais il ne capitule jamais. Un test de Charme à <span class="mod mod-neg">(-20)</span> ou de Marchandage à <span class="mod mod-neg">(-30)</span> le distrait un round : on parle à un mur affamé. Bien plus efficace : agiter quelque chose qui sent fort (viande, sang, alcool) pour le faire dévier. De la berge, si possible.</p>
+
+<span class="stat-line">Peur 3</span>
+<p>Test de Sang-froid au moment où il émerge pleinement de l'eau, ou bondit du sommet de la combe. Une seule fois par combat : au second jet, la familiarisation joue, et s'ils ont vu des dessins ou entendu des témoignages avant, ils y échappent.</p>
+<p><strong>C'est brutal, et c'est voulu.</strong> Avec des FM autour de 35-40, une bonne moitié du groupe démarre <em>Effrayé 3</em>. Ne compense pas, ne l'adoucis pas : c'est un troll, et les deux premiers rounds sont censés être une déroute. Le fil n'a de sens que si le groupe se reprend ensuite : c'est là qu'est la victoire, pas dans les dégâts.</p>
+<span class="stat-line">Comp&eacute;tences</span><p>Corps à corps (Base) 45, Résistance 55, Perception 30, Discrétion (Rurale) 40, Nage 60.</p></div></div>
 </div>
 </div>
 
@@ -3252,6 +3319,9 @@ function instantane(sec){
   /* les portraits ne sont jamais stockés dans le corps du texte :
      le bloc ne garde que son identifiant, l'image vit à part. */
   c.querySelectorAll(".pf").forEach(function(e){ e.innerHTML = ""; e.classList.remove("has"); });
+  /* les fiches dépliées sont un affichage, pas du contenu */
+  c.querySelectorAll(".fr-slot").forEach(function(e){ e.innerHTML = ""; });
+  c.querySelectorAll(".fiche-ref").forEach(function(e){ e.classList.remove("open"); });
   /* surbrillance passagere d'un bloc neuf : jamais enregistree */
   c.querySelectorAll(".bloc-neuf, .bt-cible, .bt-doomed, [data-neuf]").forEach(function(e){
     e.classList.remove("bloc-neuf");
@@ -4119,6 +4189,91 @@ document.addEventListener("paste", function(e){
   var sec = z.closest(".section-panel");
   if (sec) marquerSale(sec);
 }, true);
+
+
+/* ============================================================
+   9. FICHES PARTAGÉES
+   Le profil de référence vit dans le glossaire. Les scènes ne
+   portent qu'un renvoi qui le déplie sur place, en lisant le
+   bloc réel : une seule version à tenir à jour, jamais de copie
+   qui se périme dans un coin.
+   ============================================================ */
+function indexFiches(){
+  var m = {};
+  document.querySelectorAll("[data-fiche]").forEach(function(e){ m[e.getAttribute("data-fiche")] = e; });
+  return m;
+}
+
+function ouvrirRef(ref){
+  var slot = ref.querySelector(".fr-slot");
+  var btn  = ref.querySelector(".fr-b");
+  if (!slot || !btn) return;
+  if (ref.classList.contains("open")) { ref.classList.remove("open"); slot.innerHTML = ""; return; }
+  var cle = ref.getAttribute("data-ref");
+  var src = indexFiches()[cle];
+  if (!src) {
+    btn.classList.add("absent");
+    toast("Fiche « " + cle + " » introuvable dans le glossaire", true);
+    return;
+  }
+  btn.classList.remove("absent");
+  var c = src.cloneNode(true);
+  c.removeAttribute("data-fiche");
+  c.removeAttribute("contenteditable");
+  c.querySelectorAll("[contenteditable]").forEach(function(e){ e.removeAttribute("contenteditable"); });
+  c.classList.remove("bt-cible", "bt-doomed", "bloc-neuf");
+  slot.innerHTML = "";
+  slot.appendChild(c);
+  var go = document.createElement("button");
+  go.className = "fr-go";
+  go.type = "button";
+  go.textContent = "Modifier cette fiche dans le glossaire";
+  go.setAttribute("data-goto", cle);
+  slot.appendChild(go);
+  ref.classList.add("open");
+  chargerPortraitsVisibles();
+}
+
+document.addEventListener("click", function(e){
+  var go = e.target.closest ? e.target.closest("[data-goto]") : null;
+  if (go) {
+    var cible = indexFiches()[go.getAttribute("data-goto")];
+    if (!cible) return;
+    var sec = cible.closest(".section-panel");
+    var sc  = cible.closest(".scene-panel");
+    if (sec && sc && typeof showScene === "function") showScene(sec.id, sc.id);
+    setTimeout(function(){
+      try { cible.scrollIntoView({ behavior: "smooth", block: "center" }); } catch(err){}
+      cible.classList.add("bloc-neuf");
+      setTimeout(function(){ cible.classList.remove("bloc-neuf"); }, 2400);
+    }, 60);
+    return;
+  }
+  var b = e.target.closest ? e.target.closest(".fr-b") : null;
+  if (!b) return;
+  var ref = b.closest(".fiche-ref");
+  if (ref) ouvrirRef(ref);
+});
+
+/* Contrôle : quels renvois ne pointent vers rien, quelles fiches
+   ne sont jamais appelées. Accessible depuis la console ou le bouton. */
+window.auditFiches = function(){
+  var idx = indexFiches();
+  var manquants = [], appeles = {};
+  document.querySelectorAll(".fiche-ref[data-ref]").forEach(function(r){
+    var k = r.getAttribute("data-ref");
+    appeles[k] = true;
+    if (!idx[k]) manquants.push(k);
+  });
+  var jamais = Object.keys(idx).filter(function(k){ return !appeles[k]; });
+  var msg = "Fiches au glossaire : " + Object.keys(idx).length
+          + "\nRenvois dans les scènes : " + Object.keys(appeles).length
+          + "\nRenvois sans fiche : " + (manquants.length ? manquants.join(", ") : "aucun")
+          + "\nFiches jamais appelées : " + (jamais.length ? jamais.join(", ") : "aucune");
+  console.log(msg);
+  toast(manquants.length ? manquants.length + " renvoi(s) sans fiche — voir la console" : "Toutes les fiches sont reliées", !!manquants.length);
+  return { manquants: manquants, jamais: jamais, total: Object.keys(idx).length };
+};
 
 /* ---------- Démarrage ---------- */
 poserPortraits();
