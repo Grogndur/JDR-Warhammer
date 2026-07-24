@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>L'Éclipse — Scénario</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
 :root {
   --ink:#09090e; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
@@ -173,6 +175,84 @@ body.editing .main{padding-bottom:6rem;}
 .pwd-btn{width:100%;font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem;border-radius:2px;cursor:pointer;background:rgba(184,146,42,0.15);border:1px solid rgba(184,146,42,0.4);color:var(--GLD);}
 .pwd-error{font-size:0.8rem;color:#c07070;margin-top:0.5rem;min-height:1.1rem;font-style:italic;}
 .pwd-home{font-size:0.75rem;color:var(--SUB);margin-top:0.75rem;display:inline-block;text-decoration:none;}
+
+/* ══════════════════════════════════════════════════════════
+   MOTEUR D'ÉDITION — barre, portraits, palette, outils de bloc
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Barre d'insertion ── */
+.eb2{position:fixed;left:0;right:0;bottom:0;z-index:880;background:rgba(20,14,32,0.98);border-top:1px solid rgba(103,78,167,0.5);padding:0.4rem 0.6rem;display:none;gap:0.3rem;align-items:center;flex-wrap:wrap;}
+body.editing .eb2{display:flex;}
+body.editing .edit-bar{bottom:auto;}
+.eb2-g{display:flex;gap:0.28rem;align-items:center;flex-wrap:wrap;}
+.eb2-s{width:1px;height:20px;background:rgba(255,255,255,0.14);margin:0 0.3rem;}
+.eb2-b{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:var(--parchment);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.05em;padding:0.34rem 0.55rem;border-radius:2px;cursor:pointer;white-space:nowrap;}
+.eb2-b:hover{border-color:rgba(103,78,167,0.65);color:#c9b8ec;}
+.eb2-b.prim{background:rgba(103,78,167,0.3);border-color:rgba(103,78,167,0.6);}
+.eb2-b.warn{color:#e08c8c;}
+.eb2-n{font-size:0.72rem;color:var(--SUB);font-style:italic;margin-left:auto;}
+@media(max-width:820px){.eb2-n{display:none;}}
+body.editing .main{padding-bottom:9rem;}
+body.editing .scene-panel{outline:1px dashed rgba(103,78,167,0.22);outline-offset:6px;}
+
+/* ── Message passager ── */
+.eb2-t{position:fixed;left:50%;transform:translateX(-50%);bottom:5.5rem;z-index:960;background:rgba(20,14,32,0.98);border:1px solid rgba(103,78,167,0.6);color:var(--parchment);font-family:'Cinzel',serif;font-size:0.66rem;letter-spacing:0.06em;padding:0.5rem 0.9rem;border-radius:3px;opacity:0;pointer-events:none;transition:opacity 0.25s;}
+.eb2-t.show{opacity:1;}
+.eb2-t.err{border-color:rgba(180,60,60,0.7);color:#f0c8c8;}
+
+/* ── Portraits de PNJ ── */
+.npc-head{display:flex;align-items:center;gap:0.75rem;}
+.pnj-header{display:flex;align-items:center;gap:0.75rem;}
+.head-txt{flex:1;min-width:0;}
+.pf{flex:0 0 auto;width:74px;height:74px;border-radius:2px;border:1px solid rgba(184,146,42,0.45);background:rgba(0,0,0,0.32);cursor:pointer;padding:0;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
+.pnj-header .pf{border-color:rgba(103,78,167,0.55);}
+.pf:hover{border-color:#e0c15e;}
+.pnj-header .pf:hover{border-color:#b8a3f0;}
+.pf img{width:100%;height:100%;object-fit:cover;display:block;}
+.pf-ph{font-family:'Cinzel',serif;font-size:0.5rem;letter-spacing:0.12em;color:rgba(212,200,168,0.4);text-transform:uppercase;line-height:1.3;text-align:center;pointer-events:none;}
+.pf-busy{position:absolute;inset:0;background:rgba(9,9,14,0.72);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:0.5rem;color:#e0c15e;letter-spacing:0.1em;}
+.pf-menu{position:fixed;z-index:900;background:rgba(16,12,26,0.99);border:1px solid rgba(103,78,167,0.55);border-radius:2px;padding:0.25rem;display:flex;flex-direction:column;gap:0.15rem;box-shadow:0 6px 22px rgba(0,0,0,0.65);}
+.pf-menu button{background:none;border:none;color:var(--parchment-dark);font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:0.06em;padding:0.4rem 0.8rem;cursor:pointer;text-align:left;white-space:nowrap;border-radius:2px;}
+.pf-menu button:hover{background:rgba(255,255,255,0.09);color:var(--parchment);}
+.pf-menu button.warn{color:#e08c8c;}
+.pf-view{position:fixed;inset:0;background:rgba(9,9,14,0.94);z-index:9000;display:none;align-items:center;justify-content:center;padding:1.5rem;cursor:zoom-out;}
+.pf-view.on{display:flex;}
+.pf-view img{max-width:min(560px,92vw);max-height:88vh;border:1px solid rgba(103,78,167,0.5);border-radius:2px;}
+@media(max-width:640px){.pf{width:58px;height:58px;}}
+
+/* ── Indicateur de synchronisation ── */
+.sync-flag{font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;padding:0.2rem 0.5rem;border-radius:2px;border:1px solid transparent;white-space:nowrap;}
+.sync-flag.ok{color:#8fae7e;border-color:rgba(94,128,79,0.45);background:rgba(94,128,79,0.13);}
+.sync-flag.pending{color:#e8cf72;border-color:rgba(184,146,42,0.45);background:rgba(184,146,42,0.13);}
+.sync-flag.err{color:#e08c8c;border-color:rgba(160,50,50,0.55);background:rgba(160,50,50,0.16);}
+
+/* ── Couleur du texte ── */
+.eb-swatch{display:inline-block;width:11px;height:11px;border-radius:2px;border:1px solid rgba(255,255,255,0.35);vertical-align:-1px;margin-left:0.35rem;background:var(--parchment-dark);}
+.pal{position:fixed;z-index:950;background:rgba(16,12,26,0.99);border:1px solid rgba(103,78,167,0.55);border-radius:3px;padding:0.5rem;box-shadow:0 -8px 26px rgba(0,0,0,0.7);display:none;width:206px;}
+.pal.on{display:block;}
+.pal-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0.3rem;}
+.pal-c{width:100%;aspect-ratio:1;border-radius:2px;border:1px solid rgba(255,255,255,0.22);cursor:pointer;padding:0;}
+.pal-c:hover{border-color:var(--parchment);transform:scale(1.12);}
+.pal-row{display:flex;gap:0.3rem;margin-top:0.45rem;align-items:center;}
+.pal-row button{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);color:var(--parchment-dark);font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:0.05em;padding:0.32rem 0.3rem;border-radius:2px;cursor:pointer;}
+.pal-row button:hover{background:rgba(255,255,255,0.11);color:var(--parchment);}
+.pal-row input[type=color]{width:30px;height:26px;padding:0;border:1px solid rgba(255,255,255,0.2);background:none;border-radius:2px;cursor:pointer;}
+.pal-t{font-family:'Cinzel',serif;font-size:0.54rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(212,200,168,0.5);margin-bottom:0.4rem;}
+
+/* ── Outils de bloc ── */
+.bt{position:fixed;z-index:940;display:none;gap:2px;background:rgba(16,12,26,0.97);border:1px solid rgba(103,78,167,0.6);border-radius:3px;padding:2px;box-shadow:0 3px 14px rgba(0,0,0,0.6);}
+.bt.on{display:flex;}
+.bt button{background:none;border:none;color:var(--parchment-dark);font-family:'Cinzel',serif;font-size:0.68rem;line-height:1;padding:0.3rem 0.42rem;cursor:pointer;border-radius:2px;min-width:24px;}
+.bt button:hover{background:rgba(255,255,255,0.12);color:var(--parchment);}
+.bt button.sup:hover{background:rgba(150,30,30,0.55);color:#ffdede;}
+.bt button.sup.armed{background:#8B1A1A;color:#ffe4e4;font-size:0.56rem;letter-spacing:0.06em;padding:0.3rem 0.5rem;}
+.bt-cible{outline:1px dashed rgba(184,146,42,0.6);outline-offset:3px;}
+.bt-doomed{outline:1px solid #c05050!important;outline-offset:3px;background:rgba(139,26,26,0.14)!important;}
+@media(max-width:640px){.bt button{padding:0.42rem 0.5rem;min-width:32px;font-size:0.75rem;}}
+
+/* ── Bloc fraîchement inséré ── */
+@keyframes neuf-pulse{0%{box-shadow:0 0 0 0 rgba(103,78,167,0.8);}70%{box-shadow:0 0 0 12px rgba(103,78,167,0);}100%{box-shadow:0 0 0 0 rgba(103,78,167,0);}}
+.bloc-neuf{animation:neuf-pulse 1.1s ease-out 2;outline:1px solid rgba(147,120,220,0.9);outline-offset:2px;scroll-margin-top:80px;}
 </style>
 </head>
 <body>
@@ -2759,7 +2839,6 @@ document.getElementById('btn-menu').addEventListener('click', toggleSidebar);
   <span class="edit-bar-title">Mode édition</span>
   <span class="edit-status" id="edit-status"></span>
   <button class="edit-btn primary" onclick="editSave()">&#128190; Enregistrer</button>
-  <button class="edit-btn" onclick="editPushGitHub()">&#8679; Pousser GitHub</button>
   <button class="edit-btn" onclick="editDownload()">&#8681; Télécharger le HTML</button>
   <button class="edit-btn" onclick="editReset()">&#8634; Réinitialiser</button>
   <button class="edit-btn" onclick="editToggle()">&#10005; Quitter</button>
@@ -2774,7 +2853,10 @@ var TOKEN_KEY = 'gh_token';
 // Appliquer une édition sauvegardée au chargement
 (function(){
   var saved = localStorage.getItem(EDIT_KEY);
-  if(saved){
+  /* Reprise unique : si des modifications locales trainent, on les applique
+     pour qu'elles partent en base au premier chargement, puis on oublie
+     definitivement ce mecanisme au profit de la synchronisation en ligne. */
+  if(saved && !localStorage.getItem('eclipse_cache_v2')){
     document.querySelector('.main').innerHTML = saved;
     // remettre l'affichage par défaut (accueil visible, sections fermées)
     resetDisplayState(document);
@@ -2937,5 +3019,1029 @@ window.addEventListener('beforeunload', function(){
   if(document.body.classList.contains('editing')) editSave(true);
 });
 </script>
+<script>
+/* ============================================================
+   L'ÉCLIPSE — moteur d'édition en ligne
+   Blocs insérables, portraits de PNJ, couleur du texte,
+   outils de bloc et enregistrement automatique Firebase.
+   Même moteur que « De Boue et de Sang ».
+   ============================================================ */
+(function(){
+"use strict";
+
+/* ── Message passager (Éclipse n'en avait pas) ── */
+var tst = document.createElement("div");
+tst.className = "eb2-t";
+document.body.appendChild(tst);
+var tstT = null;
+window.toast = function(msg, err){
+  clearTimeout(tstT);
+  tst.textContent = msg;
+  tst.className = "eb2-t show" + (err ? " err" : "");
+  tstT = setTimeout(function(){ tst.className = "eb2-t" + (err ? " err" : ""); }, 2200);
+};
+function toast(m, e){ window.toast(m, e); }
+
+/* ── État d'édition ── */
+Object.defineProperty(window, "editing", {
+  get: function(){ return document.body.classList.contains("editing"); }
+});
+
+/* ── Gabarits de blocs, dans le vocabulaire visuel d'Éclipse ── */
+window.BLOCKS = {
+  lecture:  '<div class="lecture">Texte d\'ambiance à lire aux joueurs, presque tel quel.</div>',
+  mj:       '<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Note, secret ou conseil réservé au meneur.</span></div>',
+  indice:   '<div class="indice-box"><span class="indice-label">Indice</span><span class="indice-text">Ce que les PJ peuvent obtenir, et vers quoi cela les mène.</span></div>',
+  jet:      '<div class="jet-roll"><span class="jet-label">Jet — Compétence</span><span class="jet-detail">Difficulté <span class="mod mod-neu">(0)</span>. Réussite : ce qu\'ils apprennent. Échec : ce qui leur coûte.</span></div>',
+  butin:    '<div class="loot"><span class="loot-label">Butin</span><span class="loot-text">Objets, argent et documents récupérables.</span></div>',
+  recap:    '<div class="recap-item"><div class="recap-src">Source</div><div class="recap-give">Ce qu\'elle apporte à l\'enquête</div><div class="recap-to">&#8594; Vers quoi elle mène</div></div>',
+  dialogue: '<div class="dialogue"><span class="dialogue-who">Nom</span><span class="dialogue-text">Réplique, telle qu\'elle sort de sa bouche.</span></div>',
+  ambiance: '<p class="ambiance"><em>Notation d\'ambiance, odeur, bruit, lumière.</em></p>',
+  titre:    '<div class="section-head"><strong>TITRE DE SECTION</strong></div>',
+  para:     '<p>Paragraphe.</p>',
+  liste:    '<ul class="scene-list"><li>Premier point.</li><li>Deuxième point.</li></ul>',
+  pnj:      '<div class="pnj-header">PNJ Nom</div>'
+          + '<p class="ambiance"><em>Silhouette, voix, manie. Ce que les PJ voient en trois secondes.</em></p>'
+          + '<ul class="scene-list"><li><strong>Ce qu\'il veut :</strong> objectif avouable, objectif réel.</li>'
+          + '<li><strong>Ce qu\'il sait :</strong> ce qu\'il lâche, ce qu\'il faut lui arracher.</li>'
+          + '<li><strong>Compétences notables :</strong> Compétence 40, Compétence 40.</li></ul>',
+  profil:   (function(){
+              var t = ["M","CC","CT","F","E","I","Ag","Dex","Int","FM","Soc","B"];
+              var v = ["4","30","30","30","30","30","30","30","30","30","30","11"];
+              var g = "";
+              for (var i = 0; i < t.length; i++)
+                g += '<div class="stat-cell"><span class="stat-label">' + t[i] + '</span><span class="stat-val">' + v[i] + '</span></div>';
+              return '<div class="npc-stat"><div class="npc-name">Nom du PNJ</div>'
+                   + '<div class="npc-sub">Rôle — Profil de combat</div>'
+                   + '<div class="stat-grid">' + g + '</div>'
+                   + '<div class="npc-gear">Arme — BF+4 · Armure : aucune (PA 0)</div>'
+                   + '<div class="npc-ability"><strong>Compétences :</strong> Corps à corps 30, Esquive 30, Perception 30.</div>'
+                   + '<div class="npc-ability"><strong>Talents :</strong> —</div>'
+                   + '<div class="npc-ability"><strong>En jeu :</strong> comment il se bat, quand il fuit, ce qu\'il fait si tout tourne mal.</div>'
+                   + '</div>';
+            })()
+};
+
+/* ── Barre d'insertion ── */
+(function(){
+  var b = document.createElement("div");
+  b.className = "eb2";
+  b.id = "eb2";
+  var ins = [
+    ["lecture", "Lecture"], ["mj", "MJ"], ["indice", "Indice"], ["jet", "Jet"],
+    ["butin", "Butin"], ["recap", "Récap"], ["dialogue", "Dialogue"],
+    ["ambiance", "Ambiance"], ["pnj", "PNJ"], ["profil", "Profil"],
+    ["titre", "Titre"], ["para", "¶"], ["liste", "Liste"]
+  ];
+  var g1 = '<div class="eb2-g">'
+    + '<button class="eb2-b" data-cmd="bold"><strong>G</strong></button>'
+    + '<button class="eb2-b" data-cmd="italic"><em>I</em></button>'
+    + '<button class="eb2-b" data-cmd="insertUnorderedList">Liste</button>'
+    + '<button class="eb2-b" data-cmd="undo">Annuler</button>'
+    + '</div><div class="eb2-s"></div><div class="eb2-g">'
+    + ins.map(function(x){ return '<button class="eb2-b" data-ins="' + x[0] + '">+ ' + x[1] + '</button>'; }).join("")
+    + '</div><div class="eb2-s"></div><div class="eb2-g">'
+    + '<span class="sync-flag" id="sync-flag"></span>'
+    + '<button class="eb2-b prim" id="eb-save">Enregistrer</button>'
+    + '<button class="eb2-b" id="eb-load">Recharger du serveur</button>'
+    + '<button class="eb2-b" id="eb-json">Sauvegarde JSON</button>'
+    + '</div><span class="eb2-n">Enregistrement automatique · survole un bloc pour le déplacer ou le supprimer</span>';
+  b.innerHTML = g1;
+  document.body.appendChild(b);
+
+  b.querySelectorAll("[data-cmd]").forEach(function(x){
+    x.addEventListener("mousedown", function(e){ e.preventDefault(); });
+    x.addEventListener("click", function(){ document.execCommand(x.getAttribute("data-cmd"), false, null); });
+  });
+})();
+
+/* ── setEditing : Éclipse basculait tout .main d'un coup ── */
+window.setEditing = function(on){
+  document.body.classList.toggle("editing", !!on);
+  var main = document.querySelector(".main");
+  if (main) main.contentEditable = "false";
+  document.querySelectorAll(".scene-panel").forEach(function(p){
+    if (on) p.setAttribute("contenteditable", "true"); else p.removeAttribute("contenteditable");
+  });
+  document.querySelectorAll(".pf").forEach(function(n){ n.setAttribute("contenteditable", "false"); });
+  var st = document.getElementById("edit-status");
+  if (st) st.textContent = on ? "Édition active. Tout est enregistré en ligne automatiquement." : "";
+};
+window.editToggle = function(){ window.setEditing(!window.editing); };
+
+var FB_CONFIG = {
+  apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+  authDomain: "warhammer-table-jdr.firebaseapp.com",
+  databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "warhammer-table-jdr",
+  storageBucket: "warhammer-table-jdr.firebasestorage.app",
+  messagingSenderId: "347804803970",
+  appId: "1:347804803970:web:43e062299c53e59d20e59b"
+};
+var RACINE  = "scenarios/eclipse";      /* branche du scénario dans la base */
+var CACHE   = "eclipse_cache_v2";       /* miroir local, affichage instantané */
+var CLIENT  = Math.random().toString(36).slice(2, 10);
+
+var db = null, refSec = null, refImg = null;
+try {
+  if (typeof firebase !== "undefined") {
+    if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+    db = firebase.database();
+    refSec = db.ref(RACINE + "/sections");
+    refImg = db.ref(RACINE + "/portraits");
+  }
+} catch (e) { console.warn("Firebase indisponible :", e); }
+
+/* ---------- Indicateur d'état ---------- */
+var flag = document.getElementById("sync-flag");
+var flagTimer = null;
+function etat(txt, cls){
+  if (!flag) return;
+  clearTimeout(flagTimer);
+  flag.textContent = txt;
+  flag.className = "sync-flag " + (cls || "");
+  if (cls === "ok") flagTimer = setTimeout(function(){ flag.textContent = ""; flag.className = "sync-flag"; }, 2600);
+}
+
+/* ============================================================
+   1. INSTANTANÉ PROPRE D'UNE SECTION
+   On retire tout ce qui est état d'affichage ou contenu
+   reconstruit au chargement, pour ne stocker que le fond.
+   ============================================================ */
+function instantane(sec){
+  var c = sec.cloneNode(true);
+  c.removeAttribute("style");
+  c.removeAttribute("contenteditable");
+  c.querySelectorAll("[contenteditable]").forEach(function(e){ e.removeAttribute("contenteditable"); });
+  c.querySelectorAll(".scene-panel").forEach(function(e){ e.setAttribute("style", "display:none"); });
+  /* les portraits ne sont jamais stockés dans le corps du texte :
+     le bloc ne garde que son identifiant, l'image vit à part. */
+  c.querySelectorAll(".pf").forEach(function(e){ e.innerHTML = ""; e.classList.remove("has"); });
+  /* surbrillance passagere d'un bloc neuf : jamais enregistree */
+  c.querySelectorAll(".bloc-neuf, .bt-cible, .bt-doomed, [data-neuf]").forEach(function(e){
+    e.classList.remove("bloc-neuf");
+    e.classList.remove("bt-cible");
+    e.classList.remove("bt-doomed");
+    e.removeAttribute("data-neuf");
+    if (!e.getAttribute("class")) e.removeAttribute("class");
+  });
+  return c.outerHTML;
+}
+
+function sections(){
+  return Array.prototype.slice.call(document.querySelectorAll(".section-panel"));
+}
+
+/* ============================================================
+   2. ÉCRITURE — groupée, section par section
+   ============================================================ */
+var sales = {};          /* sections modifiées en attente d'écriture */
+var timerEcriture = null;
+var dernierEnvoi = {};   /* ce qu'on a écrit soi-même, pour ignorer l'écho */
+var pauseSync = false;
+
+function marquerSale(sec){
+  if (!sec || !sec.id) return;
+  sales[sec.id] = true;
+  etat("modifié", "pending");
+  clearTimeout(timerEcriture);
+  timerEcriture = setTimeout(ecrire, 1100);
+}
+
+function ecrire(){
+  if (!refSec) { etat("hors ligne", "err"); return; }
+  var ids = Object.keys(sales);
+  if (!ids.length) return;
+  sales = {};
+  var lot = {};
+  ids.forEach(function(id){
+    var sec = document.getElementById(id);
+    if (!sec) return;
+    var html = instantane(sec);
+    dernierEnvoi[id] = html;
+    lot[id] = { html: html, at: Date.now(), par: CLIENT };
+  });
+  etat("envoi…", "pending");
+  refSec.update(lot).then(function(){
+    etat("enregistré", "ok");
+    try { localStorage.setItem(CACHE, JSON.stringify(miroirLocal())); } catch(e){}
+  }).catch(function(e){
+    console.warn("Écriture échouée :", e);
+    etat("échec réseau", "err");
+    ids.forEach(function(id){ sales[id] = true; });
+  });
+}
+
+function miroirLocal(){
+  var o = {};
+  sections().forEach(function(s){ o[s.id] = instantane(s); });
+  return o;
+}
+
+/* ============================================================
+   3. LECTURE — au chargement, puis en direct
+   ============================================================ */
+function appliquer(id, html){
+  var sec = document.getElementById(id);
+  if (!sec || !html) return false;
+  /* jamais pendant qu'on tape dedans */
+  if (document.activeElement && sec.contains(document.activeElement)) return false;
+  if (sales[id]) return false;
+  var visible = sec.style.display !== "none";
+  var sceneOuverte = null;
+  sec.querySelectorAll(".scene-panel").forEach(function(p){ if (p.style.display !== "none") sceneOuverte = p.id; });
+
+  var tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  var neuf = tmp.firstElementChild;
+  if (!neuf) return false;
+  sec.parentNode.replaceChild(neuf, sec);
+
+  if (visible) {
+    neuf.style.display = "block";
+    var cible = sceneOuverte && neuf.querySelector("#" + CSS.escape(sceneOuverte));
+    if (!cible) cible = neuf.querySelector(".scene-panel");
+    if (cible) cible.style.display = "block";
+  } else {
+    neuf.style.display = "none";
+  }
+  return true;
+}
+
+function hydrater(){
+  /* a. miroir local d'abord : affichage immédiat, même hors réseau */
+  try {
+    var brut = localStorage.getItem(CACHE);
+    if (brut) {
+      var loc = JSON.parse(brut);
+      Object.keys(loc).forEach(function(id){ appliquer(id, loc[id]); });
+    }
+  } catch(e){}
+  apresRemplacement();
+
+  if (!refSec) { etat("hors ligne", "err"); return; }
+
+  /* b. serveur : source de vérité */
+  etat("lecture…", "pending");
+  refSec.once("value").then(function(snap){
+    var v = snap.val();
+    if (!v) {
+      /* première fois : on sème la base avec le contenu du fichier */
+      var lot = {};
+      sections().forEach(function(s){ lot[s.id] = { html: instantane(s), at: Date.now(), par: CLIENT }; });
+      refSec.set(lot);
+      etat("base initialisée", "ok");
+    } else {
+      Object.keys(v).forEach(function(id){
+        if (v[id] && v[id].html) { dernierEnvoi[id] = v[id].html; appliquer(id, v[id].html); }
+      });
+      etat("à jour", "ok");
+    }
+    apresRemplacement();
+    try { localStorage.setItem(CACHE, JSON.stringify(miroirLocal())); } catch(e){}
+    ecouterDirect();
+  }).catch(function(e){
+    console.warn("Lecture échouée :", e);
+    etat("hors ligne", "err");
+  });
+}
+
+function ecouterDirect(){
+  if (!refSec) return;
+  refSec.on("child_changed", function(snap){
+    var id = snap.key, v = snap.val();
+    if (!v || !v.html) return;
+    if (v.par === CLIENT) return;              /* notre propre écho */
+    if (v.html === dernierEnvoi[id]) return;
+    if (pauseSync) return;
+    if (appliquer(id, v.html)) {
+      dernierEnvoi[id] = v.html;
+      apresRemplacement();
+      toast("Mis à jour depuis un autre appareil");
+    }
+  });
+}
+
+/* Après tout remplacement de DOM : nav, sommaire, portraits, édition. */
+function apresRemplacement(){
+  if (typeof buildNav === "function") buildNav();
+  if (typeof rebuildTOC === "function") rebuildTOC();
+  poserPortraits();
+  if (window.editing) rendreEditable(true);
+  chargerPortraitsVisibles();
+}
+
+function rendreEditable(on){
+  document.querySelectorAll(".scene-panel").forEach(function(p){
+    if (on) p.setAttribute("contenteditable", "true"); else p.removeAttribute("contenteditable");
+  });
+  document.querySelectorAll(".scene-nav, .pf").forEach(function(n){ n.setAttribute("contenteditable", "false"); });
+}
+
+/* ============================================================
+   4. PORTRAITS DE PNJ
+   Un encart carré dans l'en-tête de chaque bloc de stats et de
+   chaque fiche PNJ. L'image est compressée puis rangée à part
+   dans la base, jamais dans le corps du document.
+   ============================================================ */
+function nouvelId(){ return "pf" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+function encart(){
+  var b = document.createElement("button");
+  b.className = "pf";
+  b.type = "button";
+  b.setAttribute("contenteditable", "false");
+  b.setAttribute("data-pf", nouvelId());
+  b.innerHTML = '<span class="pf-ph">Portrait</span>';
+  return b;
+}
+
+function poserPortraits(){
+  /* Profils de combat : on regroupe nom et sous-titre pour loger l'encart. */
+  document.querySelectorAll(".npc-stat").forEach(function(card){
+    if (card.querySelector(":scope > .npc-head")) return;
+    var nom = card.querySelector(":scope > .npc-name");
+    var sub = card.querySelector(":scope > .npc-sub");
+    if (!nom) return;
+    var head = document.createElement("div");
+    head.className = "npc-head";
+    var txt = document.createElement("div");
+    txt.className = "head-txt";
+    card.insertBefore(head, nom);
+    txt.appendChild(nom);
+    if (sub) txt.appendChild(sub);
+    head.appendChild(encart());
+    head.appendChild(txt);
+  });
+  /* Bandeaux PNJ : l'encart se glisse devant le libellé. */
+  document.querySelectorAll(".pnj-header").forEach(function(band){
+    if (band.querySelector(":scope > .pf")) return;
+    var restant = Array.prototype.slice.call(band.childNodes);
+    var txt = document.createElement("div");
+    txt.className = "head-txt";
+    restant.forEach(function(n){ txt.appendChild(n); });
+    band.appendChild(encart());
+    band.appendChild(txt);
+  });
+}
+
+var portraitsCharges = {};
+
+function chargerPortraitsVisibles(){
+  if (!refImg) return;
+  document.querySelectorAll(".scene-panel").forEach(function(p){
+    if (p.style.display === "none") return;
+    if (p.closest(".section-panel") && p.closest(".section-panel").style.display === "none") return;
+    p.querySelectorAll(".pf[data-pf]").forEach(function(btn){
+      var id = btn.getAttribute("data-pf");
+      if (btn.querySelector("img")) return;
+      if (portraitsCharges[id] === false) return;
+      if (portraitsCharges[id]) { peindre(btn, portraitsCharges[id]); return; }
+      refImg.child(id).once("value").then(function(s){
+        var d = s.val();
+        portraitsCharges[id] = d || false;
+        if (d) peindre(btn, d);
+      }).catch(function(){});
+    });
+  });
+}
+
+function peindre(btn, data){
+  btn.innerHTML = "";
+  var img = document.createElement("img");
+  img.src = data;
+  img.alt = "";
+  btn.appendChild(img);
+  btn.classList.add("has");
+}
+
+function videPortrait(btn){
+  btn.innerHTML = '<span class="pf-ph">Portrait</span>';
+  btn.classList.remove("has");
+}
+
+/* --- Compression : 520 px de côté au plus, JPEG dégressif --- */
+function compresser(file, cb){
+  var fr = new FileReader();
+  fr.onload = function(e){
+    var im = new Image();
+    im.onload = function(){
+      var MAX = 520, w = im.width, h = im.height;
+      if (w > MAX || h > MAX) { var r = Math.min(MAX / w, MAX / h); w = Math.round(w * r); h = Math.round(h * r); }
+      var cv = document.createElement("canvas");
+      cv.width = w; cv.height = h;
+      cv.getContext("2d").drawImage(im, 0, 0, w, h);
+      var d = cv.toDataURL("image/jpeg", 0.82);
+      if (d.length > 380000) d = cv.toDataURL("image/jpeg", 0.62);
+      if (d.length > 380000) d = cv.toDataURL("image/jpeg", 0.44);
+      cb(d);
+    };
+    im.onerror = function(){ alert("Image illisible. Essaie un JPEG ou un PNG."); };
+    im.src = e.target.result;
+  };
+  fr.readAsDataURL(file);
+}
+
+/* --- Sélecteur de fichier partagé --- */
+var champ = document.createElement("input");
+champ.type = "file";
+champ.accept = "image/*";
+champ.style.display = "none";
+document.body.appendChild(champ);
+var cible = null;
+
+champ.addEventListener("change", function(ev){
+  var f = ev.target.files && ev.target.files[0];
+  ev.target.value = "";
+  if (!f || !cible) return;
+  var btn = cible;
+  var occupe = document.createElement("span");
+  occupe.className = "pf-busy";
+  occupe.textContent = "…";
+  btn.appendChild(occupe);
+  compresser(f, function(data){
+    var id = btn.getAttribute("data-pf") || nouvelId();
+    btn.setAttribute("data-pf", id);
+    portraitsCharges[id] = data;
+    peindre(btn, data);
+    if (refImg) {
+      refImg.child(id).set(data)
+        .then(function(){ etat("portrait enregistré", "ok"); })
+        .catch(function(e){ console.warn(e); etat("portrait non envoyé", "err"); });
+    }
+    var sec = btn.closest(".section-panel");
+    if (sec) marquerSale(sec);
+  });
+});
+
+/* --- Menu au clic sur un encart --- */
+var menu = null;
+function fermerMenu(){ if (menu) { menu.remove(); menu = null; } }
+document.addEventListener("click", function(e){
+  var btn = e.target.closest ? e.target.closest(".pf") : null;
+  if (!btn) { fermerMenu(); return; }
+  e.preventDefault();
+  e.stopPropagation();
+  fermerMenu();
+  var aImage = !!btn.querySelector("img");
+  menu = document.createElement("div");
+  menu.className = "pf-menu";
+  menu.innerHTML =
+    (aImage ? '<button data-a="voir">Agrandir</button>' : "") +
+    '<button data-a="charger">' + (aImage ? "Remplacer" : "Choisir une image") + "</button>" +
+    (aImage ? '<button class="warn" data-a="vider">Retirer</button>' : "");
+  document.body.appendChild(menu);
+  var r = btn.getBoundingClientRect();
+  menu.style.left = Math.min(r.left, window.innerWidth - menu.offsetWidth - 10) + "px";
+  menu.style.top = (r.bottom + window.scrollY + 4) + "px";
+  menu.addEventListener("click", function(ev){
+    var a = ev.target.getAttribute && ev.target.getAttribute("data-a");
+    if (!a) return;
+    ev.stopPropagation();
+    if (a === "charger") { cible = btn; champ.click(); }
+    if (a === "voir") {
+      var v = document.getElementById("pf-view");
+      v.querySelector("img").src = btn.querySelector("img").src;
+      v.classList.add("on");
+    }
+    if (a === "vider") {
+      var id = btn.getAttribute("data-pf");
+      videPortrait(btn);
+      portraitsCharges[id] = false;
+      if (refImg) refImg.child(id).remove();
+      var sec = btn.closest(".section-panel");
+      if (sec) marquerSale(sec);
+    }
+    fermerMenu();
+  });
+}, true);
+
+(function(){
+  var v = document.createElement("div");
+  v.className = "pf-view";
+  v.id = "pf-view";
+  v.innerHTML = "<img alt=''>";
+  v.addEventListener("click", function(){ v.classList.remove("on"); });
+  document.body.appendChild(v);
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape") v.classList.remove("on"); });
+})();
+
+/* ============================================================
+   5. BRANCHEMENT SUR LE MOTEUR EXISTANT
+   ============================================================ */
+/* a. toute frappe dans une zone éditable déclenche la sauvegarde */
+document.addEventListener("input", function(e){
+  var z = e.target.closest ? e.target.closest("[contenteditable='true']") : null;
+  if (!z) return;
+  var sec = z.closest(".section-panel");
+  if (sec) marquerSale(sec);
+});
+
+/* b. les fonctions de brouillon deviennent des opérations serveur */
+window.saveDraft = function(){ clearTimeout(timerEcriture); ecrire(); };
+window.loadDraft = function(){
+  if (!refSec) { toast("Hors ligne", true); return; }
+  pauseSync = true;
+  refSec.once("value").then(function(snap){
+    var v = snap.val() || {};
+    Object.keys(v).forEach(function(id){ if (v[id] && v[id].html) { dernierEnvoi[id] = v[id].html; appliquer(id, v[id].html); } });
+    apresRemplacement();
+    pauseSync = false;
+    toast("Rechargé depuis le serveur");
+  }).catch(function(){ pauseSync = false; toast("Lecture échouée", true); });
+};
+window.dropDraft = function(){
+  if (!confirm("Effacer le miroir local de ce navigateur ?\nLa version en ligne n'est pas touchée : elle sera rechargée.")) return;
+  try { localStorage.removeItem(CACHE); } catch(e){}
+  window.loadDraft();
+};
+window.checkDraft = function(){};
+
+/* c. INSERTION DE BLOCS — réécrite
+   L'ancienne version perdait le curseur au clic sur le bouton, puis
+   retombait sur « la première scène non masquée du document », qui peut
+   très bien appartenir à une partie fermée. Le bloc partait alors dans
+   une scène invisible. Ici : le curseur est préservé, et à défaut le
+   bloc va dans la scène réellement affichée, puis on y saute. */
+function sectionVisible(){
+  return Array.prototype.filter.call(document.querySelectorAll(".section-panel"), function(p){
+    return p.style.display !== "none";
+  })[0] || null;
+}
+function sceneVisible(){
+  var sec = sectionVisible();
+  if (!sec) return null;
+  return Array.prototype.filter.call(sec.querySelectorAll(".scene-panel"), function(p){
+    return p.style.display !== "none";
+  })[0] || null;
+}
+function curseurValide(){
+  var a = document.activeElement;
+  if (!a || !a.closest) return null;
+  var z = a.closest("[contenteditable='true']");
+  if (!z) return null;
+  var sc = sceneVisible();
+  if (sc && !sc.contains(z) && !z.contains(sc)) return null;   /* curseur ailleurs : on ignore */
+  var sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return null;
+  return z;
+}
+function marquerNeuf(html){
+  return html.replace(/^<(\w+)/, '<$1 data-neuf="1"');
+}
+function revelerNeuf(){
+  var n = document.querySelector("[data-neuf]");
+  if (!n) return null;
+  n.removeAttribute("data-neuf");
+  n.classList.add("bloc-neuf");
+  try {
+    if (typeof n.scrollIntoView === "function") n.scrollIntoView({ behavior: "smooth", block: "center" });
+  } catch(e){
+    try { n.scrollIntoView(); } catch(e2){}
+  }
+  setTimeout(function(){ n.classList.remove("bloc-neuf"); }, 2400);
+  return n;
+}
+
+window.insertBlock = function(kind){
+  var html = (window.BLOCKS || {})[kind];
+  if (!html) return;
+  html = marquerNeuf(html);
+
+  var sc = sceneVisible();
+  if (!sc) { toast("Ouvre une scène d'abord", true); return; }
+  if (!window.editing) { toast("Active l'édition d'abord", true); return; }
+
+  var z = curseurValide();
+  if (z) {
+    document.execCommand("insertHTML", false, html);
+  } else {
+    sc.insertAdjacentHTML("beforeend", html);
+  }
+
+  poserPortraits();
+  rendreEditable(true);
+  var n = revelerNeuf();
+  marquerSale(sc.closest(".section-panel") || sectionVisible());
+  chargerPortraitsVisibles();
+  toast(z ? "Bloc inséré au curseur" : "Bloc ajouté en fin de scène");
+  return n;
+};
+
+(function(){
+  var orig = window.addScene;
+  if (typeof orig !== "function") return;
+  window.addScene = function(){
+    var r = orig.apply(this, arguments);
+    poserPortraits();
+    if (window.editing) rendreEditable(true);
+    var vis = sectionVisible();
+    if (vis) marquerSale(vis);
+    chargerPortraitsVisibles();
+    return r;
+  };
+})();
+
+/* Les boutons d'insertion ne doivent pas voler le curseur. */
+var bsc = document.getElementById("eb-scene");
+if (bsc) bsc.addEventListener("mousedown", function(e){ e.preventDefault(); });
+document.querySelectorAll("[data-ins]").forEach(function(b){
+  var n = b.cloneNode(true);
+  b.parentNode.replaceChild(n, b);
+  n.addEventListener("mousedown", function(e){ e.preventDefault(); });
+  n.addEventListener("click", function(){ window.insertBlock(n.getAttribute("data-ins")); });
+});
+
+/* d. le changement de scène déclenche le chargement des portraits */
+["showScene", "showSection"].forEach(function(nom){
+  var orig = window[nom];
+  if (typeof orig !== "function") return;
+  window[nom] = function(){
+    var r = orig.apply(this, arguments);
+    chargerPortraitsVisibles();
+    return r;
+  };
+});
+
+/* e. le mode édition repose les encarts sur les blocs neufs */
+(function(){
+  var orig = window.setEditing;
+  if (typeof orig !== "function") return;
+  window.setEditing = function(on){
+    orig(on);
+    poserPortraits();
+    rendreEditable(on);
+    if (!on) { clearTimeout(timerEcriture); ecrire(); }
+  };
+  var b = document.getElementById("btn-edit");
+  if (b) { var n = b.cloneNode(true); b.parentNode.replaceChild(n, b);
+    n.addEventListener("click", function(){ window.setEditing(!window.editing); }); }
+})();
+
+/* f. plus d'alerte au départ : tout est déjà enregistré */
+window.addEventListener("beforeunload", function(){
+  if (Object.keys(sales).length) { clearTimeout(timerEcriture); ecrire(); }
+});
+
+/* g. sauvegarde JSON complète, pour archivage hors ligne */
+window.exportJSON = function(){
+  var paquet = { version: 2, at: new Date().toISOString(), sections: miroirLocal(), portraits: portraitsCharges };
+  var b = new Blob([JSON.stringify(paquet)], { type: "application/json" });
+  var u = URL.createObjectURL(b);
+  var a = document.createElement("a");
+  a.href = u; a.download = "bds-sauvegarde-" + new Date().toISOString().slice(0, 10) + ".json";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(u); }, 1500);
+  toast("Sauvegarde téléchargée");
+};
+
+
+/* ============================================================
+   6. COULEUR DU TEXTE
+   Palette du document, plus une couleur libre. La sélection est
+   mémorisée en permanence : cliquer dans la barre ne la perd pas.
+   ============================================================ */
+var COULEURS = [
+  ["#f0e8d8", "Parchemin clair"],
+  ["#d4c8a8", "Parchemin"],
+  ["#c05050", "Sang"],
+  ["#d19a5e", "Cuivre"],
+  ["#e8cf72", "Or"],
+  ["#b8a3f0", "Violet"],
+  ["#9dc48a", "Vert"],
+  ["#cfe0ea", "Givre"],
+  ["#8a8a99", "Estompé"],
+  ["#c9a227", "Ambre"]
+];
+
+var derniereZone = null, dernierRange = null;
+document.addEventListener("selectionchange", function(){
+  var sel = document.getSelection();
+  if (!sel || !sel.rangeCount) return;
+  var n = sel.getRangeAt(0).commonAncestorContainer;
+  if (n.nodeType === 3) n = n.parentNode;
+  if (!n || !n.closest) return;
+  var z = n.closest("[contenteditable='true']");
+  if (z) { derniereZone = z; dernierRange = sel.getRangeAt(0).cloneRange(); }
+});
+
+function rendreSelection(){
+  if (!dernierRange) return false;
+  var sel = document.getSelection();
+  var n = sel.rangeCount ? sel.getRangeAt(0).commonAncestorContainer : null;
+  if (n && n.nodeType === 3) n = n.parentNode;
+  if (n && n.closest && n.closest("[contenteditable='true']")) return true;   /* déjà bien placé */
+  if (derniereZone && derniereZone.isConnected) {
+    derniereZone.focus();
+    sel.removeAllRanges();
+    sel.addRange(dernierRange);
+    return true;
+  }
+  return false;
+}
+
+function appliquerCouleur(hex){
+  if (!window.editing) { toast("Active l'édition d'abord", true); return; }
+  if (!rendreSelection()) { toast("Sélectionne d'abord du texte", true); return; }
+  var sel = document.getSelection();
+  if (sel.isCollapsed) { toast("Sélectionne d'abord du texte", true); return; }
+  try { document.execCommand("styleWithCSS", false, true); } catch(e){}
+  document.execCommand("foreColor", false, hex);
+  var pastille = document.getElementById("eb-swatch");
+  if (pastille) pastille.style.background = hex;
+  var sec = (derniereZone && derniereZone.closest(".section-panel")) || null;
+  if (sec) marquerSale(sec);
+}
+
+/* Retrait : on dépouille les balises de couleur touchées par la sélection,
+   sans toucher au gras, à l'italique ni aux classes du document. */
+function retirerCouleur(){
+  if (!rendreSelection()) return;
+  var sel = document.getSelection();
+  if (!sel.rangeCount) return;
+  var rg = sel.getRangeAt(0);
+  var zone = derniereZone;
+  if (!zone) return;
+  var vises = [];
+  zone.querySelectorAll("span[style*='color'], font[color], font[style*='color']").forEach(function(e){
+    try { if (rg.intersectsNode(e)) vises.push(e); } catch(err){}
+  });
+  vises.forEach(function(e){
+    if (e.tagName === "FONT") { deballer(e); return; }
+    e.style.removeProperty("color");
+    if (!e.getAttribute("style")) e.removeAttribute("style");
+    if (!e.getAttribute("style") && !e.getAttribute("class")) deballer(e);
+  });
+  var sec = zone.closest(".section-panel");
+  if (sec) marquerSale(sec);
+  toast(vises.length ? "Couleur retirée" : "Rien à retirer");
+}
+function deballer(e){
+  var p = e.parentNode;
+  if (!p) return;
+  while (e.firstChild) p.insertBefore(e.firstChild, e);
+  p.removeChild(e);
+  p.normalize();
+}
+
+/* --- Construction du bouton et de la palette --- */
+(function(){
+  var barre = document.querySelector(".eb2-g");
+  if (!barre) return;
+  var btn = document.createElement("button");
+  btn.className = "eb2-b";
+  btn.id = "eb-color";
+  btn.type = "button";
+  btn.innerHTML = 'Couleur<span class="eb-swatch" id="eb-swatch"></span>';
+  var apresItalique = barre.querySelector("[data-cmd='italic']");
+  if (apresItalique && apresItalique.nextSibling) barre.insertBefore(btn, apresItalique.nextSibling);
+  else barre.appendChild(btn);
+
+  var pal = document.createElement("div");
+  pal.className = "pal";
+  pal.id = "eb-pal";
+  pal.innerHTML = '<div class="pal-t">Couleur du texte</div><div class="pal-grid"></div>'
+    + '<div class="pal-row"><input type="color" id="pal-libre" value="#c05050" title="Couleur libre">'
+    + '<button data-p="libre">Appliquer</button><button data-p="off">Retirer</button></div>';
+  document.body.appendChild(pal);
+  var grille = pal.querySelector(".pal-grid");
+  COULEURS.forEach(function(c){
+    var b = document.createElement("button");
+    b.className = "pal-c";
+    b.type = "button";
+    b.style.background = c[0];
+    b.title = c[1];
+    b.setAttribute("data-hex", c[0]);
+    grille.appendChild(b);
+  });
+
+  function ouvrir(on){
+    pal.classList.toggle("on", on);
+    if (!on) return;
+    var r = btn.getBoundingClientRect();
+    pal.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 214)) + "px";
+    var h = pal.offsetHeight || 150;
+    pal.style.top = Math.max(8, r.top - h - 6) + "px";
+  }
+
+  /* Aucun élément de la palette ne doit prendre le focus. */
+  [btn, pal].forEach(function(e){
+    e.addEventListener("mousedown", function(ev){
+      if (ev.target && ev.target.type === "color") return;   /* le sélecteur natif a besoin du clic */
+      ev.preventDefault();
+    });
+  });
+
+  btn.addEventListener("click", function(){ ouvrir(!pal.classList.contains("on")); });
+  pal.addEventListener("click", function(ev){
+    var c = ev.target.closest("[data-hex]");
+    if (c) { appliquerCouleur(c.getAttribute("data-hex")); ouvrir(false); return; }
+    var a = ev.target.getAttribute && ev.target.getAttribute("data-p");
+    if (a === "libre") { appliquerCouleur(document.getElementById("pal-libre").value); ouvrir(false); }
+    if (a === "off")   { retirerCouleur(); ouvrir(false); }
+  });
+  document.addEventListener("click", function(ev){
+    if (!ev.target.closest("#eb-pal") && !ev.target.closest("#eb-color")) ouvrir(false);
+  });
+  document.addEventListener("keydown", function(ev){ if (ev.key === "Escape") ouvrir(false); });
+})();
+
+
+/* ============================================================
+   7. OUTILS DE BLOC
+   En mode édition, survoler un bloc fait apparaître une petite
+   barre : monter, descendre, dupliquer, supprimer. La suppression
+   demande un second clic, sans boîte de dialogue.
+   La barre vit hors du document et n'est jamais enregistrée.
+   ============================================================ */
+function blocDe(n){
+  while (n && n !== document.body) {
+    if (n.parentNode && n.parentNode.classList && n.parentNode.classList.contains("scene-panel")) return n;
+    n = n.parentNode;
+  }
+  return null;
+}
+
+var bt = document.createElement("div");
+bt.className = "bt";
+bt.innerHTML =
+  '<button data-b="haut" title="Monter">&#9650;</button>' +
+  '<button data-b="bas" title="Descendre">&#9660;</button>' +
+  '<button data-b="copie" title="Dupliquer">&#10697;</button>' +
+  '<button class="sup" data-b="sup" title="Supprimer">&#10005;</button>';
+document.body.appendChild(bt);
+var btCible = null, btTimer = null;
+
+function desarmer(){
+  var b = bt.querySelector(".sup");
+  b.classList.remove("armed");
+  b.innerHTML = "&#10005;";
+  if (btCible) btCible.classList.remove("bt-doomed");
+}
+
+function viserBloc(el){
+  if (btCible === el) return;
+  if (btCible) { btCible.classList.remove("bt-cible"); desarmer(); }
+  btCible = el;
+  if (!el) { bt.classList.remove("on"); return; }
+  el.classList.add("bt-cible");
+  var r = el.getBoundingClientRect();
+  bt.classList.add("on");
+  var l = r.right - bt.offsetWidth - 4;
+  bt.style.left = Math.max(6, Math.min(l, window.innerWidth - bt.offsetWidth - 6)) + "px";
+  bt.style.top = Math.max(6, r.top - bt.offsetHeight - 3) + "px";
+}
+
+function lacherBloc(){
+  clearTimeout(btTimer);
+  btTimer = setTimeout(function(){
+    if (btCible) { btCible.classList.remove("bt-cible"); desarmer(); }
+    btCible = null;
+    bt.classList.remove("on");
+  }, 260);
+}
+
+document.addEventListener("mouseover", function(e){
+  if (!window.editing) return;
+  if (e.target.closest && e.target.closest(".bt")) { clearTimeout(btTimer); return; }
+  var b = blocDe(e.target);
+  if (b) { clearTimeout(btTimer); viserBloc(b); }
+  else lacherBloc();
+});
+bt.addEventListener("mouseleave", lacherBloc);
+document.addEventListener("scroll", function(){ if (btCible) viserBloc0(btCible); }, true);
+function viserBloc0(el){
+  var r = el.getBoundingClientRect();
+  var l = r.right - bt.offsetWidth - 4;
+  bt.style.left = Math.max(6, Math.min(l, window.innerWidth - bt.offsetWidth - 6)) + "px";
+  bt.style.top = Math.max(6, r.top - bt.offsetHeight - 3) + "px";
+}
+
+bt.addEventListener("mousedown", function(e){ e.preventDefault(); });
+bt.addEventListener("click", function(e){
+  var b = e.target.closest("[data-b]");
+  if (!b || !btCible) return;
+  var a = b.getAttribute("data-b");
+  var el = btCible, par = el.parentNode;
+
+  if (a === "haut") {
+    var p = el.previousElementSibling;
+    if (p) { par.insertBefore(el, p); viserBloc0(el); toast("Bloc remonté"); }
+    else toast("Déjà en haut", true);
+  }
+  else if (a === "bas") {
+    var n = el.nextElementSibling;
+    if (n) { par.insertBefore(n, el); viserBloc0(el); toast("Bloc descendu"); }
+    else toast("Déjà en bas", true);
+  }
+  else if (a === "copie") {
+    var c = el.cloneNode(true);
+    c.classList.remove("bt-cible", "bt-doomed");
+    /* un doublon ne doit pas hériter du portrait de l'original */
+    c.querySelectorAll(".pf").forEach(function(x){
+      x.setAttribute("data-pf", nouvelId());
+      x.innerHTML = '<span class="pf-ph">Portrait</span>';
+      x.classList.remove("has");
+    });
+    par.insertBefore(c, el.nextSibling);
+    rendreEditable(true);
+    toast("Bloc dupliqué");
+  }
+  else if (a === "sup") {
+    var sb = bt.querySelector(".sup");
+    if (!sb.classList.contains("armed")) {
+      sb.classList.add("armed");
+      sb.textContent = "Sûr ?";
+      el.classList.add("bt-doomed");
+      viserBloc0(el);
+      clearTimeout(btTimer);
+      setTimeout(function(){ if (btCible === el) desarmer(); }, 4000);
+      return;
+    }
+    /* portraits associés : on nettoie la base pour ne pas laisser d'orphelins */
+    el.querySelectorAll(".pf[data-pf]").forEach(function(x){
+      var id = x.getAttribute("data-pf");
+      if (refImg) refImg.child(id).remove();
+      delete portraitsCharges[id];
+    });
+    var sec = el.closest(".section-panel");
+    el.remove();
+    btCible = null;
+    bt.classList.remove("on");
+    desarmer();
+    if (sec) marquerSale(sec);
+    toast("Bloc supprimé");
+    return;
+  }
+  var sec2 = el.closest(".section-panel");
+  if (sec2) marquerSale(sec2);
+});
+
+/* Sur mobile, un appui long sur un bloc appelle la barre. */
+(function(){
+  var t = null;
+  document.addEventListener("touchstart", function(e){
+    if (!window.editing) return;
+    var b = blocDe(e.target);
+    if (!b) return;
+    t = setTimeout(function(){ viserBloc(b); }, 550);
+  }, { passive: true });
+  ["touchend", "touchmove", "touchcancel"].forEach(function(ev){
+    document.addEventListener(ev, function(){ clearTimeout(t); }, { passive: true });
+  });
+})();
+
+/* La barre disparaît dès qu'on quitte le mode édition. */
+(function(){
+  var o = window.setEditing;
+  window.setEditing = function(on){
+    o(on);
+    if (!on) { if (btCible) btCible.classList.remove("bt-cible", "bt-doomed"); btCible = null; bt.classList.remove("on"); }
+  };
+})();
+
+
+/* ── Reprise des boutons hérités d'Éclipse ── */
+window.editSave = function(){ clearTimeout(timerEcriture); ecrire(); };
+window.editReset = function(){ window.dropDraft(); };
+
+/* L'ancienne restauration locale ne doit plus concurrencer le serveur. */
+try { localStorage.removeItem("eclipse_scenario_edit"); } catch(e){}
+
+/* L'export du fichier ne doit pas emporter les portraits. */
+(function(){
+  var o = window.buildFullHtml;
+  if (typeof o !== "function") return;
+  window.buildFullHtml = function(){
+    document.querySelectorAll(".pf").forEach(function(e){ e.innerHTML = '<span class="pf-ph">Portrait</span>'; e.classList.remove("has"); });
+    var r = o.apply(this, arguments);
+    chargerPortraitsVisibles();
+    return r;
+  };
+})();
+
+/* Le bouton d'édition était branché sur l'ancienne bascule au chargement :
+   on le remplace par un clone pour repartir du bon comportement. */
+(function(){
+  var b = document.getElementById("btn-edit");
+  if (!b) return;
+  var n = b.cloneNode(true);
+  b.parentNode.replaceChild(n, b);
+  n.addEventListener("click", function(){ window.setEditing(!window.editing); });
+})();
+
+document.querySelectorAll(".edit-bar [onclick]").forEach(function(b){
+  var t = (b.textContent || "").toLowerCase();
+  if (t.indexOf("réinitialiser") >= 0 || t.indexOf("reinitialiser") >= 0) b.setAttribute("onclick", "dropDraft()");
+  if (t.indexOf("enregistrer") >= 0) b.setAttribute("onclick", "saveDraft()");
+});
+
+/* ---------- Démarrage ---------- */
+poserPortraits();
+hydrater();
+
+})();
+</script>
+
 </body>
 </html>
