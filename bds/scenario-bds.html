@@ -4054,6 +4054,72 @@ bt.addEventListener("click", function(e){
   };
 })();
 
+
+/* ============================================================
+   8. COLLAGE INTELLIGENT
+   Le collage était forcé en texte brut pour barrer la route aux
+   scories de Word. On garde ce filet, mais on reconnaît désormais
+   le balisage maison : coller un bloc venu d'un autre fichier du
+   scénario le restitue tel quel, encadré et grille compris.
+   ============================================================ */
+var SIGNATURE = /\bclass\s*=\s*["'][^"']*\b(lecture|mj-box|mj-text|mj-label|indice-box|indice-text|jet-roll|jet-label|jet-detail|butin-box|loot|loot-text|stat-card|stat-head|stat-name|statblock|stat-line|pnj-card|pnj-name|pnj-body|npc-stat|npc-name|npc-sub|npc-gear|npc-ability|stat-grid|stat-cell|stat-label|stat-val|pnj-header|recap-item|recap-src|recap-give|dialogue|dialogue-who|ambiance|scene-list|section-head|trait|mod)\b/;
+
+function nettoyerColle(html){
+  var d = document.createElement("div");
+  d.innerHTML = html;
+  /* Débris d'enveloppe ajoutés par le navigateur au copier. */
+  d.querySelectorAll("meta, style, script, link, title").forEach(function(e){ e.remove(); });
+  var w = document.createTreeWalker(d, NodeFilter.SHOW_COMMENT, null);
+  var morts = [], n;
+  while ((n = w.nextNode())) morts.push(n);
+  morts.forEach(function(c){ c.parentNode && c.parentNode.removeChild(c); });
+  /* Marques de travail qui n'ont rien à faire dans le document. */
+  d.querySelectorAll("[contenteditable]").forEach(function(e){ e.removeAttribute("contenteditable"); });
+  d.querySelectorAll("[data-neuf]").forEach(function(e){ e.removeAttribute("data-neuf"); });
+  d.querySelectorAll(".bloc-neuf, .bt-cible, .bt-doomed").forEach(function(e){
+    e.classList.remove("bloc-neuf", "bt-cible", "bt-doomed");
+    if (!e.getAttribute("class")) e.removeAttribute("class");
+  });
+  /* Un portrait ne se copie pas : le bloc collé repart avec un encart vierge,
+     sinon deux blocs partageraient la même image et se marcheraient dessus. */
+  d.querySelectorAll(".pf").forEach(function(e){
+    e.setAttribute("data-pf", nouvelId());
+    e.setAttribute("contenteditable", "false");
+    e.innerHTML = '<span class="pf-ph">Portrait</span>';
+    e.classList.remove("has");
+  });
+  return d.innerHTML;
+}
+
+/* Capture au niveau du document : on passe avant l'ancien gestionnaire,
+   qui reste en place pour tout ce qui n'est pas reconnu. */
+document.addEventListener("paste", function(e){
+  if (!window.editing) return;
+  var z = e.target && e.target.closest ? e.target.closest("[contenteditable='true']") : null;
+  if (!z && e.target && e.target.parentElement) z = e.target.parentElement.closest("[contenteditable='true']");
+  if (!z) return;
+  var dt = e.clipboardData || window.clipboardData;
+  if (!dt) return;
+  var html = "";
+  try { html = dt.getData("text/html") || ""; } catch(err){}
+  var maison = html && SIGNATURE.test(html);
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  if (maison) {
+    document.execCommand("insertHTML", false, nettoyerColle(html));
+    poserPortraits();
+    rendreEditable(true);
+    chargerPortraitsVisibles();
+    toast("Bloc collé avec sa mise en forme");
+  } else {
+    var txt = "";
+    try { txt = dt.getData("text/plain") || ""; } catch(err){}
+    document.execCommand("insertText", false, txt);
+  }
+  var sec = z.closest(".section-panel");
+  if (sec) marquerSale(sec);
+}, true);
+
 /* ---------- Démarrage ---------- */
 poserPortraits();
 hydrater();
