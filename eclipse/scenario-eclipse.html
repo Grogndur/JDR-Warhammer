@@ -3021,9 +3021,7 @@ document.getElementById('btn-menu').addEventListener('click', toggleSidebar);
 <div class="edit-bar" id="edit-bar">
   <span class="edit-bar-title">Mode édition</span>
   <span class="edit-status" id="edit-status"></span>
-  <button class="edit-btn primary" onclick="editSave()">&#128190; Enregistrer</button>
-  <button class="edit-btn" onclick="editDownload()">&#8681; Télécharger le HTML</button>
-  <button class="edit-btn" onclick="editReset()">&#8634; Réinitialiser</button>
+  <button class="edit-btn" id="eb-export" onclick="editDownload()">&#8681; Exporter le fichier</button>
   <button class="edit-btn" onclick="editToggle()">&#10005; Quitter</button>
 </div>
 
@@ -3337,9 +3335,6 @@ window.rebuildTOC = function(){
     + ins.map(function(x){ return '<button class="eb2-b" data-ins="' + x[0] + '">+ ' + x[1] + '</button>'; }).join("")
     + '</div><div class="eb2-s"></div><div class="eb2-g">'
     + '<span class="sync-flag" id="sync-flag"></span>'
-    + '<button class="eb2-b prim" id="eb-save">Enregistrer</button>'
-    + '<button class="eb2-b" id="eb-load">Recharger du serveur</button>'
-    + '<button class="eb2-b" id="eb-json">Sauvegarde JSON</button>'
     + '</div><span class="eb2-n">Enregistrement automatique · survole un bloc pour le déplacer ou le supprimer</span>';
   b.innerHTML = g1;
   document.body.appendChild(b);
@@ -3415,7 +3410,7 @@ function instantane(sec){
   c.querySelectorAll(".pf").forEach(function(e){ e.innerHTML = ""; e.classList.remove("has"); });
   /* les fiches dépliées sont un affichage, pas du contenu */
   c.querySelectorAll(".fr-slot").forEach(function(e){ e.innerHTML = ""; });
-  c.querySelectorAll(".sec-tools").forEach(function(e){ e.remove(); });
+  c.querySelectorAll(".crayon").forEach(function(e){ e.remove(); });
   c.querySelectorAll(".fiche-ref").forEach(function(e){ e.classList.remove("open"); });
   /* surbrillance passagere d'un bloc neuf : jamais enregistree */
   c.querySelectorAll(".bloc-neuf, .bt-cible, .bt-doomed, [data-neuf]").forEach(function(e){
@@ -3584,9 +3579,9 @@ function ecouterDirect(){
 /* Après tout remplacement de DOM : nav, sommaire, portraits, édition. */
 function apresRemplacement(){
   if (typeof buildNav === "function") buildNav();
-  if (typeof rebuildTOC === "function") rebuildTOC();
+  sommaire();
   poserPortraits();
-  poserOutilsPartie();
+  poserCrayons();
   if (window.editing) rendreEditable(true);
   chargerPortraitsVisibles();
 }
@@ -4444,6 +4439,7 @@ function idUnique(prefixe){
 function sommaire(){
   if (typeof rebuildTOC === "function") rebuildTOC();
   else if (typeof buildTOC === "function") buildTOC();
+  crayonsSommaire();
 }
 
 function titreDe(sec){
@@ -4469,7 +4465,7 @@ function nouvellePartie(){
                + (window.GABARIT_SCENE ? window.GABARIT_SCENE(sid, t) : "");
   conteneur().appendChild(el);
   sommaire();
-  poserOutilsPartie();
+  poserCrayons();
   poserPortraits();
   if (window.editing) rendreEditable(true);
   marquerSale(el);
@@ -4499,8 +4495,8 @@ function nouvelleFiche(){
 }
 
 /* --- Renommer --- */
-function renommerPartie(){
-  var sec = sectionVisible();
+function renommerPartie(cible){
+  var sec = cible || sectionVisible();
   if (!sec) return;
   var t = prompt("Nouveau titre de la partie :", titreDe(sec));
   if (!t) return;
@@ -4510,12 +4506,13 @@ function renommerPartie(){
   var h = sec.querySelector(".section-title");
   if (h) h.textContent = t;
   sommaire();
+  poserCrayons();
   marquerSale(sec);
   toast("Partie renommée");
 }
 
-function renommerFiche(){
-  var sc = sceneVisible();
+function renommerFiche(cible){
+  var sc = cible || sceneVisible();
   if (!sc) return;
   var h = sc.querySelector(".scene-title");
   if (!h) return;
@@ -4525,6 +4522,7 @@ function renommerFiche(){
   if (!t) return;
   h.textContent = t;
   sommaire();
+  poserCrayons();
   marquerSale(sc.closest(".section-panel"));
   toast("Fiche renommée");
 }
@@ -4581,51 +4579,101 @@ window.renommerFiche  = renommerFiche;
 window.supprimerPartie = supprimerPartie;
 window.supprimerFiche  = supprimerFiche;
 
-/* --- Boutons dans la barre d'édition --- */
+/* --- Boutons dans la barre d'édition ---
+   Quatre commandes, rien d'autre. L'enregistrement est automatique,
+   le rechargement se fait en rouvrant la page, et l'export HTML
+   emporte le contenu à jour : les autres boutons ne servaient à rien.
+   Les fonctions restent joignables depuis la console si besoin. --- */
 (function(){
+  ["eb-save", "eb-load", "eb-json", "eb-drop"].forEach(function(id){
+    var b = document.getElementById(id);
+    if (b) b.remove();
+  });
   var hote = document.querySelector(".editbar .eb-group:last-of-type, .eb2 .eb2-g:last-of-type");
   if (!hote) return;
-  var sep = document.createElement("div");
-  sep.className = document.querySelector(".editbar") ? "eb-sep" : "eb2-s";
+  var cls = document.querySelector(".editbar") ? "eb-btn" : "eb2-b";
   var g = document.createElement("div");
   g.className = "eb-struct";
-  var cls = document.querySelector(".editbar") ? "eb-btn" : "eb2-b";
-  [["+ Partie", "nouvellePartie"], ["+ Fiche", "nouvelleFiche"],
-   ["Renommer", "renommerFiche"], ["Supprimer", "supprimerFiche"]].forEach(function(x){
+  [["+ Partie", "nouvellePartie", false],
+   ["+ Fiche",  "nouvelleFiche",  false],
+   ["\u2212 Partie", "supprimerPartie", true],
+   ["\u2212 Fiche",  "supprimerFiche",  true]].forEach(function(x){
     var b = document.createElement("button");
-    b.className = cls + (x[1].indexOf("supprimer") === 0 ? " warn" : "");
+    b.className = cls + (x[2] ? " warn" : "");
     b.type = "button";
     b.textContent = x[0];
     b.addEventListener("mousedown", function(e){ e.preventDefault(); });
     b.addEventListener("click", function(){ window[x[1]](); });
     g.appendChild(b);
   });
-  hote.parentNode.insertBefore(sep, hote);
+  var sep = document.createElement("div");
+  sep.className = document.querySelector(".editbar") ? "eb-sep" : "eb2-s";
   hote.parentNode.insertBefore(g, hote);
+  hote.parentNode.insertBefore(sep, hote);
 })();
 
-/* --- Bandeau d'outils en tête de la partie affichée --- */
-function poserOutilsPartie(){
-  document.querySelectorAll(".section-panel").forEach(function(sec){
-    if (sec.querySelector(":scope > .sec-tools")) return;
-    var d = document.createElement("div");
-    d.className = "sec-tools";
-    d.setAttribute("contenteditable", "false");
-    [["Renommer cette partie", "renommerPartie"],
-     ["+ Fiche", "nouvelleFiche"],
-     ["+ Partie", "nouvellePartie"],
-     ["Supprimer cette partie", "supprimerPartie"]].forEach(function(x){
-      var b = document.createElement("button");
-      b.className = "st-b" + (x[1] === "supprimerPartie" ? " warn" : "");
-      b.type = "button";
-      b.textContent = x[0];
-      b.addEventListener("mousedown", function(e){ e.preventDefault(); });
-      b.addEventListener("click", function(){ window[x[1]](); });
-      d.appendChild(b);
-    });
-    sec.insertBefore(d, sec.firstChild);
+/* --- Crayon de renommage ---
+   Un crayon discret à droite du titre, dans la page et dans le
+   sommaire. Un clic suffit. Il n'apparaît qu'en mode édition et
+   n'est jamais enregistré : c'est un outil, pas du contenu. --- */
+function crayon(quoi, ident){
+  var b = document.createElement("button");
+  b.className = "crayon";
+  b.type = "button";
+  b.title = "Renommer";
+  b.textContent = "\u270E";
+  b.setAttribute("contenteditable", "false");
+  b.setAttribute("data-ren", quoi);
+  if (ident) b.setAttribute("data-cible", ident);
+  b.addEventListener("mousedown", function(e){ e.preventDefault(); e.stopPropagation(); });
+  return b;
+}
+
+function poserCrayons(){
+  document.querySelectorAll(".scene-panel > .scene-title-bar > .scene-title").forEach(function(t){
+    if (t.querySelector(":scope > .crayon")) return;
+    var p = t.closest(".scene-panel");
+    t.appendChild(crayon("fiche", p ? p.id : ""));
+  });
+  document.querySelectorAll(".section-panel > .section-header > .section-title").forEach(function(t){
+    if (t.querySelector(":scope > .crayon")) return;
+    var p = t.closest(".section-panel");
+    t.appendChild(crayon("partie", p ? p.id : ""));
   });
 }
+
+/* Le sommaire est reconstruit à chaque changement : on repose les
+   crayons ensuite, en appariant les entrées aux parties dans l'ordre. */
+function crayonsSommaire(){
+  var barre = document.querySelector("#sidebar-inner, .sidebar-inner");
+  if (!barre) return;
+  var secs = Array.prototype.slice.call(document.querySelectorAll(".section-panel"));
+  var k = 0;
+  barre.querySelectorAll(".toc-part").forEach(function(a){
+    if ((a.textContent || "").trim() === "Accueil") return;
+    var sec = secs[k++];
+    if (!sec || a.querySelector(".crayon")) return;
+    a.appendChild(crayon("partie", sec.id));
+  });
+  barre.querySelectorAll(".toc-scene").forEach(function(a){
+    if (a.querySelector(".crayon")) return;
+    var id = (a.id || "").replace(/^toc-/, "");
+    if (id) a.appendChild(crayon("fiche", id));
+  });
+}
+
+document.addEventListener("click", function(e){
+  var c = e.target.closest ? e.target.closest(".crayon") : null;
+  if (!c) return;
+  e.preventDefault();
+  e.stopPropagation();
+  var quoi = c.getAttribute("data-ren");
+  var id = c.getAttribute("data-cible");
+  var el = id ? document.getElementById(id) : null;
+  if (quoi === "partie") renommerPartie(el);
+  else renommerFiche(el);
+}, true);
+
 
 
 /* ── Reprise des boutons hérités d'Éclipse ── */
