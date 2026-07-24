@@ -288,6 +288,17 @@ body.editing [contenteditable="true"]:focus{outline:1px solid rgba(184,146,42,0.
 .fr-slot .stat-card,.fr-slot .pnj-card{margin-top:0.3rem;}
 .fr-go{display:block;margin:0.3rem 0 0.1rem;background:none;border:none;color:rgba(212,200,168,0.5);font-family:'Cinzel',serif;font-size:0.56rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;padding:0.2rem 0;}
 .fr-go:hover{color:var(--CUI-light);text-decoration:underline;}
+
+/* ══════ STRUCTURE (parties et fiches) ══════ */
+.eb-struct{display:flex;gap:0.28rem;align-items:center;}
+.toc-part{position:relative;}
+body.editing .toc-part::after{content:"";}
+.sec-tools{display:flex;gap:0.3rem;margin:0 0 0.9rem;padding:0.4rem 0;border-bottom:1px dotted rgba(184,146,42,0.25);flex-wrap:wrap;}
+body:not(.editing) .sec-tools{display:none;}
+.st-b{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);color:var(--parchment-dark);font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:0.06em;padding:0.3rem 0.6rem;border-radius:2px;cursor:pointer;}
+.st-b:hover{background:rgba(255,255,255,0.1);color:var(--parchment);}
+.st-b.warn{color:#d08080;}
+.st-b.warn:hover{background:rgba(139,26,26,0.35);color:#ffdede;}
 </style>
 </head>
 <body>
@@ -3282,13 +3293,14 @@ var RACINE  = "scenarios/bds";          /* branche du scénario dans la base */
 var CACHE   = "bds_cache_v2";           /* miroir local, affichage instantané */
 var CLIENT  = Math.random().toString(36).slice(2, 10);
 
-var db = null, refSec = null, refImg = null;
+var db = null, refSec = null, refImg = null, refOrdre = null;
 try {
   if (typeof firebase !== "undefined") {
     if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
     db = firebase.database();
     refSec = db.ref(RACINE + "/sections");
     refImg = db.ref(RACINE + "/portraits");
+    refOrdre = db.ref(RACINE + "/ordre");
   }
 } catch (e) { console.warn("Firebase indisponible :", e); }
 
@@ -3321,6 +3333,7 @@ function instantane(sec){
   c.querySelectorAll(".pf").forEach(function(e){ e.innerHTML = ""; e.classList.remove("has"); });
   /* les fiches dépliées sont un affichage, pas du contenu */
   c.querySelectorAll(".fr-slot").forEach(function(e){ e.innerHTML = ""; });
+  c.querySelectorAll(".sec-tools").forEach(function(e){ e.remove(); });
   c.querySelectorAll(".fiche-ref").forEach(function(e){ e.classList.remove("open"); });
   /* surbrillance passagere d'un bloc neuf : jamais enregistree */
   c.querySelectorAll(".bloc-neuf, .bt-cible, .bt-doomed, [data-neuf]").forEach(function(e){
@@ -3367,6 +3380,7 @@ function ecrire(){
     lot[id] = { html: html, at: Date.now(), par: CLIENT };
   });
   etat("envoi…", "pending");
+  if (refOrdre) refOrdre.set(sections().map(function(x){ return x.id; }));
   refSec.update(lot).then(function(){
     etat("enregistré", "ok");
     try { localStorage.setItem(CACHE, JSON.stringify(miroirLocal())); } catch(e){}
@@ -3437,8 +3451,26 @@ function hydrater(){
       refSec.set(lot);
       etat("base initialisée", "ok");
     } else {
-      Object.keys(v).forEach(function(id){
-        if (v[id] && v[id].html) { dernierEnvoi[id] = v[id].html; appliquer(id, v[id].html); }
+      refSec.parent.child("ordre").once("value").then(function(o){
+        var ordre = o.val() || Object.keys(v);
+        ordre.forEach(function(id){
+          if (!v[id] || !v[id].html) return;
+          dernierEnvoi[id] = v[id].html;
+          if (document.getElementById(id)) { appliquer(id, v[id].html); return; }
+          /* partie créée sur un autre appareil : on la fabrique */
+          var t = document.createElement("div");
+          t.innerHTML = v[id].html;
+          var neuf = t.firstElementChild;
+          if (neuf) { neuf.style.display = "none"; conteneur().appendChild(neuf); }
+        });
+        /* remise dans l'ordre enregistré */
+        var c = conteneur();
+        ordre.forEach(function(id){
+          var e = document.getElementById(id);
+          if (e && e.parentNode === c) c.appendChild(e);
+        });
+        apresRemplacement();
+        sommaire();
       });
       etat("à jour", "ok");
     }
@@ -3472,6 +3504,7 @@ function apresRemplacement(){
   if (typeof buildNav === "function") buildNav();
   if (typeof rebuildTOC === "function") rebuildTOC();
   poserPortraits();
+  poserOutilsPartie();
   if (window.editing) rendreEditable(true);
   chargerPortraitsVisibles();
 }
@@ -4275,8 +4308,225 @@ window.auditFiches = function(){
   return { manquants: manquants, jamais: jamais, total: Object.keys(idx).length };
 };
 
+
+/* ============================================================
+   10. STRUCTURE DU DOCUMENT
+   Créer, renommer et supprimer des parties et des fiches.
+   L'ordre des parties est conservé en base : une partie créée
+   ici se retrouve au rechargement, sur n'importe quel appareil.
+   ============================================================ */
+
+/* --- Gabarits de structure, au format de ce scénario ---
+   Chaque scénario peut fournir les siens : on ne pose ceux-ci
+   que si personne ne les a déjà définis. */
+if (!window.GABARIT_ENTETE) window.GABARIT_ENTETE = function(titre){
+  return '<div class="section-header"><span class="section-kicker">Le socle</span>'
+       + '<h1 class="section-title">' + titre + '</h1></div>';
+};
+if (!window.GABARIT_SCENE) window.GABARIT_SCENE = function(id, titre){
+  return '<div class="scene-panel" id="' + id + '" style="display:none">'
+       + '<div class="scene-title-bar"><h2 class="scene-title">' + titre + '</h2>'
+       + '<div class="scene-nav"></div></div>\n'
+       + '<p>Contenu de la fiche.</p></div>';
+};
+
+function conteneur(){ return document.querySelector("#main, .main"); }
+
+function idUnique(prefixe){
+  var i, n = 0;
+  do { i = prefixe + Date.now().toString(36) + (n ? n : ""); n++; } while (document.getElementById(i));
+  return i;
+}
+
+function sommaire(){
+  if (typeof rebuildTOC === "function") rebuildTOC();
+  else if (typeof buildTOC === "function") buildTOC();
+}
+
+function titreDe(sec){
+  return sec.getAttribute("data-title")
+      || (sec.querySelector(".section-title") ? sec.querySelector(".section-title").textContent.trim() : sec.id);
+}
+
+/* --- Créer --- */
+function nouvellePartie(){
+  var t = prompt("Titre de la nouvelle partie ?");
+  if (!t) return;
+  t = t.trim();
+  if (!t) return;
+  var id = idUnique("px");
+  var sid = id + "_sc0";
+  var el = document.createElement("div");
+  el.className = "section-panel";
+  el.id = id;
+  el.setAttribute("data-title", t);
+  if (document.querySelector(".section-panel[data-arc]")) el.setAttribute("data-arc", "socle");
+  el.style.display = "none";
+  el.innerHTML = (window.GABARIT_ENTETE ? window.GABARIT_ENTETE(t) : "")
+               + (window.GABARIT_SCENE ? window.GABARIT_SCENE(sid, t) : "");
+  conteneur().appendChild(el);
+  sommaire();
+  poserOutilsPartie();
+  poserPortraits();
+  if (window.editing) rendreEditable(true);
+  marquerSale(el);
+  if (typeof showScene === "function") showScene(id, sid);
+  toast("Partie « " + t + " » créée");
+}
+
+function nouvelleFiche(){
+  var sec = sectionVisible();
+  if (!sec) { toast("Ouvre une partie d'abord", true); return; }
+  var t = prompt("Titre de la nouvelle fiche ?");
+  if (!t) return;
+  t = t.trim();
+  if (!t) return;
+  var sid = idUnique(sec.id + "_sc");
+  var tmp = document.createElement("div");
+  tmp.innerHTML = window.GABARIT_SCENE ? window.GABARIT_SCENE(sid, t) : "";
+  var el = tmp.firstElementChild;
+  if (!el) return;
+  sec.appendChild(el);
+  sommaire();
+  poserPortraits();
+  if (window.editing) rendreEditable(true);
+  marquerSale(sec);
+  if (typeof showScene === "function") showScene(sec.id, sid);
+  toast("Fiche « " + t + " » créée");
+}
+
+/* --- Renommer --- */
+function renommerPartie(){
+  var sec = sectionVisible();
+  if (!sec) return;
+  var t = prompt("Nouveau titre de la partie :", titreDe(sec));
+  if (!t) return;
+  t = t.trim();
+  if (!t) return;
+  sec.setAttribute("data-title", t);
+  var h = sec.querySelector(".section-title");
+  if (h) h.textContent = t;
+  sommaire();
+  marquerSale(sec);
+  toast("Partie renommée");
+}
+
+function renommerFiche(){
+  var sc = sceneVisible();
+  if (!sc) return;
+  var h = sc.querySelector(".scene-title");
+  if (!h) return;
+  var t = prompt("Nouveau titre de la fiche :", h.textContent.trim());
+  if (!t) return;
+  t = t.trim();
+  if (!t) return;
+  h.textContent = t;
+  sommaire();
+  marquerSale(sc.closest(".section-panel"));
+  toast("Fiche renommée");
+}
+
+/* --- Supprimer --- */
+function supprimerPartie(){
+  var sec = sectionVisible();
+  if (!sec) return;
+  var n = sec.querySelectorAll(".scene-panel").length;
+  if (!confirm("Supprimer la partie « " + titreDe(sec) + " » et ses " + n + " fiche(s) ?\n\nC'est définitif, y compris en ligne.")) return;
+  if (!confirm("Dernière vérification : cette partie et tout son contenu vont disparaître.")) return;
+  sec.querySelectorAll(".pf[data-pf]").forEach(function(x){
+    var id = x.getAttribute("data-pf");
+    if (refImg) refImg.child(id).remove();
+    delete portraitsCharges[id];
+  });
+  var id = sec.id;
+  sec.remove();
+  delete dernierEnvoi[id];
+  delete sales[id];
+  if (refSec) refSec.child(id).remove();
+  if (refOrdre) refOrdre.set(sections().map(function(x){ return x.id; }));
+  sommaire();
+  if (typeof showWelcome === "function") showWelcome();
+  toast("Partie supprimée");
+}
+
+function supprimerFiche(){
+  var sc = sceneVisible();
+  if (!sc) return;
+  var sec = sc.closest(".section-panel");
+  var t = sc.querySelector(".scene-title");
+  if (!confirm("Supprimer la fiche « " + (t ? t.textContent.trim() : sc.id) + " » ?\n\nC'est définitif.")) return;
+  sc.querySelectorAll(".pf[data-pf]").forEach(function(x){
+    var id = x.getAttribute("data-pf");
+    if (refImg) refImg.child(id).remove();
+    delete portraitsCharges[id];
+  });
+  var voisine = sc.previousElementSibling && sc.previousElementSibling.classList.contains("scene-panel")
+              ? sc.previousElementSibling
+              : sc.nextElementSibling;
+  sc.remove();
+  sommaire();
+  marquerSale(sec);
+  if (voisine && voisine.classList.contains("scene-panel") && typeof showScene === "function") showScene(sec.id, voisine.id);
+  else if (typeof showSection === "function") showSection(sec.id);
+  toast("Fiche supprimée");
+}
+
+window.nouvellePartie = nouvellePartie;
+window.nouvelleFiche  = nouvelleFiche;
+window.renommerPartie = renommerPartie;
+window.renommerFiche  = renommerFiche;
+window.supprimerPartie = supprimerPartie;
+window.supprimerFiche  = supprimerFiche;
+
+/* --- Boutons dans la barre d'édition --- */
+(function(){
+  var hote = document.querySelector(".editbar .eb-group:last-of-type, .eb2 .eb2-g:last-of-type");
+  if (!hote) return;
+  var sep = document.createElement("div");
+  sep.className = document.querySelector(".editbar") ? "eb-sep" : "eb2-s";
+  var g = document.createElement("div");
+  g.className = "eb-struct";
+  var cls = document.querySelector(".editbar") ? "eb-btn" : "eb2-b";
+  [["+ Partie", "nouvellePartie"], ["+ Fiche", "nouvelleFiche"],
+   ["Renommer", "renommerFiche"], ["Supprimer", "supprimerFiche"]].forEach(function(x){
+    var b = document.createElement("button");
+    b.className = cls + (x[1].indexOf("supprimer") === 0 ? " warn" : "");
+    b.type = "button";
+    b.textContent = x[0];
+    b.addEventListener("mousedown", function(e){ e.preventDefault(); });
+    b.addEventListener("click", function(){ window[x[1]](); });
+    g.appendChild(b);
+  });
+  hote.parentNode.insertBefore(sep, hote);
+  hote.parentNode.insertBefore(g, hote);
+})();
+
+/* --- Bandeau d'outils en tête de la partie affichée --- */
+function poserOutilsPartie(){
+  document.querySelectorAll(".section-panel").forEach(function(sec){
+    if (sec.querySelector(":scope > .sec-tools")) return;
+    var d = document.createElement("div");
+    d.className = "sec-tools";
+    d.setAttribute("contenteditable", "false");
+    [["Renommer cette partie", "renommerPartie"],
+     ["+ Fiche", "nouvelleFiche"],
+     ["+ Partie", "nouvellePartie"],
+     ["Supprimer cette partie", "supprimerPartie"]].forEach(function(x){
+      var b = document.createElement("button");
+      b.className = "st-b" + (x[1] === "supprimerPartie" ? " warn" : "");
+      b.type = "button";
+      b.textContent = x[0];
+      b.addEventListener("mousedown", function(e){ e.preventDefault(); });
+      b.addEventListener("click", function(){ window[x[1]](); });
+      d.appendChild(b);
+    });
+    sec.insertBefore(d, sec.firstChild);
+  });
+}
+
 /* ---------- Démarrage ---------- */
 poserPortraits();
+poserOutilsPartie();
 hydrater();
 
 })();
