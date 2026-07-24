@@ -262,6 +262,17 @@ body.editing [contenteditable="true"]:focus{outline:1px solid rgba(184,146,42,0.
 .pal-row button:hover{background:rgba(255,255,255,0.11);color:var(--parchment);}
 .pal-row input[type=color]{width:30px;height:26px;padding:0;border:1px solid rgba(255,255,255,0.2);background:none;border-radius:2px;cursor:pointer;}
 .pal-t{font-family:'Cinzel',serif;font-size:0.54rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(212,200,168,0.5);margin-bottom:0.4rem;}
+
+/* ══════ OUTILS DE BLOC (survol en mode édition) ══════ */
+.bt{position:fixed;z-index:940;display:none;gap:2px;background:rgba(14,12,20,0.97);border:1px solid rgba(184,146,42,0.45);border-radius:3px;padding:2px;box-shadow:0 3px 14px rgba(0,0,0,0.6);}
+.bt.on{display:flex;}
+.bt button{background:none;border:none;color:var(--parchment-dark);font-family:'Cinzel',serif;font-size:0.68rem;line-height:1;padding:0.3rem 0.42rem;cursor:pointer;border-radius:2px;min-width:24px;}
+.bt button:hover{background:rgba(255,255,255,0.12);color:var(--parchment);}
+.bt button.sup:hover{background:rgba(139,26,26,0.5);color:#ffdede;}
+.bt button.sup.armed{background:var(--blood);color:#ffe4e4;font-size:0.56rem;letter-spacing:0.06em;padding:0.3rem 0.5rem;}
+.bt-cible{outline:1px dashed rgba(184,146,42,0.55);outline-offset:3px;}
+.bt-doomed{outline:1px solid var(--blood-light)!important;outline-offset:3px;background:rgba(139,26,26,0.14)!important;}
+@media(max-width:640px){.bt button{padding:0.42rem 0.5rem;min-width:32px;font-size:0.75rem;}}
 </style>
 </head>
 <body>
@@ -3242,8 +3253,10 @@ function instantane(sec){
      le bloc ne garde que son identifiant, l'image vit à part. */
   c.querySelectorAll(".pf").forEach(function(e){ e.innerHTML = ""; e.classList.remove("has"); });
   /* surbrillance passagere d'un bloc neuf : jamais enregistree */
-  c.querySelectorAll(".bloc-neuf, [data-neuf]").forEach(function(e){
+  c.querySelectorAll(".bloc-neuf, .bt-cible, .bt-doomed, [data-neuf]").forEach(function(e){
     e.classList.remove("bloc-neuf");
+    e.classList.remove("bt-cible");
+    e.classList.remove("bt-doomed");
     e.removeAttribute("data-neuf");
     if (!e.getAttribute("class")) e.removeAttribute("class");
   });
@@ -3885,6 +3898,160 @@ function deballer(e){
     if (!ev.target.closest("#eb-pal") && !ev.target.closest("#eb-color")) ouvrir(false);
   });
   document.addEventListener("keydown", function(ev){ if (ev.key === "Escape") ouvrir(false); });
+})();
+
+
+/* ============================================================
+   7. OUTILS DE BLOC
+   En mode édition, survoler un bloc fait apparaître une petite
+   barre : monter, descendre, dupliquer, supprimer. La suppression
+   demande un second clic, sans boîte de dialogue.
+   La barre vit hors du document et n'est jamais enregistrée.
+   ============================================================ */
+function blocDe(n){
+  while (n && n !== document.body) {
+    if (n.parentNode && n.parentNode.classList && n.parentNode.classList.contains("scene-panel")) return n;
+    n = n.parentNode;
+  }
+  return null;
+}
+
+var bt = document.createElement("div");
+bt.className = "bt";
+bt.innerHTML =
+  '<button data-b="haut" title="Monter">&#9650;</button>' +
+  '<button data-b="bas" title="Descendre">&#9660;</button>' +
+  '<button data-b="copie" title="Dupliquer">&#10697;</button>' +
+  '<button class="sup" data-b="sup" title="Supprimer">&#10005;</button>';
+document.body.appendChild(bt);
+var btCible = null, btTimer = null;
+
+function desarmer(){
+  var b = bt.querySelector(".sup");
+  b.classList.remove("armed");
+  b.innerHTML = "&#10005;";
+  if (btCible) btCible.classList.remove("bt-doomed");
+}
+
+function viserBloc(el){
+  if (btCible === el) return;
+  if (btCible) { btCible.classList.remove("bt-cible"); desarmer(); }
+  btCible = el;
+  if (!el) { bt.classList.remove("on"); return; }
+  el.classList.add("bt-cible");
+  var r = el.getBoundingClientRect();
+  bt.classList.add("on");
+  var l = r.right - bt.offsetWidth - 4;
+  bt.style.left = Math.max(6, Math.min(l, window.innerWidth - bt.offsetWidth - 6)) + "px";
+  bt.style.top = Math.max(6, r.top - bt.offsetHeight - 3) + "px";
+}
+
+function lacherBloc(){
+  clearTimeout(btTimer);
+  btTimer = setTimeout(function(){
+    if (btCible) { btCible.classList.remove("bt-cible"); desarmer(); }
+    btCible = null;
+    bt.classList.remove("on");
+  }, 260);
+}
+
+document.addEventListener("mouseover", function(e){
+  if (!window.editing) return;
+  if (e.target.closest && e.target.closest(".bt")) { clearTimeout(btTimer); return; }
+  var b = blocDe(e.target);
+  if (b) { clearTimeout(btTimer); viserBloc(b); }
+  else lacherBloc();
+});
+bt.addEventListener("mouseleave", lacherBloc);
+document.addEventListener("scroll", function(){ if (btCible) viserBloc0(btCible); }, true);
+function viserBloc0(el){
+  var r = el.getBoundingClientRect();
+  var l = r.right - bt.offsetWidth - 4;
+  bt.style.left = Math.max(6, Math.min(l, window.innerWidth - bt.offsetWidth - 6)) + "px";
+  bt.style.top = Math.max(6, r.top - bt.offsetHeight - 3) + "px";
+}
+
+bt.addEventListener("mousedown", function(e){ e.preventDefault(); });
+bt.addEventListener("click", function(e){
+  var b = e.target.closest("[data-b]");
+  if (!b || !btCible) return;
+  var a = b.getAttribute("data-b");
+  var el = btCible, par = el.parentNode;
+
+  if (a === "haut") {
+    var p = el.previousElementSibling;
+    if (p) { par.insertBefore(el, p); viserBloc0(el); toast("Bloc remonté"); }
+    else toast("Déjà en haut", true);
+  }
+  else if (a === "bas") {
+    var n = el.nextElementSibling;
+    if (n) { par.insertBefore(n, el); viserBloc0(el); toast("Bloc descendu"); }
+    else toast("Déjà en bas", true);
+  }
+  else if (a === "copie") {
+    var c = el.cloneNode(true);
+    c.classList.remove("bt-cible", "bt-doomed");
+    /* un doublon ne doit pas hériter du portrait de l'original */
+    c.querySelectorAll(".pf").forEach(function(x){
+      x.setAttribute("data-pf", nouvelId());
+      x.innerHTML = '<span class="pf-ph">Portrait</span>';
+      x.classList.remove("has");
+    });
+    par.insertBefore(c, el.nextSibling);
+    rendreEditable(true);
+    toast("Bloc dupliqué");
+  }
+  else if (a === "sup") {
+    var sb = bt.querySelector(".sup");
+    if (!sb.classList.contains("armed")) {
+      sb.classList.add("armed");
+      sb.textContent = "Sûr ?";
+      el.classList.add("bt-doomed");
+      viserBloc0(el);
+      clearTimeout(btTimer);
+      setTimeout(function(){ if (btCible === el) desarmer(); }, 4000);
+      return;
+    }
+    /* portraits associés : on nettoie la base pour ne pas laisser d'orphelins */
+    el.querySelectorAll(".pf[data-pf]").forEach(function(x){
+      var id = x.getAttribute("data-pf");
+      if (refImg) refImg.child(id).remove();
+      delete portraitsCharges[id];
+    });
+    var sec = el.closest(".section-panel");
+    el.remove();
+    btCible = null;
+    bt.classList.remove("on");
+    desarmer();
+    if (sec) marquerSale(sec);
+    toast("Bloc supprimé");
+    return;
+  }
+  var sec2 = el.closest(".section-panel");
+  if (sec2) marquerSale(sec2);
+});
+
+/* Sur mobile, un appui long sur un bloc appelle la barre. */
+(function(){
+  var t = null;
+  document.addEventListener("touchstart", function(e){
+    if (!window.editing) return;
+    var b = blocDe(e.target);
+    if (!b) return;
+    t = setTimeout(function(){ viserBloc(b); }, 550);
+  }, { passive: true });
+  ["touchend", "touchmove", "touchcancel"].forEach(function(ev){
+    document.addEventListener(ev, function(){ clearTimeout(t); }, { passive: true });
+  });
+})();
+
+/* La barre disparaît dès qu'on quitte le mode édition. */
+(function(){
+  var o = window.setEditing;
+  window.setEditing = function(on){
+    o(on);
+    if (!on) { if (btCible) btCible.classList.remove("bt-cible", "bt-doomed"); btCible = null; bt.classList.remove("on"); }
+  };
 })();
 
 /* ---------- Démarrage ---------- */
