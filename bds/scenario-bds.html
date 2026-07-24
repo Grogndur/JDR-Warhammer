@@ -3290,7 +3290,7 @@ var RACINE  = "scenarios/bds";          /* branche du scénario dans la base */
 var CACHE   = "bds_cache_v2";           /* miroir local, affichage instantané */
 var CLIENT  = Math.random().toString(36).slice(2, 10);
 
-var db = null, refSec = null, refImg = null, refOrdre = null;
+var db = null, refSec = null, refImg = null, refOrdre = null, refSuppr = null;
 try {
   if (typeof firebase !== "undefined") {
     if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
@@ -3298,6 +3298,7 @@ try {
     refSec = db.ref(RACINE + "/sections");
     refImg = db.ref(RACINE + "/portraits");
     refOrdre = db.ref(RACINE + "/ordre");
+    refSuppr = db.ref(RACINE + "/supprimes");
   }
 } catch (e) { console.warn("Firebase indisponible :", e); }
 
@@ -3424,7 +3425,52 @@ function appliquer(id, html){
   return true;
 }
 
+/* Ce que contient le fichier lui-même, relevé avant que la base ne prenne
+   la main. Sert à repérer les fiches ajoutées au fichier depuis la dernière
+   synchronisation, pour les faire rejoindre la base au lieu de les perdre. */
+var FICHIER = {};
+function releverFichier(){
+  sections().forEach(function(sec){ FICHIER[sec.id] = instantane(sec); });
+}
+
+var supprimes = {};
+
+/* Réconciliation : une fiche présente dans le fichier mais absente de la base
+   y est réinjectée, à sa place, sauf si elle a été supprimée exprès. */
+function reconcilier(){
+  var ajouts = 0;
+  Object.keys(FICHIER).forEach(function(sid){
+    var sec = document.getElementById(sid);
+    if (!sec) return;
+    var t = document.createElement("div");
+    t.innerHTML = FICHIER[sid];
+    var origine = t.firstElementChild;
+    if (!origine) return;
+    var presentes = {};
+    sec.querySelectorAll(".scene-panel").forEach(function(p){ presentes[p.id] = true; });
+    var precedente = null;
+    origine.querySelectorAll(".scene-panel").forEach(function(p){
+      if (presentes[p.id]) { precedente = p.id; return; }
+      if (supprimes[p.id]) { precedente = p.id; return; }
+      var neuve = p.cloneNode(true);
+      neuve.setAttribute("style", "display:none");
+      var apres = precedente ? document.getElementById(precedente) : null;
+      if (apres && apres.parentNode === sec) sec.insertBefore(neuve, apres.nextSibling);
+      else sec.appendChild(neuve);
+      precedente = p.id;
+      ajouts++;
+      marquerSale(sec);
+    });
+  });
+  if (ajouts) toast(ajouts + " nouvelle(s) fiche(s) reprise(s) du fichier");
+  return ajouts;
+}
+
+window.reconcilier = reconcilier;
+window.releverFichier = releverFichier;
+
 function hydrater(){
+  releverFichier();
   /* a. miroir local d'abord : affichage immédiat, même hors réseau */
   try {
     var brut = localStorage.getItem(CACHE);
@@ -3439,6 +3485,8 @@ function hydrater(){
 
   /* b. serveur : source de vérité */
   etat("lecture…", "pending");
+  var prealable = refSuppr ? refSuppr.once("value").then(function(sn){ supprimes = sn.val() || {}; }) : Promise.resolve();
+  prealable.catch(function(){}).then(function(){
   refSec.once("value").then(function(snap){
     var v = snap.val();
     if (!v) {
@@ -3466,6 +3514,7 @@ function hydrater(){
           var e = document.getElementById(id);
           if (e && e.parentNode === c) c.appendChild(e);
         });
+        reconcilier();
         apresRemplacement();
         sommaire();
       });
@@ -3477,6 +3526,7 @@ function hydrater(){
   }).catch(function(e){
     console.warn("Lecture échouée :", e);
     etat("hors ligne", "err");
+  });
   });
 }
 
@@ -4439,6 +4489,12 @@ function supprimerPartie(){
     delete portraitsCharges[id];
   });
   var id = sec.id;
+  sec.querySelectorAll(".scene-panel").forEach(function(p){
+    supprimes[p.id] = true;
+    if (refSuppr) refSuppr.child(p.id).set(true);
+  });
+  supprimes[id] = true;
+  if (refSuppr) refSuppr.child(id).set(true);
   sec.remove();
   delete dernierEnvoi[id];
   delete sales[id];
@@ -4460,6 +4516,8 @@ function supprimerFiche(){
     if (refImg) refImg.child(id).remove();
     delete portraitsCharges[id];
   });
+  supprimes[sc.id] = true;
+  if (refSuppr) refSuppr.child(sc.id).set(true);
   var voisine = sc.previousElementSibling && sc.previousElementSibling.classList.contains("scene-panel")
               ? sc.previousElementSibling
               : sc.nextElementSibling;
