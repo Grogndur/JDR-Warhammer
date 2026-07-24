@@ -249,6 +249,19 @@ body.editing [contenteditable="true"]:focus{outline:1px solid rgba(184,146,42,0.
 /* ══════ BLOC FRAÎCHEMENT INSÉRÉ ══════ */
 @keyframes neuf-pulse{0%{box-shadow:0 0 0 0 rgba(184,146,42,0.75);}70%{box-shadow:0 0 0 12px rgba(184,146,42,0);}100%{box-shadow:0 0 0 0 rgba(184,146,42,0);}}
 .bloc-neuf{animation:neuf-pulse 1.1s ease-out 2;outline:1px solid rgba(184,146,42,0.8);outline-offset:2px;scroll-margin-top:80px;}
+
+/* ══════ COULEUR DU TEXTE ══════ */
+.eb-swatch{display:inline-block;width:11px;height:11px;border-radius:2px;border:1px solid rgba(255,255,255,0.35);vertical-align:-1px;margin-left:0.35rem;background:var(--parchment-dark);}
+.pal{position:fixed;z-index:950;background:rgba(14,12,20,0.99);border:1px solid rgba(184,146,42,0.42);border-radius:3px;padding:0.5rem;box-shadow:0 -8px 26px rgba(0,0,0,0.7);display:none;width:206px;}
+.pal.on{display:block;}
+.pal-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0.3rem;}
+.pal-c{width:100%;aspect-ratio:1;border-radius:2px;border:1px solid rgba(255,255,255,0.22);cursor:pointer;padding:0;}
+.pal-c:hover{border-color:var(--parchment);transform:scale(1.12);}
+.pal-row{display:flex;gap:0.3rem;margin-top:0.45rem;align-items:center;}
+.pal-row button{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);color:var(--parchment-dark);font-family:'Cinzel',serif;font-size:0.58rem;letter-spacing:0.05em;padding:0.32rem 0.3rem;border-radius:2px;cursor:pointer;}
+.pal-row button:hover{background:rgba(255,255,255,0.11);color:var(--parchment);}
+.pal-row input[type=color]{width:30px;height:26px;padding:0;border:1px solid rgba(255,255,255,0.2);background:none;border-radius:2px;cursor:pointer;}
+.pal-t{font-family:'Cinzel',serif;font-size:0.54rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(212,200,168,0.5);margin-bottom:0.4rem;}
 </style>
 </head>
 <body>
@@ -3722,6 +3735,157 @@ window.exportJSON = function(){
   setTimeout(function(){ URL.revokeObjectURL(u); }, 1500);
   toast("Sauvegarde téléchargée");
 };
+
+
+/* ============================================================
+   6. COULEUR DU TEXTE
+   Palette du document, plus une couleur libre. La sélection est
+   mémorisée en permanence : cliquer dans la barre ne la perd pas.
+   ============================================================ */
+var COULEURS = [
+  ["#f0e8d8", "Parchemin clair"],
+  ["#d4c8a8", "Parchemin"],
+  ["#c05050", "Sang"],
+  ["#d19a5e", "Cuivre"],
+  ["#e8cf72", "Or"],
+  ["#b8a3f0", "Violet"],
+  ["#9dc48a", "Vert"],
+  ["#cfe0ea", "Givre"],
+  ["#8a8a99", "Estompé"],
+  ["#c9a227", "Ambre"]
+];
+
+var derniereZone = null, dernierRange = null;
+document.addEventListener("selectionchange", function(){
+  var sel = document.getSelection();
+  if (!sel || !sel.rangeCount) return;
+  var n = sel.getRangeAt(0).commonAncestorContainer;
+  if (n.nodeType === 3) n = n.parentNode;
+  if (!n || !n.closest) return;
+  var z = n.closest("[contenteditable='true']");
+  if (z) { derniereZone = z; dernierRange = sel.getRangeAt(0).cloneRange(); }
+});
+
+function rendreSelection(){
+  if (!dernierRange) return false;
+  var sel = document.getSelection();
+  var n = sel.rangeCount ? sel.getRangeAt(0).commonAncestorContainer : null;
+  if (n && n.nodeType === 3) n = n.parentNode;
+  if (n && n.closest && n.closest("[contenteditable='true']")) return true;   /* déjà bien placé */
+  if (derniereZone && derniereZone.isConnected) {
+    derniereZone.focus();
+    sel.removeAllRanges();
+    sel.addRange(dernierRange);
+    return true;
+  }
+  return false;
+}
+
+function appliquerCouleur(hex){
+  if (!window.editing) { toast("Active l'édition d'abord", true); return; }
+  if (!rendreSelection()) { toast("Sélectionne d'abord du texte", true); return; }
+  var sel = document.getSelection();
+  if (sel.isCollapsed) { toast("Sélectionne d'abord du texte", true); return; }
+  try { document.execCommand("styleWithCSS", false, true); } catch(e){}
+  document.execCommand("foreColor", false, hex);
+  var pastille = document.getElementById("eb-swatch");
+  if (pastille) pastille.style.background = hex;
+  var sec = (derniereZone && derniereZone.closest(".section-panel")) || null;
+  if (sec) marquerSale(sec);
+}
+
+/* Retrait : on dépouille les balises de couleur touchées par la sélection,
+   sans toucher au gras, à l'italique ni aux classes du document. */
+function retirerCouleur(){
+  if (!rendreSelection()) return;
+  var sel = document.getSelection();
+  if (!sel.rangeCount) return;
+  var rg = sel.getRangeAt(0);
+  var zone = derniereZone;
+  if (!zone) return;
+  var vises = [];
+  zone.querySelectorAll("span[style*='color'], font[color], font[style*='color']").forEach(function(e){
+    try { if (rg.intersectsNode(e)) vises.push(e); } catch(err){}
+  });
+  vises.forEach(function(e){
+    if (e.tagName === "FONT") { deballer(e); return; }
+    e.style.removeProperty("color");
+    if (!e.getAttribute("style")) e.removeAttribute("style");
+    if (!e.getAttribute("style") && !e.getAttribute("class")) deballer(e);
+  });
+  var sec = zone.closest(".section-panel");
+  if (sec) marquerSale(sec);
+  toast(vises.length ? "Couleur retirée" : "Rien à retirer");
+}
+function deballer(e){
+  var p = e.parentNode;
+  if (!p) return;
+  while (e.firstChild) p.insertBefore(e.firstChild, e);
+  p.removeChild(e);
+  p.normalize();
+}
+
+/* --- Construction du bouton et de la palette --- */
+(function(){
+  var barre = document.querySelector(".editbar .eb-group");
+  if (!barre) return;
+  var btn = document.createElement("button");
+  btn.className = "eb-btn";
+  btn.id = "eb-color";
+  btn.type = "button";
+  btn.innerHTML = 'Couleur<span class="eb-swatch" id="eb-swatch"></span>';
+  var apresItalique = barre.querySelector("[data-cmd='italic']");
+  if (apresItalique && apresItalique.nextSibling) barre.insertBefore(btn, apresItalique.nextSibling);
+  else barre.appendChild(btn);
+
+  var pal = document.createElement("div");
+  pal.className = "pal";
+  pal.id = "eb-pal";
+  pal.innerHTML = '<div class="pal-t">Couleur du texte</div><div class="pal-grid"></div>'
+    + '<div class="pal-row"><input type="color" id="pal-libre" value="#c05050" title="Couleur libre">'
+    + '<button data-p="libre">Appliquer</button><button data-p="off">Retirer</button></div>';
+  document.body.appendChild(pal);
+  var grille = pal.querySelector(".pal-grid");
+  COULEURS.forEach(function(c){
+    var b = document.createElement("button");
+    b.className = "pal-c";
+    b.type = "button";
+    b.style.background = c[0];
+    b.title = c[1];
+    b.setAttribute("data-hex", c[0]);
+    grille.appendChild(b);
+  });
+
+  function ouvrir(on){
+    pal.classList.toggle("on", on);
+    if (!on) return;
+    var r = btn.getBoundingClientRect();
+    pal.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 214)) + "px";
+    var h = pal.offsetHeight || 150;
+    pal.style.top = Math.max(8, r.top - h - 6) + "px";
+  }
+
+  /* Aucun élément de la palette ne doit prendre le focus. */
+  [btn, pal].forEach(function(e){
+    e.addEventListener("mousedown", function(ev){
+      if (ev.target && ev.target.type === "color") return;   /* le sélecteur natif a besoin du clic */
+      ev.preventDefault();
+    });
+  });
+
+  btn.addEventListener("click", function(){ ouvrir(!pal.classList.contains("on")); });
+  pal.addEventListener("click", function(ev){
+    var c = ev.target.closest("[data-hex]");
+    if (c) { appliquerCouleur(c.getAttribute("data-hex")); ouvrir(false); return; }
+    var a = ev.target.getAttribute && ev.target.getAttribute("data-p");
+    if (a === "libre") { appliquerCouleur(document.getElementById("pal-libre").value); ouvrir(false); }
+    if (a === "off")   { retirerCouleur(); ouvrir(false); }
+  });
+  document.addEventListener("click", function(ev){
+    if (!ev.target.closest("#eb-pal") && !ev.target.closest("#eb-color")) ouvrir(false);
+  });
+  document.addEventListener("keydown", function(ev){ if (ev.key === "Escape") ouvrir(false); });
+})();
 
 /* ---------- Démarrage ---------- */
 poserPortraits();
