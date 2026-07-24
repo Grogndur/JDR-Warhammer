@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>De Boue et de Sang — WFRP 4e</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
 
 :root {
@@ -216,6 +218,33 @@ body.editing [contenteditable="true"]:focus{outline:1px solid rgba(184,146,42,0.
 @media(max-width:750px){.eb-note{display:none;}.editbar{padding:0.4rem 0.5rem;}}
 @media print{.topbar,.sidebar,.editbar,.scene-nav,.btn-menu{display:none!important;}.main{margin:0;padding:0;}body{background:#fff;color:#000;}}
 
+
+/* ══════ PORTRAITS DE PNJ ══════ */
+.stat-head,.pnj-head{display:flex;align-items:center;gap:0.75rem;}
+.head-txt{flex:1;min-width:0;display:flex;justify-content:space-between;align-items:baseline;gap:0.7rem;flex-wrap:wrap;}
+.pnj-head .head-txt{display:block;}
+.pf{flex:0 0 auto;width:74px;height:74px;border-radius:2px;border:1px solid rgba(169,113,59,0.45);background:rgba(0,0,0,0.32);cursor:pointer;padding:0;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
+.pnj-card .pf{border-color:rgba(103,78,167,0.45);}
+.pf:hover{border-color:var(--CUI-light);}
+.pnj-card .pf:hover{border-color:#b8a3f0;}
+.pf img{width:100%;height:100%;object-fit:cover;display:block;}
+.pf-ph{font-family:'Cinzel',serif;font-size:0.5rem;letter-spacing:0.12em;color:rgba(212,200,168,0.4);text-transform:uppercase;line-height:1.3;text-align:center;pointer-events:none;}
+.pf-busy{position:absolute;inset:0;background:rgba(9,9,14,0.72);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:0.5rem;color:var(--CUI-light);letter-spacing:0.1em;}
+.pf-menu{position:absolute;z-index:900;background:rgba(14,12,20,0.99);border:1px solid rgba(184,146,42,0.42);border-radius:2px;padding:0.25rem;display:flex;flex-direction:column;gap:0.15rem;box-shadow:0 6px 22px rgba(0,0,0,0.6);}
+.pf-menu button{background:none;border:none;color:var(--parchment-dark);font-family:'Cinzel',serif;font-size:0.62rem;letter-spacing:0.06em;padding:0.4rem 0.8rem;cursor:pointer;text-align:left;white-space:nowrap;border-radius:2px;}
+.pf-menu button:hover{background:rgba(255,255,255,0.09);color:var(--parchment);}
+.pf-menu button.warn{color:var(--blood-light);}
+.pf-view{position:fixed;inset:0;background:rgba(9,9,14,0.94);z-index:9000;display:none;align-items:center;justify-content:center;padding:1.5rem;cursor:zoom-out;}
+.pf-view.on{display:flex;}
+.pf-view img{max-width:min(560px,92vw);max-height:88vh;border:1px solid rgba(184,146,42,0.4);border-radius:2px;}
+@media(max-width:640px){.pf{width:58px;height:58px;}}
+
+/* ══════ INDICATEUR DE SYNCHRO ══════ */
+.sync-flag{font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;padding:0.2rem 0.5rem;border-radius:2px;white-space:nowrap;border:1px solid transparent;}
+.sync-flag.ok{color:#8fae7e;border-color:rgba(94,128,79,0.4);background:rgba(94,128,79,0.12);}
+.sync-flag.pending{color:#e8cf72;border-color:rgba(184,146,42,0.4);background:rgba(184,146,42,0.12);}
+.sync-flag.err{color:var(--blood-light);border-color:rgba(139,26,26,0.5);background:rgba(139,26,26,0.16);}
+@media(max-width:820px){.sync-flag{display:none;}}
 </style>
 </head>
 <body>
@@ -583,6 +612,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <span class="pnj-line">Son usage</span>
 <p>Informateur, déserteur, ou remords vivant de la milice, selon ce que les PJ en font. C'est la seule main tendue du prologue, et elle est tendue par le mauvais camp. S'ils la saisissent, il devient la preuve que la milice est faite d'hommes. S'ils la refusent, il devient la preuve du contraire, et c'est de leur faute.</p>
 </div></div>
+<div class="stat-card"><div class="stat-head"><span class="stat-name">Le jeune milicien</span><span class="stat-kind">Humain, milicien de Dorfmark · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Le jeune milicien</td><td>4</td><td>30</td><td>25</td><td>30</td><td>30</td><td>30</td><td>35</td><td>30</td><td>30</td><td>30</td><td>30</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Lance de milice · Moyenne · BF+4. Casque de cuir bouilli (1 PA, tête).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 30, Esquive 35, Perception 30, Athétisme 35, Métier (Fermier) 40, Calme 25.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Coriace</span> <span class="trait">Sixième sens</span></p><span class="stat-line">En jeu</span><p>Il obéit de mauvaise grâce et cherche une raison de ne plus le faire. Si les PJ la lui donnent, il la prend.</p></div></div>
 
 <div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Le vieil homme au bonnet rouge</div><div class="pnj-role">La diversion du Chapitre 1 · ne jamais expliquer</div></div><div class="pnj-body">
 <span class="pnj-line">Ce qu'il fait</span>
@@ -592,6 +622,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <span class="pnj-line">Profil</span>
 <p>Aucun, délibérément. S'il devait se battre, il ne serait plus lui.</p>
 </div></div>
+<div class="stat-card"><div class="stat-head"><span class="stat-name">Le vieil homme au bonnet rouge</span><span class="stat-kind">Humain âgé · ne se bat pas</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Le vieil homme au bonnet rouge</td><td>3</td><td>25</td><td>20</td><td>25</td><td>30</td><td>30</td><td>25</td><td>30</td><td>35</td><td>45</td><td>35</td><td>10</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Un bâton de marche. Aucune armure.</p><span class="stat-line">Compétences</span><p>Perception 45, Intuition 45, Discrétion 35, Savoir (Contrée) 40, Charme 35, Calme 40.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Insaisissable</span></p><span class="stat-line">En jeu</span><p>Il détourne l'attention et disparaît. Ne jamais expliquer comment. S'il est retenu de force, il n'oppose rien : c'est ce qui dérange.</p></div></div>
 </div>
 <div class="scene-panel" id="P3_sc9" style="display:none">
 <div class="scene-title-bar"><h2 class="scene-title">Le nord — les bandes</h2><div class="scene-nav"></div></div>
@@ -646,6 +677,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <span class="pnj-line">Profil</span>
 <p>Voir <strong>Boucher marqué</strong> au bestiaire, avec la règle de <em>Contagion</em>. Une rencontre frontale avant le milieu de l'Arc II est une erreur : ils ne sont pas un défi calibré, ils sont une chose qu'on découvre d'abord par ce qu'elle laisse derrière elle.</p>
 </div></div>
+<div class="stat-card"><div class="stat-head"><span class="stat-name">La bande marquée</span><span class="stat-kind">Humains, faux bandits · 4 à 6</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>La bande marquée</td><td>4</td><td>40</td><td>35</td><td>40</td><td>40</td><td>35</td><td>35</td><td>30</td><td>30</td><td>40</td><td>30</td><td>13</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Épée · Moyenne · BF+4. Arbalète légère · 50 m · BF+7, recharge 1. Cuir clouté (2 PA, corps et bras).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 40, Projectiles (Arbalète) 35, Discrétion (Rurale) 40, Perception 35, Esquive 35, Intimidation 35.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Combattant né</span> <span class="trait">Discipline</span></p><span class="stat-line">En jeu</span><p>Ils se battent trop bien pour des bandits et rompent trop proprement. C'est le seul indice qu'on leur laisse.</p></div></div>
 
 <div class="pnj-card"><div class="pnj-head"><div class="pnj-name">« Le Saigneur »</div><div class="pnj-role">Chef de la bande marquée · pas de profil, et c'est volontaire</div></div><div class="pnj-body">
 <span class="pnj-line">Pourquoi pas de chiffres</span>
@@ -655,6 +687,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <span class="pnj-line">Le tenir simple</span>
 <p>Pas de plan retors, pas de manipulation fine, pas de double jeu. De la fureur. La finesse de la campagne est ailleurs : elle est dans le fait que cette fureur brute suffit à faire brûler des innocents à cinq lieues de là, par des gens qui n'ont jamais entendu parler de lui. Lui est simple ; ce qui le tient ne l'est pas. Le Saigneur croit servir le sang, et il a tort : cette ironie est pour toi seul.</p>
 </div></div>
+<div class="stat-card"><div class="stat-head"><span class="stat-name">« Le Saigneur »</span><span class="stat-kind">Humain, chef de la bande marquée · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>« Le Saigneur »</td><td>4</td><td>50</td><td>40</td><td>45</td><td>45</td><td>40</td><td>40</td><td>35</td><td>40</td><td>50</td><td>40</td><td>15</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Épée lourde · Moyenne · BF+5. Cotte de mailles sous le manteau (4 PA, corps).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 50, Esquive 40, Commandement 45, Intimidation 50, Discrétion 40, Perception 40.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Combattant né</span> <span class="trait">Frappe puissante</span> <span class="trait">Sang-froid</span></p><span class="stat-line">En jeu</span><p>Le document dit expressément qu'il n'a pas de profil, et c'est un choix. Celui-ci n'est là que si la table force la rencontre : à supprimer si tu tiens à l'intention d'origine.</p></div></div>
 
 <div class="mj-box"><span class="mj-label">Sous les deux</span><span class="mj-text"><strong>À ne pas jouer maintenant.</strong> Le culte lui-même reste hors-champ : on n'en voit encore que le bras déguisé en bandits. Simple graine. Le hameau brûlé du prologue peut être, au choix ou en mélange, un coup des opportunistes maquillé, une purge de milice, ou l'œuvre de la bande marquée, plus sauvage et démesurée. Garde l'ambiguïté : c'est elle qui, plus tard, fera basculer les PJ vers la couche 3.</span></div>
 </div>
@@ -672,6 +705,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <p>Il est purement opportuniste et ignore sans doute qu'il fait le jeu du culte. C'est précisément ce qui le rend si utile à celui-ci. Ne le fais jamais devenir cultiste : il est bien plus effrayant en petit salaud ordinaire.</p>
 <div class="jet-roll"><span class="jet-label">Jet — Intuition</span><span class="jet-detail"><span class="mod mod-neg">(-20)</span> · Sentir que sa chaleur est un outil. Il est bon. Il fait ça depuis des années et il y croit lui-même à moitié.</span></div>
 </div></div>
+<div class="stat-card"><div class="stat-head"><span class="stat-name">Berthold Kroll</span><span class="stat-kind">Humain, informateur · ne se bat pas</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Berthold Kroll</td><td>4</td><td>25</td><td>25</td><td>30</td><td>30</td><td>30</td><td>30</td><td>35</td><td>45</td><td>35</td><td>55</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Un couteau qu'il n'a jamais sorti. Aucune armure.</p><span class="stat-line">Compétences</span><p>Charme 55, Intuition 55, Marchandage 50, Ragot 60, Perception 40, Subterfuge 45, Savoir (Contrée) 45.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Beau parleur</span> <span class="trait">Sixième sens</span></p><span class="stat-line">En jeu</span><p>Il vend ce qu'il sait et sait ce qu'il vend. Menacé, il cède vite et fait payer plus tard, par un tiers.</p></div></div>
 
 <div class="butin-box"><span class="butin-label">Butin</span><span class="butin-text"><strong>Chez Kroll, si les PJ vont jusque-là.</strong>
 <ul class="butin-list">
@@ -720,6 +754,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <span class="pnj-line">Ce qu'elle apporte</span>
 <p>Des Soins gratuits, et une lettre scellée de témoignage pour une autorité de l'ouest : c'est le seul objectif clair et propre du prologue. Porter la vérité quelque part. Le fait que ce soit un objectif <em>naïf</em> ne se révélera que plus tard.</p>
 </div></div>
+<div class="stat-card"><div class="stat-head"><span class="stat-name">Sœur Mathilde Loniale</span><span class="stat-kind">Humaine, prêtresse de Shallya · ne se bat sous aucun prétexte</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Sœur Mathilde Loniale</td><td>4</td><td>20</td><td>20</td><td>30</td><td>35</td><td>35</td><td>30</td><td>40</td><td>45</td><td>55</td><td>50</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Rien. Elle refuse de porter une arme, même pour la donner à quelqu'un d'autre.</p><span class="stat-line">Compétences</span><p>Guérison 55, Charme 50, Empathie 55, Calme 55, Savoir (Théologie) 45, Langue (Classique) 40, Résistance 40.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Foi (Shallya)</span> <span class="trait">Bénedictions mineures</span> <span class="trait">Sang-froid</span></p><span class="stat-line">En jeu</span><p>Elle se met entre les coups et les blessés. Elle ne fuit pas. Si un PJ la met en danger pour avancer, elle s'en souviendra sans jamais le lui reprocher, ce qui est pire.</p></div></div>
 
 <div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Brokk</div><div class="pnj-role">Dernier de la lignée de Kazad Varr · l'auteur de la lettre · la charnière incarnée</div></div><div class="pnj-body">
 <span class="pnj-line">Ce qu'il est</span>
@@ -731,6 +766,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <span class="pnj-line">Profil</span>
 <p>Vieux nain solide : M 3, CC 40, F 45, E 50, FM 55, B 14, PA 1 (cuir de travail), pic de mineur · Moyenne · BF+4. Savoir (Nains, Géologie, Métallurgie) 60, Survie 50, Perception 45, Rancunier, Vision nocturne. Il ne se battra pas aux côtés des PJ, mais il ne fuira pas non plus : c'est sa montagne.</p>
 </div></div>
+<div class="stat-card"><div class="stat-head"><span class="stat-name">Brokk</span><span class="stat-kind">Nain, dernier de la lignée de Kazad Varr · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Brokk</td><td>3</td><td>45</td><td>30</td><td>40</td><td>50</td><td>30</td><td>25</td><td>40</td><td>40</td><td>50</td><td>35</td><td>15</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Hache naine · Moyenne · BF+4. Maille naine usée (4 PA, corps).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 45, Résistance 50, Calme 50, Savoir (Généalogie, Nains) 50, Métier (Mineur) 45, Perception 40, Langue (Khazalid) 60.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Robustesse naine</span> <span class="trait">Vision nocturne</span> <span class="trait">Rancunier</span> <span class="trait">Sang-froid</span></p><span class="stat-line">En jeu</span><p>C'est la charnière de l'arc : il ne doit pas tomber sur un jet de dés. Le profil dit ce qu'il vaut si on le prend au collet, pas ce qu'il fait à l'initiative.</p></div></div>
 
 <div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Albrecht Trenler</div><div class="pnj-role">Facteur du Konsortium Korbach · l'employeur</div></div><div class="pnj-body">
 <span class="pnj-line">Ce qu'il est</span>
@@ -740,6 +776,7 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <span class="pnj-line">Détail qui change tout</span>
 <p>Si les PJ ont posé des questions au comptoir de la Korp à Altdorf pendant la charnière, <strong>il est prévenu</strong> et il sait leurs noms avant de les voir. L'embauche prend alors un tout autre ton. Voir <strong>Kazad Varr</strong>, scène de l'embauche.</p>
 </div></div>
+<div class="stat-card"><div class="stat-head"><span class="stat-name">Albrecht Trenler</span><span class="stat-kind">Humain, facteur du Konsortium Korbach · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Albrecht Trenler</td><td>4</td><td>30</td><td>25</td><td>30</td><td>35</td><td>35</td><td>30</td><td>40</td><td>50</td><td>40</td><td>55</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Rapière de ville · Moyenne · BF+4, portée sans conviction. Aucune armure.</p><span class="stat-line">Compétences</span><p>Marchandage 60, Charme 55, Intuition 45, Évaluation 55, Lecture/Écriture 50, Langue (Reikspiel, Bretonnien) 50, Commandement 40.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Beau parleur</span> <span class="trait">Négociateur</span> <span class="trait">Lire et écrire</span></p><span class="stat-line">En jeu</span><p>L'employeur. Il paie ce qui est convenu, jamais plus, et note tout. Trahir le contrat coûte plus cher que le rompre proprement.</p></div></div>
 </div>
 </div>
 
@@ -1260,14 +1297,19 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <p><strong>PNJ récurrents de Hochsleben</strong></p>
 
 <div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Greta Holfmann</div><div class="pnj-role">aubergiste du Sanglier Gris</div></div><div class="pnj-body"><p>La cinquantaine sèche, veuve, cheveux gris noués serrés, tablier toujours propre malgré l'activité. Tient l'auberge depuis 22 ans, connaît tout le monde. Voix grave, peu de mots, sourires rares mais sincères. Le Sanglier Gris est l'auberge des résidents et des habitués, plus modeste et plus discrète que l'Auberge du Bien Portant de Marta Heulen (qui, elle, reçoit les gens de passage et les hôtes de marque comme les nains de Koppar-Dumm). Greta sait que les PJ ont la réputation de la route, et tant qu'ils paient correctement leurs repas et se tiennent bien, elle <strong>leur fait crédit</strong> et leur garde toujours une table près du feu. Si un PJ est poli et régulier, elle finit par lui lâcher des bribes : qui couche avec qui, qui doit de l'argent à qui, qui boit trop. <em>« J'écoute, je vois, je dis rien. Mais à vous, je peux dire. »</em> Bon contact pour un PJ qui tient un carnet d'enquête.</p></div></div>
+<div class="stat-card"><div class="stat-head"><span class="stat-name">Greta Holfmann</span><span class="stat-kind">Humaine, aubergiste du Sanglier Gris · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Greta Holfmann</td><td>4</td><td>25</td><td>20</td><td>35</td><td>35</td><td>30</td><td>30</td><td>40</td><td>35</td><td>35</td><td>50</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Un gourdin sous le comptoir · Moyenne · BF+3. Aucune armure.</p><span class="stat-line">Compétences</span><p>Charme 50, Ragot 55, Marchandage 45, Métier (Cuisinier) 50, Intuition 45, Perception 40, Intimidation 35.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Ragot</span> <span class="trait">Sixième sens</span></p><span class="stat-line">En jeu</span><p>Elle sait qui dort chez elle et qui est reparti avant l'aube. Elle le dit à qui paie sa tournée, pas à qui hausse le ton.</p></div></div>
 
 <div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Capitaine Aldun Hesselmann</div><div class="pnj-role">garde municipale</div></div><div class="pnj-body"><p>Quarantaine, militaire de carrière (ancien de l'armée d'Averland, désormais en charge de la garde de ville), barbe poivre et sel taillée court, uniforme impeccable. Direct, pragmatique, peu enclin aux discours. Tient son poste depuis 8 ans, connaît son monde. <strong>Respecte d'emblée un PJ de la patrouille ou de la garde</strong>, qui peut s'asseoir à sa table sans demander. Reçoit les PJ avec courtoisie professionnelle mais sans chaleur, il évalue. Si on lui demande un service, il pèse : <em>« Qu'est-ce que ça vous rapporte ? Et à moi ? »</em> Pas corrompu : juste réaliste. Bon allié si on sait y faire, sinon obstacle.</p></div></div>
+<div class="stat-card"><div class="stat-head"><span class="stat-name">Capitaine Aldun Hesselmann</span><span class="stat-kind">Humain, garde municipale · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Capitaine Aldun Hesselmann</td><td>4</td><td>45</td><td>35</td><td>40</td><td>40</td><td>35</td><td>35</td><td>30</td><td>30</td><td>40</td><td>40</td><td>14</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Épée · Moyenne · BF+4. Brigandine et casque (3 PA, corps ; 2 PA, tête).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 45, Esquive 35, Commandement 45, Intimidation 45, Perception 40, Intuition 40, Savoir (Loi) 35.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Combattant né</span> <span class="trait">Discipline</span> <span class="trait">Autorité</span></p><span class="stat-line">En jeu</span><p>Il applique le règlement tant qu'on le respecte, et l'oublie intégralement si on l'humilie devant ses hommes.</p></div></div>
 
 <div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Frère Otmar</div><div class="pnj-role">prêtre de Sigmar</div></div><div class="pnj-body"><p>Soixantaine, voûté, mains noueuses, robe brune élimée. Tient la petite chapelle Sigmar du quartier ouest, un édifice modeste, deux bancs, un autel, une statue ébréchée. Pieux mais lassé : il a vu trop de paysans repartir sans réponse. Parle bas, articule. <strong>Reconnaît un Répurgateur</strong> s'il se présente, et le traite avec un mélange de respect canonique et de prudence (il a vu des Répurgateurs sombrer). Connaît les superstitions locales, les cas de « possession » récents (généralement explicables), les histoires de la région. Donne accès à des registres paroissiaux si on demande poliment et qu'on prie un peu. Pour un PJ dévot ou répurgateur : <strong>contact essentiel</strong>.</p></div></div>
+<div class="stat-card"><div class="stat-head"><span class="stat-name">Frère Otmar</span><span class="stat-kind">Humain, prêtre de Sigmar · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Frère Otmar</td><td>4</td><td>35</td><td>25</td><td>35</td><td>40</td><td>30</td><td>30</td><td>30</td><td>45</td><td>50</td><td>45</td><td>13</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Marteau de guerre · Moyenne · BF+5. Robe et plastron simple (2 PA, corps).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 35, Savoir (Théologie) 50, Charme 45, Commandement 40, Calme 50, Intuition 45, Lecture/Écriture 45.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Foi (Sigmar)</span> <span class="trait">Bénedictions mineures</span> <span class="trait">Sang-froid</span></p><span class="stat-line">En jeu</span><p>Il aide sincèrement et rapporte tout aussi sincèrement. Les deux, dans cet ordre.</p></div></div>
 
 <div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Lothar Reinhardt</div><div class="pnj-role">marchand de tissus et de fournitures</div></div><div class="pnj-body"><p>Quarantaine, gras, jovial mais calculateur, accent du sud. Tient la plus grosse échoppe de Hochsleben (textiles, cuir, équipement de voyage, sangles, sacoches). Voit passer tout le monde, sait qui paye comptant, qui demande crédit. <strong>Très bavard avec qui achète</strong>. Source de rumeurs commerciales : qui voyage où, qui s'équipe pour quoi, qui a fait fortune et qui a perdu sa chemise. Apprécie les connaisseurs : il vend la bonne marchandise à qui sait la reconnaître. Peut commander spécifiquement pour un PJ moyennant délai (3-5 jours pour des équipements rares). Bon contact pour un PJ qui monte un cabinet d'enquête ou une officine.</p></div></div>
+<div class="stat-card"><div class="stat-head"><span class="stat-name">Lothar Reinhardt</span><span class="stat-kind">Humain, marchand de tissus et de fournitures · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Lothar Reinhardt</td><td>4</td><td>25</td><td>20</td><td>30</td><td>30</td><td>30</td><td>30</td><td>40</td><td>40</td><td>35</td><td>50</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Un coutelas de commerce. Aucune armure.</p><span class="stat-line">Compétences</span><p>Marchandage 55, Évaluation 50, Charme 45, Ragot 45, Intuition 40, Lecture/Écriture 40, Métier (Marchand) 50.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Beau parleur</span> <span class="trait">Évaluation</span></p><span class="stat-line">En jeu</span><p>Il fournit tout ce qui n'est pas une arme, et connaît celui qui fournit le reste.</p></div></div>
 
 <div class="pnj-card"><div class="pnj-head"><div class="pnj-name">« Le Vieux Hans »</div><div class="pnj-role">voisin de palier au Sanglier Gris</div></div><div class="pnj-body"><p>Soixante-dix ans, ancien batelier de l'Aver, plus de famille, vit dans la chambre la plus modeste de l'auberge. Greta le tolère parce qu'il paye une fois par mois sans rater. Cassé, marche avec une canne, bat son chien (un vieux molosse maigre qui s'appelle Kessel et qui ne fait plus de mal à une mouche). Parle aux murs, parfois aux PJ s'ils le croisent dans le couloir le matin. Délire mais lucide par éclairs. Mention possible : <em>« Y'a des yeux rouges dans les ruelles. J'les ai vus. Tout le monde dit que j'suis fou. P't-être. »</em> <strong>Lien Gariz dormant</strong> : si les PJ s'y intéressent, il a vraiment vu quelque chose.</p></div></div>
+<div class="stat-card"><div class="stat-head"><span class="stat-name">« Le Vieux Hans »</span><span class="stat-kind">Humain, voisin de palier au Sanglier Gris · 1</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>« Le Vieux Hans »</td><td>4</td><td>20</td><td>20</td><td>25</td><td>30</td><td>25</td><td>25</td><td>30</td><td>30</td><td>30</td><td>35</td><td>10</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Rien. Aucune armure.</p><span class="stat-line">Compétences</span><p>Ragot 50, Perception 40, Intuition 35, Métier (Journalier) 35, Résistance 35.</p><span class="stat-line">Traits &amp; talents</span><p><span class="trait">Ragot</span></p><span class="stat-line">En jeu</span><p>Il parle beaucoup, se trompe souvent et tombe juste une fois. Le problème du groupe est de savoir laquelle.</p></div></div>
 
 <p><strong>Rumeurs en circulation (à piocher 1-2 par session)</strong></p>
 <ul class="scene-list">
@@ -2759,12 +2801,13 @@ Puis, deux ans plus tard, à huit cents lieues, au fond de Kazad Varr, il y a un
   </div>
   <div class="eb-sep"></div>
   <div class="eb-group">
-    <button class="eb-btn" id="eb-save">Brouillon</button>
-    <button class="eb-btn" id="eb-load">Recharger</button>
-    <button class="eb-btn warn" id="eb-drop">Effacer</button>
-    <button class="eb-btn prim" id="eb-export">Exporter le fichier</button>
+    <button class="eb-btn prim" id="eb-save">Enregistrer</button>
+    <button class="eb-btn" id="eb-load">Recharger du serveur</button>
+    <button class="eb-btn" id="eb-json">Sauvegarde JSON</button>
+    <button class="eb-btn warn" id="eb-drop">Vider le cache local</button>
+    <button class="eb-btn" id="eb-export">Exporter le fichier</button>
   </div>
-  <span class="eb-note">Ctrl+S brouillon &middot; Ctrl+Maj+E edition &middot; l'export remplace le fichier du site</span>
+  <span class="eb-note">Enregistrement automatique &middot; Ctrl+S force l'envoi &middot; Ctrl+Maj+E edition</span>
 </div>
 <div class="eb-toast" id="eb-toast"></div>
 
@@ -2940,8 +2983,8 @@ var BLOCKS = {
   indice:  '<div class="indice-box"><span class="indice-label">Indice</span><span class="indice-text"><strong>Ce que les PJ peuvent trouver.</strong> Et comment ils le trouvent.</span></div>',
   jet:     '<div class="jet-roll"><span class="jet-label">Jet \u2014 Compétence</span><span class="jet-detail"><span class="mod mod-neu">(0)</span> \u00b7 Ce que réussit ou rate le personnage.</span></div>',
   butin:   '<div class="butin-box"><span class="butin-label">Butin</span><span class="butin-text"><ul class="butin-list"><li>Objet \u00b7 valeur \u00b7 note</li></ul></span></div>',
-  pnj:     '<div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Nom du PNJ</div><div class="pnj-role">Rôle en une ligne</div></div><div class="pnj-body"><span class="pnj-line">En un coup d\'\u0153il</span><p>Description.</p></div></div>',
-  profil:  '<div class="stat-card"><div class="stat-head"><span class="stat-name">Nom</span><span class="stat-kind">Type · Nombre</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Nom</td><td>4</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>\u2014</p><span class="stat-line">Traits</span><p><span class="trait">Trait</span></p></div></div>',
+  pnj:     '<div class="pnj-card"><div class="pnj-head"><div class="pnj-name">Nom du PNJ</div><div class="pnj-role">Rôle en une ligne</div></div><div class="pnj-body"><span class="pnj-line">En un coup d\'\u0153il</span><p>Silhouette, voix, manie. Ce que les PJ voient en trois secondes.</p><span class="pnj-line">Ce qu\'il veut</span><p>Objectif avouable, objectif réel.</p><span class="pnj-line">Ce qu\'il sait</span><p>Ce qu\'il lâche gratuitement, ce qu\'il faut lui arracher.</p><span class="pnj-line">Compétences notables</span><p>Compétence 40, Compétence 40.</p></div></div>',
+  profil:  '<div class="stat-card"><div class="stat-head"><span class="stat-name">Nom</span><span class="stat-kind">Type · Nombre</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Nom</td><td>4</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>30</td><td>11</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Arme \u00b7 Portée \u00b7 BF+0. Armure : aucune (0 PA).</p><span class="stat-line">Compétences</span><p>Corps à corps (Base) 30, Esquive 30, Perception 30, Athlétisme 30.</p><span class="stat-line">Talents</span><p>\u2014</p><span class="stat-line">Traits</span><p><span class="trait">Trait</span></p><span class="stat-line">En jeu</span><p>Comment il se bat, quand il fuit, ce qu\'il fait si les choses tournent mal.</p></div></div>',
   scene:   null
 };
 
@@ -3039,6 +3082,9 @@ function exportHTML(){
   var pi = doc.querySelector('#pwd-input'); if(pi) pi.removeAttribute('value');
   var pe = doc.querySelector('#pwd-error'); if(pe) pe.textContent='';
 
+  doc.querySelectorAll('.pf').forEach(function(e){ e.innerHTML=''; e.classList.remove('has'); });
+  doc.querySelectorAll('.pf-menu, .pf-view, input[type="file"]').forEach(function(e){ e.remove(); });
+  var sf = doc.querySelector('#draft-flag'); if(sf){ sf.textContent=''; sf.className='sync-flag'; }
   var out = '<!DOCTYPE html>\n' + doc.outerHTML;
   var blob = new Blob([out], {type:'text/html;charset=utf-8'});
   var url = URL.createObjectURL(blob);
@@ -3064,6 +3110,8 @@ function wireEdit(){
   document.getElementById('eb-load').addEventListener('click', loadDraft);
   document.getElementById('eb-drop').addEventListener('click', dropDraft);
   document.getElementById('eb-export').addEventListener('click', exportHTML);
+  var bj = document.getElementById('eb-json');
+  if(bj) bj.addEventListener('click', function(){ if(window.exportJSON) window.exportJSON(); });
   document.addEventListener('keydown', function(e){
     if((e.ctrlKey||e.metaKey) && e.key==='s'){ e.preventDefault(); if(editing) saveDraft(); }
     if((e.ctrlKey||e.metaKey) && e.shiftKey && e.key.toLowerCase()==='e'){ e.preventDefault(); setEditing(!editing); }
@@ -3116,5 +3164,481 @@ document.querySelectorAll('[data-goto]').forEach(function(b){
 });
 
 </script>
+<script>
+/* ============================================================
+   DE BOUE ET DE SANG — synchronisation en ligne + portraits
+   Remplace le brouillon localStorage par une sauvegarde
+   Firebase automatique, section par section.
+   Base : warhammer-table-jdr (la même que les fiches).
+   ============================================================ */
+(function(){
+"use strict";
+
+var FB_CONFIG = {
+  apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+  authDomain: "warhammer-table-jdr.firebaseapp.com",
+  databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "warhammer-table-jdr",
+  storageBucket: "warhammer-table-jdr.firebasestorage.app",
+  messagingSenderId: "347804803970",
+  appId: "1:347804803970:web:43e062299c53e59d20e59b"
+};
+var RACINE  = "scenarios/bds";          /* branche du scénario dans la base */
+var CACHE   = "bds_cache_v2";           /* miroir local, affichage instantané */
+var CLIENT  = Math.random().toString(36).slice(2, 10);
+
+var db = null, refSec = null, refImg = null;
+try {
+  if (typeof firebase !== "undefined") {
+    if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+    db = firebase.database();
+    refSec = db.ref(RACINE + "/sections");
+    refImg = db.ref(RACINE + "/portraits");
+  }
+} catch (e) { console.warn("Firebase indisponible :", e); }
+
+/* ---------- Indicateur d'état ---------- */
+var flag = document.getElementById("draft-flag");
+if (flag) flag.className = "sync-flag";
+var flagTimer = null;
+function etat(txt, cls){
+  if (!flag) return;
+  clearTimeout(flagTimer);
+  flag.textContent = txt;
+  flag.className = "sync-flag " + (cls || "");
+  if (cls === "ok") flagTimer = setTimeout(function(){ flag.textContent = ""; flag.className = "sync-flag"; }, 2600);
+}
+
+/* ============================================================
+   1. INSTANTANÉ PROPRE D'UNE SECTION
+   On retire tout ce qui est état d'affichage ou contenu
+   reconstruit au chargement, pour ne stocker que le fond.
+   ============================================================ */
+function instantane(sec){
+  var c = sec.cloneNode(true);
+  c.removeAttribute("style");
+  c.removeAttribute("contenteditable");
+  c.querySelectorAll("[contenteditable]").forEach(function(e){ e.removeAttribute("contenteditable"); });
+  c.querySelectorAll(".scene-nav").forEach(function(e){ e.innerHTML = ""; });
+  c.querySelectorAll(".scene-panel").forEach(function(e){ e.setAttribute("style", "display:none"); });
+  /* les portraits ne sont jamais stockés dans le corps du texte :
+     le bloc ne garde que son identifiant, l'image vit à part. */
+  c.querySelectorAll(".pf").forEach(function(e){ e.innerHTML = ""; e.classList.remove("has"); });
+  return c.outerHTML;
+}
+
+function sections(){
+  return Array.prototype.slice.call(document.querySelectorAll(".section-panel"));
+}
+
+/* ============================================================
+   2. ÉCRITURE — groupée, section par section
+   ============================================================ */
+var sales = {};          /* sections modifiées en attente d'écriture */
+var timerEcriture = null;
+var dernierEnvoi = {};   /* ce qu'on a écrit soi-même, pour ignorer l'écho */
+var pauseSync = false;
+
+function marquerSale(sec){
+  if (!sec || !sec.id) return;
+  sales[sec.id] = true;
+  etat("modifié", "pending");
+  clearTimeout(timerEcriture);
+  timerEcriture = setTimeout(ecrire, 1100);
+}
+
+function ecrire(){
+  if (!refSec) { etat("hors ligne", "err"); return; }
+  var ids = Object.keys(sales);
+  if (!ids.length) return;
+  sales = {};
+  var lot = {};
+  ids.forEach(function(id){
+    var sec = document.getElementById(id);
+    if (!sec) return;
+    var html = instantane(sec);
+    dernierEnvoi[id] = html;
+    lot[id] = { html: html, at: Date.now(), par: CLIENT };
+  });
+  etat("envoi…", "pending");
+  refSec.update(lot).then(function(){
+    etat("enregistré", "ok");
+    try { localStorage.setItem(CACHE, JSON.stringify(miroirLocal())); } catch(e){}
+  }).catch(function(e){
+    console.warn("Écriture échouée :", e);
+    etat("échec réseau", "err");
+    ids.forEach(function(id){ sales[id] = true; });
+  });
+}
+
+function miroirLocal(){
+  var o = {};
+  sections().forEach(function(s){ o[s.id] = instantane(s); });
+  return o;
+}
+
+/* ============================================================
+   3. LECTURE — au chargement, puis en direct
+   ============================================================ */
+function appliquer(id, html){
+  var sec = document.getElementById(id);
+  if (!sec || !html) return false;
+  /* jamais pendant qu'on tape dedans */
+  if (document.activeElement && sec.contains(document.activeElement)) return false;
+  if (sales[id]) return false;
+  var visible = sec.style.display !== "none";
+  var sceneOuverte = null;
+  sec.querySelectorAll(".scene-panel").forEach(function(p){ if (p.style.display !== "none") sceneOuverte = p.id; });
+
+  var tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  var neuf = tmp.firstElementChild;
+  if (!neuf) return false;
+  sec.parentNode.replaceChild(neuf, sec);
+
+  if (visible) {
+    neuf.style.display = "block";
+    var cible = sceneOuverte && neuf.querySelector("#" + CSS.escape(sceneOuverte));
+    if (!cible) cible = neuf.querySelector(".scene-panel");
+    if (cible) cible.style.display = "block";
+  } else {
+    neuf.style.display = "none";
+  }
+  return true;
+}
+
+function hydrater(){
+  /* a. miroir local d'abord : affichage immédiat, même hors réseau */
+  try {
+    var brut = localStorage.getItem(CACHE);
+    if (brut) {
+      var loc = JSON.parse(brut);
+      Object.keys(loc).forEach(function(id){ appliquer(id, loc[id]); });
+    }
+  } catch(e){}
+  apresRemplacement();
+
+  if (!refSec) { etat("hors ligne", "err"); return; }
+
+  /* b. serveur : source de vérité */
+  etat("lecture…", "pending");
+  refSec.once("value").then(function(snap){
+    var v = snap.val();
+    if (!v) {
+      /* première fois : on sème la base avec le contenu du fichier */
+      var lot = {};
+      sections().forEach(function(s){ lot[s.id] = { html: instantane(s), at: Date.now(), par: CLIENT }; });
+      refSec.set(lot);
+      etat("base initialisée", "ok");
+    } else {
+      Object.keys(v).forEach(function(id){
+        if (v[id] && v[id].html) { dernierEnvoi[id] = v[id].html; appliquer(id, v[id].html); }
+      });
+      etat("à jour", "ok");
+    }
+    apresRemplacement();
+    try { localStorage.setItem(CACHE, JSON.stringify(miroirLocal())); } catch(e){}
+    ecouterDirect();
+  }).catch(function(e){
+    console.warn("Lecture échouée :", e);
+    etat("hors ligne", "err");
+  });
+}
+
+function ecouterDirect(){
+  if (!refSec) return;
+  refSec.on("child_changed", function(snap){
+    var id = snap.key, v = snap.val();
+    if (!v || !v.html) return;
+    if (v.par === CLIENT) return;              /* notre propre écho */
+    if (v.html === dernierEnvoi[id]) return;
+    if (pauseSync) return;
+    if (appliquer(id, v.html)) {
+      dernierEnvoi[id] = v.html;
+      apresRemplacement();
+      toast("Mis à jour depuis un autre appareil");
+    }
+  });
+}
+
+/* Après tout remplacement de DOM : nav, sommaire, portraits, édition. */
+function apresRemplacement(){
+  if (typeof buildNav === "function") buildNav();
+  if (typeof rebuildTOC === "function") rebuildTOC();
+  poserPortraits();
+  if (window.editing) rendreEditable(true);
+  chargerPortraitsVisibles();
+}
+
+function rendreEditable(on){
+  document.querySelectorAll(".scene-panel, .section-header").forEach(function(p){
+    if (on) p.setAttribute("contenteditable", "true"); else p.removeAttribute("contenteditable");
+  });
+  document.querySelectorAll(".scene-nav, .pf").forEach(function(n){ n.setAttribute("contenteditable", "false"); });
+}
+
+/* ============================================================
+   4. PORTRAITS DE PNJ
+   Un encart carré dans l'en-tête de chaque bloc de stats et de
+   chaque fiche PNJ. L'image est compressée puis rangée à part
+   dans la base, jamais dans le corps du document.
+   ============================================================ */
+function nouvelId(){ return "pf" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+function poserPortraits(){
+  document.querySelectorAll(".stat-head, .pnj-head").forEach(function(head){
+    if (head.querySelector(":scope > .pf")) return;
+    var restant = Array.prototype.slice.call(head.childNodes);
+    var boite = document.createElement("div");
+    boite.className = "head-txt";
+    restant.forEach(function(n){ boite.appendChild(n); });
+    var btn = document.createElement("button");
+    btn.className = "pf";
+    btn.type = "button";
+    btn.setAttribute("contenteditable", "false");
+    btn.setAttribute("data-pf", nouvelId());
+    btn.innerHTML = '<span class="pf-ph">Portrait</span>';
+    head.appendChild(btn);
+    head.appendChild(boite);
+  });
+}
+
+var portraitsCharges = {};
+
+function chargerPortraitsVisibles(){
+  if (!refImg) return;
+  document.querySelectorAll(".scene-panel").forEach(function(p){
+    if (p.style.display === "none") return;
+    if (p.closest(".section-panel") && p.closest(".section-panel").style.display === "none") return;
+    p.querySelectorAll(".pf[data-pf]").forEach(function(btn){
+      var id = btn.getAttribute("data-pf");
+      if (btn.querySelector("img")) return;
+      if (portraitsCharges[id] === false) return;
+      if (portraitsCharges[id]) { peindre(btn, portraitsCharges[id]); return; }
+      refImg.child(id).once("value").then(function(s){
+        var d = s.val();
+        portraitsCharges[id] = d || false;
+        if (d) peindre(btn, d);
+      }).catch(function(){});
+    });
+  });
+}
+
+function peindre(btn, data){
+  btn.innerHTML = "";
+  var img = document.createElement("img");
+  img.src = data;
+  img.alt = "";
+  btn.appendChild(img);
+  btn.classList.add("has");
+}
+
+function videPortrait(btn){
+  btn.innerHTML = '<span class="pf-ph">Portrait</span>';
+  btn.classList.remove("has");
+}
+
+/* --- Compression : 520 px de côté au plus, JPEG dégressif --- */
+function compresser(file, cb){
+  var fr = new FileReader();
+  fr.onload = function(e){
+    var im = new Image();
+    im.onload = function(){
+      var MAX = 520, w = im.width, h = im.height;
+      if (w > MAX || h > MAX) { var r = Math.min(MAX / w, MAX / h); w = Math.round(w * r); h = Math.round(h * r); }
+      var cv = document.createElement("canvas");
+      cv.width = w; cv.height = h;
+      cv.getContext("2d").drawImage(im, 0, 0, w, h);
+      var d = cv.toDataURL("image/jpeg", 0.82);
+      if (d.length > 380000) d = cv.toDataURL("image/jpeg", 0.62);
+      if (d.length > 380000) d = cv.toDataURL("image/jpeg", 0.44);
+      cb(d);
+    };
+    im.onerror = function(){ alert("Image illisible. Essaie un JPEG ou un PNG."); };
+    im.src = e.target.result;
+  };
+  fr.readAsDataURL(file);
+}
+
+/* --- Sélecteur de fichier partagé --- */
+var champ = document.createElement("input");
+champ.type = "file";
+champ.accept = "image/*";
+champ.style.display = "none";
+document.body.appendChild(champ);
+var cible = null;
+
+champ.addEventListener("change", function(ev){
+  var f = ev.target.files && ev.target.files[0];
+  ev.target.value = "";
+  if (!f || !cible) return;
+  var btn = cible;
+  var occupe = document.createElement("span");
+  occupe.className = "pf-busy";
+  occupe.textContent = "…";
+  btn.appendChild(occupe);
+  compresser(f, function(data){
+    var id = btn.getAttribute("data-pf") || nouvelId();
+    btn.setAttribute("data-pf", id);
+    portraitsCharges[id] = data;
+    peindre(btn, data);
+    if (refImg) {
+      refImg.child(id).set(data)
+        .then(function(){ etat("portrait enregistré", "ok"); })
+        .catch(function(e){ console.warn(e); etat("portrait non envoyé", "err"); });
+    }
+    var sec = btn.closest(".section-panel");
+    if (sec) marquerSale(sec);
+  });
+});
+
+/* --- Menu au clic sur un encart --- */
+var menu = null;
+function fermerMenu(){ if (menu) { menu.remove(); menu = null; } }
+document.addEventListener("click", function(e){
+  var btn = e.target.closest ? e.target.closest(".pf") : null;
+  if (!btn) { fermerMenu(); return; }
+  e.preventDefault();
+  e.stopPropagation();
+  fermerMenu();
+  var aImage = !!btn.querySelector("img");
+  menu = document.createElement("div");
+  menu.className = "pf-menu";
+  menu.innerHTML =
+    (aImage ? '<button data-a="voir">Agrandir</button>' : "") +
+    '<button data-a="charger">' + (aImage ? "Remplacer" : "Choisir une image") + "</button>" +
+    (aImage ? '<button class="warn" data-a="vider">Retirer</button>' : "");
+  document.body.appendChild(menu);
+  var r = btn.getBoundingClientRect();
+  menu.style.left = Math.min(r.left, window.innerWidth - menu.offsetWidth - 10) + "px";
+  menu.style.top = (r.bottom + window.scrollY + 4) + "px";
+  menu.addEventListener("click", function(ev){
+    var a = ev.target.getAttribute && ev.target.getAttribute("data-a");
+    if (!a) return;
+    ev.stopPropagation();
+    if (a === "charger") { cible = btn; champ.click(); }
+    if (a === "voir") {
+      var v = document.getElementById("pf-view");
+      v.querySelector("img").src = btn.querySelector("img").src;
+      v.classList.add("on");
+    }
+    if (a === "vider") {
+      var id = btn.getAttribute("data-pf");
+      videPortrait(btn);
+      portraitsCharges[id] = false;
+      if (refImg) refImg.child(id).remove();
+      var sec = btn.closest(".section-panel");
+      if (sec) marquerSale(sec);
+    }
+    fermerMenu();
+  });
+}, true);
+
+(function(){
+  var v = document.createElement("div");
+  v.className = "pf-view";
+  v.id = "pf-view";
+  v.innerHTML = "<img alt=''>";
+  v.addEventListener("click", function(){ v.classList.remove("on"); });
+  document.body.appendChild(v);
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape") v.classList.remove("on"); });
+})();
+
+/* ============================================================
+   5. BRANCHEMENT SUR LE MOTEUR EXISTANT
+   ============================================================ */
+/* a. toute frappe dans une zone éditable déclenche la sauvegarde */
+document.addEventListener("input", function(e){
+  var z = e.target.closest ? e.target.closest("[contenteditable='true']") : null;
+  if (!z) return;
+  var sec = z.closest(".section-panel");
+  if (sec) marquerSale(sec);
+});
+
+/* b. les fonctions de brouillon deviennent des opérations serveur */
+window.saveDraft = function(){ clearTimeout(timerEcriture); ecrire(); };
+window.loadDraft = function(){
+  if (!refSec) { toast("Hors ligne", true); return; }
+  pauseSync = true;
+  refSec.once("value").then(function(snap){
+    var v = snap.val() || {};
+    Object.keys(v).forEach(function(id){ if (v[id] && v[id].html) { dernierEnvoi[id] = v[id].html; appliquer(id, v[id].html); } });
+    apresRemplacement();
+    pauseSync = false;
+    toast("Rechargé depuis le serveur");
+  }).catch(function(){ pauseSync = false; toast("Lecture échouée", true); });
+};
+window.dropDraft = function(){
+  if (!confirm("Effacer le miroir local de ce navigateur ?\nLa version en ligne n'est pas touchée : elle sera rechargée.")) return;
+  try { localStorage.removeItem(CACHE); } catch(e){}
+  window.loadDraft();
+};
+window.checkDraft = function(){};
+
+/* c. l'ajout de scène et l'insertion de bloc marquent la section */
+["insertBlock", "addScene"].forEach(function(nom){
+  var orig = window[nom];
+  if (typeof orig !== "function") return;
+  window[nom] = function(){
+    var r = orig.apply(this, arguments);
+    poserPortraits();
+    if (window.editing) rendreEditable(true);
+    var vis = Array.prototype.filter.call(document.querySelectorAll(".section-panel"), function(p){ return p.style.display !== "none"; })[0];
+    if (vis) marquerSale(vis);
+    chargerPortraitsVisibles();
+    return r;
+  };
+});
+
+/* d. le changement de scène déclenche le chargement des portraits */
+["showScene", "showSection"].forEach(function(nom){
+  var orig = window[nom];
+  if (typeof orig !== "function") return;
+  window[nom] = function(){
+    var r = orig.apply(this, arguments);
+    chargerPortraitsVisibles();
+    return r;
+  };
+});
+
+/* e. le mode édition repose les encarts sur les blocs neufs */
+(function(){
+  var orig = window.setEditing;
+  if (typeof orig !== "function") return;
+  window.setEditing = function(on){
+    orig(on);
+    poserPortraits();
+    rendreEditable(on);
+    if (!on) { clearTimeout(timerEcriture); ecrire(); }
+  };
+  var b = document.getElementById("btn-edit");
+  if (b) { var n = b.cloneNode(true); b.parentNode.replaceChild(n, b);
+    n.addEventListener("click", function(){ window.setEditing(!window.editing); }); }
+})();
+
+/* f. plus d'alerte au départ : tout est déjà enregistré */
+window.addEventListener("beforeunload", function(){
+  if (Object.keys(sales).length) { clearTimeout(timerEcriture); ecrire(); }
+});
+
+/* g. sauvegarde JSON complète, pour archivage hors ligne */
+window.exportJSON = function(){
+  var paquet = { version: 2, at: new Date().toISOString(), sections: miroirLocal(), portraits: portraitsCharges };
+  var b = new Blob([JSON.stringify(paquet)], { type: "application/json" });
+  var u = URL.createObjectURL(b);
+  var a = document.createElement("a");
+  a.href = u; a.download = "bds-sauvegarde-" + new Date().toISOString().slice(0, 10) + ".json";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(u); }, 1500);
+  toast("Sauvegarde téléchargée");
+};
+
+/* ---------- Démarrage ---------- */
+poserPortraits();
+hydrater();
+
+})();
+</script>
+
 </body>
 </html>
