@@ -272,6 +272,7 @@ body.editing .scene-panel{outline:1px dashed rgba(103,78,167,0.22);outline-offse
 /* ══════ STRUCTURE ET RENOMMAGE ══════ */
 .eb-struct{display:flex;gap:0.28rem;align-items:center;flex-wrap:wrap;}
 /* Crayon de renommage : au survol sur ordinateur, toujours visible au doigt. */
+.crayon::before{content:'\270E';}
 .crayon{background:none;border:none;color:rgba(212,200,168,0.45);cursor:pointer;padding:0 0.35rem;font-size:0.78rem;line-height:1;opacity:0;transition:opacity 0.15s,color 0.15s;vertical-align:middle;font-family:'Crimson Text',serif;}
 .crayon:hover{color:#b8a3f0;}
 body:not(.editing) .crayon{display:none;}
@@ -853,7 +854,7 @@ body:not(.editing) .crayon{display:none;}
 <div class="section-header" style="border-left:4px solid #1C3A5A"><h1 class="section-title">Acte 1 : Armand</h1></div>
 <div class="scene-panel active" id="s2_intro"><p class="ambiance"><em>Phase 0 --- Mission Dokhern · Script gameplay ready</em></p></div>
 <div class="scene-panel" id="s2_sc0" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">Scène 1 LA MAISON --- ARMAND WALTBERG</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s2','s2_intro')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s2','s2_scLO')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">Scène 1 LA MAISON --- ARMAND WALTBERG</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s2','s2_intro')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s2','s2_sc1')">Suiv. &#8594;</button></div></div>
 <p class="ambiance"><em>RP --- Temps réel. Le jeu commence.</em></p>
 <div class="section-head"><strong>MISE EN PLACE</strong></div>
 <p>Le lendemain de la retraite, à cheval vers Nuln. Portes Est closes à la tombée du jour. Sept cavaliers entièrement vêtus de noir les encerclent, montures recouvertes d'un large drapé, une sphère sombre sur une plus claire. Les gardes marquent un léger recul et ne bougent plus.</p>
@@ -894,76 +895,8 @@ body:not(.editing) .crayon{display:none;}
 <div class="section-head"><strong>LA VEILLE</strong></div>
 <p>Ils passent la nuit dans la maison, deux chambres préparées à l'étage, restauration sur place. Départ à l'aube. Tout ce qu'elles ont demandé à Varour se trouve dans le salon. Les chevaux ont été placés à l'abri avec du foin et de l'eau.</p>
 </div>
-<div class="scene-panel" id="s2_scLO" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">Scène 1bis LA LAME DE L’OMBRE --- RENDEZ-VOUS NOCTURNE</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s2','s2_sc0')">&#8592; Pr&eacute;c.</button><button class="nav-btn" onclick="showScene('s2','s2_sc1')">Suiv. &#8594;</button></div></div>
-<p class="ambiance"><em>RP nocturne · Quelques jours après l’installation au manoir · Un seul PJ</em></p>
-<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Scène solo, à jouer à part ou en aparte pendant que les autres dorment. Elle concerne le PJ que l’Eclipse a déjà remarqué et recruté en secret. Les autres joueurs ne doivent rien en savoir : c’est le premier vrai secret que ce personnage porte contre son propre groupe, et toute la valeur de la scène tient là-dedans.</span></div>
-<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text"><strong>Préalable.</strong> Quelques jours plus tôt, le PJ a trouvé une dague sous son oreiller, avec cinq mots pliés contre le fil. Lame droite, sans garde, sans ornement, valant dix fois ce qu’il porte à la ceinture. Ce n’était pas un cadeau, c’était un test : il devait comprendre seul que refuser de venir reviendrait à rendre l’objet. Varour savait qu’il ne le rendrait pas.</span></div>
-<div class="section-head"><strong>L’ATTENTE</strong></div>
-<div class="lecture">La maison met longtemps à s’éteindre. Une porte, puis une autre. Le pas lourd d’un domestique dans l’escalier de service, deux fois, puis plus rien. Le silence d’une grande demeure n’est jamais complet : le bois travaille, une gouttière goutte quelque part, et le ventre de la ville continue de gronder très loin, du côté des fonderies, une rumeur si constante qu’on finit par la prendre pour le sang dans ses propres oreilles.</div>
-<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Laisse le joueur décider de son heure. Trop tôt, elle le fait attendre dans le froid et ne bouge pas d’un pouce. Trop tard, elle est déjà derrière lui avant qu’il ait atteint les arbres. Dans tous les cas, elle arrive quand elle a décidé.</span></div>
-<div class="section-head"><strong>LE PARC</strong></div>
-<div class="lecture">Dehors, l’air est immobile et coupant. Pas de vent, pas de lune : seulement la clarté grise et basse du ciel de Nuln, assez pour deviner les masses, pas assez pour lire un visage. La pelouse est plus longue qu’elle n’en avait l’air de jour. Elle cède aux taillis, puis à de vrais arbres, hêtres et charmes serrés, dont les troncs montent droit sur dix mètres avant la première branche. Le sol est tapissé de feuilles mortes que le gel a durcies en surface. Elles craquent. À chaque appui, elles craquent, et il n’y a rien à faire contre ça.</div>
-<div class="lecture">Il n’y a personne. On avance encore. Toujours personne. Les troncs sont trop réguliers, on croit reconnaître le même dix fois. Aucune trace dans le givre, aucune branche cassée, aucune haleine qui fume dans le froid à part la sienne. Rien ne bouge. Rien n’a bougé depuis longtemps. Et le silence se creuse, parce qu’à un moment on cesse d’entendre les feuilles gelées derrière soi.</div>
-<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Décris l’absence, pas la présence. Le vide est la vraie mise en scène : il doit commencer à se demander s’il n’a pas rêvé le rendez-vous. Insiste deux fois sur le craquement du gel sous ses propres pieds : c’est le sujet de toute la nuit, et il ne le sait pas encore.</span></div>
-<div class="jet-roll"><span class="jet-label">Jet — Perception (Base)</span><span class="jet-detail">Très difficile <span class="mod mod-neg">(--30)</span>. Échec : rien, absolument rien, jusqu’au contact. Réussite : une fraction de seconde avant, l’odeur. Cuir froid et genièvre. Le temps de comprendre que ce n’est pas la sienne, c’est déjà fini.</span></div>
-<div class="section-head"><strong>LA LEÇON COMMENCE</strong></div>
-<div class="lecture">Une main se pose à plat sur son épaule, sans poids, presque une politesse. Au même instant le fil est contre sa gorge, remonté sous la mâchoire, et l’angle est tel que baisser le menton l’enfoncerait. Il n’a pas entendu un pas. Il n’a pas senti un déplacement d’air. Elle est simplement là, derrière lui, plus près que quiconque ne se tient jamais.</div>
-<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Et là... tu serais mourant, mon jeune ami.</span></div>
-<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Pas mort. Mourant. C’est la différence entre nous. Un homme mort ne sait plus rien. Un homme mourant a encore trois ou quatre minutes pour comprendre ce qui lui est arrivé, et cela, vois-tu, c’est le seul enseignement qui reste vraiment.</span></div>
-<div class="lecture">La lame s’écarte. Le froid persiste à l’endroit où elle était, longtemps après. Puis, du bout de la botte, elle gratte le sol entre eux. Les feuilles gelées crissent.</div>
-<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Tu as marché là-dessus pendant deux cents pas. Moi aussi. Tu as entendu quoi ?</span></div>
-<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">C’est la démonstration complète, et elle a eu lieu avant qu’un mot soit prononcé. Tout ce qu’elle va lui apprendre cette nuit, elle vient de le lui faire subir. Si le joueur le comprend seul, laisse-lui le dire, ne le dis pas à sa place.</span></div>
-<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Varour parle peu et bas. Elle ne hausse jamais le ton de toute la scène, même quand elle frappe. Sa voix reste suave, et c’est ce décalage qui met le personnage mal à l’aise, pas les menaces, puisqu’il n’y en aura aucune. Si le jet de Perception a réussi, elle ajoute sur le même ton : « Tu as senti quelque chose. Une demi-seconde. C’est déjà plus que la plupart. » Premier des trois compliments de la nuit, et il n’y en aura pas d’autre avant la fin.</span></div>
-<div class="section-head"><strong>PREMIER TEMPS · LE SOUFFLE</strong></div>
-<div class="lecture">Elle ne parle pas de dague. Elle parle de respiration.</div>
-<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Le bruit ne vient pas des pieds. Il vient du poids, et le poids vient du souffle. Tu poses le talon parce que tu es en train d’expirer et que ton buste tombe en avant. Change l’ordre. Le pied se pose vide, l’appui vient après, et le souffle ne s’arrête jamais.</span></div>
-<div class="lecture">Elle lui fait traverser six mètres de feuilles gelées. Six mètres. Il y passe une heure. Extérieur du pied d’abord, le bord, puis le plat, jamais le talon. Le genou plié plus longtemps que ce n’est confortable. Et surtout, le poids qui ne descend qu’une fois que le pied a interrogé le sol et lui a demandé la permission. La première fois qu’il traverse sans un son, il ne s’en rend même pas compte. C’est elle qui s’arrête de compter.</div>
-<div class="jet-roll"><span class="jet-label">Jet — Discrétion (Rurale)</span><span class="jet-detail">Difficile <span class="mod mod-neg">(--10)</span>, répété. Chaque échec coûte 1 point de Fatigue, cette posture détruit les cuisses. Elle ne commente ni les réussites ni les échecs.</span></div>
-<div class="section-head"><strong>DEUXIÈME TEMPS · LE COURANT</strong></div>
-<div class="lecture">Elle plante sa dague dans un hêtre, à trente pas. Puis elle se place au milieu, ferme les yeux, et croise les mains dans le dos.</div>
-<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Va la chercher.</span></div>
-<div class="lecture">Il n’y arrive pas. Il n’y arrive pas la deuxième fois non plus. À la quatrième, elle le corrige sans ouvrir les paupières : il contourne, et contourner c’est allonger le trajet, donc multiplier les occasions d’être entendu. Ce qu’il faut faire est exactement l’inverse.</div>
-<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Tu crois qu’il faut s’éloigner. Faux. Un homme surveille l’endroit où il pense que tu es, et ce n’est jamais l’endroit où il se tient. Passe contre lui. À un pas. Son attention est un cône, il l’a posé quelque part, et derrière ce cône il y a un couloir vide. C’est là que tu vis.</span></div>
-<div class="lecture">Elle le fait recommencer. Vingt fois. Trente fois. Elle ne compte pas à voix haute et elle ne s’impatiente jamais, ce qui est plus humiliant qu’un reproche. Puis, sans prévenir, elle le ramène vers la lisière. On voit la façade du manoir, une lanterne près des communs, et la silhouette du gardien de nuit qui bat la semelle en tapant ses mains l’une contre l’autre.</div>
-<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Assez d’exercices. Va poser ta main sur son épaule. Comme j’ai posé la mienne sur la tienne.</span></div>
-<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Le vrai test, et il est terrifiant : quatre-vingts mètres de pelouse rase, une source de lumière, un homme éveillé. Réussite, il comprend qu’il vient de changer de métier. Échec, le gardien fait sa ronde vers le bruit et il passe un quart d’heure à plat ventre dans le givre, ce qui est une leçon aussi. Varour, elle, reste debout à découvert et n’est jamais vue.</span></div>
-<div class="jet-roll"><span class="jet-label">Jet — Discrétion (Urbaine)</span><span class="jet-detail">Difficile <span class="mod mod-neg">(--10)</span>, en opposition à la Perception du gardien. Maladresse : la lanterne se lève, il faut se coucher et attendre.</span></div>
-<div class="section-head"><strong>TROISIÈME TEMPS · LA MORSURE</strong></div>
-<div class="lecture">Il revient. Elle a récupéré sa dague sans qu’il sache quand.</div>
-<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Tout ce que tu viens de faire ne sert à rien si le dernier geste est bruyant. Un homme qu’on frappe crie. Il crie parce qu’il a le temps de comprendre, et il a le temps de comprendre parce qu’on frappe la chair. Ne frappe pas la chair. Frappe l’intervalle.</span></div>
-<div class="lecture">Il n’y a pas de démonstration lente. Elle le prévient d’un mot, « regarde », et c’est déjà fini. Elle a effacé l’épaule, glissé sous le bras, et la pointe s’est arrêtée exactement là où le fil s’était posé tout à l’heure. Ce qu’il retient, c’est que le coup n’est pas parti de la main. Il est parti de la hanche, il a traversé tout le corps, et la dague n’a fait que finir le geste. La lame ne cherche pas la masse, elle cherche le défaut : sous la mâchoire, au creux de la clavicule, le pli d’un gorgerin, le dessous d’un bras levé.</div>
-<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Bien fait, il n’y a pas de cri. Il n’y a pas de chute non plus, tu le retiens, tu l’assois, tu t’en vas. Ses camarades le trouveront au matin en pensant qu’il dormait.</span></div>
-<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Une fois. Une seule. Si tu dois la sortir deux fois dans la même nuit, c’est que la première a échoué, et si la première a échoué, tu n’es plus dans l’ombre.</span></div>
-<div class="section-head"><strong>LA LAME DE L’OMBRE · RÈGLES</strong></div>
-<p>Ce n’est pas une botte de duel, c’est une approche, et le coup n’en est que la conclusion. Rien de surnaturel là-dedans : du poids, du souffle, de la distance et de la lecture d’attention.</p>
-<div class="jet-roll"><span class="jet-label">Apprentissage — Test étendu, Agilité</span><span class="jet-detail">Difficile <span class="mod mod-neg">(--10)</span>, seuil 12 DR, huit jets maximum. Chaque échec coûte 1 Fatigue, chaque maladresse 1 Blessure. Le seuil n’est pas atteignable en une nuit pour la plupart des personnages, et c’est voulu : elle reviendra.</span></div>
-<p><strong>Conditions.</strong> Dague ou lame courte. Rien de plus lourd que du cuir souple, pas de bouclier, pas de sac. La cible doit ignorer sa présence. Une fois par scène.</p>
-<p><strong>Premier temps · Le Souffle.</strong> Les terrains qui trahissent normalement un intrus, gel, gravier, feuilles sèches, plancher ancien, eau peu profonde, n’imposent plus aucun malus à ses tests de Discrétion. Et il se déplace à son Mouvement complet sans perdre sa furtivité, là où un homme ordinaire avance à demi-vitesse.</p>
-<p><strong>Deuxième temps · Le Courant, et la Mesure.</strong> Chaque round d’approche, un test de Discrétion opposé à la meilleure Perception adverse. Chaque réussite lui fait gagner ses DR en points de <strong>Mesure</strong>, plafonnés à son Bonus d’Agilité plus son Bonus de Force. La Mesure n’est pas une ressource mystique : c’est la distance qu’il a effacée, la respiration de l’homme qu’il a apprise, le moment de son cycle où l’épaule descend et où la nuque se découvre.</p>
-<ul class="scene-list"><li>Passer à un pas d’un adversaire éveillé impose <span class="mod mod-neg">(--10)</span> au test, mais rapporte 2 points de Mesure supplémentaires en cas de réussite.</li><li>Un échec remet la Mesure à zéro sans le trahir : il s’est figé, il a perdu le rythme, il reprend l’approche depuis le début. Seule une maladresse le fait repérer.</li></ul>
-<p><strong>Troisième temps · La Morsure.</strong> Contre une cible qui l’ignore, l’attaque touche automatiquement, sans jet en opposition. Dégâts : arme, plus Bonus de Force, plus la Mesure. Les points d’Armure sont ignorés, puisque la lame cherche le défaut et non la masse.</p>
-<div class="indice-box"><span class="indice-label">Indice</span><span class="indice-text">Si les dégâts réduisent la cible à 0 Blessure ou moins, elle meurt sans un bruit : la pointe passe sous le maxillaire avant que la gorge ait le temps de produire un son, et la main libre retient le corps pendant qu’il s’affaisse. Pas de cri, pas de chute, aucune alerte. C’est cette clause qui fait la valeur du talent, bien plus que les chiffres. Si elle survit, elle hurle, et tout le bénéfice de l’approche est perdu d’un coup.</span></div>
-<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Compte l’ordre de grandeur avant la table. Un voleur typique, Ag 45 et F 35, plafonne à 7 points de Mesure. Avec une dague à BF+2, cela donne 12 à 13 dégâts sans armure comptée : de quoi tuer net un milicien, pas un capitaine en brigandine. L’échelle est juste, ne la gonfle pas.</span></div>
-<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Contre un garde ordinaire, c’est une exécution silencieuse. Contre un adversaire sérieux, c’est une ouverture très violente qui ne le tuera pas et qui laissera le personnage seul, en cuir, au milieu de gens réveillés. Les deux usages sont intéressants, et le second est un piège que le joueur doit avoir le droit de se tendre lui-même.</span></div>
-<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Ce talent déséquilibre l’infiltration si tu le laisses courir sans friction. Tes garde-fous naturels : les chiens, qui travaillent au nez et pas à l’oreille ; les sols qui bougent, passerelles et barges ; la lumière, contre laquelle le souffle ne peut rien ; et les créatures qui ne perçoivent pas comme des hommes. Les égouts nord et la Villa Bal offrent les trois premiers.</span></div>
-<div class="section-head"><strong>CE QU’ELLE DONNE, CE QU’ELLE PREND</strong></div>
-<div class="lecture">Elle ramasse son manteau. Elle ne le remercie de rien et ne le félicite de rien. Puis, au moment de partir, elle s’arrête et se retourne à demi.</div>
-<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Ce mouvement a un nom, et il n’a jamais été enseigné à un humain avant toi. Je ne l’apprendrai ni à la sorcière, ni à la chasseuse. Il est à toi.</span></div>
-<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Mon nom, dans ma langue, veut dire deux choses. Foudre. Ou agression. Les deux se disent pareil. On m’a donné ce nom avant que je puisse choisir laquelle des deux j’allais être.</span></div>
-<div class="lecture">Elle est partie. Cette fois non plus, il n’a pas entendu les feuilles gelées craquer.</div>
-<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Voilà le vrai coup de la nuit, et il n’est pas porté à la dague. Le personnage a été distingué, nommé, adoubé, sans titre et sans témoin. C’est exactement son fantasme : pas noble, légitime. Quelqu’un qui compte l’a regardé. À partir de maintenant il ne trahira l’Eclipse ni par peur ni par appât du gain : il ne la trahira pas parce qu’il faudrait renoncer à ce regard.</span></div>
-<div class="section-head"><strong>ÉCHOS À PRÉPARER</strong></div>
-<ul class="scene-list"><li><strong>Sareth</strong>, hôte d’Ulgu, peut sentir quelque chose au petit matin sans savoir quoi. Une trace, une odeur d’ombre travaillée, comme une pièce où l’on aurait remué la poussière. Ne lui donne rien de plus qu’un malaise.</li><li><strong>Den’l</strong>, la première fois qu’elle le voit traverser un terrain découvert, comprendra que ça ne s’apprend pas dans la rue. Elle a vu des éclaireurs. Elle posera la question franchement, ce qu’il redoute plus qu’un soupçon.</li><li><strong>Armand</strong>, à la prochaine entrevue, saura. Aucun commentaire, mais il le regardera un quart de seconde de trop, et sourira. Le message est clair : on parle de toi.</li><li><strong>Le gardien de nuit</strong>, si le test a réussi, se réveillera plusieurs jours de suite avec la sensation d’une main sur son épaule, et n’en parlera à personne. À ressortir bien plus tard.</li></ul>
-<div class="section-head"><strong>RÉPLIQUES EN RÉSERVE</strong></div>
-<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Tu voles bien. Voler, c’est prendre et fuir. Je vais t’apprendre à rester.</span></div>
-<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Non. Tu as retenu ton souffle. Un homme qui retient son souffle finit toujours par le lâcher, et ce jour-là on l’entend à dix pas. Respire. Recommence.</span></div>
-<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Le noir ne cache personne. Le noir cache ce qui ne bouge pas comme le reste. Bouge comme le reste.</span></div>
-<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Tu as peur de moi. C’est sain. Garde-la, cette peur, elle vaut mieux que ta confiance.</span></div>
-<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Ce n’est pas de la vitesse. La vitesse, on la voit. C’est de la patience avec un couteau au bout.</span></div>
-</div>
 <div class="scene-panel" id="s2_sc1" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">Scène 2 SWARTZHAFEN</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s2','s2_scLO')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s2','s2_sc2')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">Scène 2 SWARTZHAFEN</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s2','s2_sc0')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s2','s2_sc2')">Suiv. &#8594;</button></div></div>
 <p class="ambiance"><em>RP --- Cinq semaines de voyage</em></p>
 <div class="section-head"><strong>SYSTÈME DE VOYAGE</strong></div>
 <div class="lecture">Le voyage de Nuln à Swartzhafen prend environ cinq semaines à cheval. Les routes se dégradent à mesure qu'on avance vers l'est. En Sylvanie, certains tronçons ne sont plus que des pistes boueuses que les cartes ne mentionnent plus.</div>
@@ -1755,7 +1688,7 @@ body:not(.editing) .crayon{display:none;}
 <div class="lecture">Une seule scène obligatoire : l'installation à la maison de Federico. Elle pose les règles de la mission et ouvre les premières pistes d'enquête.</div>
 </div>
 <div class="scene-panel" id="s5_sc1" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">Scène 1 INSTALLATION --- LA MAISON DE FEDERICO</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s5','s5_sc0')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s5','s5_sc2')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">Scène 1 INSTALLATION --- LA MAISON DE FEDERICO</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s5','s5_sc0')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s5','s5_scLO')">Suiv. &#8594;</button></div></div>
 <p class="ambiance"><em>RP --- Arrivée à Swartzhafen avec Federico <span class="gloss">(intendant de la maison de l'Eclipse)</span></em></p>
 <p>Federico les accueille sans effusion. La maison est propre, fonctionnelle, discrète. Il connaît déjà leurs noms, leurs rangs, leurs missions passées, mais ne le montre pas. Il leur explique les règles de la maison avec la même neutralité bienveillante qu'il appliquerait à la gestion d'un inventaire.</p>
 <p>Les PJ peuvent remarquer qu'il est aussi habile que maniaque: il essuie d un geste presque tout ce qu'il touche avec un élégant tissu beige.</p>
@@ -1782,8 +1715,76 @@ body:not(.editing) .crayon{display:none;}
 <div class="section-head"><strong>2 --- FILS D'ENTRÉE</strong></div>
 <div class="lecture">Ces scènes se déclenchent naturellement dans les premiers jours. Chacune peut fonctionner indépendamment. En activer deux ou trois simultanément crée l'élan de l'enquête.</div>
 </div>
+<div class="scene-panel" id="s5_scLO" style="display:none">
+<div class="scene-title-bar"><h2 class="scene-title">Scène 1bis LA LAME DE L’OMBRE --- RENDEZ-VOUS NOCTURNE</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s5','s5_sc1')">&#8592; Pr&eacute;c.</button><button class="nav-btn" onclick="showScene('s5','s5_sc2')">Suiv. &#8594;</button></div></div>
+<p class="ambiance"><em>RP nocturne · Le soir même de l’installation, ou la nuit suivante · Un seul PJ</em></p>
+<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Scène solo, à jouer à part ou en aparte pendant que les autres dorment. Elle concerne le PJ que l’Eclipse a déjà remarqué et recruté en secret. Les autres joueurs ne doivent rien en savoir : c’est le premier vrai secret que ce personnage porte contre son propre groupe, et toute la valeur de la scène tient là-dedans.</span></div>
+<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text"><strong>Préalable.</strong> Quelques jours plus tôt, le PJ a trouvé une dague sous son oreiller, avec cinq mots pliés contre le fil. Lame droite, sans garde, sans ornement, valant dix fois ce qu’il porte à la ceinture. Ce n’était pas un cadeau, c’était un test : il devait comprendre seul que refuser de venir reviendrait à rendre l’objet. Varour savait qu’il ne le rendrait pas.</span></div>
+<div class="section-head"><strong>L’ATTENTE</strong></div>
+<div class="lecture">La maison met longtemps à s’éteindre. Une porte, puis une autre. Le pas lourd d’un domestique dans l’escalier de service, deux fois, puis plus rien. Le silence d’une grande demeure n’est jamais complet : le bois travaille, une gouttière goutte quelque part, et le ventre de la ville continue de gronder très loin, du côté du secteur nord de la ville, une rumeur sourde et intermittente qu’on finit par ne plus entendre.</div>
+<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Laisse le joueur décider de son heure. Trop tôt, elle le fait attendre dans le froid et ne bouge pas d’un pouce. Trop tard, elle est déjà derrière lui avant qu’il ait atteint les arbres. Dans tous les cas, elle arrive quand elle a décidé.</span></div>
+<div class="section-head"><strong>LE TERRAIN</strong></div>
+<div class="lecture">Dehors, l’air est immobile et coupant. Pas de vent, pas de lune : seulement la clarté grise et basse du ciel couvert, assez pour deviner les masses, pas assez pour lire un visage. La pelouse est plus longue qu’elle n’en avait l’air de jour. Elle cède aux taillis, puis à de vrais arbres, hêtres et charmes serrés, dont les troncs montent droit sur dix mètres avant la première branche. Le sol est tapissé de feuilles mortes que le gel a durcies en surface. Elles craquent. À chaque appui, elles craquent, et il n’y a rien à faire contre ça.</div>
+<div class="lecture">Il n’y a personne. On avance encore. Toujours personne. Les troncs sont trop réguliers, on croit reconnaître le même dix fois. Aucune trace dans le givre, aucune branche cassée, aucune haleine qui fume dans le froid à part la sienne. Rien ne bouge. Rien n’a bougé depuis longtemps. Et le silence se creuse, parce qu’à un moment on cesse d’entendre les feuilles gelées derrière soi.</div>
+<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Décris l’absence, pas la présence. Le vide est la vraie mise en scène : il doit commencer à se demander s’il n’a pas rêvé le rendez-vous. Insiste deux fois sur le craquement du gel sous ses propres pieds : c’est le sujet de toute la nuit, et il ne le sait pas encore.</span></div>
+<div class="jet-roll"><span class="jet-label">Jet — Perception (Base)</span><span class="jet-detail">Très difficile <span class="mod mod-neg">(--30)</span>. Échec : rien, absolument rien, jusqu’au contact. Réussite : une fraction de seconde avant, l’odeur. Cuir froid et genièvre. Le temps de comprendre que ce n’est pas la sienne, c’est déjà fini.</span></div>
+<div class="section-head"><strong>LA LEÇON COMMENCE</strong></div>
+<div class="lecture">Une main se pose à plat sur son épaule, sans poids, presque une politesse. Au même instant le fil est contre sa gorge, remonté sous la mâchoire, et l’angle est tel que baisser le menton l’enfoncerait. Il n’a pas entendu un pas. Il n’a pas senti un déplacement d’air. Elle est simplement là, derrière lui, plus près que quiconque ne se tient jamais.</div>
+<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Et là... tu serais mourant, mon jeune ami.</span></div>
+<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Pas mort. Mourant. C’est la différence entre nous. Un homme mort ne sait plus rien. Un homme mourant a encore trois ou quatre minutes pour comprendre ce qui lui est arrivé, et cela, vois-tu, c’est le seul enseignement qui reste vraiment.</span></div>
+<div class="lecture">La lame s’écarte. Le froid persiste à l’endroit où elle était, longtemps après. Puis, du bout de la botte, elle gratte le sol entre eux. Les feuilles gelées crissent.</div>
+<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Tu as marché là-dessus pendant deux cents pas. Moi aussi. Tu as entendu quoi ?</span></div>
+<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">C’est la démonstration complète, et elle a eu lieu avant qu’un mot soit prononcé. Tout ce qu’elle va lui apprendre cette nuit, elle vient de le lui faire subir. Si le joueur le comprend seul, laisse-lui le dire, ne le dis pas à sa place.</span></div>
+<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Varour parle peu et bas. Elle ne hausse jamais le ton de toute la scène, même quand elle frappe. Sa voix reste suave, et c’est ce décalage qui met le personnage mal à l’aise, pas les menaces, puisqu’il n’y en aura aucune. Si le jet de Perception a réussi, elle ajoute sur le même ton : « Tu as senti quelque chose. Une demi-seconde. C’est déjà plus que la plupart. » Premier des trois compliments de la nuit, et il n’y en aura pas d’autre avant la fin.</span></div>
+<div class="section-head"><strong>PREMIER TEMPS · LE SOUFFLE</strong></div>
+<div class="lecture">Elle ne parle pas de dague. Elle parle de respiration.</div>
+<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Le bruit ne vient pas des pieds. Il vient du poids, et le poids vient du souffle. Tu poses le talon parce que tu es en train d’expirer et que ton buste tombe en avant. Change l’ordre. Le pied se pose vide, l’appui vient après, et le souffle ne s’arrête jamais.</span></div>
+<div class="lecture">Elle lui fait traverser six mètres de feuilles gelées. Six mètres. Il y passe une heure. Extérieur du pied d’abord, le bord, puis le plat, jamais le talon. Le genou plié plus longtemps que ce n’est confortable. Et surtout, le poids qui ne descend qu’une fois que le pied a interrogé le sol et lui a demandé la permission. La première fois qu’il traverse sans un son, il ne s’en rend même pas compte. C’est elle qui s’arrête de compter.</div>
+<div class="jet-roll"><span class="jet-label">Jet — Discrétion (Rurale)</span><span class="jet-detail">Difficile <span class="mod mod-neg">(--10)</span>, répété. Chaque échec coûte 1 point de Fatigue, cette posture détruit les cuisses. Elle ne commente ni les réussites ni les échecs.</span></div>
+<div class="section-head"><strong>DEUXIÈME TEMPS · LE COURANT</strong></div>
+<div class="lecture">Elle plante sa dague dans un hêtre, à trente pas. Puis elle se place au milieu, ferme les yeux, et croise les mains dans le dos.</div>
+<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Va la chercher.</span></div>
+<div class="lecture">Il n’y arrive pas. Il n’y arrive pas la deuxième fois non plus. À la quatrième, elle le corrige sans ouvrir les paupières : il contourne, et contourner c’est allonger le trajet, donc multiplier les occasions d’être entendu. Ce qu’il faut faire est exactement l’inverse.</div>
+<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Tu crois qu’il faut s’éloigner. Faux. Un homme surveille l’endroit où il pense que tu es, et ce n’est jamais l’endroit où il se tient. Passe contre lui. À un pas. Son attention est un cône, il l’a posé quelque part, et derrière ce cône il y a un couloir vide. C’est là que tu vis.</span></div>
+<div class="lecture">Elle le fait recommencer. Vingt fois. Trente fois. Elle ne compte pas à voix haute et elle ne s’impatiente jamais, ce qui est plus humiliant qu’un reproche. Puis, sans prévenir, elle le ramène vers la lisière. On voit la façade du manoir, une lanterne près des communs, et la silhouette du gardien de nuit qui bat la semelle en tapant ses mains l’une contre l’autre.</div>
+<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Assez d’exercices. Va poser ta main sur son épaule. Comme j’ai posé la mienne sur la tienne.</span></div>
+<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Le vrai test, et il est terrifiant : quatre-vingts mètres de pelouse rase, une source de lumière, un homme éveillé. Réussite, il comprend qu’il vient de changer de métier. Échec, le gardien fait sa ronde vers le bruit et il passe un quart d’heure à plat ventre dans le givre, ce qui est une leçon aussi. Varour, elle, reste debout à découvert et n’est jamais vue.</span></div>
+<div class="jet-roll"><span class="jet-label">Jet — Discrétion (Urbaine)</span><span class="jet-detail">Difficile <span class="mod mod-neg">(--10)</span>, en opposition à la Perception du gardien. Maladresse : la lanterne se lève, il faut se coucher et attendre.</span></div>
+<div class="section-head"><strong>TROISIÈME TEMPS · LA MORSURE</strong></div>
+<div class="lecture">Il revient. Elle a récupéré sa dague sans qu’il sache quand.</div>
+<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Tout ce que tu viens de faire ne sert à rien si le dernier geste est bruyant. Un homme qu’on frappe crie. Il crie parce qu’il a le temps de comprendre, et il a le temps de comprendre parce qu’on frappe la chair. Ne frappe pas la chair. Frappe l’intervalle.</span></div>
+<div class="lecture">Il n’y a pas de démonstration lente. Elle le prévient d’un mot, « regarde », et c’est déjà fini. Elle a effacé l’épaule, glissé sous le bras, et la pointe s’est arrêtée exactement là où le fil s’était posé tout à l’heure. Ce qu’il retient, c’est que le coup n’est pas parti de la main. Il est parti de la hanche, il a traversé tout le corps, et la dague n’a fait que finir le geste. La lame ne cherche pas la masse, elle cherche le défaut : sous la mâchoire, au creux de la clavicule, le pli d’un gorgerin, le dessous d’un bras levé.</div>
+<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Bien fait, il n’y a pas de cri. Il n’y a pas de chute non plus, tu le retiens, tu l’assois, tu t’en vas. Ses camarades le trouveront au matin en pensant qu’il dormait.</span></div>
+<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Une fois. Une seule. Si tu dois la sortir deux fois dans la même nuit, c’est que la première a échoué, et si la première a échoué, tu n’es plus dans l’ombre.</span></div>
+<div class="section-head"><strong>LA LAME DE L’OMBRE · RÈGLES</strong></div>
+<p>Ce n’est pas une botte de duel, c’est une approche, et le coup n’en est que la conclusion. Rien de surnaturel là-dedans : du poids, du souffle, de la distance et de la lecture d’attention.</p>
+<div class="jet-roll"><span class="jet-label">Apprentissage — Test étendu, Agilité</span><span class="jet-detail">Difficile <span class="mod mod-neg">(--10)</span>, seuil 12 DR, huit jets maximum. Chaque échec coûte 1 Fatigue, chaque maladresse 1 Blessure. Le seuil n’est pas atteignable en une nuit pour la plupart des personnages, et c’est voulu : elle reviendra.</span></div>
+<p><strong>Conditions.</strong> Dague ou lame courte. Rien de plus lourd que du cuir souple, pas de bouclier, pas de sac. La cible doit ignorer sa présence. Une fois par scène.</p>
+<p><strong>Premier temps · Le Souffle.</strong> Les terrains qui trahissent normalement un intrus, gel, gravier, feuilles sèches, plancher ancien, eau peu profonde, n’imposent plus aucun malus à ses tests de Discrétion. Et il se déplace à son Mouvement complet sans perdre sa furtivité, là où un homme ordinaire avance à demi-vitesse.</p>
+<p><strong>Deuxième temps · Le Courant, et la Mesure.</strong> Chaque round d’approche, un test de Discrétion opposé à la meilleure Perception adverse. Chaque réussite lui fait gagner ses DR en points de <strong>Mesure</strong>, plafonnés à son Bonus d’Agilité plus son Bonus de Force. La Mesure n’est pas une ressource mystique : c’est la distance qu’il a effacée, la respiration de l’homme qu’il a apprise, le moment de son cycle où l’épaule descend et où la nuque se découvre.</p>
+<ul class="scene-list"><li>Passer à un pas d’un adversaire éveillé impose <span class="mod mod-neg">(--10)</span> au test, mais rapporte 2 points de Mesure supplémentaires en cas de réussite.</li><li>Un échec remet la Mesure à zéro sans le trahir : il s’est figé, il a perdu le rythme, il reprend l’approche depuis le début. Seule une maladresse le fait repérer.</li></ul>
+<p><strong>Troisième temps · La Morsure.</strong> Contre une cible qui l’ignore, l’attaque touche automatiquement, sans jet en opposition. Dégâts : arme, plus Bonus de Force, plus la Mesure. Les points d’Armure sont ignorés, puisque la lame cherche le défaut et non la masse.</p>
+<div class="indice-box"><span class="indice-label">Indice</span><span class="indice-text">Si les dégâts réduisent la cible à 0 Blessure ou moins, elle meurt sans un bruit : la pointe passe sous le maxillaire avant que la gorge ait le temps de produire un son, et la main libre retient le corps pendant qu’il s’affaisse. Pas de cri, pas de chute, aucune alerte. C’est cette clause qui fait la valeur du talent, bien plus que les chiffres. Si elle survit, elle hurle, et tout le bénéfice de l’approche est perdu d’un coup.</span></div>
+<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Compte l’ordre de grandeur avant la table. Un voleur typique, Ag 45 et F 35, plafonne à 7 points de Mesure. Avec une dague à BF+2, cela donne 12 à 13 dégâts sans armure comptée : de quoi tuer net un milicien, pas un capitaine en brigandine. L’échelle est juste, ne la gonfle pas.</span></div>
+<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Contre un garde ordinaire, c’est une exécution silencieuse. Contre un adversaire sérieux, c’est une ouverture très violente qui ne le tuera pas et qui laissera le personnage seul, en cuir, au milieu de gens réveillés. Les deux usages sont intéressants, et le second est un piège que le joueur doit avoir le droit de se tendre lui-même.</span></div>
+<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Ce talent déséquilibre l’infiltration si tu le laisses courir sans friction. Tes garde-fous naturels : les chiens, qui travaillent au nez et pas à l’oreille ; les sols qui bougent, passerelles et barges ; la lumière, contre laquelle le souffle ne peut rien ; et les créatures qui ne perçoivent pas comme des hommes. Les égouts nord et la Villa Bal offrent les trois premiers.</span></div>
+<div class="section-head"><strong>CE QU’ELLE DONNE, CE QU’ELLE PREND</strong></div>
+<div class="lecture">Elle ramasse son manteau. Elle ne le remercie de rien et ne le félicite de rien. Puis, au moment de partir, elle s’arrête et se retourne à demi.</div>
+<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Ce mouvement a un nom, et il n’a jamais été enseigné à un humain avant toi. Je ne l’apprendrai ni à la sorcière, ni à la chasseuse. Il est à toi.</span></div>
+<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Mon nom, dans ma langue, veut dire deux choses. Foudre. Ou agression. Les deux se disent pareil. On m’a donné ce nom avant que je puisse choisir laquelle des deux j’allais être.</span></div>
+<div class="lecture">Elle est partie. Cette fois non plus, il n’a pas entendu les feuilles gelées craquer.</div>
+<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text">Voilà le vrai coup de la nuit, et il n’est pas porté à la dague. Le personnage a été distingué, nommé, adoubé, sans titre et sans témoin. C’est exactement son fantasme : pas noble, légitime. Quelqu’un qui compte l’a regardé. À partir de maintenant il ne trahira l’Eclipse ni par peur ni par appât du gain : il ne la trahira pas parce qu’il faudrait renoncer à ce regard.</span></div>
+<div class="section-head"><strong>ÉCHOS À PRÉPARER</strong></div>
+<ul class="scene-list"><li><strong>Sareth</strong>, hôte d’Ulgu, peut sentir quelque chose au petit matin sans savoir quoi. Une trace, une odeur d’ombre travaillée, comme une pièce où l’on aurait remué la poussière. Ne lui donne rien de plus qu’un malaise.</li><li><strong>Den’l</strong>, la première fois qu’elle le voit traverser un terrain découvert, comprendra que ça ne s’apprend pas dans la rue. Elle a vu des éclaireurs. Elle posera la question franchement, ce qu’il redoute plus qu’un soupçon.</li><li><strong>Armand</strong>, à la prochaine entrevue, saura. Aucun commentaire, mais il le regardera un quart de seconde de trop, et sourira. Le message est clair : on parle de toi.</li><li><strong>Le gardien de nuit</strong>, si le test a réussi, se réveillera plusieurs jours de suite avec la sensation d’une main sur son épaule, et n’en parlera à personne. À ressortir bien plus tard.</li></ul>
+<div class="section-head"><strong>RÉPLIQUES EN RÉSERVE</strong></div>
+<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Tu voles bien. Voler, c’est prendre et fuir. Je vais t’apprendre à rester.</span></div>
+<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Non. Tu as retenu ton souffle. Un homme qui retient son souffle finit toujours par le lâcher, et ce jour-là on l’entend à dix pas. Respire. Recommence.</span></div>
+<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Le noir ne cache personne. Le noir cache ce qui ne bouge pas comme le reste. Bouge comme le reste.</span></div>
+<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Tu as peur de moi. C’est sain. Garde-la, cette peur, elle vaut mieux que ta confiance.</span></div>
+<div class="dialogue"><span class="dialogue-who">Varour</span><span class="dialogue-text">Ce n’est pas de la vitesse. La vitesse, on la voit. C’est de la patience avec un couteau au bout.</span></div>
+</div>
 <div class="scene-panel" id="s5_sc2" style="display:none">
-<div class="scene-title-bar"><h2 class="scene-title">Scène 2 PÈRE ADELMAR --- LE CULTE DE MORR</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s5','s5_sc1')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s5','s5_sc3')">Suiv. &#8594;</button></div></div>
+<div class="scene-title-bar"><h2 class="scene-title">Scène 2 PÈRE ADELMAR --- LE CULTE DE MORR</h2><div class="scene-nav"><button class="nav-btn" onclick="showScene('s5','s5_scLO')">&#8592; Préc.</button><button class="nav-btn" onclick="showScene('s5','s5_sc3')">Suiv. &#8594;</button></div></div>
 <p class="ambiance"><em>RP/Social --- Temple de Morr, Swartzhafen</em></p>
 <p>Le Père Adelmar est joignable à son temple. Homme de peu de mots, il observe la situation avec une inquiétude croissante depuis des mois. Si les PJ l'approchent avec discrétion et lui offrent une perspective de protection, il peut devenir une source précieuse, et un allié prudent.</p>
 <p>Il a peur. Il voudrait que cela cesse sans en parler publiquement. Il peut remettre un document listant des autorisations suspectes de déplacements de corps et de condamnations de caveaux, si et seulement s'il fait confiance aux PJ.</p>
@@ -3381,7 +3382,7 @@ window.rebuildTOC = function(){
          + titre + '</a>';
     sec.querySelectorAll(".scene-panel").forEach(function(p){
       var h = p.querySelector(".scene-title");
-      var t = h ? h.textContent.trim() : "";
+      var t = h ? (window.texteTitre ? window.texteTitre(h) : h.textContent.trim()) : "";
       if (!t) return;
       out += '\n<a href="javascript:void(0)" class="toc-scene" onclick="showScene(\''
            + sec.id + '\',\'' + p.id + '\')" id="toc-' + p.id + '">' + t + '</a>';
@@ -4570,9 +4571,16 @@ function sommaire(){
   crayonsSommaire();
 }
 
+function texteTitre(el){
+  if (!el) return "";
+  var c = el.cloneNode(true);
+  c.querySelectorAll(".crayon").forEach(function(x){ x.remove(); });
+  return (c.textContent || "").trim();
+}
+window.texteTitre = texteTitre;
+
 function titreDe(sec){
-  return sec.getAttribute("data-title")
-      || (sec.querySelector(".section-title") ? sec.querySelector(".section-title").textContent.trim() : sec.id);
+  return sec.getAttribute("data-title") || texteTitre(sec.querySelector(".section-title")) || sec.id;
 }
 
 /* --- Créer --- */
@@ -4644,11 +4652,13 @@ function renommerFiche(cible){
   if (!sc) return;
   var h = sc.querySelector(".scene-title");
   if (!h) return;
-  var t = prompt("Nouveau titre de la fiche :", h.textContent.trim());
+  var t = prompt("Nouveau titre de la fiche :", texteTitre(h));
   if (!t) return;
   t = t.trim();
   if (!t) return;
+  var garde = h.querySelector(".crayon");
   h.textContent = t;
+  if (garde) h.appendChild(garde);
   sommaire();
   poserCrayons();
   marquerSale(sc.closest(".section-panel"));
@@ -4757,7 +4767,7 @@ function crayon(quoi, ident){
   b.className = "crayon";
   b.type = "button";
   b.title = "Renommer";
-  b.textContent = "\u270E";
+  b.setAttribute("aria-label", "Renommer");
   b.setAttribute("contenteditable", "false");
   b.setAttribute("data-ren", quoi);
   if (ident) b.setAttribute("data-cible", ident);
