@@ -222,6 +222,16 @@ body.editing [contenteditable="true"]:focus{outline:1px solid rgba(184,146,42,0.
 @media print{.topbar,.sidebar,.editbar,.scene-nav,.btn-menu{display:none!important;}.main{margin:0;padding:0;}body{background:#fff;color:#000;}}
 
 
+
+/* ══════ SOMMAIRE PLIABLE ══════ */
+.toc-section > .toc-scene{display:none;}
+.toc-section.open > .toc-scene{display:block;}
+.toc-fold{float:right;background:none;border:none;color:inherit;opacity:0.5;cursor:pointer;font-size:0.72rem;line-height:1.2;padding:0 0.15rem;margin-left:0.35rem;transition:transform 0.15s ease,opacity 0.15s ease;}
+.toc-fold:hover{opacity:1;}
+.toc-section.open > .toc-part .toc-fold{transform:rotate(90deg);}
+.toc-tout{display:flex;gap:0.4rem;padding:0.35rem 1rem 0.5rem;}
+.toc-tout button{flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--SUB);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.3rem 0.2rem;border-radius:2px;cursor:pointer;}
+.toc-tout button:hover{background:rgba(255,255,255,0.09);color:var(--parchment);}
 /* ══════ PORTRAITS DE PNJ ══════ */
 .stat-head{display:flex;align-items:center;gap:0.75rem;}
 .head-txt{flex:1;min-width:0;display:flex;justify-content:space-between;align-items:baseline;gap:0.7rem;flex-wrap:wrap;}
@@ -1000,8 +1010,6 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 
 <span class="stat-line">Comp&eacute;tences</span><p>Corps à corps (Base) 45, Esquive 45, Discrétion (Souterraine) 55, Perception 45, Commandement 40, Escalade 45.</p></div></div>
 </div>
-</div>
-
 <div class="scene-panel" id="P3_f_vorenberg" style="display:none">
 <div class="scene-title-bar"><h2 class="scene-title">Capitaine Eliasz Vorenberg : Le Commandement</h2><div class="scene-nav"></div></div>
 <p>Humain d'environ quarante-cinq ans, droit comme un mât, uniforme impeccable malgré l'usure visible des manches. Cheveux poivre et sel coupés court, barbe taillée, cicatrice nette à la pommette gauche. Capitaine de la garnison de Wusterburg. Officier de carrière, vingt ans de patrouilles frontalières avant sa promotion. Marié, deux enfants qu'il voit peu.</p>
@@ -1036,6 +1044,8 @@ Tout le reste est ici : ceux qui peuvent se battre n'importe où, ceux qui revie
 <div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text"><strong>C'est ton canal d'exposition, et c'est un canal faillible.</strong> Fais-lui dire des choses justes et des choses fausses avec exactement la même assurance. Les joueurs doivent apprendre à trier, pas à noter. Dans la meilleure issue de la Phase 3, il ressort terrorisé mais vivant, et sa survie ouvre un contact savant durable à Wusterburg, précieux le jour où la campagne reviendra vers les questions naines anciennes.</span></div>
 <div class="stat-card" data-fiche="frere-bartelius-hochst"><div class="stat-head"><span class="stat-name">Frère Bartelius Höchst</span><span class="stat-kind">Humain, académicien de l'Université d'Altdorf &middot; ne se bat pas</span></div><div class="stat-body"><div class="statblock-wrap"><table class="statblock"><tr><th>Profil</th><th>M</th><th>CC</th><th>CT</th><th>F</th><th>E</th><th>I</th><th>Ag</th><th>Dex</th><th>Int</th><th>FM</th><th>Soc</th><th>B</th></tr><tr><td>Bartelius Höchst</td><td>3</td><td>20</td><td>20</td><td>25</td><td>25</td><td>30</td><td>25</td><td>40</td><td>60</td><td>40</td><td>40</td><td>9</td></tr></table></div><span class="stat-line">Armes &amp; armure</span><p>Un couteau à parchemin. Rien d'autre, jamais. Aucune armure : sa robe et un manteau de voyage trop léger pour la montagne.</p><span class="stat-line">Compétences</span><p>Savoir (Histoire) 65, Recherche 62, Lecture et Écriture 60, Savoir (Nains) 55, Savoir (Théologie) 45, Langue (Khazalid) 45, Évaluation 45, Charme 40, Perception 30.</p><span class="stat-line">Traits</span><p><span class="trait">Deux ans d'archives</span> Sur toute question touchant à Schattenfels, à son histoire ou à ses bâtisseurs, il fournit une réponse immédiate et détaillée. Lance discrètement 1d10 : sur 8 ou plus, la réponse est fausse et donnée avec la même assurance. <span class="trait">Il parle trop</span> En situation de tension ou de discrétion, un test de Calme est nécessaire pour qu'il se taise. Il le rate souvent. <span class="trait">Aucune pratique du terrain</span> <span class="mod mod-neg">(-20)</span> à tout ce qui relève du corps : marche forcée, escalade, froid, fuite. Il ralentit la colonne et il ne s'en rend pas compte. <span class="trait">Il vaut plus vivant</span> S'il survit, il devient un contact savant à Wusterburg, ouvert sur les questions naines anciennes.</p></div></div>
 </div>
+</div>
+
 <div class="section-panel" id="P4" data-title="Documents Clés" data-arc="socle" style="display:none">
 <div class="section-header"><span class="section-kicker">Le socle</span><h1 class="section-title">Documents Clés</h1></div>
 <div class="scene-panel" id="P4_sc0" style="display:none">
@@ -3077,11 +3087,15 @@ function buildTOC(){
       inner.appendChild(h);
       lastArc = arc;
     }
+    var box = document.createElement('div');
+    box.className='toc-section';
+    box.setAttribute('data-sec', sec.id);
+
     var part = document.createElement('a');
     part.className='toc-part'; part.href='#';
     part.textContent = sec.getAttribute('data-title') || txt(sec.querySelector('.section-title'));
     part.addEventListener('click', function(e){ e.preventDefault(); showSection(sec.id); });
-    inner.appendChild(part);
+    box.appendChild(part);
 
     sec.querySelectorAll('.scene-panel').forEach(function(p){
       var t = txt(p.querySelector('.scene-title'));
@@ -3089,9 +3103,10 @@ function buildTOC(){
       var a = document.createElement('a');
       a.className='toc-scene'; a.href='#'; a.id='toc-'+p.id; a.textContent=t;
       a.addEventListener('click', function(e){ e.preventDefault(); showScene(sec.id, p.id); });
-      inner.appendChild(a);
+      box.appendChild(a);
       SEARCH_INDEX.push({ sid:sec.id, scid:p.id, section: sec.getAttribute('data-title')||'', title:t, body:(p.textContent||'').toLowerCase().slice(0,4000) });
     });
+    inner.appendChild(box);
   });
 }
 
@@ -3985,6 +4000,88 @@ function pousserFichier(){
 }
 
 window.pousserFichier = pousserFichier;
+
+/* ============================================================
+   SOMMAIRE PLIABLE
+   Le répertoire des PNJ dépasse la quarantaine de fiches : on
+   plie chaque partie et on n'ouvre que celle qu'on consulte.
+   ============================================================ */
+function sectionAffichee(){
+  var v = null;
+  document.querySelectorAll(".section-panel").forEach(function(s){
+    if (s.style.display && s.style.display !== "none") v = s;
+  });
+  return v;
+}
+
+function synchroniserPliage(){
+  var vis = sectionAffichee();
+  document.querySelectorAll(".sidebar-inner .toc-section[data-sec]").forEach(function(box){
+    if (vis && box.getAttribute("data-sec") === vis.id) box.classList.add("open");
+  });
+}
+
+function poserPliage(){
+  var inner = document.querySelector(".sidebar-inner");
+  if (!inner) return;
+
+  inner.querySelectorAll(".toc-section[data-sec]").forEach(function(box){
+    var part = box.querySelector(".toc-part");
+    if (!part || part.querySelector(".toc-fold")) return;
+    if (!box.querySelector(".toc-scene")) return;
+    var b = document.createElement("button");
+    b.className = "toc-fold";
+    b.type = "button";
+    b.title = "Plier ou déplier";
+    b.setAttribute("aria-label", "Plier ou déplier");
+    b.innerHTML = "&#9656;";
+    b.addEventListener("click", function(e){
+      e.preventDefault(); e.stopPropagation();
+      box.classList.toggle("open");
+    });
+    part.insertBefore(b, part.firstChild);
+    part.addEventListener("click", function(){ box.classList.add("open"); });
+  });
+
+  if (!inner.querySelector(".toc-tout")) {
+    var barre = document.createElement("div");
+    barre.className = "toc-tout";
+    var plier = document.createElement("button");
+    plier.type = "button"; plier.textContent = "Tout plier";
+    plier.addEventListener("click", function(){
+      inner.querySelectorAll(".toc-section").forEach(function(b){ b.classList.remove("open"); });
+    });
+    var deplier = document.createElement("button");
+    deplier.type = "button"; deplier.textContent = "Tout déplier";
+    deplier.addEventListener("click", function(){
+      inner.querySelectorAll(".toc-section[data-sec]").forEach(function(b){ b.classList.add("open"); });
+    });
+    barre.appendChild(plier); barre.appendChild(deplier);
+    inner.insertBefore(barre, inner.firstChild);
+  }
+
+  synchroniserPliage();
+}
+
+window.poserPliage = poserPliage;
+window.synchroniserPliage = synchroniserPliage;
+
+/* le pliage suit la navigation */
+(function(){
+  ["showSection","showScene"].forEach(function(nom){
+    var orig = window[nom];
+    if (typeof orig !== "function") return;
+    window[nom] = function(){
+      var r = orig.apply(this, arguments);
+      try { synchroniserPliage(); } catch(e){}
+      return r;
+    };
+  });
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", poserPliage);
+  else poserPliage();
+})();
+
 (function(){
   var b = document.getElementById("btn-push");
   if (b) b.addEventListener("click", pousserFichier);
@@ -4619,6 +4716,7 @@ function sommaire(){
   if (typeof rebuildTOC === "function") rebuildTOC();
   else if (typeof buildTOC === "function") buildTOC();
   crayonsSommaire();
+  if (typeof poserPliage === "function") poserPliage();
 }
 
 function texteTitre(el){
