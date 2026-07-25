@@ -153,6 +153,9 @@ strong{color:var(--parchment);}
 /* MODE ÉDITION */
 .btn-edit{background:rgba(103,78,167,0.15);border:1px solid rgba(103,78,167,0.4);color:#a78fd8;font-size:0.85rem;cursor:pointer;padding:0.3rem 0.6rem;border-radius:2px;font-family:'Cinzel',serif;}
 .btn-edit:hover{background:rgba(103,78,167,0.3);}
+.btn-push{background:rgba(139,26,26,0.18);border:1px solid rgba(139,26,26,0.45);color:#c98a8a;font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.1em;padding:0.3rem 0.6rem;border-radius:2px;cursor:pointer;white-space:nowrap;}
+.btn-push:hover{background:rgba(139,26,26,0.34);color:#e0a8a8;}
+.btn-push[disabled]{opacity:0.4;cursor:default;}
 body.editing .btn-edit{background:rgba(103,78,167,0.45);color:#fff;}
 body.editing .main{outline:2px dashed rgba(103,78,167,0.5);outline-offset:-2px;caret-color:#a78fd8;}
 .edit-bar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:500;background:rgba(20,14,32,0.98);border-top:1px solid rgba(103,78,167,0.5);padding:0.5rem 0.75rem;gap:0.5rem;align-items:center;flex-wrap:wrap;}
@@ -202,12 +205,9 @@ body.editing .scene-panel{outline:1px dashed rgba(103,78,167,0.22);outline-offse
 
 /* ── Portraits de PNJ ── */
 .npc-head{display:flex;align-items:center;gap:0.75rem;}
-.pnj-header{display:flex;align-items:center;gap:0.75rem;}
 .head-txt{flex:1;min-width:0;}
 .pf{flex:0 0 auto;width:74px;height:74px;border-radius:2px;border:1px solid rgba(184,146,42,0.45);background:rgba(0,0,0,0.32);cursor:pointer;padding:0;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
-.pnj-header .pf{border-color:rgba(103,78,167,0.55);}
 .pf:hover{border-color:#e0c15e;}
-.pnj-header .pf:hover{border-color:#b8a3f0;}
 .pf img{width:100%;height:100%;object-fit:cover;display:block;}
 .pf-ph{font-family:'Cinzel',serif;font-size:0.5rem;letter-spacing:0.12em;color:rgba(212,200,168,0.4);text-transform:uppercase;line-height:1.3;text-align:center;pointer-events:none;}
 .pf-busy{position:absolute;inset:0;background:rgba(9,9,14,0.72);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:0.5rem;color:#e0c15e;letter-spacing:0.1em;}
@@ -304,6 +304,7 @@ body:not(.editing) .crayon{display:none;}
   <span class="topbar-title">L'Éclipse · Scénario</span>
   <div class="topbar-right">
     <button class="btn-edit" id="btn-edit" title="Mode édition">&#9998;</button>
+    <button class="btn-push" id="btn-push" title="Publier la version du fichier vers la base en ligne. Le fichier fait autorité.">Push</button>
     <input class="search-input" type="text" placeholder="Rechercher…" id="search-input" autocomplete="off">
     <div class="search-results" id="search-results"></div>
   </div>
@@ -3741,6 +3742,7 @@ function encart(){
 }
 
 function poserPortraits(){
+  nettoyerPortraitsPnj();
   /* Profils de combat : on regroupe nom et sous-titre pour loger l'encart. */
   document.querySelectorAll(".npc-stat").forEach(function(card){
     if (card.querySelector(":scope > .npc-head")) return;
@@ -3757,15 +3759,18 @@ function poserPortraits(){
     head.appendChild(encart());
     head.appendChild(txt);
   });
-  /* Bandeaux PNJ : l'encart se glisse devant le libellé. */
+}
+
+/* Les bandeaux PNJ n'ont plus d'encart : un personnage n'a qu'un seul
+   portrait, celui de son bloc de profil. On retire ceux qui traînent
+   encore dans le contenu enregistré. */
+function nettoyerPortraitsPnj(){
   document.querySelectorAll(".pnj-header").forEach(function(band){
-    if (band.querySelector(":scope > .pf")) return;
-    var restant = Array.prototype.slice.call(band.childNodes);
-    var txt = document.createElement("div");
-    txt.className = "head-txt";
-    restant.forEach(function(n){ txt.appendChild(n); });
-    band.appendChild(encart());
-    band.appendChild(txt);
+    band.querySelectorAll(":scope > .pf").forEach(function(e){ e.remove(); });
+    band.querySelectorAll(":scope > .head-txt").forEach(function(boite){
+      while (boite.firstChild) band.insertBefore(boite.firstChild, boite);
+      boite.remove();
+    });
   });
 }
 
@@ -3940,6 +3945,129 @@ window.dropDraft = function(){
   window.loadDraft();
 };
 window.checkDraft = function(){};
+
+/* ============================================================
+   b bis. PUSH — le fichier fait autorité
+   Le site lit la base au chargement et remplace le contenu du
+   fichier. Corriger le fichier ne suffit donc pas : il faut le
+   republier. Ce bouton écrit FICHIER (relevé avant que la base
+   ne prenne la main) par-dessus la base, en sauvegardant l'état
+   précédent et en conservant les identifiants de portrait.
+   ============================================================ */
+function clePortrait(carte){
+  var f = carte.getAttribute("data-fiche");
+  if (f) return "f:" + f;
+  var n = carte.querySelector(".npc-name");
+  return "n:" + (n ? n.textContent.trim().toLowerCase() : "");
+}
+
+function releverPortraits(){
+  var m = {};
+  document.querySelectorAll(".npc-stat").forEach(function(c){
+    var btn = c.querySelector(".pf[data-pf]");
+    if (btn) m[clePortrait(c)] = btn.getAttribute("data-pf");
+  });
+  return m;
+}
+
+/* Le fichier ne contient aucun encart de portrait : ils sont posés au
+   chargement. Sans cette étape, publier le fichier orphelinerait toutes
+   les images déjà envoyées. */
+function greffer(html, mapPf){
+  var t = document.createElement("div");
+  t.innerHTML = html;
+  var sec = t.firstElementChild;
+  if (!sec) return null;
+  sec.querySelectorAll(".pnj-header").forEach(function(band){
+    band.querySelectorAll(":scope > .pf").forEach(function(e){ e.remove(); });
+    band.querySelectorAll(":scope > .head-txt").forEach(function(boite){
+      while (boite.firstChild) band.insertBefore(boite.firstChild, boite);
+      boite.remove();
+    });
+  });
+  sec.querySelectorAll(".npc-stat").forEach(function(c){
+    if (c.querySelector(".pf[data-pf]")) return;
+    var id = mapPf[clePortrait(c)];
+    if (!id) return;
+    var nom = c.querySelector(":scope > .npc-name");
+    var sub = c.querySelector(":scope > .npc-sub");
+    if (!nom) return;
+    var head = document.createElement("div");
+    head.className = "npc-head";
+    var txt = document.createElement("div");
+    txt.className = "head-txt";
+    c.insertBefore(head, nom);
+    txt.appendChild(nom);
+    if (sub) txt.appendChild(sub);
+    var btn = document.createElement("button");
+    btn.className = "pf";
+    btn.type = "button";
+    btn.setAttribute("contenteditable", "false");
+    btn.setAttribute("data-pf", id);
+    btn.innerHTML = "";
+    head.appendChild(btn);
+    head.appendChild(txt);
+  });
+  return instantane(sec);
+}
+
+function pousserFichier(){
+  if (!refSec) { toast("Hors ligne : publication impossible", true); return; }
+  var ids = Object.keys(FICHIER);
+  if (!ids.length) { toast("Rien à publier", true); return; }
+  if (!confirm(
+    "Publier la version du fichier vers la base ?\n\n" +
+    ids.length + " section(s) en ligne seront remplacées par celles du fichier.\n" +
+    "Tout ce qui a été modifié dans le navigateur sans être réexporté sera perdu.\n\n" +
+    "L'état actuel est sauvegardé dans la base avant écriture."
+  )) return;
+
+  var mapPf = releverPortraits();
+  var lot = {}, miroir = {}, refus = 0;
+  ids.forEach(function(id){
+    var html = greffer(FICHIER[id], mapPf);
+    if (!html) { refus++; return; }
+    dernierEnvoi[id] = html;
+    miroir[id] = html;
+    lot[id] = { html: html, at: Date.now(), par: CLIENT };
+  });
+  if (!Object.keys(lot).length) { toast("Aucune section exploitable", true); return; }
+
+  var bouton = document.getElementById("btn-push");
+  if (bouton) bouton.setAttribute("disabled", "disabled");
+  etat("sauvegarde…", "pending");
+  sales = {};
+  clearTimeout(timerEcriture);
+
+  refSec.once("value").then(function(sn){
+    var avant = sn.val();
+    if (!avant || !db) return null;
+    return db.ref(RACINE + "/sauvegardes/" + Date.now()).set(avant);
+  }).catch(function(e){ console.warn("Sauvegarde impossible :", e); })
+  .then(function(){
+    etat("publication…", "pending");
+    return refSec.set(lot);
+  }).then(function(){
+    if (refOrdre) refOrdre.set(Object.keys(lot));
+    if (refSuppr) refSuppr.remove();
+    try { localStorage.setItem(CACHE, JSON.stringify(miroir)); } catch(e){}
+    etat("publié", "ok");
+    toast("Fichier publié" + (refus ? " (" + refus + " section illisible)" : "") + ". Rechargement…");
+    setTimeout(function(){ location.reload(); }, 900);
+  }).catch(function(e){
+    console.warn("Publication échouée :", e);
+    if (bouton) bouton.removeAttribute("disabled");
+    etat("publication refusée", "err");
+    toast("Publication refusée par la base", true);
+  });
+}
+
+window.pousserFichier = pousserFichier;
+(function(){
+  var b = document.getElementById("btn-push");
+  if (b) b.addEventListener("click", pousserFichier);
+})();
+
 
 /* c. INSERTION DE BLOCS — réécrite
    L'ancienne version perdait le curseur au clic sur le bouton, puis
