@@ -223,13 +223,10 @@ body.editing [contenteditable="true"]:focus{outline:1px solid rgba(184,146,42,0.
 
 
 /* ══════ PORTRAITS DE PNJ ══════ */
-.stat-head,.pnj-head{display:flex;align-items:center;gap:0.75rem;}
+.stat-head{display:flex;align-items:center;gap:0.75rem;}
 .head-txt{flex:1;min-width:0;display:flex;justify-content:space-between;align-items:baseline;gap:0.7rem;flex-wrap:wrap;}
-.pnj-head .head-txt{display:block;}
 .pf{flex:0 0 auto;width:74px;height:74px;border-radius:2px;border:1px solid rgba(169,113,59,0.45);background:rgba(0,0,0,0.32);cursor:pointer;padding:0;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
-.pnj-card .pf{border-color:rgba(103,78,167,0.45);}
 .pf:hover{border-color:var(--CUI-light);}
-.pnj-card .pf:hover{border-color:#b8a3f0;}
 .pf img{width:100%;height:100%;object-fit:cover;display:block;}
 .pf-ph{font-family:'Cinzel',serif;font-size:0.5rem;letter-spacing:0.12em;color:rgba(212,200,168,0.4);text-transform:uppercase;line-height:1.3;text-align:center;pointer-events:none;}
 .pf-busy{position:absolute;inset:0;background:rgba(9,9,14,0.72);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:0.5rem;color:var(--CUI-light);letter-spacing:0.1em;}
@@ -499,14 +496,14 @@ C'est là que la peur trouve sa graine de vérité : il y a bel et bien des tra�
 <div class="scene-title-bar"><h2 class="scene-title">II. Trame de Fond : Ce que le MJ Sait</h2><div class="scene-nav"></div></div>
 <div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text"><strong>NE JAMAIS RÉVÉLER L'INTRIGUE DE FOND DIRECTEMENT</strong><ul class="scene-list"><li>Toute l'intrigue est orchestrée dans l'ombre par un personnage dont il ne faut rien dire directement.</li><li>Les joueurs ne doivent découvrir son existence que progressivement, via des indices semés tout au long de l'Arc et des Actes suivants qui le composent.</li></ul></span></div>
 <p><strong>Les Deux Clans Nains des Montagnes Noires</strong></p>
-<table class="inline-table"><tbody><tr><td><strong>Gromnil-Bak</strong></td><td><strong>Koppar-Dumm</strong></td></tr>
+<table class="inline-table"><tbody><tr><td></td><td><strong>Gromnil-Bak</strong></td><td><strong>Koppar-Dumm</strong></td></tr>
 <tr><td><strong>Traduction</strong></td><td>« Le Ruisseau de Fer »</td><td>« Le Cuivre Sombre »</td></tr>
 <tr><td><strong>Position</strong></td><td>Est de Karak Angazhar, ouest de Koppar-Dumm</td><td>Est de Gromnil-Bak, contre la passe du Feu Noir</td></tr>
 <tr><td><strong>Richesse</strong></td><td>Riche, prospère, bien connecté</td><td>Pauvre, isolé, exposé à l'est</td></tr>
 <tr><td><strong>Ressource principale</strong></td><td>Gromril* : métal nain extrêmement précieux</td><td>Cuivre, bronze + Vert de Sang</td></tr>
 <tr><td><strong>Aide de Thorgrim le Rancunier</strong></td><td>Importante : en cours de réduction</td><td>Insuffisante : en cours d'augmentation</td></tr>
 <tr><td><strong>Dirigeant</strong></td><td>Seigneur Hegnar Ironbrow</td><td>Seigneur Durgin Blackseam</td></tr>
-<tr><td>Prince Nerr Ironbrow</td><td>Prince Bergor Blackseam</td></tr></tbody></table>
+<tr><td><strong>Héritier</strong></td><td>Prince Nerr Ironbrow</td><td>Prince Bergor Blackseam</td></tr></tbody></table>
 <p>*Le gromril est le métal le plus précieux et résistant du monde nain. Seuls les meilleurs forgerons nains peuvent le travailler. Posséder ses filons confère une influence immense auprès de Karaz-a-Karak (capitale des Nains et Trône de Thorgrim).</p>
 <p><strong>Tensions fraternelles</strong></p>
 <p>Les peaux-vertes sont légion dans ce recoin du monde, mais Gromnil-Bak a fini par repousser ses vieux assaillants. Aujourd'hui, le clan jouit d'une prospérité indéniable, d'une position commerciale exceptionnelle grâce à ses filons de gromril et d'une relation royale privilégiée. Koppar-Dumm au contraire, se voit de plus en plus menacé (surtout par les gobelins de la nuit), ne dispose pas de filons si précieux et ne reçoit pas la même reconnaissance de Karaz-a-Karak. Le clan souffre de plus en plus et les années font croître un lourd sentiment d'injustice.</p>
@@ -3555,8 +3552,22 @@ function rendreEditable(on){
    ============================================================ */
 function nouvelId(){ return "pf" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
+/* Les bandeaux de fiche PNJ n'ont plus d'encart : un personnage n'a qu'un
+   seul portrait, celui de son bloc de profil. On retire ceux qui traînent
+   encore dans le contenu enregistré. */
+function nettoyerPortraitsPnj(){
+  document.querySelectorAll(".pnj-head").forEach(function(head){
+    head.querySelectorAll(":scope > .pf").forEach(function(e){ e.remove(); });
+    head.querySelectorAll(":scope > .head-txt").forEach(function(boite){
+      while (boite.firstChild) head.insertBefore(boite.firstChild, boite);
+      boite.remove();
+    });
+  });
+}
+
 function poserPortraits(){
-  document.querySelectorAll(".stat-head, .pnj-head").forEach(function(head){
+  nettoyerPortraitsPnj();
+  document.querySelectorAll(".stat-head").forEach(function(head){
     if (head.querySelector(":scope > .pf")) return;
     var restant = Array.prototype.slice.call(head.childNodes);
     var boite = document.createElement("div");
@@ -3762,7 +3773,7 @@ function clePortrait(carte){
 
 function releverPortraits(){
   var m = {};
-  document.querySelectorAll(".stat-card, .pnj-card").forEach(function(c){
+  document.querySelectorAll(".stat-card").forEach(function(c){
     var btn = c.querySelector(".pf[data-pf]");
     if (btn) m[clePortrait(c)] = btn.getAttribute("data-pf");
   });
@@ -3777,9 +3788,9 @@ function greffer(html, mapPf){
   t.innerHTML = html;
   var sec = t.firstElementChild;
   if (!sec) return null;
-  sec.querySelectorAll(".stat-card, .pnj-card").forEach(function(c){
+  sec.querySelectorAll(".stat-card").forEach(function(c){
     if (c.querySelector(".pf[data-pf]")) return;
-    var head = c.querySelector(".stat-head, .pnj-head");
+    var head = c.querySelector(".stat-head");
     if (!head) return;
     var id = mapPf[clePortrait(c)];
     if (!id) return;
