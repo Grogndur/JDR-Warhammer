@@ -198,6 +198,9 @@ em{color:inherit;}
 .btn-edit{background:rgba(103,78,167,0.18);border:1px solid rgba(103,78,167,0.4);color:#9d86dd;font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:0.1em;padding:0.32rem 0.65rem;border-radius:2px;cursor:pointer;white-space:nowrap;}
 .btn-edit:hover{background:rgba(103,78,167,0.32);}
 .btn-edit.on{background:rgba(184,146,42,0.3);border-color:rgba(184,146,42,0.6);color:#e8cf72;}
+.btn-push{background:rgba(139,26,26,0.18);border:1px solid rgba(139,26,26,0.45);color:#c98a8a;font-family:'Cinzel',serif;font-size:0.68rem;letter-spacing:0.1em;padding:0.32rem 0.65rem;border-radius:2px;cursor:pointer;white-space:nowrap;}
+.btn-push:hover{background:rgba(139,26,26,0.34);color:#e0a8a8;}
+.btn-push[disabled]{opacity:0.4;cursor:default;}
 .editbar{position:fixed;bottom:0;left:0;right:0;background:rgba(14,12,20,0.985);border-top:1px solid rgba(184,146,42,0.4);z-index:500;padding:0.5rem 0.8rem;display:none;gap:0.4rem;align-items:center;flex-wrap:wrap;}
 .editbar.visible{display:flex;}
 .eb-btn{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.13);color:var(--parchment-dark);font-family:'Cinzel',serif;font-size:0.63rem;letter-spacing:0.06em;padding:0.3rem 0.55rem;border-radius:2px;cursor:pointer;white-space:nowrap;}
@@ -323,6 +326,7 @@ body:not(.editing) .crayon{display:none;}
   <div class="topbar-right">
     <span class="draft-flag" id="draft-flag"></span>
     <button class="btn-edit" id="btn-edit">Editer</button>
+    <button class="btn-push" id="btn-push" title="Publier la version du fichier vers la base en ligne. Le fichier fait autorité.">Push</button>
     <input type="text" class="search-input" id="search-input" placeholder="Rechercher..." autocomplete="off">
   </div>
 </div>
@@ -441,7 +445,8 @@ body:not(.editing) .crayon{display:none;}
 
 <p class="section-head">Éditer ce document</p>
 
-<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text"><strong>Le bouton Éditer, en haut à droite.</strong> Il rend tout le texte modifiable directement dans le navigateur, y compris une fois le fichier en ligne. La barre du bas permet d'insérer un bloc de chaque type, d'ajouter une scène, d'enregistrer un brouillon dans le navigateur, et surtout d'<strong>exporter le fichier complet</strong>. C'est le fichier exporté qu'il faut remettre sur le dépôt : le site est statique, il ne sauvegarde rien tout seul. Le sommaire, la navigation et la recherche se reconstruisent seuls à chaque ouverture, donc renommer ou ajouter une scène ne casse rien.</span></div>
+<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text"><strong>Le bouton Éditer, en haut à droite.</strong> Il rend tout le texte modifiable directement dans le navigateur, y compris une fois le fichier en ligne. La barre du bas permet d'insérer un bloc de chaque type, d'ajouter une scène, d'enregistrer un brouillon dans le navigateur, et surtout d'<strong>exporter le fichier complet</strong>. C'est le fichier exporté qu'il faut remettre sur le dépôt.</span></div>
+<div class="mj-box"><span class="mj-label">MJ</span><span class="mj-text"><strong>Le bouton Push, à droite d'Éditer.</strong> Le site ne lit pas le fichier : au chargement, il récupère le contenu stocké en ligne et remplace celui du fichier. Corriger le fichier à la main puis le remettre sur le dépôt ne change donc rien à ce qui s'affiche. Push republie la version du fichier par-dessus la base, une fois pour toutes. L'ordre est toujours le même : exporter, corriger, remettre sur le dépôt, recharger la page, cliquer sur Push. Ce qui a été modifié dans le navigateur sans passer par un export est écrasé ; l'état précédent est sauvegardé dans la base avant écriture, sous <em>sauvegardes</em>. Le sommaire, la navigation et la recherche se reconstruisent seuls à chaque ouverture, donc renommer ou ajouter une scène ne casse rien.</span></div>
 </div>
 <div class="scene-panel" id="P1_sc1" style="display:none">
 <div class="scene-title-bar"><h2 class="scene-title">Le sud — Averland, 2510</h2><div class="scene-nav"></div></div>
@@ -3739,6 +3744,118 @@ window.dropDraft = function(){
   window.loadDraft();
 };
 window.checkDraft = function(){};
+
+/* ============================================================
+   b bis. PUSH — le fichier fait autorité
+   Le site lit la base au chargement et remplace le contenu du
+   fichier. Corriger le fichier ne suffit donc pas : il faut le
+   republier. Ce bouton écrit FICHIER (relevé avant que la base
+   ne prenne la main) par-dessus la base, en sauvegardant l'état
+   précédent et en conservant les identifiants de portrait.
+   ============================================================ */
+function clePortrait(carte){
+  var f = carte.getAttribute("data-fiche");
+  if (f) return "f:" + f;
+  var n = carte.querySelector(".stat-name, .pnj-name");
+  return "n:" + (n ? n.textContent.trim().toLowerCase() : "");
+}
+
+function releverPortraits(){
+  var m = {};
+  document.querySelectorAll(".stat-card, .pnj-card").forEach(function(c){
+    var btn = c.querySelector(".pf[data-pf]");
+    if (btn) m[clePortrait(c)] = btn.getAttribute("data-pf");
+  });
+  return m;
+}
+
+/* Le fichier ne contient aucun encart de portrait : ils sont posés au
+   chargement. Sans cette étape, publier le fichier orphelinerait toutes
+   les images déjà envoyées. */
+function greffer(html, mapPf){
+  var t = document.createElement("div");
+  t.innerHTML = html;
+  var sec = t.firstElementChild;
+  if (!sec) return null;
+  sec.querySelectorAll(".stat-card, .pnj-card").forEach(function(c){
+    if (c.querySelector(".pf[data-pf]")) return;
+    var head = c.querySelector(".stat-head, .pnj-head");
+    if (!head) return;
+    var id = mapPf[clePortrait(c)];
+    if (!id) return;
+    var restant = Array.prototype.slice.call(head.childNodes);
+    var boite = document.createElement("div");
+    boite.className = "head-txt";
+    restant.forEach(function(n){ boite.appendChild(n); });
+    var btn = document.createElement("button");
+    btn.className = "pf";
+    btn.type = "button";
+    btn.setAttribute("contenteditable", "false");
+    btn.setAttribute("data-pf", id);
+    btn.innerHTML = "";
+    head.appendChild(btn);
+    head.appendChild(boite);
+  });
+  return instantane(sec);
+}
+
+function pousserFichier(){
+  if (!refSec) { toast("Hors ligne : publication impossible", true); return; }
+  var ids = Object.keys(FICHIER);
+  if (!ids.length) { toast("Rien à publier", true); return; }
+  if (!confirm(
+    "Publier la version du fichier vers la base ?\n\n" +
+    ids.length + " section(s) en ligne seront remplacées par celles du fichier.\n" +
+    "Tout ce qui a été modifié dans le navigateur sans être réexporté sera perdu.\n\n" +
+    "L'état actuel est sauvegardé dans la base avant écriture."
+  )) return;
+
+  var mapPf = releverPortraits();
+  var lot = {}, miroir = {}, refus = 0;
+  ids.forEach(function(id){
+    var html = greffer(FICHIER[id], mapPf);
+    if (!html) { refus++; return; }
+    dernierEnvoi[id] = html;
+    miroir[id] = html;
+    lot[id] = { html: html, at: Date.now(), par: CLIENT };
+  });
+  if (!Object.keys(lot).length) { toast("Aucune section exploitable", true); return; }
+
+  var bouton = document.getElementById("btn-push");
+  if (bouton) bouton.setAttribute("disabled", "disabled");
+  etat("sauvegarde…", "pending");
+  sales = {};
+  clearTimeout(timerEcriture);
+
+  refSec.once("value").then(function(sn){
+    var avant = sn.val();
+    if (!avant || !db) return null;
+    return db.ref(RACINE + "/sauvegardes/" + Date.now()).set(avant);
+  }).catch(function(e){ console.warn("Sauvegarde impossible :", e); })
+  .then(function(){
+    etat("publication…", "pending");
+    return refSec.set(lot);
+  }).then(function(){
+    if (refOrdre) refOrdre.set(Object.keys(lot));
+    if (refSuppr) refSuppr.remove();
+    try { localStorage.setItem(CACHE, JSON.stringify(miroir)); } catch(e){}
+    etat("publié", "ok");
+    toast("Fichier publié" + (refus ? " (" + refus + " section illisible)" : "") + ". Rechargement…");
+    setTimeout(function(){ location.reload(); }, 900);
+  }).catch(function(e){
+    console.warn("Publication échouée :", e);
+    if (bouton) bouton.removeAttribute("disabled");
+    etat("publication refusée", "err");
+    toast("Publication refusée par la base", true);
+  });
+}
+
+window.pousserFichier = pousserFichier;
+(function(){
+  var b = document.getElementById("btn-push");
+  if (b) b.addEventListener("click", pousserFichier);
+})();
+
 
 /* c. INSERTION DE BLOCS — réécrite
    L'ancienne version perdait le curseur au clic sur le bouton, puis
