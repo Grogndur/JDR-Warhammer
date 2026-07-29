@@ -73,6 +73,7 @@
   .soustitre-input::placeholder { color:var(--SUB); opacity:0.5; }
   .desc-input { background:transparent; border:1px solid rgba(255,255,255,0.06); border-radius:2px; color:var(--parchment-dark); font-family:'Crimson Text',serif; font-size:0.95rem; line-height:1.6; width:100%; margin-top:1rem; padding:0.7rem 0.8rem; resize:vertical; min-height:120px; }
   .desc-input:focus { outline:none; border-color:rgba(184,146,42,0.3); }
+  .ech-desc { margin-top:0.3rem; min-height:70px; font-size:0.92rem; }
   .desc-input::placeholder { color:var(--SUB); opacity:0.6; font-style:italic; }
 
   /* ---- Cartes ---- */
@@ -150,6 +151,7 @@
     .entry { border-color:#d8caa0; border-left-color:#b8922a; background:#fff; break-inside:avoid; }
     .entry-nom { color:#2a2114; border:none; font-weight:600; }
     .entry-desc { color:#332b18; }
+    .ech-desc { color:#332b18; font-style:italic; }
     .echelon-head { color:#8a6d2a; border-color:#d8caa0; }
     .echelon-label { color:#8a6d2a; }
     .statut-lbl { color:#6b5320; }
@@ -251,7 +253,7 @@ let state = {
   echelons:[]             // 4 paliers : [{ competences:[], talents:[], possessions:[] }, ...]
 };
 CARACS.forEach(c => state.schema[c] = [false,false,false,false]);
-for (let i = 0; i < 4; i++) state.echelons.push({ stTier:'', stRang:'', competences:[], talents:[], possessions:[] });
+for (let i = 0; i < 4; i++) state.echelons.push({ stTier:'', stRang:'', description:'', competences:[], talents:[], possessions:[] });
 
 // Types de listes présents dans chaque échelon
 const TYPES = [
@@ -277,6 +279,7 @@ function normaliser(d) {
     s.echelons.push({
       stTier: (typeof src.stTier === 'string') ? src.stTier : '',
       stRang: (src.stRang === 0 || src.stRang) ? String(src.stRang) : '',
+      description: (typeof src.description === 'string') ? src.description : '',
       competences: nettoie(src.competences),
       talents: nettoie(src.talents),
       possessions: nettoie(src.possessions)
@@ -349,6 +352,8 @@ function rendreTout() {
   ECHELONS.forEach((ech, ei) => TYPES.forEach(t => rendreListe(ei, t.key)));
   appliquerSchema();
   appliquerStatuts();
+  appliquerDescriptions();
+  majEtatsVides();
   document.title = (state.titre ? state.titre + ' — ' : '') + 'Carrière · Warhammer';
 }
 
@@ -397,6 +402,11 @@ function construireSquelette() {
         '</span>' +
       '</div>';
     html +=
+      '<div class="sub sub-desc" id="sub-desc-' + ei + '">' +
+        '<div class="sub-title">Description</div>' +
+        '<textarea class="desc-input ech-desc" id="ech-desc-' + ei + '" placeholder="Ce que devient le personnage à cet échelon : son rôle, ce qu\'il sait faire de plus, ce que la voie lui coûte…"></textarea>' +
+      '</div>';
+    html +=
       '<div class="sub sub-schema" id="sub-schema-' + ei + '">' +
         '<div class="sub-title">Caractéristiques qui progressent</div>' +
         '<div class="carac-row" id="schema-e' + ei + '">' +
@@ -418,6 +428,16 @@ function construireSquelette() {
     el.addEventListener('click', () => {
       const card = el.closest('.echelon-card');
       if (card) card.classList.toggle('collapsed');
+    });
+  });
+  ECHELONS.forEach((ech, ei) => {
+    const ta = document.getElementById('ech-desc-' + ei);
+    if (!ta) return;
+    ta.addEventListener('input', function () {
+      state.echelons[ei].description = this.value;
+      autoGrow(this);
+      majEtatsVides();
+      programmerSauvegarde();
     });
   });
   zone.querySelectorAll('.carac-chip').forEach(chip => {
@@ -501,6 +521,16 @@ function majStatutPrint(ei) {
   el.textContent = txt;
 }
 
+// Applique les descriptions d'échelon aux zones de texte (au chargement / à la synchro).
+function appliquerDescriptions() {
+  ECHELONS.forEach((ech, ei) => {
+    const ta = document.getElementById('ech-desc-' + ei);
+    if (!ta) return;
+    ta.value = state.echelons[ei].description || '';
+    autoGrow(ta);
+  });
+}
+
 // Applique les valeurs de statut aux contrôles (au chargement / à la synchro).
 function appliquerStatuts() {
   ECHELONS.forEach((ech, ei) => {
@@ -516,7 +546,10 @@ function appliquerStatuts() {
 function majEtatsVides() {
   ECHELONS.forEach((ech, ei) => {
     const caracVide = CARACS.every(c => !state.schema[c][ei]);
-    let cardVide = !(state.echelons[ei].stTier || state.echelons[ei].stRang) && caracVide;
+    const descVide = !((state.echelons[ei].description || '').trim());
+    let cardVide = !(state.echelons[ei].stTier || state.echelons[ei].stRang) && caracVide && descVide;
+    const subDesc = document.getElementById('sub-desc-' + ei);
+    if (subDesc) subDesc.classList.toggle('sub-empty', descVide);
     const subSch = document.getElementById('sub-schema-' + ei);
     if (subSch) subSch.classList.toggle('sub-empty', caracVide);
     TYPES.forEach(t => {
