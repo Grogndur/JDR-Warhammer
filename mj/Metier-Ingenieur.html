@@ -40,7 +40,11 @@
   .sechead .n{font-size:.74rem;color:var(--dim)}
   .sechead button{padding:.22rem .5rem;font-size:.75rem}
   .snote,.sfoot{font-size:.8rem;color:var(--dim);padding:.5rem .7rem 0}
-  .sfoot{padding:.1rem .7rem .5rem;font-style:italic}
+  .sfoot{margin:.5rem .7rem .2rem;padding:.45rem .7rem;font-style:italic;
+         border-left:2px solid var(--acc2);background:rgba(184,146,42,.05);border-radius:0 3px 3px 0}
+  .sfoot:empty{display:none}
+  .sfoot::before{content:'À retenir';display:block;font-family:'Cinzel',serif;font-style:normal;
+         font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--acc2);margin-bottom:.2rem}
   .secbody{padding:.2rem .5rem .6rem}
   .sec.closed .secbody,.sec.closed .snote,.sec.closed .sfoot{display:none}
 
@@ -130,7 +134,9 @@
     .sechead{background:none;border-bottom:1px solid var(--acc);padding:0 0 1mm}
     .sechead .t{color:#8B1A1A}
     h2.bloc{color:#8B1A1A;border-color:#8B1A1A}
-    .intro,.snote,.sfoot,.leg{background:#faf7f1;color:#5a524a}
+    .intro,.snote,.leg{background:#faf7f1;color:#5a524a}
+    .sfoot{background:#faf7f1;color:#5a524a;border-left:2px solid #8B1A1A}
+    .sfoot::before{color:#8B1A1A}
     th{position:static;background:#2a1414;color:#f0e8d8;border:none}
     td{border-bottom:1px solid #ddd6ca}
     tr.off td{color:#5a524a}
@@ -364,6 +370,7 @@ function rendre(){
     h += '<div class="snote" contenteditable data-t="sn" data-s="' + si + '">' + esc(s.note || '') + '</div>';
     h += '<div class="secbody">';
 
+    var PIED = s.foot || s.foot === '' ? '<div class="sfoot" contenteditable data-t="sf" data-s="' + si + '">' + esc(s.foot || '') + '</div>' : '';
     if(s.kind === 'table'){
       h += '<table><thead><tr>';
       for(var ci = 0; ci < s.cols.length; ci++)
@@ -383,7 +390,7 @@ function rendre(){
              '<button data-a="dup" title="Dupliquer">⧉</button>' +
              '<button data-a="del" title="Supprimer">✕</button></td></tr>';
       }
-      h += '</tbody></table><button class="addrow" data-a="addrow">+ Ligne</button>';
+      h += '</tbody></table>' + PIED + '<button class="addrow" data-a="addrow">+ Ligne</button>';
     } else {
       h += '<div class="items">';
       for(var ii = 0; ii < s.items.length; ii++){
@@ -391,10 +398,9 @@ function rendre(){
              '<div class="txt" contenteditable data-t="item" data-s="' + si + '" data-i="' + ii + '">' + esc(s.items[ii]) + '</div>' +
              '<span class="acts"><button data-a="upitem">↑</button><button data-a="delitem">✕</button></span></div>';
       }
-      h += '</div><button class="addrow" data-a="additem">+ Paragraphe</button>';
+      h += '</div>' + PIED + '<button class="addrow" data-a="additem">+ Paragraphe</button>';
     }
     h += '</div>';
-    h += '<div class="sfoot" contenteditable data-t="sf" data-s="' + si + '">' + esc(s.foot || '') + '</div>';
     h += '</div>';
   }
 
