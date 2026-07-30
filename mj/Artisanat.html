@@ -534,35 +534,71 @@ document.getElementById('q').oninput = function(){
     legs[k].classList.toggle('hid', !!q && legs[k].textContent.toLowerCase().indexOf(q) < 0);
 };
 
-var IDX = {};
+/* ======================= INFOBULLES DE LÉGENDE ======================= */
+var IDX = [];               /* [{cle, terme, entree}] trié du plus long au plus court */
 function normal(t){
-  return t.toLowerCase().replace(/\s*\(.*?\)\s*/g,' ').replace(/\s+\d+\s*$/,'').replace(/[.,;:]+$/,'').trim();
+  return String(t).toLowerCase()
+    .replace(/\s*\(.*?\)\s*/g, ' ')      /* Bénie (X) -> benie */
+    .replace(/\s+[\dx×]+\s*$/, '')       /* Recharge 3 et Addictive X -> recharge, addictive */
+    .replace(/[.,;:!?]+$/, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 function indexerLegende(){
-  IDX = {};
+  IDX = [];
   if(!data.legend) return;
-  for(var i = 0; i < data.legend.length; i++) IDX[normal(data.legend[i].term)] = data.legend[i];
-}
-var tip = document.getElementById('tip');
-document.addEventListener('mouseover', function(e){
-  var td = e.target.closest ? e.target.closest('td[data-atout]') : null;
-  if(!td || document.activeElement === td){ tip.style.display = 'none'; return; }
-  var parts = td.textContent.split(/[,.]/), out = '';
-  for(var i = 0; i < parts.length; i++){
-    var E = IDX[normal(parts[i])];
-    if(E) out += '<p><b>' + esc(E.term) + '.</b> ' + esc(E.def) + '</p>';
+  for(var i = 0; i < data.legend.length; i++){
+    var cle = normal(data.legend[i].term);
+    if(cle.length > 2) IDX.push({cle: cle, entree: data.legend[i]});
   }
-  if(!out){ tip.style.display = 'none'; return; }
-  tip.innerHTML = out; tip.style.display = 'block';
-  var r = td.getBoundingClientRect();
+  IDX.sort(function(a, b){ return b.cle.length - a.cle.length; });
+}
+
+/* Reconnaît les mots-clés d'une cellule, par segment puis par occurrence dans la phrase. */
+function definitions(texte){
+  var trouve = [], vus = {};
+  function pousser(E){
+    if(!vus[E.term]){ vus[E.term] = 1; trouve.push(E); }
+  }
+  var segments = String(texte).split(/[,;.•·]/);
+  for(var s = 0; s < segments.length; s++){
+    for(var i = 0; i < IDX.length; i++){
+      if(normal(segments[s]) === IDX[i].cle){ pousser(IDX[i].entree); break; }
+    }
+  }
+  var plat = ' ' + normal(texte) + ' ';
+  for(var j = 0; j < IDX.length; j++){
+    if(IDX[j].cle.length < 5) continue;                 /* trop court : trop de faux positifs */
+    if(plat.indexOf(' ' + IDX[j].cle) >= 0) pousser(IDX[j].entree);
+  }
+  return trouve;
+}
+
+var tip = document.getElementById('tip');
+function cacherTip(){ tip.style.display = 'none'; }
+function montrerTip(cible){
+  if(!cible || document.activeElement === cible){ cacherTip(); return; }
+  var liste = definitions(cible.textContent);
+  if(!liste.length){ cacherTip(); return; }
+  var out = '';
+  for(var i = 0; i < liste.length && i < 6; i++)
+    out += '<p><b>' + esc(liste[i].term) + '.</b> ' + esc(liste[i].def) + '</p>';
+  tip.innerHTML = out;
+  tip.style.display = 'block';
+  var r = cible.getBoundingClientRect();
   var top = r.bottom + 6;
   if(top + tip.offsetHeight > window.innerHeight) top = Math.max(6, r.top - tip.offsetHeight - 6);
   tip.style.top = top + 'px';
-  tip.style.left = Math.min(r.left, window.innerWidth - tip.offsetWidth - 12) + 'px';
-});
-document.addEventListener('mouseout', function(e){
-  if(e.target.closest && e.target.closest('td[data-atout]')) tip.style.display = 'none';
-});
+  tip.style.left = Math.min(Math.max(6, r.left), window.innerWidth - tip.offsetWidth - 12) + 'px';
+}
+function cibleTip(e){
+  if(!e.target.closest) return null;
+  return e.target.closest('td[data-t="cell"], .item .txt, .sfoot, .snote');
+}
+document.addEventListener('mouseover', function(e){ montrerTip(cibleTip(e)); });
+document.addEventListener('mouseout', function(e){ if(cibleTip(e)) cacherTip(); });
+document.addEventListener('scroll', cacherTip, true);
+document.addEventListener('focusin', cacherTip);
 
 charger();
 rendre();
