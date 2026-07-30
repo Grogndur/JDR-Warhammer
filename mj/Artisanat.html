@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Artisanat</title>
+<style>
+  :root{
+    --bg:#12100e; --panel:#1b1815; --panel2:#221e1a; --line:#37302a;
+    --txt:#e8e0d2; --dim:#a2968a; --acc:#6b7fa8; --acc2:#c9a227; --off:#8d8375;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+       font-family:"Iowan Old Style",Georgia,serif;font-size:15px;line-height:1.45}
+
+  .bar{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,#1b1815,#161311);
+       border-bottom:1px solid var(--line);padding:.6rem .9rem;display:flex;gap:.6rem;
+       align-items:center;flex-wrap:wrap}
+  .bar h1{font-size:1.02rem;letter-spacing:.13em;text-transform:uppercase;margin:0 .5rem 0 0;
+          font-weight:600;white-space:nowrap}
+  .bar h1 span{color:var(--acc)}
+  input[type=search]{flex:1;min-width:160px;background:#0e0c0b;border:1px solid var(--line);
+       color:var(--txt);padding:.42rem .6rem;border-radius:4px;font-family:inherit;font-size:.9rem}
+  input[type=search]:focus{outline:none;border-color:var(--acc2)}
+  button{background:#2a2521;border:1px solid var(--line);color:var(--txt);padding:.4rem .7rem;
+       border-radius:4px;cursor:pointer;font-family:inherit;font-size:.82rem;white-space:nowrap}
+  button:hover{border-color:var(--acc2);color:#fff}
+  button.pri{background:#3a1512;border-color:#5d201a}
+  .status{font-size:.78rem;color:var(--dim);min-width:78px}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:1rem .9rem 4rem}
+  .intro{font-size:.85rem;color:var(--dim);background:var(--panel);border-left:2px solid var(--acc);
+       padding:.6rem .8rem;border-radius:0 4px 4px 0;margin:0 0 1.2rem}
+  .intro:focus{outline:none;background:#0e0c0b}
+
+  .sec{background:var(--panel);border:1px solid var(--line);border-radius:5px;margin:0 0 .8rem;overflow:hidden}
+  .sechead{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;background:var(--panel2);
+       border-bottom:1px solid var(--line)}
+  .sechead .t{font-size:.87rem;letter-spacing:.09em;text-transform:uppercase;color:var(--acc2);flex:1}
+  .sechead .n{font-size:.74rem;color:var(--dim)}
+  .sechead button{padding:.22rem .5rem;font-size:.75rem}
+  .snote,.sfoot{font-size:.8rem;color:var(--dim);padding:.5rem .7rem 0}
+  .sfoot{padding:.1rem .7rem .5rem;font-style:italic}
+  .secbody{padding:.2rem .5rem .6rem}
+  .sec.closed .secbody,.sec.closed .snote,.sec.closed .sfoot{display:none}
+
+  table{width:100%;border-collapse:collapse;font-size:.83rem}
+  th{position:sticky;top:44px;background:#0f0d0c;color:var(--dim);font-weight:400;text-align:left;
+     font-size:.67rem;letter-spacing:.08em;text-transform:uppercase;padding:.4rem .45rem;
+     border-bottom:1px solid var(--line);z-index:5}
+  td{border-bottom:1px solid #262019;padding:.32rem .45rem;vertical-align:top}
+  tr:hover td{background:#1f1b17}
+  tr.off td{color:var(--off);font-style:italic}
+  td[contenteditable]:focus,th[contenteditable]:focus{outline:none;background:#0e0c0b;box-shadow:inset 0 0 0 1px var(--acc2);border-radius:3px}
+  .acts{width:1%;white-space:nowrap;opacity:0;transition:opacity .12s}
+  tr:hover .acts{opacity:1}
+  .acts button{padding:.1rem .34rem;font-size:.72rem;background:transparent;border-color:transparent;color:var(--dim)}
+  .acts button:hover{color:#fff;border-color:var(--line)}
+  .addrow{margin:.35rem 0 0;font-size:.78rem}
+
+  .items{margin:0;padding:.2rem .3rem}
+  .item{display:flex;gap:.5rem;align-items:flex-start;padding:.3rem .3rem;border-bottom:1px solid #262019}
+  .item:hover{background:#1f1b17}
+  .item .puce{color:var(--acc);flex:0 0 auto;line-height:1.5}
+  .item .txt{flex:1;font-size:.87rem}
+  .item .txt:focus{outline:none;background:#0e0c0b;box-shadow:inset 0 0 0 1px var(--acc2);border-radius:3px}
+  .item .acts{opacity:0}
+  .item:hover .acts{opacity:1}
+
+  .legwrap{columns:2;column-gap:1.4rem}
+  .leg{break-inside:avoid;margin:0 0 .45rem;padding:.35rem .5rem;background:var(--panel);
+       border-left:2px solid var(--line);border-radius:0 3px 3px 0;font-size:.83rem}
+  .leg.mai{border-left-color:var(--acc)}
+  .leg .term{font-weight:700;color:var(--acc2)}
+  .leg.of .term{color:#bdb2a2}
+  .leg .term:focus,.leg .df:focus{outline:none;background:#0e0c0b}
+  .leg .acts2{float:right;opacity:0}
+  .leg:hover .acts2{opacity:1}
+  .leg .acts2 button{padding:.05rem .3rem;font-size:.7rem;background:transparent;border-color:transparent;color:var(--dim)}
+  h2.bloc{font-size:.98rem;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);
+       border-bottom:1px solid var(--acc);padding-bottom:.3rem;margin:1.8rem 0 .6rem}
+
+  #tip{position:fixed;z-index:60;max-width:340px;background:#0d0b0a;border:1px solid var(--acc2);
+       border-radius:4px;padding:.5rem .6rem;font-size:.8rem;display:none;box-shadow:0 6px 24px #000a}
+  #tip b{color:var(--acc2)}
+  #tip p{margin:0 0 .35rem} #tip p:last-child{margin:0}
+
+
+  .sync-flag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .5rem;
+       border-radius:2px;white-space:nowrap;border:1px solid transparent;color:var(--dim)}
+  .sync-flag.ok{color:#8fae7e;border-color:rgba(94,128,79,.4);background:rgba(94,128,79,.12)}
+  .sync-flag.pending{color:#e8cf72;border-color:rgba(184,146,42,.4);background:rgba(184,146,42,.12)}
+  .sync-flag.err{color:#e08a80;border-color:rgba(139,26,26,.5);background:rgba(139,26,26,.16)}
+
+  /* ---------- téléphone : plus de défilement horizontal ---------- */
+  @media(max-width:760px){
+    body{font-size:14px}
+    .bar{padding:.5rem .6rem;gap:.4rem}
+    .bar h1{font-size:.9rem;width:100%;margin:0}
+    button{padding:.34rem .55rem;font-size:.78rem}
+    .wrap{padding:.7rem .5rem 3rem}
+    .secbody{padding:.2rem .3rem .5rem}
+    thead{display:none}
+    table,tbody,tr,td{display:block;width:100%}
+    tr{border:1px solid var(--line);border-radius:4px;background:#1d1915;
+       margin:0 0 .5rem;padding:.35rem .5rem}
+    tr:hover td{background:transparent}
+    td{border-bottom:none;padding:.22rem 0;text-align:left !important;white-space:normal}
+    td:empty{padding:0}
+    td::before{content:attr(data-lab);display:inline-block;min-width:5.4rem;
+       font-size:.62rem;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);
+       vertical-align:top;padding-right:.4rem}
+    td.acts{opacity:1;width:auto;text-align:right !important;padding-top:.3rem;
+       border-top:1px solid #2a241e;margin-top:.25rem}
+    td.acts::before{content:none}
+    .acts button{font-size:.85rem;padding:.18rem .5rem}
+    .legwrap{columns:1}
+    .item .acts{opacity:1}
+  }
+  .retour{color:var(--dim);text-decoration:none;font-size:.8rem;white-space:nowrap;padding:.2rem .3rem}
+  .retour:hover{color:var(--acc2)}
+  .hid{display:none !important}
+  .hint{font-size:.78rem;color:var(--dim);margin:.8rem 0 0}
+
+  @media print{
+    body{background:#fff;color:#14110f;font-size:9pt}
+    .bar,.acts,.acts2,.addrow,.sechead button,.hint,#tip,.retour{display:none !important}
+    .wrap{max-width:none;padding:0}
+    .sec{border:none;background:none;margin:0 0 3mm}
+    .sechead{background:none;border-bottom:1px solid var(--acc);padding:0 0 1mm}
+    .sechead .t{color:#8B1A1A}
+    h2.bloc{color:#8B1A1A;border-color:#8B1A1A}
+    .intro,.snote,.sfoot,.leg{background:#faf7f1;color:#5a524a}
+    th{position:static;background:#2a1414;color:#f0e8d8;border:none}
+    td{border-bottom:1px solid #ddd6ca}
+    tr.off td{color:#5a524a}
+    .item{border-bottom:none;padding:.5mm 0}
+    .sec.closed .secbody,.sec.closed .snote,.sec.closed .sfoot{display:block}
+  }
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<div class="bar">
+  <a class="retour" href="index-mj.html" title="Retour à l'espace MJ">◂ MJ</a>
+  <h1><span>Artisanat</span> : cuir, bois, tissu, verre</h1>
+  <input type="search" id="q" placeholder="Filtrer…">
+  <button id="b-fold">Replier tout</button>
+  <button id="b-tab">+ Tableau</button>
+  <button id="b-txt">+ Texte</button>
+  <button id="b-leg">+ Légende</button>
+  <button id="b-push" title="Publier la version du fichier vers la base en ligne. Le fichier fait autorité.">Push</button>
+  <button id="b-print" class="pri">PDF</button>
+  <span class="sync-flag" id="flag"></span>
+</div>
+
+<div class="wrap" id="app"></div>
+<div id="tip"></div>
+
+<script>
+var DEFAUT = {"sections": [{"kind": "texte", "title": "Le moteur commun", "note": "", "items": ["Toutes les spécialisations fonctionnent de la même façon. Ce qui change est la matière, l'atelier et ce qu'on peut en tirer.", "Fabriquer. Test étendu de Métier dans la bonne spécialisation, un jet par période de travail, jusqu'au nombre de DR requis par la complexité. Matières premières : la moitié du prix de vente, perdues en cas d'abandon.", "Réparer. Complexité inférieure d'un cran à celle de la fabrication, un quart du prix en matières. Une pièce réparée trois fois ne se répare plus.", "Finir. Teinture, cirage, doublure, gravure. Un DR de moins que la fabrication, deux finitions au maximum par objet, chacune avec sa contrepartie.", "Expertiser. Un test de Métier ou d'Évaluation dit d'où vient un objet, qui l'a fait et ce qu'il vaut. C'est l'apport d'enquête de tous ces métiers, et souvent le plus utile en jeu.", "Improviser. Un seul jet à −20, avec ce qu'on a. Le résultat est Fragile et n'accepte aucune finition.", "Sans Outils de profession, tout test subit au minimum −20. Un atelier fixe donne +10, un campement −20, et plafonne à la complexité 2. Une Maladresse ruine les matières et déclenche la table des incidents."], "foot": ""}, {"kind": "table", "title": "Complexité, tous métiers confondus", "note": "", "cols": ["Complexité", "DR requis", "Par tentative", "Matières", "Exemples toutes spécialisations"], "rows": [{"c": ["1 · Simple", "2", "1 heure", "Commune", "Courroie, cuillère, sac de toile, cordage, bougie, réparation grossière"], "off": false}, {"c": ["2 · Soignée", "4", "4 heures", "Commune", "Bottes, veste de cuir, coffre, chemise, panier, flacon soufflé"], "off": false}, {"c": ["3 · Précise", "6", "2 jours", "Limitée", "Selle, arbalète en bois, manteau de statut, vitrail simple, bijou d'argent"], "off": false}, {"c": ["4 · Complexe", "8", "1 semaine", "Rare", "Harnachement complet, chariot, robe de cour, lentille, sceau gravé"], "off": false}, {"c": ["5 · Exceptionnelle", "12", "1 mois", "Exotique", "Carrosse, vitrail de temple, parure nobiliaire, pièce d'apparat signée"], "off": false}], "foot": ""}, {"kind": "table", "title": "Échelons de la carrière d'artisan", "note": "", "cols": ["Échelon", "Titre", "Travaux reconnus", "Autorisations et limites"], "rows": [{"c": ["1", "Apprenti artisan", "Complexité 1 et 2, préparation des matières, réparations courantes", "Travaille sous la marque d'un maître, ne vend pas en son nom"], "off": false}, {"c": ["2", "Artisan", "Complexité 3, finitions, vente au détail, tenue d'un établi", "Affiliation à la guilde, marque personnelle, achat de matières réglementées"], "off": false}, {"c": ["3", "Maître artisan", "Complexité 4, commandes sur mesure, formation d'apprentis, expertise devant un tribunal", "Peut marquer le travail d'autrui et accepter une commande nobiliaire"], "off": false}, {"c": ["4", "Maître de guilde", "Complexité 5, pièces d'apparat, direction d'un atelier collectif", "Fixe les prix locaux, répond des malfaçons de ses affiliés"], "off": false}], "foot": ""}, {"kind": "table", "title": "Cuir et peaux", "note": "Métier (Tanneur) pour préparer la peau, Métier (Sellier) ou (Cordonnier) pour la travailler. Le tannage empeste : les tanneries sont toujours en aval de la ville, et le personnage sent ce qu'il fait.", "cols": ["Production", "Prix", "DR", "Temps", "Intérêt en jeu"], "rows": [{"c": ["Peau tannée (par pièce)", "10/–", "2", "1 semaine de bain", "Matière première de tout le reste, y compris des armures du forgeron"], "off": false}, {"c": ["Bottes de marche", "1CO", "4", "4 heures", "Sans bottes correctes, un malus aux tests d'Endurance en voyage prolongé"], "off": false}, {"c": ["Veste de cuir", "1CO", "4", "1 jour", "1 PA au torse et aux bras. L'armure la plus répandue de l'Empire"], "off": false}, {"c": ["Cuir clouté (avec un forgeron)", "2CO", "6", "2 jours", "2 PA. Demande le rivetage d'un forgeron, donc deux métiers"], "off": false}, {"c": ["Ceinturon, baudrier, fourreau", "12/–", "2", "2 heures", "Un fourreau ajusté protège la lame : évite l'usure entre deux affûtages"], "off": false}, {"c": ["Sacoches et besace", "15/–", "4", "4 heures", "Enc transporté augmenté de 1 sans pénalité"], "off": false}, {"c": ["Outre et gourde cousue", "8/–", "2", "2 heures", "Deux jours d'eau. Indispensable hors des routes"], "off": false}, {"c": ["Selle et harnais", "2CO", "6", "3 jours", "+10 aux tests de Chevaucher si ajustée à la monture"], "off": false}, {"c": ["Manteau huilé", "1CO 10/–", "6", "1 jour", "+10 aux tests de Résistance contre la pluie et le froid"], "off": false}, {"c": ["Étui à parchemins étanche", "10/–", "4", "2 heures", "Protège documents et cartes. Précieux pour un répurgateur ou un érudit"], "off": false}, {"c": ["Masque de cuir bouilli", "1CO", "6", "1 jour", "1 PA à la tête et un visage qu'on n'oublie pas"], "off": false}, {"c": ["Muselière et laisses renforcées", "12/–", "4", "3 heures", "Pour chiens de guerre, ou pour un prisonnier qui mord"], "off": false}], "foot": ""}, {"kind": "table", "title": "Bois", "note": "Métier (Charpentier) pour la structure, (Menuisier) pour le meuble, (Tonnelier) pour le contenant, (Fléchier) pour les traits. Le bois est la seule matière qu'on trouve partout, ce qui fait du charpentier l'artisan le plus utile en expédition.", "cols": ["Production", "Prix", "DR", "Temps", "Intérêt en jeu"], "rows": [{"c": ["Hampes, manches, crosses", "5/–", "2", "1 heure", "Remet en service une arme dont le bois a cassé"], "off": false}, {"c": ["Flèches et carreaux (12)", "5/–", "2", "2 heures", "Autonomie en munitions loin des villes, avec l'aide d'un forgeron pour les pointes"], "off": false}, {"c": ["Arc ou arbalète en fût", "4CO", "6", "3 jours", "Fabrication complète, hors mécanisme métallique"], "off": false}, {"c": ["Bouclier de bois cerclé", "1CO", "4", "1 jour", "Le consommable de la mêlée : il casse, on en refait"], "off": false}, {"c": ["Échelle, passerelle, étai", "12/–", "2", "3 heures", "Franchir un mur, étayer une galerie, traverser une brèche"], "off": false}, {"c": ["Coffre à serrure", "1CO 10/–", "4", "1 jour", "Crochetage à −10 avec une serrure de forgeron"], "off": false}, {"c": ["Tonneau ou barrique", "1CO", "4", "1 jour", "Transport de liquides, et cachette classique pour tout autre chose"], "off": false}, {"c": ["Civière et attelle", "6/–", "2", "1 heure", "+10 aux tests de Guérison sur un membre brisé, et de quoi transporter un blessé"], "off": false}, {"c": ["Cercueil", "1CO", "4", "1 jour", "Denrée de première nécessité en Averland, et l'entrée du charpentier chez Morr"], "off": false}, {"c": ["Charrette", "8CO", "6", "1 semaine", "Transport de charge lourde. Une roue cassée en pleine campagne est une scène entière"], "off": false}, {"c": ["Palissade et chevaux de frise", "3CO", "6", "2 jours", "Fortification d'un campement : les assaillants perdent leur bonus de charge"], "off": false}, {"c": ["Chariot ou carrosse", "60CO", "12", "1 mois", "Pièce de prestige, ou base roulante pour une campagne itinérante"], "off": false}], "foot": ""}, {"kind": "table", "title": "Tissu et vêtement", "note": "Métier (Tailleur), (Couturière), (Chapelier). En Empire, le vêtement est le premier indicateur de rang : c'est le métier qui achète littéralement du Statut.", "cols": ["Production", "Prix", "DR", "Temps", "Intérêt en jeu"], "rows": [{"c": ["Vêtements de paysan", "8/–", "2", "3 heures", "Tenue neutre, utile pour ne pas se faire remarquer dans un village"], "off": false}, {"c": ["Vêtements de bourgeois", "1CO 10/–", "4", "1 jour", "Nécessaires pour être reçu. Sans eux, malus aux tests sociaux en ville"], "off": false}, {"c": ["Tenue de qualité", "8CO", "6", "3 jours", "Vaut un cran de Statut apparent pour la durée d'une visite"], "off": false}, {"c": ["Robe ou habit de cour", "30CO", "8", "2 semaines", "Deux crans de Statut apparent, et une entrée dans des lieux fermés"], "off": false}, {"c": ["Manteau de voyage", "1CO", "4", "1 jour", "+10 aux tests de Résistance par mauvais temps"], "off": false}, {"c": ["Cape sombre doublée", "1CO 10/–", "4", "1 jour", "+10 aux tests de Discrétion de nuit"], "off": false}, {"c": ["Livrée ou uniforme", "2CO", "6", "2 jours", "Passer pour un serviteur, un milicien ou un messager. Le costume fait la moitié du travail"], "off": false}, {"c": ["Vêtement à doublure secrète", "2CO", "6", "2 jours", "Une fouille sommaire ne trouve rien : test de Perception à −20"], "off": false}, {"c": ["Toile de tente", "3CO", "4", "2 jours", "Nuit sèche en extérieur : évite les tests de Résistance nocturnes"], "off": false}, {"c": ["Bâche, sacs, voiles", "1CO", "2", "4 heures", "Protéger un chargement, une cargaison, un bateau"], "off": false}, {"c": ["Linceul et tenture de deuil", "12/–", "2", "2 heures", "Commande courante, et un pied dans toutes les maisons endeuillées"], "off": false}], "foot": ""}, {"kind": "table", "title": "Verre et lentilles", "note": "Métier (Verrier). Un four est indispensable, donc pas de verrerie en campagne. Métier rare, souvent urbain, et l'un des rares à intéresser directement un ingénieur ou un apothicaire.", "cols": ["Production", "Prix", "DR", "Temps", "Intérêt en jeu"], "rows": [{"c": ["Fioles et flacons (dizaine)", "10/–", "4", "4 heures", "Contenants indispensables à l'apothicaire, consommables à chaque usage"], "off": false}, {"c": ["Verrerie d'alambic", "3CO", "6", "2 jours", "Remplace les outils cassés par un incident de laboratoire"], "off": false}, {"c": ["Vitre de fenêtre", "1CO", "4", "1 jour", "Signe de richesse. Une fenêtre vitrée dans un village se remarque"], "off": false}, {"c": ["Miroir de main", "2CO", "6", "1 jour", "Regarder au coin d'un couloir, ou faire face à ce qu'il vaut mieux ne pas regarder"], "off": false}, {"c": ["Lentille taillée", "8CO", "8", "3 jours", "Pièce maîtresse d'une longue-vue : l'ingénieur en a besoin"], "off": false}, {"c": ["Besicles", "10CO", "8", "3 jours", "Annule le malus de vue d'un personnage âgé ou usé par les livres"], "off": false}, {"c": ["Vitrail simple", "15CO", "8", "1 semaine", "Commande de temple. Une scène religieuse peut y être discrètement modifiée"], "off": false}, {"c": ["Vitrail de sanctuaire", "80CO", "12", "1 mois", "Œuvre d'une vie, et une place assurée dans la mémoire d'une ville"], "off": false}], "foot": ""}, {"kind": "table", "title": "Métaux fins et gravure", "note": "Métier (Orfèvre), (Bijoutier), (Graveur). Métier du Statut et de la preuve : sceaux, poinçons, chevalières, tout ce qui atteste une identité.", "cols": ["Production", "Prix", "DR", "Temps", "Intérêt en jeu"], "rows": [{"c": ["Bijou de cuivre ou d'étain", "12/–", "2", "2 heures", "Colifichet, symbole religieux courant, cadeau de peu de valeur"], "off": false}, {"c": ["Symbole religieux en fer noirci", "10/–", "2", "2 heures", "Signe de dévotion privée, mat, qui ne trahit pas son porteur la nuit"], "off": false}, {"c": ["Bijou d'argent", "3CO", "6", "1 jour", "Vaut un cran de Statut apparent, et se troque partout"], "off": false}, {"c": ["Chevalière gravée", "6CO", "8", "2 jours", "Sceau personnel. Sceller une lettre engage celui dont c'est le sceau"], "off": false}, {"c": ["Matrice de sceau officiel", "12CO", "8", "3 jours", "Outil de pouvoir administratif, et de faux documents entre de mauvaises mains"], "off": false}, {"c": ["Poinçon de guilde", "8CO", "8", "2 jours", "Permet de marquer des pièces. Le contrefaire est un crime grave"], "off": false}, {"c": ["Reliquaire", "15CO", "8", "1 semaine", "Contenant consacré. Un temple paiera, et voudra savoir ce qu'on y met"], "off": false}, {"c": ["Parure nobiliaire", "60CO", "12", "1 mois", "Deux crans de Statut apparent, et une cible pour tous les voleurs de la province"], "off": false}, {"c": ["Argenture d'un objet", "×10", "6", "1 jour", "Donne l'atout Argentée. Travail partagé avec le forgeron"], "off": false}], "foot": ""}, {"kind": "table", "title": "Finitions communes", "note": "", "cols": ["Finition", "Surcoût", "DR", "Effet et contrepartie"], "rows": [{"c": ["Teinture", "×1,5", "4", "Couleur au choix. Une teinture sombre donne +10 en Discrétion nocturne, une couleur vive attire l'œil"], "off": false}, {"c": ["Cirage et huilage", "×1,5", "4", "L'objet résiste à l'eau et dure deux fois plus longtemps. À refaire chaque saison"], "off": false}, {"c": ["Doublure", "×2", "6", "+10 aux tests de Résistance au froid, ou une poche secrète. Enc +1"], "off": false}, {"c": ["Renfort", "×2", "6", "L'objet ne casse plus sur une Maladresse. Enc +1"], "off": false}, {"c": ["Allègement", "×3", "8", "Enc réduit de 1. L'objet devient Fragile"], "off": false}, {"c": ["Gravure ou broderie", "×3", "8", "Aucun effet mécanique, un cran de Statut apparent. Identifie aussi son propriétaire"], "off": false}, {"c": ["Marque d'artisan", "–", "6", "Double le prix de revente, engage la responsabilité du signataire, et rend l'objet traçable"], "off": false}, {"c": ["Sur mesure", "×1,5", "6", "+10 à un test lié à l'usage de l'objet par son propriétaire. Inutilisable confortablement par un autre"], "off": false}], "foot": ""}, {"kind": "table", "title": "Quand ça tourne mal", "note": "Sur une Maladresse à un test de Métier, jeter 1d10. Les matières sont perdues dans tous les cas. Un artisan travaillant dans son propre atelier avec ses propres matières soustrait 2, minimum 1.", "cols": ["1d10", "Incident"], "rows": [{"c": ["1", "Pièce manquée. Du temps et de la matière perdus, rien d'autre"], "off": false}, {"c": ["2", "Défaut caché. L'objet paraît réussi et gagne Fragile sans que personne le sache"], "off": false}, {"c": ["3", "Mesures fausses. L'objet est inutilisable par son destinataire, mais vendable à un autre"], "off": false}, {"c": ["4", "Coupure ou piqûre. 1d10 dégâts à la main, armure inapplicable"], "off": false}, {"c": ["5", "Teinture ou colle renversée. Une autre pièce en cours dans l'atelier est ruinée"], "off": false}, {"c": ["6", "Outils brisés. −10 aux tests jusqu'à remplacement : un jour de travail et 1 CO"], "off": false}, {"c": ["7", "Matière gâtée. Tout le stock de la matière employée est perdu"], "off": false}, {"c": ["8", "Vapeurs ou poussières. Test d'Endurance ou état Nauséeux jusqu'au lendemain. Le tannage et le verre sont les pires"], "off": false}, {"c": ["9", "Accident sérieux. Blessure Critique légère à la main ou au bras, selon la matière travaillée"], "off": false}, {"c": ["10", "Sinistre. Four fendu, cuve renversée, feu à l'établi. L'atelier est inutilisable pendant 1d10 jours"], "off": false}], "foot": ""}, {"kind": "texte", "title": "Atelier, guilde et clientèle", "note": "", "items": ["Revenus. Un établi tenu une semaine complète rapporte 1 CO par DR obtenu à un test de Métier. Les jours de foire doublent la mise, la morte-saison la réduit de moitié.", "Guilde. Affiliation de 2 à 3 CO par an selon le métier : accès aux fournisseurs, droit d'enseigner, marque personnelle. Travailler en ville sans affiliation entraîne saisie et amende.", "Matières réglementées. Le sel, l'argent, le plomb et le verre sont taxés. Un artisan qui s'approvisionne au marché noir gagne un tiers du prix et un créancier peu recommandable.", "Marque. Comme le poinçon du forgeron ou le registre de l'apothicaire, elle transforme un objet en témoignage. Une sacoche marquée retrouvée sur une scène de crime mène à son fabricant, donc à son client.", "Prix du travail. L'artisan facture la moitié du prix en main-d'œuvre. Un personnage qui fabrique lui-même ne paie que les matières : c'est l'avantage concret et permanent du métier."], "foot": ""}, {"kind": "texte", "title": "Notes de MJ", "note": "", "items": ["Fais consommer le matériel. Bottes usées, fourreaux fendus, flacons brisés, cordages pourris. Sans usure, aucun artisan n'a d'utilité ; avec une usure raisonnable, il devient précieux sans qu'on ait à inventer de scènes pour lui.", "Le vêtement est un pouvoir. Autoriser un tailleur à donner un cran de Statut apparent pour une soirée résout des scènes entières et ne déséquilibre rien, puisque l'imposture reste vérifiable.", "Croise les métiers. Le cuir clouté demande un tanneur et un forgeron, la longue-vue un verrier et un ingénieur, les flèches un fléchier et un forgeron. Deux artisans à la table valent mieux qu'un, et ça crée de la coopération.", "Deux finitions maximum par objet, sinon tout finit teint, doublé, renforcé, allégé et gravé.", "Le temps reste la limite. Une semaine d'établi est une semaine sans le personnage sur le terrain."], "foot": ""}, {"kind": "texte", "title": "Résumé pour le joueur, en cinq lignes", "note": "", "items": ["Ta compétence clé est Métier dans ta spécialisation, tes outils sont obligatoires et un atelier fixe débloque tout ce qui dépasse la complexité 2. Le moteur est le même pour tous les métiers de matière : test étendu, DR selon la complexité, moitié du prix en matières. Tu ne paies jamais la main-d'œuvre, ce qui divise par deux l'équipement du groupe. Tes finitions sont ta signature : teinture, doublure, sur mesure, marque. Et ton savoir sert autant à fabriquer qu'à reconnaître : dis-moi qui a fait cette sacoche, et je te dirai d'où vient l'homme qui la portait."], "foot": ""}], "legend": [{"off": false, "term": "Fragile", "def": "L'objet casse sur une Maladresse lors de son usage."}, {"off": false, "term": "Sur mesure", "def": "Ajusté à une personne : +10 à un test lié, malus ou inconfort pour tout autre porteur."}, {"off": false, "term": "Statut apparent", "def": "Rang que l'apparence laisse supposer. Se vérifie, se démasque, et ne remplace pas le vrai Statut."}, {"off": false, "term": "Marque d'artisan", "def": "Signature garantissant l'origine. Double la revente et rend l'objet traçable."}, {"off": false, "term": "Argentée", "def": "Blesse normalement les créatures que seules les armes d'argent ou magiques peuvent atteindre."}, {"off": false, "term": "Enc", "def": "Encombrement, tel que défini par les règles de charge."}, {"off": false, "term": "Nauséeux", "def": "−10 à tous les tests jusqu'à la fin de la journée, cumulable une seule fois."}], "intro": "Avertissement. Document entièrement maison. Le livre donne la compétence Métier avec ses spécialisations et le prix des objets finis, sans temps de travail, sans coût de matière et sans notion de qualité obtenue. Ce guide applique aux métiers de matière le moteur déjà utilisé pour l'ingénieur, l'apothicaire, la forge et la cuisine, afin qu'un seul système couvre tout l'artisanat de ta table. La forge a son propre document, plus détaillé, parce qu'elle touche directement à l'équipement de combat."};
+var RACINE = 'outils/artisanat';
+var CACHE  = 'artisanat_cache_v1';
+var CLIENT = Math.random().toString(36).slice(2, 10);
+var data = null;
+
+var FB_CONFIG = {
+  apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+  authDomain: "warhammer-table-jdr.firebaseapp.com",
+  databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "warhammer-table-jdr",
+  storageBucket: "warhammer-table-jdr.firebasestorage.app",
+  messagingSenderId: "347804803970",
+  appId: "1:347804803970:web:43e062299c53e59d20e59b"
+};
+
+var db = null, refData = null, refSave = null;
+try{
+  if(typeof firebase !== 'undefined'){
+    if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+    db = firebase.database();
+    refData = db.ref(RACINE + '/donnees');
+    refSave = db.ref(RACINE + '/sauvegardes');
+  }
+}catch(e){ console.warn('Firebase indisponible :', e); }
+
+/* ---------- indicateur d'état ---------- */
+var flag = document.getElementById('flag');
+var flagTimer = null;
+function etat(txt, cls){
+  if(!flag) return;
+  clearTimeout(flagTimer);
+  flag.textContent = txt;
+  flag.className = 'sync-flag ' + (cls || '');
+  if(cls === 'ok') flagTimer = setTimeout(function(){ flag.textContent = ''; flag.className = 'sync-flag'; }, 2600);
+}
+
+/* ---------- Firebase efface les tableaux vides : on remet tout d'aplomb ---------- */
+function tab(x){
+  if(Array.isArray(x)) return x;
+  if(x && typeof x === 'object'){
+    var k = Object.keys(x).sort(function(a,b){ return a - b; }), o = [];
+    for(var i = 0; i < k.length; i++) o.push(x[k[i]]);
+    return o;
+  }
+  return [];
+}
+
+/* ---------- lecture initiale : cache local, puis la base fait autorité ---------- */
+function charger(){
+  try{
+    var brut = localStorage.getItem(CACHE);
+    if(brut){ data = normaliser(JSON.parse(brut)); }
+  }catch(e){}
+  if(!data) data = normaliser(JSON.parse(JSON.stringify(DEFAUT)));
+}
+function cacher(){
+  try{ localStorage.setItem(CACHE, JSON.stringify(data)); }catch(e){}
+}
+
+/* ---------- écriture groupée ---------- */
+var tmr = null, sale = false;
+function sauver(){
+  sale = true;
+  etat('modifié', 'pending');
+  cacher();
+  clearTimeout(tmr);
+  tmr = setTimeout(ecrire, 900);
+}
+function ecrire(){
+  if(!refData){ etat('hors ligne', 'err'); return; }
+  etat('envoi…', 'pending');
+  refData.set({ payload: data, at: Date.now(), par: CLIENT }).then(function(){
+    sale = false;
+    etat('enregistré', 'ok');
+  }).catch(function(e){
+    console.warn('Écriture échouée :', e);
+    etat('échec réseau', 'err');
+    clearTimeout(tmr);
+    tmr = setTimeout(ecrire, 4000);
+  });
+}
+
+/* ---------- écoute en direct ---------- */
+var enAttente = null;
+function enEdition(){
+  var a = document.activeElement;
+  return !!(a && a.isContentEditable);
+}
+function appliquer(p){
+  data = normaliser(p);
+  cacher();
+  rendre();
+  etat('à jour', 'ok');
+}
+if(refData){
+  refData.on('value', function(sn){
+    var v = sn.val();
+    if(!v || !v.payload) return;
+    if(v.par === CLIENT) return;
+    if(sale || enEdition()){ enAttente = v.payload; return; }
+    appliquer(v.payload);
+  }, function(e){ console.warn('Lecture impossible :', e); etat('hors ligne', 'err'); });
+}
+document.addEventListener('focusout', function(){
+  setTimeout(function(){
+    if(enAttente && !sale && !enEdition()){ var p = enAttente; enAttente = null; appliquer(p); }
+  }, 300);
+});
+
+/* ---------- publication du fichier vers la base ---------- */
+function pousserFichier(){
+  if(!refData){ alert('Hors ligne : publication impossible.'); return; }
+  if(!confirm(
+    'Publier la version du fichier vers la base ?\n\n' +
+    'Tout ce qui a été modifié en ligne sans être réintégré au fichier sera remplacé.\n' +
+    "L'état actuel de la base est sauvegardé avant écriture."
+  )) return;
+  var b = document.getElementById('b-push');
+  if(b) b.setAttribute('disabled', 'disabled');
+  etat('sauvegarde…', 'pending');
+  refData.once('value').then(function(sn){
+    var avant = sn.val();
+    if(!avant || !refSave) return null;
+    return refSave.child(String(Date.now())).set(avant);
+  }).catch(function(e){ console.warn('Sauvegarde impossible :', e); })
+  .then(function(){
+    etat('publication…', 'pending');
+    data = normaliser(JSON.parse(JSON.stringify(DEFAUT)));
+    return refData.set({ payload: data, at: Date.now(), par: CLIENT });
+  }).then(function(){
+    sale = false;
+    cacher();
+    rendre();
+    if(b) b.removeAttribute('disabled');
+    etat('publié', 'ok');
+  }).catch(function(e){
+    console.warn('Publication échouée :', e);
+    if(b) b.removeAttribute('disabled');
+    etat('publication refusée', 'err');
+  });
+}
+
+
+/* ---------- remise en forme après lecture ---------- */
+function normaliser(d){
+  if(!d || typeof d !== 'object') return JSON.parse(JSON.stringify(DEFAUT));
+  d.intro = d.intro || '';
+  d.sections = tab(d.sections);
+  for(var i = 0; i < d.sections.length; i++){
+    var s = d.sections[i];
+    s.kind = s.kind || 'texte';
+    s.title = s.title || '';
+    s.note = s.note || '';
+    s.foot = s.foot || '';
+    if(s.kind === 'table'){
+      s.cols = tab(s.cols);
+      s.rows = tab(s.rows);
+      for(var r = 0; r < s.rows.length; r++){
+        s.rows[r] = s.rows[r] || {};
+        s.rows[r].c = tab(s.rows[r].c);
+        s.rows[r].off = !!s.rows[r].off;
+      }
+    } else {
+      s.items = tab(s.items);
+    }
+  }
+  d.legend = tab(d.legend);
+  for(var l = 0; l < d.legend.length; l++){
+    d.legend[l] = d.legend[l] || {};
+    d.legend[l].term = d.legend[l].term || '';
+    d.legend[l].def = d.legend[l].def || '';
+    d.legend[l].off = !!d.legend[l].off;
+  }
+  return d;
+}
+
+
+function esc(s){
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function classeCol(nom){
+  var n = (nom || '').toLowerCase();
+  if(n.indexOf('enc') === 0 || n.indexOf('dr') === 0 || n.indexOf('éch') === 0 || n.indexOf('serv') === 0) return 'c';
+  return '';
+}
+
+function rendre(){
+  var h = '';
+  h += '<div class="intro" contenteditable data-t="intro">' + esc(data.intro || '') + '</div>';
+
+  for(var si = 0; si < data.sections.length; si++){
+    var s = data.sections[si];
+    var n = (s.kind === 'table') ? s.rows.length : s.items.length;
+    h += '<div class="sec" data-s="' + si + '">';
+    h += '<div class="sechead">';
+    h +=   '<button data-a="fold">▾</button>';
+    h +=   '<span class="t" contenteditable data-t="st" data-s="' + si + '">' + esc(s.title) + '</span>';
+    h +=   '<span class="n">' + n + '</span>';
+    h +=   '<button data-a="up">↑</button><button data-a="down">↓</button>';
+    h +=   '<button data-a="delsec">Supprimer</button>';
+    h += '</div>';
+    h += '<div class="snote" contenteditable data-t="sn" data-s="' + si + '">' + esc(s.note || '') + '</div>';
+    h += '<div class="secbody">';
+
+    if(s.kind === 'table'){
+      h += '<table><thead><tr>';
+      for(var ci = 0; ci < s.cols.length; ci++)
+        h += '<th contenteditable data-t="col" data-s="' + si + '" data-c="' + ci + '">' + esc(s.cols[ci]) + '</th>';
+      h += '<th></th></tr></thead><tbody>';
+      for(var ri = 0; ri < s.rows.length; ri++){
+        var r = s.rows[ri];
+        h += '<tr' + (r.off ? ' class="off"' : '') + ' data-r="' + ri + '">';
+        for(var k = 0; k < s.cols.length; k++){
+          var mot = (s.cols[k] || '').toLowerCase();
+          var cle = (mot.indexOf('atout') === 0 || mot.indexOf('mots') >= 0 || mot.indexOf('effet') === 0) ? ' data-atout="1"' : '';
+          h += '<td class="' + classeCol(s.cols[k]) + '" contenteditable data-t="cell" data-lab="' + esc(s.cols[k]) +
+               '" data-s="' + si +
+               '" data-r="' + ri + '" data-c="' + k + '"' + cle + '>' + esc(r.c[k] === undefined ? '' : r.c[k]) + '</td>';
+        }
+        h += '<td class="acts"><button data-a="off" title="Ligne du livre">★</button>' +
+             '<button data-a="dup" title="Dupliquer">⧉</button>' +
+             '<button data-a="del" title="Supprimer">✕</button></td></tr>';
+      }
+      h += '</tbody></table><button class="addrow" data-a="addrow">+ Ligne</button>';
+    } else {
+      h += '<div class="items">';
+      for(var ii = 0; ii < s.items.length; ii++){
+        h += '<div class="item" data-i="' + ii + '"><span class="puce">◆</span>' +
+             '<div class="txt" contenteditable data-t="item" data-s="' + si + '" data-i="' + ii + '">' + esc(s.items[ii]) + '</div>' +
+             '<span class="acts"><button data-a="upitem">↑</button><button data-a="delitem">✕</button></span></div>';
+      }
+      h += '</div><button class="addrow" data-a="additem">+ Paragraphe</button>';
+    }
+    h += '</div>';
+    h += '<div class="sfoot" contenteditable data-t="sf" data-s="' + si + '">' + esc(s.foot || '') + '</div>';
+    h += '</div>';
+  }
+
+  if(data.legend && data.legend.length){
+    h += '<h2 class="bloc">Légende</h2><div class="legwrap">';
+    for(var li = 0; li < data.legend.length; li++){
+      var L = data.legend[li];
+      h += '<div class="leg ' + (L.off ? 'of' : 'mai') + '" data-l="' + li + '">';
+      h += '<span class="acts2"><button data-a="legoff">★</button><button data-a="legdel">✕</button></span>';
+      h += '<span class="term" contenteditable data-t="lt" data-l="' + li + '">' + esc(L.term) + '</span>. ';
+      h += '<span class="df" contenteditable data-t="ld" data-l="' + li + '">' + esc(L.def) + '</span></div>';
+    }
+    h += '</div>';
+  }
+  h += '<p class="hint">Tout est modifiable : cliquer et écrire. Synchronisation automatique avec la base en ligne, sans rien à valider. Survoler une cellule d\'effet affiche les définitions reconnues.</p>';
+
+  document.getElementById('app').innerHTML = h;
+  indexerLegende();
+}
+
+document.addEventListener('input', function(e){
+  var el = e.target, t = el.getAttribute('data-t');
+  if(!t) return;
+  var s = +el.getAttribute('data-s'), r = +el.getAttribute('data-r'),
+      c = +el.getAttribute('data-c'), i = +el.getAttribute('data-i'), l = +el.getAttribute('data-l');
+  var v = el.textContent;
+  if(t === 'intro') data.intro = v;
+  else if(t === 'st') data.sections[s].title = v;
+  else if(t === 'sn') data.sections[s].note = v;
+  else if(t === 'sf') data.sections[s].foot = v;
+  else if(t === 'col') data.sections[s].cols[c] = v;
+  else if(t === 'cell') data.sections[s].rows[r].c[c] = v;
+  else if(t === 'item') data.sections[s].items[i] = v;
+  else if(t === 'lt'){ data.legend[l].term = v; indexerLegende(); }
+  else if(t === 'ld'){ data.legend[l].def = v; indexerLegende(); }
+  sauver();
+});
+
+document.addEventListener('keydown', function(e){
+  var el = e.target;
+  if(e.key === 'Enter' && el.hasAttribute && el.hasAttribute('contenteditable')){
+    if(el.classList && el.classList.contains('txt')) return; /* paragraphes : saut de ligne permis */
+    e.preventDefault(); el.blur();
+  }
+});
+
+document.addEventListener('click', function(e){
+  var b = e.target.closest ? e.target.closest('button[data-a]') : null;
+  if(!b) return;
+  var a = b.getAttribute('data-a');
+  var sec = b.closest('.sec'), tr = b.closest('tr'), it = b.closest('.item'), leg = b.closest('.leg');
+
+  if(a === 'fold'){ sec.classList.toggle('closed'); return; }
+  if(leg){
+    var l = +leg.getAttribute('data-l');
+    if(a === 'legdel'){ data.legend.splice(l,1); sauver(); rendre(); return; }
+    if(a === 'legoff'){ data.legend[l].off = !data.legend[l].off; sauver(); rendre(); return; }
+  }
+  if(!sec) return;
+  var si = +sec.getAttribute('data-s'), S = data.sections[si];
+
+  if(a === 'addrow'){
+    var vide = []; for(var i = 0; i < S.cols.length; i++) vide.push('');
+    S.rows.push({c:vide, off:false}); sauver(); rendre(); return;
+  }
+  if(a === 'additem'){ S.items.push('Nouveau paragraphe.'); sauver(); rendre(); return; }
+  if(a === 'delsec'){
+    if(confirm('Supprimer la section « ' + S.title + ' » ?')){ data.sections.splice(si,1); sauver(); rendre(); }
+    return;
+  }
+  if(a === 'up' || a === 'down'){
+    var d = (a === 'up') ? -1 : 1, n = si + d;
+    if(n >= 0 && n < data.sections.length){
+      var tmp = data.sections[si]; data.sections[si] = data.sections[n]; data.sections[n] = tmp;
+      sauver(); rendre();
+    }
+    return;
+  }
+  if(tr){
+    var r = +tr.getAttribute('data-r');
+    if(a === 'del'){ S.rows.splice(r,1); sauver(); rendre(); return; }
+    if(a === 'dup'){ S.rows.splice(r+1,0, JSON.parse(JSON.stringify(S.rows[r]))); sauver(); rendre(); return; }
+    if(a === 'off'){ S.rows[r].off = !S.rows[r].off; sauver(); rendre(); return; }
+  }
+  if(it){
+    var ii = +it.getAttribute('data-i');
+    if(a === 'delitem'){ S.items.splice(ii,1); sauver(); rendre(); return; }
+    if(a === 'upitem' && ii > 0){
+      var t2 = S.items[ii]; S.items[ii] = S.items[ii-1]; S.items[ii-1] = t2; sauver(); rendre(); return;
+    }
+  }
+});
+
+document.getElementById('b-tab').onclick = function(){
+  var modele = null;
+  for(var i = 0; i < data.sections.length; i++) if(data.sections[i].kind === 'table'){ modele = data.sections[i]; break; }
+  data.sections.push({kind:'table', title:'Nouveau tableau', note:'', foot:'',
+    cols: modele ? modele.cols.slice() : ['Objet','Coût','Disponibilité','Effet'], rows:[]});
+  sauver(); rendre();
+};
+document.getElementById('b-txt').onclick = function(){
+  data.sections.push({kind:'texte', title:'Nouvelle section', note:'', foot:'', items:['À rédiger.']});
+  sauver(); rendre();
+};
+document.getElementById('b-leg').onclick = function(){
+  if(!data.legend) data.legend = [];
+  data.legend.push({off:false, term:'Nouveau mot-clé', def:'Définition.'});
+  sauver(); rendre();
+  var els = document.querySelectorAll('.leg .term');
+  if(els.length) els[els.length-1].focus();
+};
+document.getElementById('b-fold').onclick = function(){
+  var secs = document.querySelectorAll('.sec');
+  var fermer = !document.querySelector('.sec.closed');
+  for(var i = 0; i < secs.length; i++) secs[i].classList.toggle('closed', fermer);
+  this.textContent = fermer ? 'Déplier tout' : 'Replier tout';
+};
+document.getElementById('b-print').onclick = function(){ window.print(); };
+document.getElementById('b-push').onclick = pousserFichier;
+
+document.getElementById('q').oninput = function(){
+  var q = this.value.trim().toLowerCase();
+  var secs = document.querySelectorAll('.sec');
+  for(var i = 0; i < secs.length; i++){
+    var lignes = secs[i].querySelectorAll('tbody tr, .item'), vis = 0;
+    for(var j = 0; j < lignes.length; j++){
+      var ok = !q || lignes[j].textContent.toLowerCase().indexOf(q) >= 0;
+      lignes[j].classList.toggle('hid', !ok);
+      if(ok) vis++;
+    }
+    var titreOk = secs[i].querySelector('.sechead .t').textContent.toLowerCase().indexOf(q) >= 0;
+    secs[i].classList.toggle('hid', !!q && vis === 0 && !titreOk);
+  }
+  var legs = document.querySelectorAll('.leg');
+  for(var k = 0; k < legs.length; k++)
+    legs[k].classList.toggle('hid', !!q && legs[k].textContent.toLowerCase().indexOf(q) < 0);
+};
+
+var IDX = {};
+function normal(t){
+  return t.toLowerCase().replace(/\s*\(.*?\)\s*/g,' ').replace(/\s+\d+\s*$/,'').replace(/[.,;:]+$/,'').trim();
+}
+function indexerLegende(){
+  IDX = {};
+  if(!data.legend) return;
+  for(var i = 0; i < data.legend.length; i++) IDX[normal(data.legend[i].term)] = data.legend[i];
+}
+var tip = document.getElementById('tip');
+document.addEventListener('mouseover', function(e){
+  var td = e.target.closest ? e.target.closest('td[data-atout]') : null;
+  if(!td || document.activeElement === td){ tip.style.display = 'none'; return; }
+  var parts = td.textContent.split(/[,.]/), out = '';
+  for(var i = 0; i < parts.length; i++){
+    var E = IDX[normal(parts[i])];
+    if(E) out += '<p><b>' + esc(E.term) + '.</b> ' + esc(E.def) + '</p>';
+  }
+  if(!out){ tip.style.display = 'none'; return; }
+  tip.innerHTML = out; tip.style.display = 'block';
+  var r = td.getBoundingClientRect();
+  var top = r.bottom + 6;
+  if(top + tip.offsetHeight > window.innerHeight) top = Math.max(6, r.top - tip.offsetHeight - 6);
+  tip.style.top = top + 'px';
+  tip.style.left = Math.min(r.left, window.innerWidth - tip.offsetWidth - 12) + 'px';
+});
+document.addEventListener('mouseout', function(e){
+  if(e.target.closest && e.target.closest('td[data-atout]')) tip.style.display = 'none';
+});
+
+charger();
+rendre();
+</script>
+</body>
+</html>

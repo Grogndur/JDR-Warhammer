@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maître du Jeu · Warhammer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0a0a0f; --parchment:#f0e8d8; --GLD:#B8922A; --GLD-LT:#e3c66e; --GLD-DK:#6e5418;
+    --SUB:#555566; --blood:#8B1A1A; --line:#2a2a35;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--ink);color:var(--parchment);font-family:'Crimson Text',serif;min-height:100vh}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse at 20% 40%, rgba(184,146,42,.10) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 15%, rgba(139,26,26,.10) 0%, transparent 55%),
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,.01) 2px, rgba(255,255,255,.01) 4px);}
+
+  nav{position:relative;z-index:2;padding:1rem 1.2rem;font-size:.82rem;letter-spacing:.06em;
+      border-bottom:1px solid var(--line)}
+  nav a{color:var(--GLD);text-decoration:none}
+  nav a:hover{color:var(--GLD-LT)}
+  nav .sep{color:var(--SUB);margin:0 .5rem}
+  nav .cur{font-family:'Cinzel',serif;text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;color:#9a917f}
+
+  .wrap{position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:2.2rem 1.2rem 5rem}
+
+  header{text-align:center;margin-bottom:.4rem}
+  header .eyebrow{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.24em;text-transform:uppercase;color:var(--GLD)}
+  header h1{font-family:'Cinzel',serif;font-size:2.5rem;font-weight:700;letter-spacing:.05em;margin:.5rem 0 .4rem}
+  header p{color:#a49a88;font-size:1rem;max-width:38rem;margin:0 auto}
+  .rule{width:60%;height:1px;margin:1.6rem auto 0;
+        background:linear-gradient(to right,transparent,var(--GLD),transparent)}
+
+  .section-title{font-family:'Cinzel',serif;font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;
+        color:var(--GLD);margin:2.4rem 0 .9rem;padding-bottom:.4rem;border-bottom:1px solid rgba(184,146,42,.28)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:1rem}
+
+  .card{display:flex;flex-direction:column;text-decoration:none;color:inherit;position:relative;
+        background:rgba(20,20,26,.85);border:1px solid var(--line);border-top:3px solid var(--GLD);
+        border-radius:3px;padding:1.15rem 1.1rem 1rem;transition:border-color .15s,background .15s,transform .15s}
+  .card:hover{background:rgba(184,146,42,.10);border-color:rgba(227,198,110,.45);transform:translateY(-2px)}
+  .card .sym{font-size:1.5rem;line-height:1;color:var(--GLD-LT);margin-bottom:.55rem}
+  .card .kind{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(200,165,90,.8)}
+  .card .name{font-family:'Cinzel',serif;font-size:1.06rem;font-weight:600;letter-spacing:.02em;margin:.25rem 0 .4rem}
+  .card .desc{font-size:.88rem;color:#a49a88;flex:1;line-height:1.4}
+  .card .go{margin-top:.8rem;align-self:flex-start;font-family:'Cinzel',serif;font-size:.64rem;letter-spacing:.12em;
+        text-transform:uppercase;padding:.3rem .6rem;border-radius:2px;
+        background:rgba(184,146,42,.14);color:var(--GLD-LT);border:1px solid rgba(184,146,42,.34)}
+  .card:hover .go{background:rgba(184,146,42,.28);border-color:rgba(227,198,110,.5)}
+
+  .card.creation{border-top-color:var(--blood)}
+  .card.creation .sym,.card.creation .go{color:#e0a09a}
+  .card.creation .go{background:rgba(139,26,26,.18);border-color:rgba(139,26,26,.45)}
+
+  footer{position:relative;z-index:2;text-align:center;color:var(--SUB);font-size:.78rem;padding:2rem 0 3rem}
+
+  /* ---------- porte ---------- */
+  .gate{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;
+        background:rgba(10,10,15,.97);padding:1.2rem}
+  .gate-card{max-width:26rem;text-align:center;border:1px solid var(--line);border-top:3px solid var(--GLD);
+        background:rgba(20,20,26,.92);padding:2rem 1.6rem;border-radius:3px}
+  .gate-card .lock{font-size:2rem;color:var(--GLD-LT)}
+  .gate-card h2{font-family:'Cinzel',serif;font-size:1.3rem;letter-spacing:.06em;margin:.7rem 0 .6rem}
+  .gate-card p{color:#a49a88;font-size:.9rem;margin-bottom:1.2rem}
+  .gate-card button{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+        background:rgba(184,146,42,.16);color:var(--GLD-LT);border:1px solid rgba(184,146,42,.4);
+        padding:.6rem 1.1rem;border-radius:2px;cursor:pointer}
+  .gate-card button:hover{background:rgba(184,146,42,.3)}
+  .gate-card a{display:block;margin-top:1rem;color:var(--SUB);font-size:.82rem;text-decoration:none}
+  .gate-card a:hover{color:var(--GLD)}
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <div class="lock">🔒</div>
+    <h2>Espace Maître du Jeu</h2>
+    <p>Outils de préparation réservés au meneur : créateur de carrières, compléments de règles, tables d'équipement.</p>
+    <button id="gate-btn" type="button">Entrer le mot de passe</button>
+    <a href="../index.html">Retour à l'accueil</a>
+  </div>
+</div>
+
+<div id="espace" class="hidden">
+
+  <nav>
+    <a href="../index.html">◂ Accueil</a>
+    <span class="sep">·</span>
+    <span class="cur">Maître du Jeu</span>
+  </nav>
+
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">Warhammer Fantasy Roleplay 4<sup>e</sup> édition</div>
+      <h1>Maître du Jeu</h1>
+      <p>Créateur de carrières, compléments de règles et tables d'équipement. Tout est éditable en ligne et synchronisé, et chaque page s'imprime en PDF pour la table.</p>
+      <div class="rule"></div>
+    </header>
+
+    <div class="section-title">Création</div>
+    <div class="grid">
+      <a class="card creation" href="carrieres.html">
+        <span class="sym">⚔</span>
+        <div class="kind">Créateur · Firebase</div>
+        <div class="name">Les carrières</div>
+        <div class="desc">Créer et gérer les carrières officielles et maison, échelon par échelon, avec description, statut et possessions. Export PDF pour les joueurs.</div>
+        <span class="go">Ouvrir →</span>
+      </a>
+    </div>
+
+    <div class="section-title">Compléments de règles</div>
+    <div class="grid">
+      <a class="card" href="Mener-une-Enquete.html">
+        <span class="sym">🔍</span>
+        <div class="kind">Système maison</div>
+        <div class="name">Mener une Enquête</div>
+        <div class="desc">Sources, faits, vérités établies, horloge de l'affaire, interrogatoires et apports des spécialistes.</div>
+        <span class="go">Ouvrir →</span>
+      </a>
+      <a class="card" href="Justice-de-l-Empire.html">
+        <span class="sym">⚖</span>
+        <div class="kind">Système maison</div>
+        <div class="name">Justice de l'Empire</div>
+        <div class="desc">Juridictions, mandats, infractions et peines, poids de preuve, procès en cinq passes, détention et évasion.</div>
+        <span class="go">Ouvrir →</span>
+      </a>
+      <a class="card" href="Voyages-et-Campements.html">
+        <span class="sym">🐎</span>
+        <div class="kind">Système maison</div>
+        <div class="name">Voyages et Campements</div>
+        <div class="desc">Allures, terrains, distances averlandaises, coûts, météo saisonnière, campements et incidents de route.</div>
+        <span class="go">Ouvrir →</span>
+      </a>
+    </div>
+
+    <div class="section-title">Équipement</div>
+    <div class="grid">
+      <a class="card" href="Armes-et-Munitions.html">
+        <span class="sym">🗡</span>
+        <div class="kind">Tables étendues</div>
+        <div class="name">Armes et Munitions</div>
+        <div class="desc">Corps à corps, armes à distance, munitions spéciales et légende complète des atouts et défauts.</div>
+        <span class="go">Ouvrir →</span>
+      </a>
+      <a class="card" href="Drogues-Poisons-Herbes-Potions.html">
+        <span class="sym">⚗</span>
+        <div class="kind">Tables étendues</div>
+        <div class="name">Drogues et Potions</div>
+        <div class="desc">Drogues, poisons, herbes et remèdes, potions et onctions, avec administration, doses et mots-clés.</div>
+        <span class="go">Ouvrir →</span>
+      </a>
+    </div>
+
+    <div class="section-title">Métiers</div>
+    <div class="grid">
+      <a class="card" href="Metier-Ingenieur.html">
+        <span class="sym">⚙</span>
+        <div class="kind">Guide de métier</div>
+        <div class="name">Ingénieur</div>
+        <div class="desc">Complexité, échelons, modifications d'armes, engins et pièges, machines de guerre, table d'incidents.</div>
+        <span class="go">Ouvrir →</span>
+      </a>
+      <a class="card" href="Metier-Apothicaire.html">
+        <span class="sym">🧪</span>
+        <div class="kind">Guide de métier</div>
+        <div class="name">Apothicaire</div>
+        <div class="desc">Matières premières, procédés et formes galéniques, expertise et identification, boutique et registre.</div>
+        <span class="go">Ouvrir →</span>
+      </a>
+      <a class="card" href="La-Forge.html">
+        <span class="sym">🔨</span>
+        <div class="kind">Guide de métier</div>
+        <div class="name">La Forge</div>
+        <div class="desc">Métaux et leur effet sur les tests, fabrication et réparation d'armures, améliorations, poinçon de maître.</div>
+        <span class="go">Ouvrir →</span>
+      </a>
+      <a class="card" href="Cuisine-et-Auberge.html">
+        <span class="sym">🍲</span>
+        <div class="kind">Guide de métier</div>
+        <div class="name">Cuisine et Auberge</div>
+        <div class="desc">Vivres, plats et effets chiffrés, conservation et rations, détection des poisons, gestion d'une auberge.</div>
+        <span class="go">Ouvrir →</span>
+      </a>
+      <a class="card" href="Artisanat.html">
+        <span class="sym">🪡</span>
+        <div class="kind">Guide de métier</div>
+        <div class="name">Artisanat</div>
+        <div class="desc">Cuir, bois, tissu, verre et métaux fins : un moteur commun, une table par matière, finitions transversales.</div>
+        <span class="go">Ouvrir →</span>
+      </a>
+    </div>
+  </div>
+
+  <footer>Espace privé &nbsp;·&nbsp; Warhammer Fantasy Roleplay</footer>
+</div>
+
+<script>
+(function () {
+  var MDP = "Von Carstein";
+  var gate = document.getElementById('gate');
+  var espace = document.getElementById('espace');
+
+  function entrer() {
+    gate.classList.add('hidden');
+    espace.classList.remove('hidden');
+  }
+
+  /* Déjà déverrouillé cette session, depuis l'accueil ou une autre page MJ. */
+  try {
+    if (sessionStorage.getItem('mjAccess') === '1' || sessionStorage.getItem('carrieresMJ') === '1') entrer();
+  } catch (e) {}
+
+  document.getElementById('gate-btn').addEventListener('click', function () {
+    var p = prompt("Espace Maître du Jeu. Mot de passe :");
+    if (p === null) return;
+    if (p === MDP) {
+      try {
+        sessionStorage.setItem('mjAccess', '1');
+        sessionStorage.setItem('carrieresMJ', '1');
+      } catch (e) {}
+      entrer();
+    } else {
+      alert("Mot de passe incorrect.");
+    }
+  });
+})();
+</script>
+</body>
+</html>

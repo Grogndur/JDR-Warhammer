@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Armes et Munitions</title>
+<style>
+  :root{
+    --bg:#12100e; --panel:#1b1815; --panel2:#221e1a; --line:#37302a;
+    --txt:#e8e0d2; --dim:#a2968a; --acc:#b8322a; --acc2:#c9a227; --off:#8d8375;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+       font-family:"Iowan Old Style",Georgia,serif;font-size:15px;line-height:1.45}
+
+  /* ---------- barre d'outils ---------- */
+  .bar{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,#1b1815,#161311);
+       border-bottom:1px solid var(--line);padding:.6rem .9rem;display:flex;gap:.6rem;
+       align-items:center;flex-wrap:wrap}
+  .bar h1{font-size:1.05rem;letter-spacing:.14em;text-transform:uppercase;margin:0 .5rem 0 0;
+          color:var(--txt);font-weight:600;white-space:nowrap}
+  .bar h1 span{color:var(--acc)}
+  input[type=search]{flex:1;min-width:170px;background:#0e0c0b;border:1px solid var(--line);
+       color:var(--txt);padding:.42rem .6rem;border-radius:4px;font-family:inherit;font-size:.9rem}
+  input[type=search]:focus{outline:none;border-color:var(--acc2)}
+  button{background:#2a2521;border:1px solid var(--line);color:var(--txt);padding:.4rem .7rem;
+       border-radius:4px;cursor:pointer;font-family:inherit;font-size:.83rem;white-space:nowrap}
+  button:hover{border-color:var(--acc2);color:#fff}
+  button.pri{background:#3a1512;border-color:#5d201a}
+  .status{font-size:.78rem;color:var(--dim);min-width:80px}
+
+  /* ---------- structure ---------- */
+  .wrap{max-width:1280px;margin:0 auto;padding:1.1rem .9rem 4rem}
+  .grp{margin:0 0 1.6rem}
+  .grp>h2{font-size:1rem;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);
+       border-bottom:1px solid var(--acc);padding-bottom:.3rem;margin:1.6rem 0 .5rem}
+  .gnote{font-size:.82rem;color:var(--dim);margin:.1rem 0 .7rem;padding:.5rem .7rem;
+       background:var(--panel);border-left:2px solid var(--line);border-radius:0 3px 3px 0}
+
+  .sec{background:var(--panel);border:1px solid var(--line);border-radius:5px;margin:0 0 .8rem;overflow:hidden}
+  .sechead{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;background:var(--panel2);
+       border-bottom:1px solid var(--line)}
+  .sechead .t{font-size:.86rem;letter-spacing:.1em;text-transform:uppercase;color:var(--acc2);flex:1}
+  .sechead .n{font-size:.75rem;color:var(--dim)}
+  .sechead button{padding:.22rem .5rem;font-size:.75rem}
+  .snote{font-size:.8rem;color:var(--dim);padding:.5rem .7rem 0}
+  .secbody{padding:.2rem .5rem .6rem}
+  .sec.closed .secbody,.sec.closed .snote{display:none}
+
+  table{width:100%;border-collapse:collapse;font-size:.83rem}
+  th{position:sticky;top:44px;background:#0f0d0c;color:var(--dim);font-weight:400;text-align:left;
+     font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;padding:.4rem .45rem;
+     border-bottom:1px solid var(--line);z-index:5}
+  td{border-bottom:1px solid #262019;padding:.32rem .45rem;vertical-align:top}
+  tr:hover td{background:#1f1b17}
+  tr.off td{color:var(--off);font-style:italic}
+  td[contenteditable]{outline:none;border-radius:3px}
+  td[contenteditable]:focus{background:#0e0c0b;box-shadow:inset 0 0 0 1px var(--acc2)}
+  td.c-px,td.c-enc,td.c-dg{white-space:nowrap}
+  td.c-enc,td.c-dg{text-align:center}
+  .acts{width:1%;white-space:nowrap;opacity:0;transition:opacity .12s}
+  tr:hover .acts{opacity:1}
+  .acts button{padding:.1rem .34rem;font-size:.72rem;background:transparent;border-color:transparent;color:var(--dim)}
+  .acts button:hover{color:#fff;border-color:var(--line)}
+  .addrow{margin:.35rem 0 0;font-size:.78rem}
+
+  /* ---------- légende ---------- */
+  .legwrap{columns:2;column-gap:1.4rem}
+  .leg{break-inside:avoid;margin:0 0 .45rem;padding:.35rem .5rem;background:var(--panel);
+       border-left:2px solid var(--line);border-radius:0 3px 3px 0;font-size:.83rem}
+  .leg.mai{border-left-color:var(--acc)}
+  .leg .term{font-weight:700;color:var(--acc2)}
+  .leg.of .term{color:#bdb2a2}
+  .leg .term[contenteditable]:focus,.leg .df[contenteditable]:focus{outline:none;background:#0e0c0b}
+  .leg .acts2{float:right;opacity:0}
+  .leg:hover .acts2{opacity:1}
+  .leg .acts2 button{padding:.05rem .3rem;font-size:.7rem;background:transparent;border-color:transparent;color:var(--dim)}
+
+  /* ---------- infobulle ---------- */
+  #tip{position:fixed;z-index:60;max-width:340px;background:#0d0b0a;border:1px solid var(--acc2);
+       border-radius:4px;padding:.5rem .6rem;font-size:.8rem;display:none;box-shadow:0 6px 24px #000a}
+  #tip b{color:var(--acc2)}
+  #tip p{margin:0 0 .35rem}
+  #tip p:last-child{margin:0}
+
+
+  .sync-flag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .5rem;
+       border-radius:2px;white-space:nowrap;border:1px solid transparent;color:var(--dim)}
+  .sync-flag.ok{color:#8fae7e;border-color:rgba(94,128,79,.4);background:rgba(94,128,79,.12)}
+  .sync-flag.pending{color:#e8cf72;border-color:rgba(184,146,42,.4);background:rgba(184,146,42,.12)}
+  .sync-flag.err{color:#e08a80;border-color:rgba(139,26,26,.5);background:rgba(139,26,26,.16)}
+
+  /* ---------- téléphone : plus de défilement horizontal ---------- */
+  @media(max-width:760px){
+    body{font-size:14px}
+    .bar{padding:.5rem .6rem;gap:.4rem}
+    .bar h1{font-size:.9rem;width:100%;margin:0}
+    button{padding:.34rem .55rem;font-size:.78rem}
+    .wrap{padding:.7rem .5rem 3rem}
+    .secbody{padding:.2rem .3rem .5rem}
+    thead{display:none}
+    table,tbody,tr,td{display:block;width:100%}
+    tr{border:1px solid var(--line);border-radius:4px;background:#1d1915;
+       margin:0 0 .5rem;padding:.35rem .5rem}
+    tr:hover td{background:transparent}
+    td{border-bottom:none;padding:.22rem 0;text-align:left !important;white-space:normal}
+    td:empty{padding:0}
+    td::before{content:attr(data-lab);display:inline-block;min-width:5.4rem;
+       font-size:.62rem;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);
+       vertical-align:top;padding-right:.4rem}
+    td.acts{opacity:1;width:auto;text-align:right !important;padding-top:.3rem;
+       border-top:1px solid #2a241e;margin-top:.25rem}
+    td.acts::before{content:none}
+    .acts button{font-size:.85rem;padding:.18rem .5rem}
+    .legwrap{columns:1}
+    .item .acts{opacity:1}
+  }
+  .retour{color:var(--dim);text-decoration:none;font-size:.8rem;white-space:nowrap;padding:.2rem .3rem}
+  .retour:hover{color:var(--acc2)}
+  .hid{display:none !important}
+  .hint{font-size:.78rem;color:var(--dim);margin:.6rem 0 0}
+
+  /* ---------- impression ---------- */
+  @media print{
+    :root{--txt:#14110f;--dim:#5a524a}
+    body{background:#fff;color:#14110f;font-size:9pt}
+    .bar,.acts,.acts2,.addrow,.sechead button,.hint,#tip,.retour{display:none !important}
+    .wrap{max-width:none;padding:0}
+    .sec{border:none;background:none}
+    .sechead{background:none;border-bottom:1px solid #8B1A1A;padding:0 0 1mm}
+    .sechead .t{color:#8B1A1A}
+    .grp>h2{color:#8B1A1A;border-color:#8B1A1A}
+    .gnote,.snote,.leg{background:#faf7f1;color:#5a524a}
+    th{position:static;background:#2a1414;color:#f0e8d8;border:none}
+    td{border-bottom:1px solid #ddd6ca}
+    tr.off td{color:#5a524a}
+    .sec.closed .secbody,.sec.closed .snote{display:block}
+  }
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<div class="bar">
+  <a class="retour" href="index-mj.html" title="Retour à l'espace MJ">◂ MJ</a>
+  <h1>Armes et <span>Munitions</span></h1>
+  <input type="search" id="q" placeholder="Filtrer : nom, atout, prix…">
+  <button id="b-fold">Replier tout</button>
+  <button id="b-sec">+ Section</button>
+  <button id="b-leg">+ Entrée de légende</button>
+  <button id="b-push" title="Publier la version du fichier vers la base en ligne. Le fichier fait autorité.">Push</button>
+  <button id="b-print" class="pri">PDF</button>
+  <span class="sync-flag" id="flag"></span>
+</div>
+
+<div class="wrap" id="app"></div>
+<div id="tip"></div>
+
+<script>
+/* ======================= DONNÉES ======================= */
+var DEFAUT = {"groups": [{"title": "Armes de corps à corps", "note": "Rappels du livre : les armes de Cavalerie à deux mains comptent comme armes à Deux mains quand on combat à pied, et celles à une main ne s'emploient normalement pas démonté. Un personnage sans la spécialisation Fléau ajoute le défaut Dangereuse à son arme et n'en utilise aucun atout. Toute arme à une main possédant Défensive peut être employée avec Corps à corps (Parade), donc sans la pénalité de main gauche de −20.", "sections": [{"title": "Bagarre", "note": "", "cols": ["Arme", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Coup-de-poing ferré", "5/–", "0", "Commune", "Personnelle", "+BF+1", "Assommante, Dissimulable"], "off": false}, {"c": ["Gantelet clouté", "15/–", "1", "Limitée", "Personnelle", "+BF+2", "Assommante"], "off": false}, {"c": ["Matraque plombée", "10/–", "0", "Commune", "Très courte", "+BF+2", "Assommante, Dissimulable, Inoffensive"], "off": false}, {"c": ["Chaîne de débardeur", "8/–", "1", "Commune", "Courte", "+BF+2", "À Enroulement, Imprécise"], "off": false}]}, {"title": "Base", "note": "", "cols": ["Arme", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Dague de miséricorde", "12/–", "0", "Limitée", "Très courte", "+BF+2", "Empaleuse, Perforante, Dissimulable"], "off": false}, {"c": ["Coutelas de batelier", "10/–", "0", "Commune", "Courte", "+BF+3", "Rapide"], "off": false}, {"c": ["Épée courte impériale", "1CO", "1", "Commune", "Courte", "+BF+3", "Rapide"], "off": false}, {"c": ["Braquemart d'Averland", "1CO", "1", "Commune", "Moyenne", "+BF+4", "Taille, Imprécise"], "off": false}, {"c": ["Masse de milice", "12/–", "1", "Commune", "Courte", "+BF+4", "Percutante"], "off": false}, {"c": ["Marteau de fossoyeur", "15/–", "1", "Commune", "Courte", "+BF+4", "Percutante, Lente"], "off": false}, {"c": ["Pic de mineur", "1CO", "1", "Commune", "Moyenne", "+BF+4", "Perforante, Lente"], "off": false}, {"c": ["Hachereau de boucher", "12/–", "1", "Commune", "Courte", "+BF+4", "Taille"], "off": false}, {"c": ["Serpe de Rhya", "8/–", "0", "Commune", "Courte", "+BF+3", "Taille, Crochet"], "off": false}, {"c": ["Bâton ferré", "8/–", "1", "Commune", "Longue", "+BF+3", "Défensive"], "off": false}]}, {"title": "Parade", "note": "", "cols": ["Arme", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Dague de main gauche", "1CO", "0", "Limitée", "Très courte", "+BF+2", "Défensive, Rapide, Piège-lame"], "off": false}, {"c": ["Targe de duel", "1CO", "1", "Limitée", "Personnelle", "+BF+1", "Défensive, Protectrice 1"], "off": false}, {"c": ["Cape lestée", "15/–", "0", "Limitée", "Courte", "+BF", "Défensive, À Enroulement, Inoffensive"], "off": false}, {"c": ["Pavois de milicien", "2CO", "3", "Limitée", "Personnelle", "+BF+1", "Protectrice 3, Imprécise, Lente"], "off": false}]}, {"title": "Escrime", "note": "", "cols": ["Arme", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Estoc de duel", "3CO", "1", "Limitée", "Moyenne", "+BF+3", "Empaleuse, Perforante, Précise"], "off": false}, {"c": ["Canne-épée", "4CO", "1", "Rare", "Moyenne", "+BF+3", "Empaleuse, Rapide, Dissimulable"], "off": false}, {"c": ["Fleuret de salle", "1CO", "0", "Commune", "Moyenne", "+BF+1", "Rapide, Précise, Inoffensive"], "off": false}]}, {"title": "Cavalerie", "note": "", "cols": ["Arme", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Sabre de patrouille", "2CO", "1", "Limitée", "Moyenne", "+BF+4", "Taille, Rapide"], "off": false}, {"c": ["Marteau de selle", "2CO", "1", "Limitée", "Courte", "+BF+4", "Percutante, Épuisante"], "off": false}, {"c": ["Lance légère de reître", "1CO", "2", "Limitée", "Très longue", "+BF+4", "Empaleuse, Épuisante, Lente"], "off": false}]}, {"title": "Fléau", "note": "", "cols": ["Arme", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Fléau d'armes", "2CO", "2", "Limitée", "Moyenne", "+BF+5", "Percutante, À Enroulement, Imprécise"], "off": false}, {"c": ["Morgenstern", "2CO", "2", "Limitée", "Moyenne", "+BF+5", "Percutante, Lente"], "off": false}, {"c": ["Chaîne de flagellant", "10/–", "1", "Commune", "Longue", "+BF+3", "À Enroulement, Perturbante, Imprécise"], "off": false}, {"c": ["Fléau de battage", "5/–", "1", "Commune", "Longue", "+BF+3", "Percutante, Imprécise"], "off": false}]}, {"title": "Deux mains", "note": "", "cols": ["Arme", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Espadon d'Averland", "5CO", "3", "Limitée", "Longue", "+BF+5", "Dévastatrice, Lente"], "off": false}, {"c": ["Hache de bourreau", "4CO", "3", "Limitée", "Longue", "+BF+5", "Taille, Dévastatrice, Lente"], "off": false}, {"c": ["Maillet de forge", "3CO", "3", "Commune", "Longue", "+BF+5", "Percutante, Lente"], "off": false}, {"c": ["Faux de guerre", "1CO", "2", "Commune", "Très longue", "+BF+4", "Taille, Fauchante, Imprécise"], "off": false}]}, {"title": "Arme d'hast", "note": "", "cols": ["Arme", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Hallebarde de garde", "3CO", "3", "Commune", "Très longue", "+BF+4", "Taille, Lente"], "off": false}, {"c": ["Guisarme", "2CO", "3", "Limitée", "Très longue", "+BF+4", "Crochet, Piège-lame, Lente"], "off": false}, {"c": ["Corsèque", "3CO", "3", "Limitée", "Très longue", "+BF+4", "Empaleuse, Piège-lame, Lente"], "off": false}, {"c": ["Pique de Nuln", "2CO", "4", "Limitée", "Considérable", "+BF+4", "Empaleuse, Lente, Imprécise"], "off": false}, {"c": ["Fourche de paysan", "5/–", "2", "Commune", "Très longue", "+BF+3", "Empaleuse, Imprécise"], "off": false}]}, {"title": "Paranaturelles", "note": "Armes conçues contre ce qui ne meurt pas d'un coup d'épée ordinaire. Les traitements (argenture, bénédiction) s'appliquent aussi aux armes des autres groupes : voir les règles d'emploi.", "cols": ["Arme", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Épée plaquée argent", "10CO", "1", "Rare", "Moyenne", "+BF+4", "Argentée"], "off": false}, {"c": ["Épée bénie (culte au choix)", "15CO", "1", "Rare", "Moyenne", "+BF+4", "Bénie (X)"], "off": false}, {"c": ["Lame de fer froid", "20CO", "1", "Exotique", "Moyenne", "+BF+4", "Fer froid, Incassable"], "off": false}, {"c": ["Épieu d'aubépine", "1CO", "2", "Limitée", "Très longue", "+BF+3", "Empaleuse, Pieu, Fragile"], "off": false}, {"c": ["Lame d'ossuaire", "12CO", "1", "Exotique", "Courte", "+BF+3", "Spectrale, Fragile"], "off": false}, {"c": ["Aiguille de sorcière", "2CO", "0", "Rare", "Très courte", "+BF+1", "Empaleuse, Brise-sort, Dissimulable, Inoffensive"], "off": false}, {"c": ["Épée de gromril", "80CO", "1", "Exotique", "Moyenne", "+BF+4", "Perforante, Précise, Incassable"], "off": false}, {"c": ["Marteau à runes naines", "100CO", "1", "Exotique", "Moyenne", "+BF+5", "Runique, Percutante, Incassable, Lente"], "off": false}]}]}, {"title": "Armes à distance", "note": "Rappels du livre : les Arbalètes et le Lancer peuvent être employés avec un test de Projectiles générique, mais l'arme perd alors tous ses atouts et conserve ses défauts. Même règle pour l'Ingénierie entre les mains d'un spécialiste de la Poudre noire. Fourchettes de portée : Bout portant = Portée ÷ 10, Courte = ÷ 2, Longue = × 2, Extrême = × 3.", "sections": [{"title": "Arbalète", "note": "", "cols": ["Arme", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["(2M) Arbalète", "5CO", "2", "Commune", "60", "+9", "Recharge 1"], "off": true}, {"c": ["Arbalète de poing", "6CO", "0", "Limitée", "10", "+7", "Pistolet"], "off": true}, {"c": ["(2M) Arbalète lourde", "7CO", "3", "Rare", "100", "+9", "Dévastatrice, Recharge 2"], "off": true}, {"c": ["(2M) Arbalète à étrier", "4CO", "2", "Commune", "50", "+8", "Recharge 1"], "off": false}, {"c": ["(2M) Arbalète de chasse", "8CO", "2", "Limitée", "60", "+9", "Recharge 1, Silencieuse"], "off": false}, {"c": ["Arbalète de sacoche (pliante)", "10CO", "1", "Rare", "20", "+7", "Pistolet, Dissimulable, Recharge 2"], "off": false}, {"c": ["Arbalète de poing double", "15CO", "1", "Rare", "10", "+7", "Pistolet, À répétition 2, Recharge 2"], "off": false}, {"c": ["(2M) Arbalète à cric", "12CO", "4", "Rare", "120", "+11", "Dévastatrice, Recharge 3, Imprécise"], "off": false}, {"c": ["(2M) Arbalète naine à magasin", "25CO", "3", "Exotique", "60", "+9", "À répétition 5, Recharge 4, Incassable"], "off": false}]}, {"title": "Arc", "note": "", "cols": ["Arme", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["(2M) Arc", "4CO", "2", "Commune", "50", "+BF+3", "–"], "off": true}, {"c": ["(2M) Arc court", "3CO", "1", "Commune", "20", "+BF+2", "–"], "off": true}, {"c": ["(2M) Arc elfique", "10CO", "2", "Exotique", "150", "+BF+4", "Dévastatrice, Pointue"], "off": true}, {"c": ["(2M) Arc long", "5CO", "3", "Limitée", "100", "+BF+4", "Dévastatrice"], "off": true}, {"c": ["(2M) Arc composite kislevite", "8CO", "2", "Limitée", "70", "+BF+3", "Montée"], "off": false}, {"c": ["(2M) Arc de chasse", "3CO", "1", "Commune", "40", "+BF+2", "Silencieuse"], "off": false}, {"c": ["Sarbacane", "2CO", "0", "Exotique", "15", "+1", "Silencieuse, Dissimulable, Inoffensive"], "off": false}]}, {"title": "Fronde et lancer", "note": "", "cols": ["Arme", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Fronde", "1/–", "0", "Commune", "60", "+6", "–"], "off": true}, {"c": ["(2M) Fustibale", "4/–", "2", "Limitée", "100", "+7", "–"], "off": true}, {"c": ["Hache de lancer", "1CO", "1", "Commune", "BF x2", "+BF+3", "Taille"], "off": true}, {"c": ["Javelot", "10/6", "1", "Limitée", "BF x3", "+BF+3", "Empaleuse"], "off": true}, {"c": ["Filet de rétiaire", "1CO", "1", "Limitée", "BF x2", "–", "Immobilisante, Sans dégâts"], "off": false}, {"c": ["Épieu de battue", "15/–", "2", "Commune", "BF x2", "+BF+4", "Empaleuse, Imprécise"], "off": false}, {"c": ["Fiole d'eau bénite", "2CO", "0", "Rare", "BF x2", "–", "Aspergée, Sans dégâts, Fragile"], "off": false}, {"c": ["Pot à feu", "2CO", "1", "Limitée", "BF x2", "+7", "Incendiaire, Explosion 1, Dangereuse"], "off": false}, {"c": ["Sachet de sel gemme", "10/–", "0", "Commune", "BF", "–", "Répulsive, Sans dégâts, Fragile"], "off": false}]}, {"title": "Poudre noire et ingénierie", "note": "Toutes ces armes possèdent les atouts À poudre noire et Dévastatrice.", "cols": ["Arme", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["(2M) Arquebuse", "4CO", "2", "Limitée", "50", "+9", "Dangereuse, Recharge 3"], "off": true}, {"c": ["Pistolet", "8CO", "0", "Rare", "20", "+8", "Pistolet, Recharge 1"], "off": true}, {"c": ["(2M) Tromblon", "2CO", "1", "Limitée", "20", "+8", "Explosion 3, Dangereuse, Recharge 2"], "off": true}, {"c": ["(2M) Long fusil d'Hochland", "100CO", "3", "Exotique", "100", "+9", "Précise, Pointue, Recharge 4"], "off": true}, {"c": ["(2M) Arquebuse à répétition", "10CO", "3", "Rare", "30", "+9", "Dangereuse, Recharge 5, À répétition 4"], "off": true}, {"c": ["Pistolet à répétition", "15CO", "1", "Rare", "10", "+8", "Dangereuse, Pistolet, Recharge 4, À répétition 4"], "off": true}, {"c": ["(2M) Espingole d'abordage", "6CO", "2", "Limitée", "20", "+8", "Explosion 2, Dangereuse, Recharge 3"], "off": false}, {"c": ["(2M) Carabine de Nuln", "15CO", "2", "Rare", "60", "+9", "Précise, Dangereuse, Recharge 3"], "off": false}, {"c": ["Pistolet double", "20CO", "1", "Rare", "20", "+8", "Pistolet, À répétition 2, Dangereuse, Recharge 2"], "off": false}, {"c": ["Canne-pistolet", "25CO", "1", "Exotique", "10", "+7", "Pistolet, Dissimulable, Dangereuse, Recharge 2"], "off": false}]}]}, {"title": "Munitions", "note": "Lots de douze sauf mention contraire, encombrement nul par lot. Les lignes marquées d'un astérisque sont les munitions de base, reconstituées de mémoire : vérifie prix et atouts dans ton livre avant de t'en servir.", "sections": [{"title": "Arbalète", "note": "", "cols": ["Munition", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Carreaux (12) *", "5/–", "0", "Commune", "Comme l'arme", "–", "–"], "off": false}, {"c": ["Carreaux de qualité (12)", "1CO", "0", "Rare", "Comme l'arme", "+1", "Précise"], "off": false}, {"c": ["Carreaux de rebut (12)", "2sc", "0", "Commune", "Comme l'arme", "−1", "Imprécise"], "off": false}, {"c": ["Carreaux à bec de faucon (12)", "12/–", "0", "Limitée", "Comme l'arme", "–", "Perforante, Effilée"], "off": false}, {"c": ["Carreaux barbelés (12)", "8/–", "0", "Commune", "Comme l'arme", "–", "Barbelée"], "off": false}, {"c": ["Carreaux à bourdon (12)", "6/–", "0", "Commune", "Comme l'arme", "–", "Assommante, Inoffensive"], "off": false}, {"c": ["Carreaux à empennage lourd (12)", "10/–", "0", "Limitée", "+50", "–", "Imprécise"], "off": false}, {"c": ["Carreaux incendiaires (12)", "15/–", "0", "Limitée", "Comme l'arme", "–", "Incendiaire, Dangereuse"], "off": false}, {"c": ["Carreaux de siège (12)", "1CO", "1", "Limitée", "−10", "+2", "Percutante, Imprécise"], "off": false}, {"c": ["Carreaux à ailettes de Nuln (12)", "2CO", "0", "Rare", "+50", "+1", "Précise, Pointue"], "off": false}, {"c": ["Carreau à harpon (l'unité)", "1CO", "1", "Limitée", "Moitié de l'arme", "−2", "Immobilisante"], "off": false}, {"c": ["Carreau à message (l'unité)", "5sc", "0", "Commune", "Comme l'arme", "–", "Sans dégâts"], "off": false}, {"c": ["Carreau creux à eau bénite (l'unité)", "2CO", "0", "Rare", "Comme l'arme", "–", "Aspergée, Fragile"], "off": false}, {"c": ["Carreau à sel gemme (l'unité)", "1CO", "0", "Limitée", "Comme l'arme", "−3", "Répulsive, Fragile"], "off": false}, {"c": ["Fiole fumigène montée (l'unité)", "1CO", "0", "Rare", "Moitié de l'arme", "–", "Sans dégâts, Fumigène, Fragile"], "off": false}, {"c": ["Carreau à fragmentation (l'unité)", "6CO", "0", "Exotique", "Comme l'arme", "+2", "Explosion 1, Dangereuse, Fragile"], "off": false}, {"c": ["Carreau explosif (l'unité)", "10CO", "0", "Exotique", "Comme l'arme", "+6", "Explosion 2, Dangereuse, Fragile"], "off": false}, {"c": ["Carreau à feu de Nuln (l'unité)", "8CO", "0", "Exotique", "Comme l'arme", "–", "Incendiaire, Poisseuse, Dangereuse, Fragile"], "off": false}, {"c": ["Fusée éclairante montée (l'unité)", "3CO", "0", "Rare", "Moitié de l'arme", "–", "Sans dégâts, Éclairante, Dangereuse"], "off": false}]}, {"title": "Arc", "note": "", "cols": ["Munition", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Flèches (12) *", "5/–", "0", "Commune", "Comme l'arme", "–", "–"], "off": false}, {"c": ["Flèches elfiques (12) *", "6/–", "0", "Exotique", "+50", "+1", "Précise"], "off": false}, {"c": ["Flèches à fer large (12)", "10/–", "0", "Commune", "Comme l'arme", "–", "Taille, Effilée"], "off": false}, {"c": ["Flèches barbelées (12)", "8/–", "0", "Commune", "Comme l'arme", "–", "Barbelée"], "off": false}, {"c": ["Flèches à bec de faucon (12)", "12/–", "0", "Limitée", "Comme l'arme", "–", "Perforante, Effilée"], "off": false}, {"c": ["Flèches de guerre (12)", "1CO", "0", "Limitée", "−10", "+1", "Perforante, Effilée"], "off": false}, {"c": ["Flèches fourchues (12)", "12/–", "0", "Limitée", "Comme l'arme", "−1", "Taille, Fourchue"], "off": false}, {"c": ["Flèches sifflantes (12)", "4/–", "0", "Commune", "Comme l'arme", "–", "Sans dégâts, Signal"], "off": false}, {"c": ["Flèches incendiaires (12)", "15/–", "0", "Limitée", "Comme l'arme", "–", "Incendiaire, Dangereuse"], "off": false}, {"c": ["Flèches à empennage lourd (12)", "10/–", "0", "Limitée", "+50", "–", "Imprécise"], "off": false}, {"c": ["Flèches de rebut (12)", "2sc", "0", "Commune", "Comme l'arme", "−1", "Imprécise"], "off": false}]}, {"title": "Fronde", "note": "", "cols": ["Munition", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Balles de plomb (12) *", "4sc", "0", "Commune", "−10", "+1", "Assommante"], "off": false}, {"c": ["Projectiles de pierre (12) *", "2sc", "0", "Commune", "Comme l'arme", "–", "Assommante"], "off": false}, {"c": ["Balles d'argent (12)", "2CO", "0", "Rare", "−10", "+1", "Assommante, Argentée"], "off": false}, {"c": ["Balles percées sifflantes (12)", "3sc", "0", "Commune", "−10", "–", "Sans dégâts, Signal"], "off": false}]}, {"title": "Poudre noire et ingénierie", "note": "", "cols": ["Munition", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Balles et poudre (12) *", "3/3", "0", "Commune", "Comme l'arme", "–", "–"], "off": false}, {"c": ["Munitions improvisées et poudre *", "3sc", "0", "Commune", "Moitié de l'arme", "–", "Imprécise"], "off": false}, {"c": ["Petites munitions et poudre *", "3/3", "0", "Commune", "Comme l'arme", "–", "Explosion 1"], "off": false}, {"c": ["Balles moulées de Nuln (12)", "15/–", "0", "Limitée", "Comme l'arme", "+1", "Précise"], "off": false}, {"c": ["Balles entaillées (12)", "6/–", "0", "Commune", "Comme l'arme", "+2", "Imprécise, Encrassante"], "off": false}, {"c": ["Balles segmentées (12)", "1CO", "0", "Limitée", "Comme l'arme", "+2", "Explosion 1, Imprécise, Encrassante"], "off": false}, {"c": ["Balles d'argent et poudre (12)", "3CO", "0", "Rare", "Comme l'arme", "–", "Argentée"], "off": false}, {"c": ["Balles bénies et poudre (12)", "2CO", "0", "Limitée", "Comme l'arme", "–", "Bénie (X)"], "off": false}, {"c": ["Grenaille de chasse (12)", "10/–", "0", "Commune", "Moitié de l'arme", "−1", "Explosion 1, Imprécise"], "off": false}, {"c": ["Balles incendiaires (12)", "2CO", "0", "Rare", "Comme l'arme", "–", "Incendiaire, Traçante"], "off": false}, {"c": ["Balle explosive de Nuln (l'unité)", "5CO", "0", "Exotique", "Comme l'arme", "+4", "Explosion 1, Dangereuse"], "off": false}, {"c": ["Cartouches à sel (12)", "15/–", "0", "Limitée", "Moitié de l'arme", "−3", "Répulsive, Explosion 1, Inoffensive"], "off": false}]}, {"title": "Matières et bénédictions", "note": "Traitements applicables aux flèches et aux carreaux, prix à l'unité. Une munition traitée conserve les atouts de son façonnage de base.", "cols": ["Munition", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Pointe plaquée argent", "2CO", "0", "Rare", "Comme l'arme", "–", "Argentée"], "off": false}, {"c": ["Pointe d'argent massif", "8CO", "0", "Exotique", "Comme l'arme", "+1", "Argentée, Fragile"], "off": false}, {"c": ["Pointe de fer froid", "3CO", "0", "Rare", "Comme l'arme", "–", "Fer froid"], "off": false}, {"c": ["Hampe d'aubépine", "1CO", "0", "Limitée", "Comme l'arme", "−1", "Pieu, Fragile"], "off": false}, {"c": ["Éclat d'ossuaire", "2CO", "0", "Rare", "Comme l'arme", "–", "Spectrale, Fragile"], "off": false}, {"c": ["Pointe de gromril", "25CO", "0", "Exotique", "Comme l'arme", "+1", "Perforante, Précise, Incassable"], "off": false}, {"c": ["Pointe de pierre à sorcière", "4CO", "0", "Exotique", "Comme l'arme", "–", "Brise-sort, Fragile"], "off": false}, {"c": ["Munition bénie (Sigmar)", "1CO", "0", "Limitée", "Comme l'arme", "–", "Bénie (Chaos)"], "off": false}, {"c": ["Munition bénie (Morr)", "1CO", "0", "Limitée", "Comme l'arme", "–", "Bénie (Mort-vivant)"], "off": false}, {"c": ["Munition bénie (Ulric)", "1CO", "0", "Limitée", "Comme l'arme", "–", "Bénie (Bête)"], "off": false}, {"c": ["Munition oblitérée", "3CO", "0", "Rare", "Comme l'arme", "+3", "Nom vrai"], "off": false}, {"c": ["Pointe envenimée", "1CO", "0", "Limitée", "Comme l'arme", "–", "Venimeuse"], "off": false}, {"c": ["Pointe soporifique", "3CO", "0", "Rare", "Comme l'arme", "−3", "Soporifique, Inoffensive"], "off": false}, {"c": ["Pointe corrosive de Nuln", "2CO", "0", "Rare", "Comme l'arme", "–", "Corrosive"], "off": false}]}]}], "legend": [{"off": true, "term": "À Enroulement", "def": "Les tests de Corps à corps opposés à cette arme subissent −1 DR."}, {"off": true, "term": "À poudre noire", "def": "Être pris pour cible impose un test de Calme Accessible (+20) ou l'état Brisé, même si le tir manque."}, {"off": true, "term": "À répétition X", "def": "L'arme contient X munitions rechargées automatiquement après chaque tir. Épuisée, elle se recharge normalement."}, {"off": true, "term": "Assommante", "def": "Sur une touche à la Tête, test opposé de Force ou Résistance : en cas de succès, la cible gagne l'état Sonné."}, {"off": true, "term": "Dangereuse", "def": "Tout test raté comportant un 9 au dé des dizaines ou des unités entraîne une Maladresse."}, {"off": true, "term": "Défensive", "def": "+1 DR aux tests de Corps à corps quand on oppose une attaque."}, {"off": true, "term": "Dévastatrice", "def": "Les dégâts utilisent le plus élevé du dé des unités ou du DR."}, {"off": true, "term": "Empaleuse", "def": "Coup critique sur tout résultat divisible par 10 ou sur un double, réussi. Le projectile reste fiché : il faut un test de Guérison Intermédiaire pour l'extraire, un chirurgien pour une balle, et chaque projectile non retiré empêche de regagner 1 Blessure."}, {"off": true, "term": "Épuisante", "def": "Les atouts Percutante et Dévastatrice ne s'appliquent que lors d'un tour de Charge."}, {"off": true, "term": "Explosion X", "def": "Toutes les cibles à X mètres du point d'impact subissent DR + dégâts de l'arme et les états infligés."}, {"off": true, "term": "Immobilisante", "def": "La cible touchée gagne l'état Empêtré, de Force égale à celle du porteur. Tant qu'on entrave, on ne peut pas frapper avec l'arme."}, {"off": true, "term": "Imprécise", "def": "−1 DR à l'attaque. Ne peut jamais être Précise."}, {"off": true, "term": "Incassable", "def": "L'arme ne se brise pas, ne se corrode pas et ne s'émousse pas."}, {"off": true, "term": "Inoffensive", "def": "Tous les PA sont doublés contre elle et elle n'inflige pas la Blessure minimale automatique."}, {"off": true, "term": "Lente", "def": "Frappe toujours en dernier dans le round, et les adversaires gagnent +1 DR pour se défendre."}, {"off": true, "term": "Percutante", "def": "Ajoute le dé des unités du jet d'attaque aux dégâts."}, {"off": true, "term": "Perforante", "def": "Les PA non métalliques sont ignorés, et le premier point de toute autre armure l'est également."}, {"off": true, "term": "Perturbante", "def": "Au lieu d'infliger des dégâts, repousse l'adversaire d'un mètre par DR du test opposé."}, {"off": true, "term": "Piège-lame", "def": "Sur un critique obtenu en défense contre une arme à lame, permet de piéger la lame plutôt que d'infliger le critique."}, {"off": true, "term": "Pistolet", "def": "Utilisable en Combat rapproché."}, {"off": true, "term": "Pointue", "def": "+1 DR à tout test d'attaque réussi."}, {"off": true, "term": "Précise", "def": "+10 à tout test effectué avec l'arme."}, {"off": true, "term": "Protectrice X", "def": "En opposant une attaque, on est considéré comme ayant X PA partout. À partir de 2, permet aussi d'opposer les projectiles vus."}, {"off": true, "term": "Rapide", "def": "Permet d'attaquer hors de l'ordre d'Initiative, et impose −10 aux défenses en Corps à corps menées avec une arme non Rapide."}, {"off": true, "term": "Recharge X", "def": "Rechargement en test étendu de Projectiles, X DR requis. Toute interruption oblige à recommencer."}, {"off": true, "term": "Taille", "def": "Endommage de 1 point l'armure ou le bouclier touché en blessant la cible."}, {"off": false, "term": "Argentée", "def": "Blesse normalement les créatures que seules les armes d'argent ou magiques peuvent atteindre. Contre les métamorphes, +2 aux dégâts et régénération bloquée jusqu'à la fin du round suivant."}, {"off": false, "term": "Aspergée", "def": "Le réservoir se brise à l'impact. Contre les morts-vivants et les daemons, ajoute 1d10 dégâts ignorant les PA et bloque la régénération un round."}, {"off": false, "term": "Barbelée", "def": "Le projectile fiché exige un test de Guérison Difficile (−10) au lieu d'Intermédiaire, et un échec inflige 1 Blessure supplémentaire."}, {"off": false, "term": "Bénie (X)", "def": "Compte comme arme magique et donne +1 aux dégâts contre les créatures du type indiqué. Sept jours sur une munition, une saison sur une arme."}, {"off": false, "term": "Brise-garde", "def": "Les défenses menées avec une arme Défensive ou Protectrice subissent −1 DR contre cette arme."}, {"off": false, "term": "Brise-sort", "def": "Un lanceur touché doit réussir un test de Focalisation ou perdre le sort en cours d'incantation."}, {"off": false, "term": "Corrosive", "def": "Endommage définitivement de 1 PA la localisation touchée, sans possibilité de réparation."}, {"off": false, "term": "Crochet", "def": "Au lieu d'infliger des dégâts, test opposé de Force pour désarçonner, faire tomber ou désarmer la cible."}, {"off": false, "term": "Dissimulable", "def": "Se porte sous un vêtement. La repérer demande un test de Perception à −20."}, {"off": false, "term": "Éclairante", "def": "Brûle 2d10 rounds au point d'impact et éclaire vingt mètres à la ronde. Visible à plusieurs kilomètres de nuit."}, {"off": false, "term": "Effilée", "def": "−1 aux dégâts contre une cible sans armure : la pointe traverse au lieu de déchirer."}, {"off": false, "term": "Encrassante", "def": "Recharge augmentée de 1 au tir suivant, jusqu'à nettoyage du canon."}, {"off": false, "term": "Fauchante", "def": "Permet d'attaquer deux adversaires adjacents dans le même mouvement, avec −2 DR sur les deux tests."}, {"off": false, "term": "Fer froid", "def": "+2 aux dégâts contre les daemons matérialisés. Une blessure les empêche de se dématérialiser pendant un round."}, {"off": false, "term": "Fourchue", "def": "Contre une créature volante ou une cible tenant une corde ou un cordage, +2 aux dégâts et −20 aux tests de Vol ou d'Escalade qui suivent."}, {"off": false, "term": "Fragile", "def": "L'arme ou la munition est perdue à l'impact, quel qu'en soit le résultat."}, {"off": false, "term": "Fumigène", "def": "Nuage de trois mètres pendant 1d10 rounds. Les tirs qui le traversent subissent −20."}, {"off": false, "term": "Incendiaire", "def": "Doit être allumée avant le tir, ce qui prend une action. Inflige l'état Enflammé. Sur une Maladresse, l'utilisateur prend feu."}, {"off": false, "term": "Montée", "def": "Utilisable à cheval sans malus, y compris au galop."}, {"off": false, "term": "Nom vrai", "def": "Gravée du nom véritable d'une entité. Le bonus ne s'applique qu'à elle."}, {"off": false, "term": "Pieu", "def": "Sur un coup critique au Torse contre un mort-vivant sanguinaire, test opposé de Force pour le clouer au sol."}, {"off": false, "term": "Poisseuse", "def": "Le feu adhère. L'état Enflammé ne peut être retiré qu'en immergeant la cible ou en étouffant la flamme avec de la terre."}, {"off": false, "term": "Répulsive", "def": "La cible incorporelle ou possédée subit un test de Force Mentale ou recule de sa valeur de Marche."}, {"off": false, "term": "Runique", "def": "Compte comme arme magique. Une rune naine ne se copie pas et ne se vend pas."}, {"off": false, "term": "Sans dégâts", "def": "N'inflige aucune Blessure, quel que soit le résultat du test."}, {"off": false, "term": "Signal", "def": "Audible à un kilomètre."}, {"off": false, "term": "Silencieuse", "def": "Le tir ne s'entend pas au-delà de dix mètres. Repérer le tireur demande un test de Perception à −20."}, {"off": false, "term": "Soporifique", "def": "Une blessure impose un test d'Endurance ou la cible tombe Inconsciente en 1d10 rounds."}, {"off": false, "term": "Spectrale", "def": "Blesse les Éthérés comme une arme magique."}, {"off": false, "term": "Traçante", "def": "Le trait laisse une traînée lumineuse : +10 au tir suivant sur la même cible, mais tous les témoins voient d'où l'on tire."}, {"off": false, "term": "Venimeuse", "def": "Toute blessure infligée déclenche un test d'Endurance ou l'état Empoisonné."}]};
+var RACINE = 'outils/armes';
+var CACHE  = 'armes_cache_v1';
+var CLIENT = Math.random().toString(36).slice(2, 10);
+var data = null;
+
+var FB_CONFIG = {
+  apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+  authDomain: "warhammer-table-jdr.firebaseapp.com",
+  databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "warhammer-table-jdr",
+  storageBucket: "warhammer-table-jdr.firebasestorage.app",
+  messagingSenderId: "347804803970",
+  appId: "1:347804803970:web:43e062299c53e59d20e59b"
+};
+
+var db = null, refData = null, refSave = null;
+try{
+  if(typeof firebase !== 'undefined'){
+    if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+    db = firebase.database();
+    refData = db.ref(RACINE + '/donnees');
+    refSave = db.ref(RACINE + '/sauvegardes');
+  }
+}catch(e){ console.warn('Firebase indisponible :', e); }
+
+/* ---------- indicateur d'état ---------- */
+var flag = document.getElementById('flag');
+var flagTimer = null;
+function etat(txt, cls){
+  if(!flag) return;
+  clearTimeout(flagTimer);
+  flag.textContent = txt;
+  flag.className = 'sync-flag ' + (cls || '');
+  if(cls === 'ok') flagTimer = setTimeout(function(){ flag.textContent = ''; flag.className = 'sync-flag'; }, 2600);
+}
+
+/* ---------- Firebase efface les tableaux vides : on remet tout d'aplomb ---------- */
+function tab(x){
+  if(Array.isArray(x)) return x;
+  if(x && typeof x === 'object'){
+    var k = Object.keys(x).sort(function(a,b){ return a - b; }), o = [];
+    for(var i = 0; i < k.length; i++) o.push(x[k[i]]);
+    return o;
+  }
+  return [];
+}
+
+/* ---------- lecture initiale : cache local, puis la base fait autorité ---------- */
+function charger(){
+  try{
+    var brut = localStorage.getItem(CACHE);
+    if(brut){ data = normaliser(JSON.parse(brut)); }
+  }catch(e){}
+  if(!data) data = normaliser(JSON.parse(JSON.stringify(DEFAUT)));
+}
+function cacher(){
+  try{ localStorage.setItem(CACHE, JSON.stringify(data)); }catch(e){}
+}
+
+/* ---------- écriture groupée ---------- */
+var tmr = null, sale = false;
+function sauver(){
+  sale = true;
+  etat('modifié', 'pending');
+  cacher();
+  clearTimeout(tmr);
+  tmr = setTimeout(ecrire, 900);
+}
+function ecrire(){
+  if(!refData){ etat('hors ligne', 'err'); return; }
+  etat('envoi…', 'pending');
+  refData.set({ payload: data, at: Date.now(), par: CLIENT }).then(function(){
+    sale = false;
+    etat('enregistré', 'ok');
+  }).catch(function(e){
+    console.warn('Écriture échouée :', e);
+    etat('échec réseau', 'err');
+    clearTimeout(tmr);
+    tmr = setTimeout(ecrire, 4000);
+  });
+}
+
+/* ---------- écoute en direct ---------- */
+var enAttente = null;
+function enEdition(){
+  var a = document.activeElement;
+  return !!(a && a.isContentEditable);
+}
+function appliquer(p){
+  data = normaliser(p);
+  cacher();
+  rendre();
+  etat('à jour', 'ok');
+}
+if(refData){
+  refData.on('value', function(sn){
+    var v = sn.val();
+    if(!v || !v.payload) return;
+    if(v.par === CLIENT) return;
+    if(sale || enEdition()){ enAttente = v.payload; return; }
+    appliquer(v.payload);
+  }, function(e){ console.warn('Lecture impossible :', e); etat('hors ligne', 'err'); });
+}
+document.addEventListener('focusout', function(){
+  setTimeout(function(){
+    if(enAttente && !sale && !enEdition()){ var p = enAttente; enAttente = null; appliquer(p); }
+  }, 300);
+});
+
+/* ---------- publication du fichier vers la base ---------- */
+function pousserFichier(){
+  if(!refData){ alert('Hors ligne : publication impossible.'); return; }
+  if(!confirm(
+    'Publier la version du fichier vers la base ?\n\n' +
+    'Tout ce qui a été modifié en ligne sans être réintégré au fichier sera remplacé.\n' +
+    "L'état actuel de la base est sauvegardé avant écriture."
+  )) return;
+  var b = document.getElementById('b-push');
+  if(b) b.setAttribute('disabled', 'disabled');
+  etat('sauvegarde…', 'pending');
+  refData.once('value').then(function(sn){
+    var avant = sn.val();
+    if(!avant || !refSave) return null;
+    return refSave.child(String(Date.now())).set(avant);
+  }).catch(function(e){ console.warn('Sauvegarde impossible :', e); })
+  .then(function(){
+    etat('publication…', 'pending');
+    data = normaliser(JSON.parse(JSON.stringify(DEFAUT)));
+    return refData.set({ payload: data, at: Date.now(), par: CLIENT });
+  }).then(function(){
+    sale = false;
+    cacher();
+    rendre();
+    if(b) b.removeAttribute('disabled');
+    etat('publié', 'ok');
+  }).catch(function(e){
+    console.warn('Publication échouée :', e);
+    if(b) b.removeAttribute('disabled');
+    etat('publication refusée', 'err');
+  });
+}
+
+
+/* ---------- remise en forme après lecture ---------- */
+function normaliser(d){
+  if(!d || typeof d !== 'object') return JSON.parse(JSON.stringify(DEFAUT));
+  d.groups = tab(d.groups);
+  for(var g = 0; g < d.groups.length; g++){
+    var G = d.groups[g];
+    G.title = G.title || '';
+    G.note = G.note || '';
+    G.sections = tab(G.sections);
+    for(var i = 0; i < G.sections.length; i++){
+      var s = G.sections[i];
+      s.title = s.title || '';
+      s.note = s.note || '';
+      s.cols = tab(s.cols);
+      s.rows = tab(s.rows);
+      for(var r = 0; r < s.rows.length; r++){
+        s.rows[r] = s.rows[r] || {};
+        s.rows[r].c = tab(s.rows[r].c);
+        s.rows[r].off = !!s.rows[r].off;
+      }
+    }
+  }
+  d.legend = tab(d.legend);
+  for(var l = 0; l < d.legend.length; l++){
+    d.legend[l] = d.legend[l] || {};
+    d.legend[l].term = d.legend[l].term || '';
+    d.legend[l].def = d.legend[l].def || '';
+    d.legend[l].off = !!d.legend[l].off;
+  }
+  return d;
+}
+
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function classeCol(nom){
+  var n = nom.toLowerCase();
+  if(n.indexOf('prix') === 0) return 'c-px';
+  if(n.indexOf('enc') === 0) return 'c-enc';
+  if(n.indexOf('dég') === 0) return 'c-dg';
+  return '';
+}
+
+function rendre(){
+  var h = '';
+  for(var gi = 0; gi < data.groups.length; gi++){
+    var g = data.groups[gi];
+    h += '<div class="grp">';
+    h += '<h2 contenteditable data-t="gt" data-g="' + gi + '">' + esc(g.title) + '</h2>';
+    if(g.note !== undefined)
+      h += '<div class="gnote" contenteditable data-t="gn" data-g="' + gi + '">' + esc(g.note) + '</div>';
+
+    for(var si = 0; si < g.sections.length; si++){
+      var s = g.sections[si];
+      h += '<div class="sec" data-g="' + gi + '" data-s="' + si + '">';
+      h += '<div class="sechead">';
+      h +=   '<button data-a="fold">▾</button>';
+      h +=   '<span class="t" contenteditable data-t="st" data-g="' + gi + '" data-s="' + si + '">' + esc(s.title) + '</span>';
+      h +=   '<span class="n">' + s.rows.length + '</span>';
+      h +=   '<button data-a="up">↑</button><button data-a="down">↓</button>';
+      h +=   '<button data-a="delsec">Supprimer</button>';
+      h += '</div>';
+      h += '<div class="snote" contenteditable data-t="sn" data-g="' + gi + '" data-s="' + si + '">' + esc(s.note || '') + '</div>';
+      h += '<div class="secbody"><table><thead><tr>';
+      for(var ci = 0; ci < s.cols.length; ci++)
+        h += '<th contenteditable data-t="col" data-g="' + gi + '" data-s="' + si + '" data-c="' + ci + '">' + esc(s.cols[ci]) + '</th>';
+      h += '<th></th></tr></thead><tbody>';
+
+      for(var ri = 0; ri < s.rows.length; ri++){
+        var r = s.rows[ri];
+        h += '<tr' + (r.off ? ' class="off"' : '') + ' data-r="' + ri + '">';
+        for(var k = 0; k < s.cols.length; k++){
+          var val = r.c[k] === undefined ? '' : r.c[k];
+          var cl = classeCol(s.cols[k]);
+          var atout = (s.cols[k].toLowerCase().indexOf('atout') === 0) ? ' data-atout="1"' : '';
+          h += '<td class="' + cl + '" contenteditable data-t="cell" data-lab="' + esc(s.cols[k]) +
+               '" data-g="' + gi + '" data-s="' + si +
+               '" data-r="' + ri + '" data-c="' + k + '"' + atout + '>' + esc(val) + '</td>';
+        }
+        h += '<td class="acts">' +
+             '<button data-a="off" title="Marquer comme ligne du livre">★</button>' +
+             '<button data-a="dup" title="Dupliquer">⧉</button>' +
+             '<button data-a="del" title="Supprimer">✕</button></td>';
+        h += '</tr>';
+      }
+      h += '</tbody></table>';
+      h += '<button class="addrow" data-a="addrow">+ Ligne</button>';
+      h += '</div></div>';
+    }
+    h += '<button data-a="addsec" data-g="' + gi + '">+ Section dans ce groupe</button>';
+    h += '</div>';
+  }
+
+  /* légende */
+  h += '<div class="grp"><h2>Légende des atouts et défauts</h2>';
+  h += '<div class="gnote">Entrées officielles en gris, ajouts maison en rouge. Cliquer sur ★ bascule de l\'un à l\'autre.</div>';
+  h += '<div class="legwrap">';
+  for(var li = 0; li < data.legend.length; li++){
+    var L = data.legend[li];
+    h += '<div class="leg ' + (L.off ? 'of' : 'mai') + '" data-l="' + li + '">';
+    h += '<span class="acts2"><button data-a="legoff">★</button><button data-a="legdel">✕</button></span>';
+    h += '<span class="term" contenteditable data-t="lt" data-l="' + li + '">' + esc(L.term) + '</span>. ';
+    h += '<span class="df" contenteditable data-t="ld" data-l="' + li + '">' + esc(L.def) + '</span>';
+    h += '</div>';
+  }
+  h += '</div></div>';
+  h += '<p class="hint">Tout est modifiable : cliquer dans une cellule, un titre ou une définition et écrire. Synchronisation automatique avec la base en ligne, sans rien à valider. Survoler une cellule d\'atouts affiche les définitions reconnues.</p>';
+
+  document.getElementById('app').innerHTML = h;
+  indexerLegende();
+}
+
+/* ======================= ÉDITION ======================= */
+document.addEventListener('input', function(e){
+  var el = e.target, t = el.getAttribute('data-t');
+  if(!t) return;
+  var g = +el.getAttribute('data-g'), s = +el.getAttribute('data-s'),
+      r = +el.getAttribute('data-r'), c = +el.getAttribute('data-c'), l = +el.getAttribute('data-l');
+  var v = el.textContent;
+  if(t === 'gt') data.groups[g].title = v;
+  else if(t === 'gn') data.groups[g].note = v;
+  else if(t === 'st') data.groups[g].sections[s].title = v;
+  else if(t === 'sn') data.groups[g].sections[s].note = v;
+  else if(t === 'col') data.groups[g].sections[s].cols[c] = v;
+  else if(t === 'cell') data.groups[g].sections[s].rows[r].c[c] = v;
+  else if(t === 'lt'){ data.legend[l].term = v; indexerLegende(); }
+  else if(t === 'ld'){ data.legend[l].def = v; indexerLegende(); }
+  sauver();
+});
+
+/* Entrée = valider la cellule au lieu d'insérer un saut de ligne */
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Enter' && e.target.hasAttribute && e.target.hasAttribute('contenteditable')){
+    e.preventDefault(); e.target.blur();
+  }
+});
+
+/* ======================= ACTIONS ======================= */
+document.addEventListener('click', function(e){
+  var b = e.target.closest ? e.target.closest('button[data-a]') : null;
+  if(!b) return;
+  var a = b.getAttribute('data-a');
+  var sec = b.closest('.sec');
+  var tr  = b.closest('tr');
+  var leg = b.closest('.leg');
+
+  if(a === 'fold'){ sec.classList.toggle('closed'); return; }
+
+  if(sec){
+    var g = +sec.getAttribute('data-g'), s = +sec.getAttribute('data-s');
+    var S = data.groups[g].sections[s];
+    if(a === 'addrow'){
+      var vide = []; for(var i = 0; i < S.cols.length; i++) vide.push('');
+      S.rows.push({c:vide, off:false}); sauver(); rendre(); return;
+    }
+    if(a === 'delsec'){
+      if(confirm('Supprimer la section « ' + S.title + ' » et ses ' + S.rows.length + ' lignes ?')){
+        data.groups[g].sections.splice(s,1); sauver(); rendre();
+      }
+      return;
+    }
+    if(a === 'up' || a === 'down'){
+      var d = (a === 'up') ? -1 : 1, n = s + d;
+      if(n >= 0 && n < data.groups[g].sections.length){
+        var tmp = data.groups[g].sections[s];
+        data.groups[g].sections[s] = data.groups[g].sections[n];
+        data.groups[g].sections[n] = tmp;
+        sauver(); rendre();
+      }
+      return;
+    }
+    if(tr){
+      var r = +tr.getAttribute('data-r');
+      if(a === 'del'){ S.rows.splice(r,1); sauver(); rendre(); return; }
+      if(a === 'dup'){ S.rows.splice(r+1, 0, JSON.parse(JSON.stringify(S.rows[r]))); sauver(); rendre(); return; }
+      if(a === 'off'){ S.rows[r].off = !S.rows[r].off; sauver(); rendre(); return; }
+    }
+  }
+
+  if(a === 'addsec'){
+    var gi = +b.getAttribute('data-g');
+    var modele = data.groups[gi].sections[0];
+    var cols = modele ? modele.cols.slice() : ['Nom','Prix','Enc','Disponibilité','Portée','Dégâts','Atouts et Défauts'];
+    data.groups[gi].sections.push({title:'Nouvelle section', note:'', cols:cols, rows:[]});
+    sauver(); rendre(); return;
+  }
+
+  if(leg){
+    var l = +leg.getAttribute('data-l');
+    if(a === 'legdel'){ data.legend.splice(l,1); sauver(); rendre(); return; }
+    if(a === 'legoff'){ data.legend[l].off = !data.legend[l].off; sauver(); rendre(); return; }
+  }
+});
+
+/* ======================= BARRE ======================= */
+document.getElementById('b-sec').onclick = function(){
+  data.groups.push({title:'Nouveau groupe', note:'', sections:[]});
+  sauver(); rendre();
+};
+document.getElementById('b-leg').onclick = function(){
+  data.legend.push({off:false, term:'Nouvel atout', def:'Définition.'});
+  sauver(); rendre();
+  var els = document.querySelectorAll('.leg .term');
+  if(els.length) els[els.length-1].focus();
+};
+document.getElementById('b-fold').onclick = function(){
+  var secs = document.querySelectorAll('.sec');
+  var fermer = !document.querySelector('.sec.closed');
+  for(var i = 0; i < secs.length; i++) secs[i].classList.toggle('closed', fermer);
+  this.textContent = fermer ? 'Déplier tout' : 'Replier tout';
+};
+document.getElementById('b-print').onclick = function(){ window.print(); };
+document.getElementById('b-push').onclick = pousserFichier;
+
+/* ======================= FILTRE ======================= */
+document.getElementById('q').oninput = function(){
+  var q = this.value.trim().toLowerCase();
+  var secs = document.querySelectorAll('.sec');
+  for(var i = 0; i < secs.length; i++){
+    var lignes = secs[i].querySelectorAll('tbody tr'), visibles = 0;
+    for(var j = 0; j < lignes.length; j++){
+      var ok = !q || lignes[j].textContent.toLowerCase().indexOf(q) >= 0;
+      lignes[j].classList.toggle('hid', !ok);
+      if(ok) visibles++;
+    }
+    secs[i].classList.toggle('hid', q && visibles === 0);
+  }
+  var legs = document.querySelectorAll('.leg');
+  for(var k = 0; k < legs.length; k++)
+    legs[k].classList.toggle('hid', q && legs[k].textContent.toLowerCase().indexOf(q) < 0);
+};
+
+/* ======================= INFOBULLE DES ATOUTS ======================= */
+var IDX = {};
+function normal(t){
+  return t.toLowerCase().replace(/\s*\(.*?\)\s*/g,' ').replace(/\s+\d+\s*$/,'').trim();
+}
+function indexerLegende(){
+  IDX = {};
+  for(var i = 0; i < data.legend.length; i++)
+    IDX[normal(data.legend[i].term)] = data.legend[i];
+}
+var tip = document.getElementById('tip');
+document.addEventListener('mouseover', function(e){
+  var td = e.target.closest ? e.target.closest('td[data-atout]') : null;
+  if(!td){ tip.style.display = 'none'; return; }
+  if(document.activeElement === td){ tip.style.display = 'none'; return; }
+  var parts = td.textContent.split(','), out = '';
+  for(var i = 0; i < parts.length; i++){
+    var e2 = IDX[normal(parts[i])];
+    if(e2) out += '<p><b>' + esc(e2.term) + '.</b> ' + esc(e2.def) + '</p>';
+  }
+  if(!out){ tip.style.display = 'none'; return; }
+  tip.innerHTML = out;
+  tip.style.display = 'block';
+  var r = td.getBoundingClientRect();
+  var top = r.bottom + 6;
+  if(top + tip.offsetHeight > window.innerHeight) top = Math.max(6, r.top - tip.offsetHeight - 6);
+  tip.style.top = top + 'px';
+  tip.style.left = Math.min(r.left, window.innerWidth - tip.offsetWidth - 12) + 'px';
+});
+document.addEventListener('mouseout', function(e){
+  if(e.target.closest && e.target.closest('td[data-atout]')) tip.style.display = 'none';
+});
+
+/* ======================= DÉPART ======================= */
+charger();
+rendre();
+</script>
+</body>
+</html>
