@@ -342,14 +342,14 @@
     </a>
   </div>
 
-  <div class="section-title">Les carrières</div>
+  <div class="section-title">Espace du meneur</div>
 
   <div class="portals">
-    <a class="portal portal-carriere" id="lien-carrieres" href="carrieres.html">
+    <a class="portal portal-carriere" id="lien-mj" href="mj/index-mj.html">
       <span class="portal-symbol" style="font-size:2rem;">⚔</span>
       <div class="portal-system">Espace MJ · verrouillé</div>
-      <div class="portal-name">Les carrières</div>
-      <div class="portal-desc">Espace dédié au MJ, pour créer et gérer les carrières maison et officielles. Les fiches terminées s'exportent en PDF pour les joueurs.</div>
+      <div class="portal-name">Maître du Jeu</div>
+      <div class="portal-desc">Créateur de carrières, compléments de règles et tables d'équipement. Tout est éditable en ligne, et chaque page s'imprime en PDF pour les joueurs.</div>
       <span class="portal-enter">🔒 Entrer →</span>
     </a>
   </div>
@@ -361,14 +361,15 @@
 </div>
 
 <script>
-// Verrou d'accès à l'espace MJ « Les carrières ».
+// Verrou d'accès à l'espace du Maître du Jeu.
 (function () {
-  var lien = document.getElementById('lien-carrieres');
+  var lien = document.getElementById('lien-mj');
   lien.addEventListener('click', function (e) {
     e.preventDefault();
-    var p = prompt("Espace MJ. Mot de passe :");
+    var p = prompt("Espace Maître du Jeu. Mot de passe :");
     if (p === null) return;
     if (p === "Von Carstein") {
+      sessionStorage.setItem('mjAccess', '1');
       sessionStorage.setItem('carrieresMJ', '1');
       location.href = lien.getAttribute('href');
     } else {
