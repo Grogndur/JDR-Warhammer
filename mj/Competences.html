@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compétences</title>
+<style>
+  :root{
+    --bg:#12100e; --panel:#1b1815; --panel2:#221e1a; --line:#37302a;
+    --txt:#e8e0d2; --dim:#a2968a; --acc:#c2452a; --acc2:#c9a227; --off:#8d8375;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+       font-family:"Iowan Old Style",Georgia,serif;font-size:15px;line-height:1.45}
+
+  .bar{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,#1b1815,#161311);
+       border-bottom:1px solid var(--line);padding:.6rem .9rem;display:flex;gap:.6rem;
+       align-items:center;flex-wrap:wrap}
+  .bar h1{font-size:1.02rem;letter-spacing:.13em;text-transform:uppercase;margin:0 .5rem 0 0;
+          font-weight:600;white-space:nowrap}
+  .bar h1 span{color:var(--acc)}
+  input[type=search]{flex:1;min-width:160px;background:#0e0c0b;border:1px solid var(--line);
+       color:var(--txt);padding:.42rem .6rem;border-radius:4px;font-family:inherit;font-size:.9rem}
+  input[type=search]:focus{outline:none;border-color:var(--acc2)}
+  button{background:#2a2521;border:1px solid var(--line);color:var(--txt);padding:.4rem .7rem;
+       border-radius:4px;cursor:pointer;font-family:inherit;font-size:.82rem;white-space:nowrap}
+  button:hover{border-color:var(--acc2);color:#fff}
+  button.pri{background:#3a1512;border-color:#5d201a}
+  .status{font-size:.78rem;color:var(--dim);min-width:78px}
+
+  .wrap{max-width:1280px;margin:0 auto;padding:1rem .9rem 4rem}
+  .grp{margin:0 0 1.4rem}
+  .grp>h2{font-size:1rem;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);
+       border-bottom:1px solid var(--acc);padding-bottom:.3rem;margin:1.6rem 0 .5rem}
+  .grp>h2:focus{outline:none;background:#0e0c0b}
+  .gnote{font-size:.82rem;color:var(--dim);margin:.1rem 0 .8rem;padding:.5rem .7rem;
+       background:var(--panel);border-left:2px solid var(--line);border-radius:0 3px 3px 0}
+  .gnote:focus{outline:none;background:#0e0c0b}
+  .gnote:empty,.grp>h2:empty{display:none}
+  .intro{font-size:.85rem;color:var(--dim);background:var(--panel);border-left:2px solid var(--acc);
+       padding:.6rem .8rem;border-radius:0 4px 4px 0;margin:0 0 1.2rem}
+  .intro:focus{outline:none;background:#0e0c0b}
+
+  .sec{background:var(--panel);border:1px solid var(--line);border-radius:5px;margin:0 0 .8rem;overflow:hidden}
+  .sechead{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;background:var(--panel2);
+       border-bottom:1px solid var(--line)}
+  .sechead .t{font-size:.87rem;letter-spacing:.09em;text-transform:uppercase;color:var(--acc2);flex:1}
+  .sechead .n{font-size:.74rem;color:var(--dim)}
+  .sechead button{padding:.22rem .5rem;font-size:.75rem}
+  .snote,.sfoot{font-size:.8rem;color:var(--dim);padding:.5rem .7rem 0}
+  .sfoot{margin:.5rem .7rem .2rem;padding:.45rem .7rem;font-style:italic;
+         border-left:2px solid var(--acc2);background:rgba(184,146,42,.05);border-radius:0 3px 3px 0}
+  .sfoot:empty{display:none}
+  .sfoot::before{content:'À retenir';display:block;font-family:'Cinzel',serif;font-style:normal;
+         font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--acc2);margin-bottom:.2rem}
+  .secbody{padding:.2rem .5rem .6rem}
+  .sec.closed .secbody,.sec.closed .snote,.sec.closed .sfoot{display:none}
+
+  table{width:100%;border-collapse:collapse;font-size:.83rem}
+  th{position:sticky;top:44px;background:#0f0d0c;color:var(--dim);font-weight:400;text-align:left;
+     font-size:.67rem;letter-spacing:.08em;text-transform:uppercase;padding:.4rem .45rem;
+     border-bottom:1px solid var(--line);z-index:5}
+  td{border-bottom:1px solid #262019;padding:.32rem .45rem;vertical-align:top}
+  tr:hover td{background:#1f1b17}
+  tr.off td{color:var(--off);font-style:italic}
+  td.c{text-align:center;white-space:nowrap}
+  td[contenteditable]:focus,th[contenteditable]:focus{outline:none;background:#0e0c0b;box-shadow:inset 0 0 0 1px var(--acc2);border-radius:3px}
+  .acts{width:1%;white-space:nowrap;opacity:0;transition:opacity .12s}
+  tr:hover .acts{opacity:1}
+  .acts button{padding:.1rem .34rem;font-size:.72rem;background:transparent;border-color:transparent;color:var(--dim)}
+  .acts button:hover{color:#fff;border-color:var(--line)}
+  .addrow{margin:.35rem 0 0;font-size:.78rem}
+
+  .items{margin:0;padding:.2rem .3rem}
+  .item{display:flex;gap:.5rem;align-items:flex-start;padding:.3rem .3rem;border-bottom:1px solid #262019}
+  .item:hover{background:#1f1b17}
+  .item .puce{color:var(--acc);flex:0 0 auto;line-height:1.5}
+  .item .txt{flex:1;font-size:.87rem}
+  .item .txt:focus{outline:none;background:#0e0c0b;box-shadow:inset 0 0 0 1px var(--acc2);border-radius:3px}
+  .item .acts{opacity:0}
+  .item:hover .acts{opacity:1}
+
+  .legwrap{columns:2;column-gap:1.4rem}
+  .leg{break-inside:avoid;margin:0 0 .45rem;padding:.35rem .5rem;background:var(--panel);
+       border-left:2px solid var(--line);border-radius:0 3px 3px 0;font-size:.83rem}
+  .leg.mai{border-left-color:var(--acc)}
+  .leg .term{font-weight:700;color:var(--acc2)}
+  .leg.of .term{color:#bdb2a2}
+  .leg .term:focus,.leg .df:focus{outline:none;background:#0e0c0b}
+  .leg .acts2{float:right;opacity:0}
+  .leg:hover .acts2{opacity:1}
+  .leg .acts2 button{padding:.05rem .3rem;font-size:.7rem;background:transparent;border-color:transparent;color:var(--dim)}
+  h2.bloc{font-size:.98rem;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);
+       border-bottom:1px solid var(--acc);padding-bottom:.3rem;margin:1.8rem 0 .6rem}
+
+  #tip{position:fixed;z-index:60;max-width:340px;background:#0d0b0a;border:1px solid var(--acc2);
+       border-radius:4px;padding:.5rem .6rem;font-size:.8rem;display:none;box-shadow:0 6px 24px #000a}
+  #tip b{color:var(--acc2)}
+  #tip p{margin:0 0 .35rem} #tip p:last-child{margin:0}
+
+
+  .sync-flag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .5rem;
+       border-radius:2px;white-space:nowrap;border:1px solid transparent;color:var(--dim)}
+  .sync-flag.ok{color:#8fae7e;border-color:rgba(94,128,79,.4);background:rgba(94,128,79,.12)}
+  .sync-flag.pending{color:#e8cf72;border-color:rgba(184,146,42,.4);background:rgba(184,146,42,.12)}
+  .sync-flag.err{color:#e08a80;border-color:rgba(139,26,26,.5);background:rgba(139,26,26,.16)}
+
+  /* ---------- téléphone : plus de défilement horizontal ---------- */
+  @media(max-width:760px){
+    body{font-size:14px}
+    .bar{padding:.5rem .6rem;gap:.4rem}
+    .bar h1{font-size:.9rem;width:100%;margin:0}
+    button{padding:.34rem .55rem;font-size:.78rem}
+    .wrap{padding:.7rem .5rem 3rem}
+    .secbody{padding:.2rem .3rem .5rem}
+    thead{display:none}
+    table,tbody,tr,td{display:block;width:100%}
+    tr{border:1px solid var(--line);border-radius:4px;background:#1d1915;
+       margin:0 0 .5rem;padding:.35rem .5rem}
+    tr:hover td{background:transparent}
+    td{border-bottom:none;padding:.22rem 0;text-align:left !important;white-space:normal}
+    td:empty{padding:0}
+    td::before{content:attr(data-lab);display:inline-block;min-width:5.4rem;
+       font-size:.62rem;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);
+       vertical-align:top;padding-right:.4rem}
+    td.acts{opacity:1;width:auto;text-align:right !important;padding-top:.3rem;
+       border-top:1px solid #2a241e;margin-top:.25rem}
+    td.acts::before{content:none}
+    .acts button{font-size:.85rem;padding:.18rem .5rem}
+    .legwrap{columns:1}
+    .item .acts{opacity:1}
+  }
+  .retour{color:var(--dim);text-decoration:none;font-size:.8rem;white-space:nowrap;padding:.2rem .3rem}
+  .retour:hover{color:var(--acc2)}
+  .hid{display:none !important}
+  .hint{font-size:.78rem;color:var(--dim);margin:.8rem 0 0}
+
+  @media print{
+    body{background:#fff;color:#14110f;font-size:9pt}
+    .bar,.acts,.acts2,.addrow,.sechead button,.hint,#tip,.retour{display:none !important}
+    .wrap{max-width:none;padding:0}
+    .sec{border:none;background:none;margin:0 0 3mm}
+    .sechead{background:none;border-bottom:1px solid var(--acc);padding:0 0 1mm}
+    .sechead .t{color:#8B1A1A}
+    h2.bloc{color:#8B1A1A;border-color:#8B1A1A}
+    .grp>h2{color:#8B1A1A;border-color:#8B1A1A}
+    .gnote{background:#faf7f1;color:#5a524a}
+    .intro,.snote,.leg{background:#faf7f1;color:#5a524a}
+    .sfoot{background:#faf7f1;color:#5a524a;border-left:2px solid #8B1A1A}
+    .sfoot::before{color:#8B1A1A}
+    th{position:static;background:#2a1414;color:#f0e8d8;border:none}
+    td{border-bottom:1px solid #ddd6ca}
+    tr.off td{color:#5a524a}
+    .item{border-bottom:none;padding:.5mm 0}
+    .sec.closed .secbody,.sec.closed .snote,.sec.closed .sfoot{display:block}
+  }
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<div class="bar">
+  <a class="retour" href="index-mj.html" title="Retour à l'espace MJ">◂ MJ</a>
+  <h1>Les <span>Compétences</span></h1>
+  <input type="search" id="q" placeholder="Filtrer…">
+  <button id="b-push" title="Publier la version du fichier vers la base en ligne. Le fichier fait autorité.">Push</button>
+  <button id="b-print" class="pri">PDF</button>
+  <span class="sync-flag" id="flag"></span>
+</div>
+
+<div class="wrap" id="app"></div>
+<div id="tip"></div>
+
+<script>
+var DEFAUT = {"intro": "Les 45 compétences du livre de base, recoupées avec le supplément Up in Arms. Le niveau de compétence vaut la caractéristique associée plus le nombre d'Augmentations prises. Le losange ◆ signale une compétence dont le supplément élargit les spécialisations ou modifie l'usage ; le détail figure à la fin de la ligne, et le récapitulatif dans le dernier groupe. Up in Arms ne crée aucune compétence nouvelle.", "groups": [{"title": "Compétences de base", "note": "Vingt-cinq compétences testables même sans aucune Augmentation : on lance simplement sur la caractéristique associée.", "sections": [{"kind": "table", "title": "Les vingt-cinq compétences de base", "note": "", "cols": ["Compétence", "Carac.", "Spécialisations", "Effet"], "rows": [{"c": ["Art ◆", "Dex · groupée", "Cartographie, Gravure, Mosaïque, Peinture, Sculpture, Tatouage, Tissage", "Produire une œuvre dans le médium de la spécialisation. Le DR obtenu fixe la qualité du résultat ; une pièce complexe demande un test étendu. Sans Outils de profession, le test est pénalisé.  ◆ Up in Arms : Écriture est une spécialisation courante, employée par plusieurs carrières du livre de base comme du supplément."], "off": true}, {"c": ["Athlétisme ◆", "Ag", "–", "Courir, sauter, se mouvoir vite et avec grâce, et tout effort physique général. Sert aux mouvements de combat.  ◆ Up in Arms : Devient la compétence centrale des poursuites : un test Facile (+20) par round pour la distance parcourue. Un personnage de Mouvement 3 teste à Intermédiaire (+0), de Mouvement 2 à Difficile (−20), de Mouvement 1 à Très difficile (−30). Sert aussi au talent Distraire et à l'action Estimer."], "off": true}, {"c": ["Calme ◆", "FM", "–", "Garder son sang-froid sous pression, résister à la peur et tenir ses convictions. C'est la compétence opposée par défaut à Charme, à Intimidation et aux tentatives de contrainte.  ◆ Up in Arms : Sert à résister à l'atout À poudre noire des armes à feu, très présent dans le supplément."], "off": true}, {"c": ["Charme", "Soc", "–", "Amener autrui à vous voir, vous et vos idées, d'un bon œil. En public, un discours touche un nombre de cibles égal au Bonus de Sociabilité, opposé à leur Calme."], "off": true}, {"c": ["Chevaucher ◆", "Ag · groupée", "Cheval, Grand Loup, Griffon, Demigriffon, Pégase", "Monter le groupe d'animaux de la spécialisation. Aucun test en usage normal : seulement pour une course, un terrain dangereux, un dressage ou une charge. Monté, on utilise le Mouvement de la monture, et Chevaucher remplace Athlétisme pour courir, sauter ou bondir.  ◆ Up in Arms : Refonte du combat monté. Le cavalier dépense son Mouvement pour diriger celui de sa monture et une Action pour lui faire prendre une Action, avec un test si la monture n'est pas dressée. Une attaque de corps à corps contre une cible plus petite que la monture gagne +20. En charge, les dégâts utilisent la Force et la Taille de la monture. Poursuites : test Facile (+20) par round."], "off": true}, {"c": ["Commandement ◆", "Soc", "–", "Diriger et se faire obéir. Un test réussi donne des ordres à un nombre de cibles égal au Bonus de Sociabilité ; en combat, il distribue des Avantages aux alliés commandés.  ◆ Up in Arms : Le nouveau talent Chef de pièce s'appuie dessus : un test Intermédiaire (+0) permet aux servants d'une machine de guerre d'employer votre valeur de Projectiles à la place de la leur."], "off": true}, {"c": ["Conduite d'attelage ◆", "Ag", "–", "Mener chariots, diligences et engins à roues. Aucun test en conditions normales ; un test dès que la route, la météo ou l'allure se compliquent.  ◆ Up in Arms : Poursuites en véhicule : test Facile (+20) par round pour la distance."], "off": true}, {"c": ["Corps à corps ◆", "CC · groupée", "Arme d'hast, Arme à deux mains, Bagarre, Base, Cavalerie, Escrime, Fléau, Parade", "L'entraînement à une classe d'armes de mêlée. Sans la bonne spécialisation, l'arme perd tous ses atouts et conserve ses défauts.  ◆ Up in Arms : Le supplément élargit fortement le catalogue de chaque spécialisation et révise la qualité Protectrice : un bouclier en main secondaire protège même quand c'est l'arme de la main directrice qui a paré. Corps à corps (Parade) reste le moyen d'opposer une attaque sans la pénalité de main gauche de −20."], "off": true}, {"c": ["Discrétion", "Ag · groupée", "Rurale, Souterrains, Urbaine", "Se glisser sans être vu ni entendu. Opposée à la Perception adverse, modifiée par l'obscurité, le couvert et la tenue. Option Filature : test combiné de Perception et de Discrétion."], "off": true}, {"c": ["Divertissement ◆", "Soc · groupée", "Chant, Comédie, Interprétation, Narration", "Capter et amuser un public par la parole. Le DR mesure la réussite de la prestation.  ◆ Up in Arms : Narration et Discours sont employés par les carrières du supplément."], "off": true}, {"c": ["Emprise sur les animaux", "FM", "–", "Amadouer, calmer ou dominer des animaux, jusqu'à un nombre égal au Bonus de Force Mentale plus le DR. Généralement opposé à la Force Mentale de la cible."], "off": true}, {"c": ["Escalade", "F", "–", "Grimper une surface lisse ou verticale. Sans contrainte de temps et sur une paroi facile, aucun test."], "off": true}, {"c": ["Esquive ◆", "Ag", "–", "Éviter chutes de pierres, pièges et coups. En combat, sert à opposer une attaque et à éviter les dégâts.  ◆ Up in Arms : À cheval, tout test d'Esquive subit −20, sauf si le personnage possède Acrobaties équestres."], "off": true}, {"c": ["Intimidation", "F", "–", "Contraindre ou effrayer une créature consciente. Presque toujours opposée au Calme de la cible ; un succès impose l'état Apeuré."], "off": true}, {"c": ["Intuition", "I", "–", "Sentir ce qui cloche, deviner qu'on vous cache quelque chose, lire une situation. En combat, un test permet de jauger un adversaire et d'accumuler des Avantages."], "off": true}, {"c": ["Marchandage", "Soc", "–", "Obtenir un meilleur prix. Le plus souvent un test opposé de Marchandage contre le vendeur."], "off": true}, {"c": ["Orientation", "I", "–", "Se repérer dans la nature aux repères, aux astres ou à la carte. Test seulement si vous êtes désorienté ou en terrain inconnu."], "off": true}, {"c": ["Pari", "Int", "–", "Estimer une cote et jouer aux jeux de hasard. Tous les joueurs testent, le plus haut DR l'emporte."], "off": true}, {"c": ["Perception ◆", "I", "–", "Remarquer par les sens : mouvement, piège, filature, détail hors de propos.  ◆ Up in Arms : Sert à repérer une canne-pistolet, à Difficile (−20), ou à Très difficile (−30) pour qui ne connaît pas la poudre noire, et à repérer un pavois déployé ou un piège posé."], "off": true}, {"c": ["Ragot", "Soc", "–", "Récolter et répandre des rumeurs. Un succès donne un renseignement local, chaque DR un renseignement de plus ou une rumeur semée."], "off": true}, {"c": ["Ramer", "F", "–", "Manier la pagaie et diriger une embarcation. Test surtout en poursuite, en rapides ou pour une manœuvre risquée."], "off": true}, {"c": ["Résistance ◆", "E", "–", "Endurer la privation, l'immobilité prolongée et les milieux hostiles. Sert à résister aux États et à s'en remettre, et à récupérer des Blessures.  ◆ Up in Arms : Un tir de grosse balle impose un test Intermédiaire (+0) au tireur et à quiconque se tient à deux mètres, sous peine de l'état Assourdi. Une monture négligée teste chaque jour à Intermédiaire (+0)."], "off": true}, {"c": ["Résistance à l'alcool", "E", "–", "Boire sans perdre le jugement. Un test par verre ; chaque échec impose −10 en CC, CT, Ag, Dex et Int, jusqu'à −30."], "off": true}, {"c": ["Subornation", "Soc", "–", "Juger si quelqu'un est corruptible et comment lui présenter la chose. Le prix se calcule sur le Revenu de la cible."], "off": true}, {"c": ["Survie en extérieur ◆", "Int", "–", "Vivre dehors : pêcher, chasser, cueillir, faire du feu, monter un abri, lire le temps et les traces d'animaux dangereux. Un test par nuit de campement.  ◆ Up in Arms : Le supplément en fait la compétence de la débrouille en armement. Test étendu Intermédiaire (+0) pour se tailler un gourdin en forêt, 7 DR, ou un bâton, 20 DR, ou un bâton pointu en guise de flèche, 10 DR. Un caillou de fronde se ramasse par un test étendu Très facile (+40) de Survie ou Intermédiaire (+0) de Perception, 5 DR."], "off": true}], "foot": "Une compétence de base non améliorée reste jouable, mais un personnage sans Augmentation échoue souvent : la caractéristique brute tourne autour de 30 à 40 %."}]}, {"title": "Compétences avancées", "note": "Vingt compétences intestables tant qu'on n'y a pas mis au moins une Augmentation. Sans formation, le personnage ne peut même pas essayer, quelle que soit sa caractéristique.", "sections": [{"kind": "table", "title": "Les vingt compétences avancées", "note": "", "cols": ["Compétence", "Carac.", "Spécialisations", "Effet"], "rows": [{"c": ["Crochetage", "Dex", "–", "Ouvrir une serrure sans clé, en général par test étendu dont le nombre de DR dépend de la complexité du mécanisme. Les difficultés supposent de vrais outils ; un crochet improvisé pénalise le test."], "off": true}, {"c": ["Dressage ◆", "Int · groupée", "Cheval, Chien, Demigriffon, Pégase, Pigeon", "Comprendre et dresser un type d'animal, et identifier les capacités Dressé qu'il possède déjà. Permet l'Activité Dressage entre deux aventures. En combat, un test opposé contre la Force Mentale effraie un animal de la spécialisation.  ◆ Up in Arms : Le supplément détaille l'entraînement des montures et l'acquisition de nouvelles capacités Dressé par Activité."], "off": true}, {"c": ["Escamotage", "Dex", "–", "Faire les poches, escamoter un objet, tricher aux cartes. Opposé à la Perception de la cible."], "off": true}, {"c": ["Évaluation", "Int", "–", "Estimer la valeur d'un objet rare, d'une marchandise inhabituelle ou d'une œuvre, et repérer une contrefaçon."], "off": true}, {"c": ["Focalisation", "FM · groupée", "Aqshy, Azyr, Chamon, Dhar, Ghur, Ghyran, Hysh, Shyish, Ulgu", "Appeler et maîtriser les Vents de la Magie. Compétence à part : Groupée pour qui est formé, non Groupée pour qui ne l'est pas. Chaque spécialisation est un Vent différent."], "off": true}, {"c": ["Guérison ◆", "Int", "–", "Diagnostiquer, traiter une maladie, et rendre un nombre de Blessures égal au Bonus d'Intelligence plus le DR. Un patient ne bénéficie que d'un jet de Guérison par tranche de blessures.  ◆ Up in Arms : Avec les règles de blessure alternatives, un test Facile (+20) retire un état Hémorragie, et chaque DR en retire un de plus. L'atout Taillade des nouvelles armes rend cet état bien plus fréquent."], "off": true}, {"c": ["Langue ◆", "Int · groupée", "bataille, bretonnien, classique, guilde, khazalid, Magick, tiléen, voleur", "Parler une langue autre que le reikspiel et sa langue maternelle, qui sont acquises sans test.  ◆ Up in Arms : Les carrières du supplément emploient couramment Langue (bataille) et Langue (guilde), et ajoutent l'arabien, l'estalien et la langue du Wasteland."], "off": true}, {"c": ["Métier ◆", "Dex · groupée", "Apothicaire, Calligraphe, Charpentier, Cirier, Cuisinier, Embaumeur, Forgeron, Tanneur", "Fabriquer un objet ou fournir un service, et connaître le savoir du métier. Posséder la compétence suffit pour le travail courant ; on ne teste que dans l'urgence, en conditions défavorables ou pour une pièce de qualité, souvent par test étendu. Sert aussi de compétence de Savoir sur le métier, et à l'Activité Artisanat.  ◆ Up in Arms : Le supplément ajoute de nombreuses spécialisations : Arcier, Armurier, Arquebusier, Barbier, Cartographe, Explosifs, Forgeron d'armes, Ingénieur, Maçon, Maréchal-ferrant, Mineur, Scribe, Tailleur. Il donne aussi des barèmes de fabrication improvisée par test étendu Intermédiaire (+0) : lacet étrangleur 5 DR, coup-de-poing américain 10 DR, assommoir 15 DR."], "off": true}, {"c": ["Musicien ◆", "Dex · groupée", "Clavecin, Cor, Cornemuse, Luth, Violon", "Jouer d'un instrument. Le DR mesure la qualité du morceau.  ◆ Up in Arms : Les carrières militaires emploient Tambour, Cor et Flûte : l'instrument de signal fait partie de l'équipement du soldat."], "off": true}, {"c": ["Natation", "F", "–", "Nager sans se noyer. Aucun test en eau calme ; un test en courant fort, en poursuite ou en fuite."], "off": true}, {"c": ["Piégeage ◆", "Dex", "–", "Poser et désamorcer des pièges. Qui possède la compétence sait déclencher un piège sans risque.  ◆ Up in Arms : Le supplément fournit des pièges chiffrés dans le catalogue de l'ingénieur, dont le piège à mâchoires et la mine à pression."], "off": true}, {"c": ["Pistage", "I", "–", "Suivre des traces subtiles dans la nature. Une piste évidente relève de la Perception ; le Pistage commence là où il faut interpréter."], "off": true}, {"c": ["Prière ◆", "Soc", "–", "Invoquer sa divinité et communier avec elle. En combat, permet de méditer et de se concentrer si la situation et la foi du personnage s'y prêtent.  ◆ Up in Arms : Le culte de Myrmidia et ses miracles sont entièrement détaillés par le supplément, avec la carrière de Prêtre de Myrmidia."], "off": true}, {"c": ["Projectiles ◆", "CT · groupée", "Arbalète, Arc, Entraves, Explosifs, Fronde, Ingénierie, Lancer, Poudre noire", "L'entraînement à un groupe d'armes de tir. Sans la bonne spécialisation, l'arme perd tous ses atouts et conserve ses défauts. Lancer une simple pierre ne demande qu'un test de Capacité de Tir.  ◆ Up in Arms : Ajoute la spécialisation Machine de siège, pour catapultes, balistes, canons et mortiers, et le défaut Servants X : l'arme réclame X servants possédant la compétence adéquate, l'un d'eux étant désigné pour lancer le test. Ajoute aussi l'atout Salve X, qui autorise plusieurs tirs avant rechargement avec un cumul de −10 par tir supplémentaire dans le même tour."], "off": true}, {"c": ["Recherche", "Int", "–", "Trouver un renseignement dans une bibliothèque ou un fonds d'archives. Exige le talent Lire/Écrire."], "off": true}, {"c": ["Représentation ◆", "Ag · groupée", "Acrobaties, Cracheur de feu, Danser, Funambule, Jonglage, Mime, Pitreries", "Un art du corps, souvent exercé pour vivre. Le DR mesure la réussite devant le public.  ◆ Up in Arms : Ajoute la spécialisation Parade, la manœuvre d'apparat des troupes en revue, qui vaut du prestige à un régiment et de la solde à qui la maîtrise."], "off": true}, {"c": ["Savoir ◆", "Int · groupée", "Géologie, Héraldique, Histoire, Ingénierie, Loi, Magick, Métallurgie, Science, Théologie", "Une branche de connaissance étudiée. Le savoir courant du domaine s'obtient sans test ; un test ne sert que pour un point obscur ou précis.  ◆ Up in Arms : Ajoute Art de la guerre, la compétence de référence de tout officier, et emploie Artillerie, Géographie, Région, Empire et Tilée."], "off": true}, {"c": ["Signes secrets ◆", "Int · groupée", "Éclaireurs, Guildes (au choix), Itinérants, Ordre Gris, Vagabonds, Voleurs", "Lire et tracer les marques clandestines d'un groupe donné.  ◆ Up in Arms : Ajoute les codes des ordres de chevalerie et des cultes militaires : Soleil Ardent, Chevaliers Panthère, Ulric."], "off": true}, {"c": ["Soin aux animaux ◆", "Int", "–", "Soigner un animal malade ou blessé. Une seule Augmentation suffit à garder une bête en bonne santé sans test.  ◆ Up in Arms : Devient obligatoire pour entretenir selle, harnais, ferrure, fourrage et pansage. En campagne ou loin d'un bon pâturage, un test Facile (+20) voire Intermédiaire (+0) par jour. Une personne suffit pour six bêtes en conditions difficiles, douze avec une écurie bien tenue. Chaque jour de négligence impose à la monture un test d'Endurance Intermédiaire (+0), dont l'échec produit fatigue, maladie, ferrure abîmée ou fuite."], "off": true}, {"c": ["Voile", "Ag · groupée", "Caravelle, Chaland, Cogue, Drakkar, Frégate", "Barrer et manœuvrer un voilier. Avec un équipage entraîné, on ne teste qu'en poursuite, en haut-fond ou pour une manœuvre inhabituelle. Posséder une spécialisation rend les autres accessibles comme des compétences de Base."], "off": true}], "foot": "C'est ici que se joue la spécialisation d'un personnage : une compétence avancée acquise est une porte que les autres n'ont pas."}]}, {"title": "Ce que change Up in Arms", "note": "Le supplément ne crée aucune compétence. Il ajoute des spécialisations et modifie l'usage d'une dizaine de compétences existantes, presque toujours par le biais d'un chapitre optionnel.", "sections": [{"kind": "table", "title": "Ajouts et modifications", "note": "", "cols": ["Compétence", "Nature", "Ce qui change"], "rows": [{"c": ["Projectiles (Machine de siège)", "Nouvelle spécialisation", "Balistes, catapultes, canons, mortiers et lance-fusées, avec le défaut Servants X et l'atout Salve X."], "off": true}, {"c": ["Savoir (Art de la guerre)", "Nouvelle spécialisation", "La compétence de tout officier : stratégie, ordre de bataille, siège, logistique."], "off": true}, {"c": ["Métier, treize spécialisations", "Nouvelles spécialisations", "Arcier, Armurier, Arquebusier, Barbier, Cartographe, Explosifs, Forgeron d'armes, Ingénieur, Maçon, Maréchal-ferrant, Mineur, Scribe, Tailleur."], "off": true}, {"c": ["Signes secrets, trois codes", "Nouvelles spécialisations", "Soleil Ardent, Chevaliers Panthère, Ulric."], "off": true}, {"c": ["Représentation (Parade)", "Nouvelle spécialisation", "La manœuvre d'apparat des troupes en revue."], "off": true}, {"c": ["Musicien (Tambour, Flûte)", "Nouvelles spécialisations", "Les instruments de signal du champ de bataille, le Cor étant déjà présent."], "off": true}, {"c": ["Langue, quatre langues", "Nouvelles spécialisations", "Arabien, estalien, reikspiel pour un personnage étranger, langue du Wasteland."], "off": true}, {"c": ["Chevaucher", "Usage refondu", "Combat monté détaillé : diriger le Mouvement puis l'Action de la monture, +20 contre une cible plus petite qu'elle, dégâts de charge calculés sur sa Force et sa Taille."], "off": true}, {"c": ["Soin aux animaux", "Usage étendu", "Devient obligatoire pour entretenir une monture. Négligence sanctionnée par un test d'Endurance quotidien de la bête."], "off": true}, {"c": ["Athlétisme, Chevaucher, Conduite d'attelage", "Usage étendu", "Cœur du système de poursuites : un test Facile (+20) par round, durci pour les personnages lents."], "off": true}, {"c": ["Survie en extérieur", "Usage étendu", "Fabrication de fortune chiffrée : gourdin, bâton, projectile de fronde, bâton pointu."], "off": true}, {"c": ["Guérison", "Usage étendu", "Retire l'état Hémorragie sur un test Facile (+20), un état de plus par DR. Pertinent seulement avec les règles de blessure alternatives."], "off": true}, {"c": ["Esquive", "Restriction nouvelle", "−20 à cheval, sauf si le personnage possède le talent Acrobaties équestres."], "off": true}, {"c": ["Corps à corps", "Usage révisé", "Qualité Protectrice refondue : le bouclier protège même quand la parade est faite avec l'arme de la main directrice."], "off": true}], "foot": ""}, {"kind": "texte", "title": "Notes d'emploi", "note": "", "items": ["Sans le supplément à ta table, ignore les mentions ◆ : le reste de chaque ligne reste exact et correspond au livre de base seul.", "Les usages étendus dépendent presque tous d'un chapitre optionnel. Poursuites pour Athlétisme, Chevaucher et Conduite d'attelage. Combat monté pour Chevaucher, Soin aux animaux et Esquive. Blessures alternatives pour Guérison. Tu peux en adopter un sans adopter les autres.", "Les nouvelles spécialisations, elles, s'ajoutent sans condition : ce ne sont que des entrées de plus dans une liste qui n'a jamais été exhaustive.", "Projectiles (Machine de siège) est le seul ajout réellement structurant : il ouvre l'artillerie aux personnages, avec le défaut Servants et l'atout Salve. Voir Armes et Munitions et Le Métier d'Ingénieur.", "Les noms français des spécialisations introduites par le supplément sont des traductions maison : Up in Arms n'a pas de version française officielle."], "foot": ""}]}], "legend": [{"off": true, "term": "Augmentation", "def": "Point d'expérience investi dans une compétence. Le niveau de compétence vaut la caractéristique associée plus le nombre d'Augmentations prises."}, {"off": true, "term": "Compétence de base", "def": "Testable même sans aucune Augmentation : on lance simplement sur la caractéristique associée."}, {"off": true, "term": "Compétence avancée", "def": "Intestable tant qu'on n'y a pas mis au moins une Augmentation. Sans formation, le personnage ne peut même pas essayer."}, {"off": true, "term": "Compétence groupée", "def": "Se décline en spécialisations. Chaque Augmentation doit être affectée à une spécialisation précise, qui progresse séparément des autres."}, {"off": true, "term": "DR", "def": "Degré de Réussite. Différence entre les dizaines du score de compétence et les dizaines du jet, positive en réussite, négative en échec."}, {"off": true, "term": "Test étendu", "def": "Test répété jusqu'à cumuler un total de DR donné, chaque tentative consommant un temps défini."}, {"off": true, "term": "Test opposé", "def": "Les deux camps testent, le plus haut DR l'emporte."}, {"off": true, "term": "Maxi", "def": "Nombre de fois qu'un talent peut être acquis : soit 1, soit le bonus d'une caractéristique, c'est-à-dire son chiffre des dizaines."}, {"off": true, "term": "Tests liés", "def": "Compétences citées sous la ligne Tests d'un talent. Chaque acquisition du talent donne +1 DR à toute réussite de ces compétences, en plus de son effet propre."}, {"off": false, "term": "Avantage de groupe", "def": "Système optionnel d'Up in Arms qui remplace les Avantages individuels par une réserve par camp. Il conditionne huit des révisions de talents."}, {"off": false, "term": "Blessures alternatives", "def": "Chapitre optionnel d'Up in Arms sur les Blessures Critiques et la mort. Il conditionne la refonte de Frappe blessante et l'état Hémorragie."}, {"off": false, "term": "Poursuites", "def": "Chapitre optionnel d'Up in Arms. Athlétisme, Chevaucher et Conduite d'attelage y servent à mesurer la distance, un test Facile (+20) par round."}, {"off": false, "term": "Combat monté", "def": "Chapitre d'Up in Arms qui refond l'emploi de Chevaucher, de Soin aux animaux et d'Esquive en selle."}]};
+var RACINE = 'outils/competences';
+var CLIENT = Math.random().toString(36).slice(2, 10);
+var data = null;
+
+var FB_CONFIG = {
+  apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+  authDomain: "warhammer-table-jdr.firebaseapp.com",
+  databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "warhammer-table-jdr",
+  storageBucket: "warhammer-table-jdr.firebasestorage.app",
+  messagingSenderId: "347804803970",
+  appId: "1:347804803970:web:43e062299c53e59d20e59b"
+};
+
+var db = null, refData = null, refSave = null;
+try{
+  if(typeof firebase !== 'undefined'){
+    if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+    db = firebase.database();
+    refData = db.ref(RACINE + '/donnees');
+    refSave = db.ref(RACINE + '/sauvegardes');
+  }
+}catch(e){ console.warn('Firebase indisponible :', e); }
+
+/* ---------- indicateur d'état ---------- */
+var flag = document.getElementById('flag');
+var flagTimer = null;
+function etat(txt, cls){
+  if(!flag) return;
+  clearTimeout(flagTimer);
+  flag.textContent = txt;
+  flag.className = 'sync-flag ' + (cls || '');
+  if(cls === 'ok') flagTimer = setTimeout(function(){ flag.textContent = ''; flag.className = 'sync-flag'; }, 2600);
+}
+
+/* ---------- Firebase efface les tableaux vides : on remet tout d'aplomb ---------- */
+function tab(x){
+  if(Array.isArray(x)) return x;
+  if(x && typeof x === 'object'){
+    var k = Object.keys(x).sort(function(a,b){ return a - b; }), o = [];
+    for(var i = 0; i < k.length; i++) o.push(x[k[i]]);
+    return o;
+  }
+  return [];
+}
+
+/* ---------- amorçage : le fichier, puis la base prend la main dès sa réponse ---------- */
+function charger(){
+  data = normaliser(JSON.parse(JSON.stringify(DEFAUT)));
+}
+
+/* ---------- écriture groupée ---------- */
+var tmr = null, sale = false;
+function sauver(){
+  sale = true;
+  etat('modifié', 'pending');
+  clearTimeout(tmr);
+  tmr = setTimeout(ecrire, 900);
+}
+function ecrire(){
+  if(!refData){ etat('hors ligne', 'err'); return; }
+  etat('envoi…', 'pending');
+  refData.set({ payload: data, at: Date.now(), par: CLIENT }).then(function(){
+    sale = false;
+    etat('enregistré', 'ok');
+  }).catch(function(e){
+    console.warn('Écriture échouée :', e);
+    etat('échec réseau', 'err');
+    clearTimeout(tmr);
+    tmr = setTimeout(ecrire, 4000);
+  });
+}
+
+/* ---------- écoute en direct ---------- */
+var enAttente = null;
+function enEdition(){
+  var a = document.activeElement;
+  return !!(a && a.isContentEditable);
+}
+function appliquer(p){
+  data = normaliser(p);
+  rendre();
+  etat('à jour', 'ok');
+}
+if(refData){
+  refData.on('value', function(sn){
+    var v = sn.val();
+    if(!v || !v.payload) return;
+    if(v.par === CLIENT) return;
+    if(sale || enEdition()){ enAttente = v.payload; return; }
+    appliquer(v.payload);
+  }, function(e){ console.warn('Lecture impossible :', e); etat('hors ligne', 'err'); });
+}
+document.addEventListener('focusout', function(){
+  setTimeout(function(){
+    if(enAttente && !sale && !enEdition()){ var p = enAttente; enAttente = null; appliquer(p); }
+  }, 300);
+});
+
+/* ---------- publication du fichier vers la base ---------- */
+function pousserFichier(){
+  if(!refData){ alert('Hors ligne : publication impossible.'); return; }
+  if(!confirm(
+    'Publier la version du fichier vers la base ?\n\n' +
+    'Tout ce qui a été modifié en ligne sans être réintégré au fichier sera remplacé.\n' +
+    "L'état actuel de la base est sauvegardé avant écriture."
+  )) return;
+  var b = document.getElementById('b-push');
+  if(b) b.setAttribute('disabled', 'disabled');
+  etat('sauvegarde…', 'pending');
+  refData.once('value').then(function(sn){
+    var avant = sn.val();
+    if(!avant || !refSave) return null;
+    return refSave.child(String(Date.now())).set(avant);
+  }).catch(function(e){ console.warn('Sauvegarde impossible :', e); })
+  .then(function(){
+    etat('publication…', 'pending');
+    data = normaliser(JSON.parse(JSON.stringify(DEFAUT)));
+    return refData.set({ payload: data, at: Date.now(), par: CLIENT });
+  }).then(function(){
+    sale = false;
+    rendre();
+    if(b) b.removeAttribute('disabled');
+    etat('publié', 'ok');
+  }).catch(function(e){
+    console.warn('Publication échouée :', e);
+    if(b) b.removeAttribute('disabled');
+    etat('publication refusée', 'err');
+  });
+}
+
+
+/* ---------- remise en forme après lecture ---------- */
+function normaliser(d){
+  if(!d || typeof d !== 'object') d = JSON.parse(JSON.stringify(DEFAUT));
+  d.intro = d.intro || '';
+  /* ancien format à sections plates : on l'enveloppe dans un groupe unique */
+  if(!d.groups && d.sections) d.groups = [{title:'', note:'', sections: d.sections}];
+  delete d.sections;
+  d.groups = tab(d.groups);
+  for(var g = 0; g < d.groups.length; g++){
+    var G = d.groups[g];
+    G.title = G.title || '';
+    G.note  = G.note  || '';
+    G.sections = tab(G.sections);
+    for(var i = 0; i < G.sections.length; i++){
+      var s = G.sections[i];
+      s.kind  = s.kind || (s.cols ? 'table' : 'texte');
+      s.title = s.title || '';
+      s.note  = s.note  || '';
+      s.foot  = s.foot  || '';
+      if(s.kind === 'table'){
+        s.cols = tab(s.cols);
+        s.rows = tab(s.rows);
+        for(var r = 0; r < s.rows.length; r++){
+          s.rows[r] = s.rows[r] || {};
+          s.rows[r].c = tab(s.rows[r].c);
+          s.rows[r].off = !!s.rows[r].off;
+        }
+      } else {
+        s.items = tab(s.items);
+      }
+    }
+  }
+  d.legend = tab(d.legend);
+  for(var l = 0; l < d.legend.length; l++){
+    d.legend[l] = d.legend[l] || {};
+    d.legend[l].term = d.legend[l].term || '';
+    d.legend[l].def  = d.legend[l].def  || '';
+    d.legend[l].off  = !!d.legend[l].off;
+  }
+  return d;
+}
+
+function esc(s){
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function classeCol(nom){
+  var n = (nom || '').toLowerCase();
+  if(n.indexOf('enc') === 0 || n.indexOf('dr') === 0 || n.indexOf('éch') === 0 ||
+     n.indexOf('compl') === 0 || n.indexOf('pa') === 0 || n.indexOf('dégâts') === 0) return 'c';
+  return '';
+}
+
+function rendre(){
+  var h = '';
+  h += '<div class="intro" contenteditable data-t="intro">' + esc(data.intro || '') + '</div>';
+
+  for(var gi = 0; gi < data.groups.length; gi++){
+    var G = data.groups[gi];
+    h += '<div class="grp" data-g="' + gi + '">';
+    h += '<h2 contenteditable data-t="gt" data-g="' + gi + '">' + esc(G.title) + '</h2>';
+    h += '<div class="gnote" contenteditable data-t="gn" data-g="' + gi + '">' + esc(G.note) + '</div>';
+
+    for(var si = 0; si < G.sections.length; si++){
+      var s = G.sections[si];
+      var n = (s.kind === 'table') ? s.rows.length : s.items.length;
+      h += '<div class="sec" data-g="' + gi + '" data-s="' + si + '">';
+      h += '<div class="sechead">';
+      h +=   '<button data-a="fold">▾</button>';
+      h +=   '<span class="t" contenteditable data-t="st" data-g="' + gi + '" data-s="' + si + '">' + esc(s.title) + '</span>';
+      h +=   '<span class="n">' + n + '</span>';
+      h +=   '<button data-a="up">↑</button><button data-a="down">↓</button>';
+      h += '</div>';
+      h += '<div class="snote" contenteditable data-t="sn" data-g="' + gi + '" data-s="' + si + '">' + esc(s.note) + '</div>';
+      h += '<div class="secbody">';
+
+      var PIED = '<div class="sfoot" contenteditable data-t="sf" data-g="' + gi + '" data-s="' + si + '">' + esc(s.foot) + '</div>';
+
+      if(s.kind === 'table'){
+        h += '<table><thead><tr>';
+        for(var ci = 0; ci < s.cols.length; ci++)
+          h += '<th contenteditable data-t="col" data-g="' + gi + '" data-s="' + si + '" data-c="' + ci + '">' + esc(s.cols[ci]) + '</th>';
+        h += '<th></th></tr></thead><tbody>';
+        for(var ri = 0; ri < s.rows.length; ri++){
+          var r = s.rows[ri];
+          h += '<tr' + (r.off ? ' class="off"' : '') + ' data-r="' + ri + '">';
+          for(var k = 0; k < s.cols.length; k++){
+            h += '<td class="' + classeCol(s.cols[k]) + '" contenteditable data-t="cell" data-lab="' + esc(s.cols[k]) +
+                 '" data-g="' + gi + '" data-s="' + si + '" data-r="' + ri + '" data-c="' + k + '">' +
+                 esc(r.c[k] === undefined ? '' : r.c[k]) + '</td>';
+          }
+          h += '<td class="acts"><button data-a="off" title="Ligne officielle">★</button>' +
+               '<button data-a="dup" title="Dupliquer">⧉</button>' +
+               '<button data-a="del" title="Supprimer">✕</button></td></tr>';
+        }
+        h += '</tbody></table>' + PIED + '<button class="addrow" data-a="addrow">+ Ligne</button>';
+      } else {
+        h += '<div class="items">';
+        for(var ii = 0; ii < s.items.length; ii++){
+          h += '<div class="item" data-i="' + ii + '"><span class="puce">◆</span>' +
+               '<div class="txt" contenteditable data-t="item" data-g="' + gi + '" data-s="' + si + '" data-i="' + ii + '">' + esc(s.items[ii]) + '</div>' +
+               '<span class="acts"><button data-a="upitem">↑</button><button data-a="delitem">✕</button></span></div>';
+        }
+        h += '</div>' + PIED + '<button class="addrow" data-a="additem">+ Paragraphe</button>';
+      }
+      h += '</div></div>';
+    }
+    h += '</div>';
+  }
+
+  h += '<h2 class="bloc">Légende</h2>';
+  {
+    h += '<div class="legwrap">';
+    for(var li = 0; li < data.legend.length; li++){
+      var L = data.legend[li];
+      h += '<div class="leg ' + (L.off ? 'of' : 'mai') + '" data-l="' + li + '">';
+      h += '<span class="acts2"><button data-a="legoff">★</button><button data-a="legdel">✕</button></span>';
+      h += '<span class="term" contenteditable data-t="lt" data-l="' + li + '">' + esc(L.term) + '</span>. ';
+      h += '<span class="df" contenteditable data-t="ld" data-l="' + li + '">' + esc(L.def) + '</span></div>';
+    }
+    h += '</div><button class="addrow" data-a="addleg">+ Entrée de légende</button>';
+  }
+  h += '<p class="hint">Tout est modifiable : cliquer et écrire. Chaque frappe part vers la base en ligne, ' +
+       'rien à valider. L\'étoile marque une ligne officielle, en italique. Survoler une cellule affiche ' +
+       'les définitions reconnues. Le bouton PDF imprime la page, le bouton Push republie le contenu du ' +
+       'fichier par-dessus la base.</p>';
+
+  document.getElementById('app').innerHTML = h;
+  indexerLegende();
+}
+
+document.addEventListener('input', function(e){
+  var el = e.target, t = el.getAttribute('data-t');
+  if(!t) return;
+  var g = +el.getAttribute('data-g'), s = +el.getAttribute('data-s'),
+      r = +el.getAttribute('data-r'), c = +el.getAttribute('data-c'),
+      i = +el.getAttribute('data-i'), l = +el.getAttribute('data-l');
+  var v = el.textContent, S = (data.groups[g] && data.groups[g].sections) ? data.groups[g].sections[s] : null;
+  if(t === 'intro') data.intro = v;
+  else if(t === 'gt') data.groups[g].title = v;
+  else if(t === 'gn') data.groups[g].note = v;
+  else if(t === 'st') S.title = v;
+  else if(t === 'sn') S.note = v;
+  else if(t === 'sf') S.foot = v;
+  else if(t === 'col') S.cols[c] = v;
+  else if(t === 'cell') S.rows[r].c[c] = v;
+  else if(t === 'item') S.items[i] = v;
+  else if(t === 'lt'){ data.legend[l].term = v; indexerLegende(); }
+  else if(t === 'ld'){ data.legend[l].def = v; indexerLegende(); }
+  sauver();
+});
+
+document.addEventListener('keydown', function(e){
+  var el = e.target;
+  if(e.key === 'Enter' && el.hasAttribute && el.hasAttribute('contenteditable')){
+    if(el.classList && el.classList.contains('txt')) return; /* paragraphes : saut de ligne permis */
+    e.preventDefault(); el.blur();
+  }
+});
+
+document.addEventListener('click', function(e){
+  var b = e.target.closest ? e.target.closest('button[data-a]') : null;
+  if(!b) return;
+  var a = b.getAttribute('data-a');
+  var sec = b.closest('.sec'), tr = b.closest('tr'), it = b.closest('.item'), leg = b.closest('.leg');
+
+  if(a === 'fold'){ sec.classList.toggle('closed'); return; }
+  if(a === 'addleg'){
+    if(!data.legend) data.legend = [];
+    data.legend.push({off:false, term:'Nouveau mot-clé', def:'Définition.'});
+    sauver(); rendre();
+    var els = document.querySelectorAll('.leg .term');
+    if(els.length) els[els.length - 1].focus();
+    return;
+  }
+  if(leg){
+    var l = +leg.getAttribute('data-l');
+    if(a === 'legdel'){ data.legend.splice(l,1); sauver(); rendre(); return; }
+    if(a === 'legoff'){ data.legend[l].off = !data.legend[l].off; sauver(); rendre(); return; }
+  }
+  if(!sec) return;
+  var gi = +sec.getAttribute('data-g'), si = +sec.getAttribute('data-s');
+  var LST = data.groups[gi].sections, S = LST[si];
+
+  if(a === 'addrow'){
+    var vide = []; for(var i = 0; i < S.cols.length; i++) vide.push('');
+    S.rows.push({c:vide, off:false}); sauver(); rendre(); return;
+  }
+  if(a === 'additem'){ S.items.push('Nouveau paragraphe.'); sauver(); rendre(); return; }
+  if(a === 'up' || a === 'down'){
+    var d = (a === 'up') ? -1 : 1, n = si + d;
+    if(n >= 0 && n < LST.length){
+      var tmp = LST[si]; LST[si] = LST[n]; LST[n] = tmp;
+      sauver(); rendre();
+    }
+    return;
+  }
+  if(tr){
+    var r = +tr.getAttribute('data-r');
+    if(a === 'del'){ S.rows.splice(r,1); sauver(); rendre(); return; }
+    if(a === 'dup'){ S.rows.splice(r+1,0, JSON.parse(JSON.stringify(S.rows[r]))); sauver(); rendre(); return; }
+    if(a === 'off'){ S.rows[r].off = !S.rows[r].off; sauver(); rendre(); return; }
+  }
+  if(it){
+    var ii = +it.getAttribute('data-i');
+    if(a === 'delitem'){ S.items.splice(ii,1); sauver(); rendre(); return; }
+    if(a === 'upitem' && ii > 0){
+      var t2 = S.items[ii]; S.items[ii] = S.items[ii-1]; S.items[ii-1] = t2; sauver(); rendre(); return;
+    }
+  }
+});
+
+document.getElementById('b-print').onclick = function(){ window.print(); };
+document.getElementById('b-push').onclick = pousserFichier;
+
+document.getElementById('q').oninput = function(){
+  var q = this.value.trim().toLowerCase();
+  var secs = document.querySelectorAll('.sec');
+  for(var i = 0; i < secs.length; i++){
+    var lignes = secs[i].querySelectorAll('tbody tr, .item'), vis = 0;
+    for(var j = 0; j < lignes.length; j++){
+      var ok = !q || lignes[j].textContent.toLowerCase().indexOf(q) >= 0;
+      lignes[j].classList.toggle('hid', !ok);
+      if(ok) vis++;
+    }
+    var titreOk = secs[i].querySelector('.sechead .t').textContent.toLowerCase().indexOf(q) >= 0;
+    secs[i].classList.toggle('hid', !!q && vis === 0 && !titreOk);
+  }
+  var grps = document.querySelectorAll('.grp');
+  for(var g = 0; g < grps.length; g++){
+    var restant = grps[g].querySelectorAll('.sec:not(.hid)').length;
+    grps[g].classList.toggle('hid', !!q && restant === 0);
+  }
+  var legs = document.querySelectorAll('.leg');
+  for(var k = 0; k < legs.length; k++)
+    legs[k].classList.toggle('hid', !!q && legs[k].textContent.toLowerCase().indexOf(q) < 0);
+};
+
+/* ======================= INFOBULLES DE LÉGENDE ======================= */
+var IDX = [];               /* [{cle, terme, entree}] trié du plus long au plus court */
+function normal(t){
+  return String(t).toLowerCase()
+    .replace(/\s*\(.*?\)\s*/g, ' ')      /* Bénie (X) -> benie */
+    .replace(/\s+[\dx×]+\s*$/, '')       /* Recharge 3 et Addictive X -> recharge, addictive */
+    .replace(/[.,;:!?]+$/, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+function indexerLegende(){
+  IDX = [];
+  if(!data.legend) return;
+  for(var i = 0; i < data.legend.length; i++){
+    var cle = normal(data.legend[i].term);
+    if(cle.length > 2) IDX.push({cle: cle, entree: data.legend[i]});
+  }
+  IDX.sort(function(a, b){ return b.cle.length - a.cle.length; });
+}
+
+/* Reconnaît les mots-clés d'une cellule, par segment puis par occurrence dans la phrase. */
+function definitions(texte){
+  var trouve = [], vus = {};
+  function pousser(E){
+    if(!vus[E.term]){ vus[E.term] = 1; trouve.push(E); }
+  }
+  var segments = String(texte).split(/[,;.•·]/);
+  for(var s = 0; s < segments.length; s++){
+    for(var i = 0; i < IDX.length; i++){
+      if(normal(segments[s]) === IDX[i].cle){ pousser(IDX[i].entree); break; }
+    }
+  }
+  var plat = ' ' + normal(texte) + ' ';
+  for(var j = 0; j < IDX.length; j++){
+    if(IDX[j].cle.length < 5) continue;                 /* trop court : trop de faux positifs */
+    if(plat.indexOf(' ' + IDX[j].cle) >= 0) pousser(IDX[j].entree);
+  }
+  return trouve;
+}
+
+var tip = document.getElementById('tip');
+function cacherTip(){ tip.style.display = 'none'; }
+function montrerTip(cible){
+  if(!cible || document.activeElement === cible){ cacherTip(); return; }
+  var liste = definitions(cible.textContent);
+  if(!liste.length){ cacherTip(); return; }
+  var out = '';
+  for(var i = 0; i < liste.length && i < 6; i++)
+    out += '<p><b>' + esc(liste[i].term) + '.</b> ' + esc(liste[i].def) + '</p>';
+  tip.innerHTML = out;
+  tip.style.display = 'block';
+  var r = cible.getBoundingClientRect();
+  var top = r.bottom + 6;
+  if(top + tip.offsetHeight > window.innerHeight) top = Math.max(6, r.top - tip.offsetHeight - 6);
+  tip.style.top = top + 'px';
+  tip.style.left = Math.min(Math.max(6, r.left), window.innerWidth - tip.offsetWidth - 12) + 'px';
+}
+function cibleTip(e){
+  if(!e.target.closest) return null;
+  return e.target.closest('td[data-t="cell"], .item .txt, .sfoot, .snote');
+}
+document.addEventListener('mouseover', function(e){ montrerTip(cibleTip(e)); });
+document.addEventListener('mouseout', function(e){ if(cibleTip(e)) cacherTip(); });
+document.addEventListener('scroll', cacherTip, true);
+document.addEventListener('focusin', cacherTip);
+
+charger();
+rendre();
+</script>
+</body>
+</html>

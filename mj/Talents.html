@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Talents</title>
+<style>
+  :root{
+    --bg:#12100e; --panel:#1b1815; --panel2:#221e1a; --line:#37302a;
+    --txt:#e8e0d2; --dim:#a2968a; --acc:#c2452a; --acc2:#c9a227; --off:#8d8375;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+       font-family:"Iowan Old Style",Georgia,serif;font-size:15px;line-height:1.45}
+
+  .bar{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,#1b1815,#161311);
+       border-bottom:1px solid var(--line);padding:.6rem .9rem;display:flex;gap:.6rem;
+       align-items:center;flex-wrap:wrap}
+  .bar h1{font-size:1.02rem;letter-spacing:.13em;text-transform:uppercase;margin:0 .5rem 0 0;
+          font-weight:600;white-space:nowrap}
+  .bar h1 span{color:var(--acc)}
+  input[type=search]{flex:1;min-width:160px;background:#0e0c0b;border:1px solid var(--line);
+       color:var(--txt);padding:.42rem .6rem;border-radius:4px;font-family:inherit;font-size:.9rem}
+  input[type=search]:focus{outline:none;border-color:var(--acc2)}
+  button{background:#2a2521;border:1px solid var(--line);color:var(--txt);padding:.4rem .7rem;
+       border-radius:4px;cursor:pointer;font-family:inherit;font-size:.82rem;white-space:nowrap}
+  button:hover{border-color:var(--acc2);color:#fff}
+  button.pri{background:#3a1512;border-color:#5d201a}
+  .status{font-size:.78rem;color:var(--dim);min-width:78px}
+
+  .wrap{max-width:1280px;margin:0 auto;padding:1rem .9rem 4rem}
+  .grp{margin:0 0 1.4rem}
+  .grp>h2{font-size:1rem;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);
+       border-bottom:1px solid var(--acc);padding-bottom:.3rem;margin:1.6rem 0 .5rem}
+  .grp>h2:focus{outline:none;background:#0e0c0b}
+  .gnote{font-size:.82rem;color:var(--dim);margin:.1rem 0 .8rem;padding:.5rem .7rem;
+       background:var(--panel);border-left:2px solid var(--line);border-radius:0 3px 3px 0}
+  .gnote:focus{outline:none;background:#0e0c0b}
+  .gnote:empty,.grp>h2:empty{display:none}
+  .intro{font-size:.85rem;color:var(--dim);background:var(--panel);border-left:2px solid var(--acc);
+       padding:.6rem .8rem;border-radius:0 4px 4px 0;margin:0 0 1.2rem}
+  .intro:focus{outline:none;background:#0e0c0b}
+
+  .sec{background:var(--panel);border:1px solid var(--line);border-radius:5px;margin:0 0 .8rem;overflow:hidden}
+  .sechead{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;background:var(--panel2);
+       border-bottom:1px solid var(--line)}
+  .sechead .t{font-size:.87rem;letter-spacing:.09em;text-transform:uppercase;color:var(--acc2);flex:1}
+  .sechead .n{font-size:.74rem;color:var(--dim)}
+  .sechead button{padding:.22rem .5rem;font-size:.75rem}
+  .snote,.sfoot{font-size:.8rem;color:var(--dim);padding:.5rem .7rem 0}
+  .sfoot{margin:.5rem .7rem .2rem;padding:.45rem .7rem;font-style:italic;
+         border-left:2px solid var(--acc2);background:rgba(184,146,42,.05);border-radius:0 3px 3px 0}
+  .sfoot:empty{display:none}
+  .sfoot::before{content:'À retenir';display:block;font-family:'Cinzel',serif;font-style:normal;
+         font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--acc2);margin-bottom:.2rem}
+  .secbody{padding:.2rem .5rem .6rem}
+  .sec.closed .secbody,.sec.closed .snote,.sec.closed .sfoot{display:none}
+
+  table{width:100%;border-collapse:collapse;font-size:.83rem}
+  th{position:sticky;top:44px;background:#0f0d0c;color:var(--dim);font-weight:400;text-align:left;
+     font-size:.67rem;letter-spacing:.08em;text-transform:uppercase;padding:.4rem .45rem;
+     border-bottom:1px solid var(--line);z-index:5}
+  td{border-bottom:1px solid #262019;padding:.32rem .45rem;vertical-align:top}
+  tr:hover td{background:#1f1b17}
+  tr.off td{color:var(--off);font-style:italic}
+  td.c{text-align:center;white-space:nowrap}
+  td[contenteditable]:focus,th[contenteditable]:focus{outline:none;background:#0e0c0b;box-shadow:inset 0 0 0 1px var(--acc2);border-radius:3px}
+  .acts{width:1%;white-space:nowrap;opacity:0;transition:opacity .12s}
+  tr:hover .acts{opacity:1}
+  .acts button{padding:.1rem .34rem;font-size:.72rem;background:transparent;border-color:transparent;color:var(--dim)}
+  .acts button:hover{color:#fff;border-color:var(--line)}
+  .addrow{margin:.35rem 0 0;font-size:.78rem}
+
+  .items{margin:0;padding:.2rem .3rem}
+  .item{display:flex;gap:.5rem;align-items:flex-start;padding:.3rem .3rem;border-bottom:1px solid #262019}
+  .item:hover{background:#1f1b17}
+  .item .puce{color:var(--acc);flex:0 0 auto;line-height:1.5}
+  .item .txt{flex:1;font-size:.87rem}
+  .item .txt:focus{outline:none;background:#0e0c0b;box-shadow:inset 0 0 0 1px var(--acc2);border-radius:3px}
+  .item .acts{opacity:0}
+  .item:hover .acts{opacity:1}
+
+  .legwrap{columns:2;column-gap:1.4rem}
+  .leg{break-inside:avoid;margin:0 0 .45rem;padding:.35rem .5rem;background:var(--panel);
+       border-left:2px solid var(--line);border-radius:0 3px 3px 0;font-size:.83rem}
+  .leg.mai{border-left-color:var(--acc)}
+  .leg .term{font-weight:700;color:var(--acc2)}
+  .leg.of .term{color:#bdb2a2}
+  .leg .term:focus,.leg .df:focus{outline:none;background:#0e0c0b}
+  .leg .acts2{float:right;opacity:0}
+  .leg:hover .acts2{opacity:1}
+  .leg .acts2 button{padding:.05rem .3rem;font-size:.7rem;background:transparent;border-color:transparent;color:var(--dim)}
+  h2.bloc{font-size:.98rem;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);
+       border-bottom:1px solid var(--acc);padding-bottom:.3rem;margin:1.8rem 0 .6rem}
+
+  #tip{position:fixed;z-index:60;max-width:340px;background:#0d0b0a;border:1px solid var(--acc2);
+       border-radius:4px;padding:.5rem .6rem;font-size:.8rem;display:none;box-shadow:0 6px 24px #000a}
+  #tip b{color:var(--acc2)}
+  #tip p{margin:0 0 .35rem} #tip p:last-child{margin:0}
+
+
+  .sync-flag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .5rem;
+       border-radius:2px;white-space:nowrap;border:1px solid transparent;color:var(--dim)}
+  .sync-flag.ok{color:#8fae7e;border-color:rgba(94,128,79,.4);background:rgba(94,128,79,.12)}
+  .sync-flag.pending{color:#e8cf72;border-color:rgba(184,146,42,.4);background:rgba(184,146,42,.12)}
+  .sync-flag.err{color:#e08a80;border-color:rgba(139,26,26,.5);background:rgba(139,26,26,.16)}
+
+  /* ---------- téléphone : plus de défilement horizontal ---------- */
+  @media(max-width:760px){
+    body{font-size:14px}
+    .bar{padding:.5rem .6rem;gap:.4rem}
+    .bar h1{font-size:.9rem;width:100%;margin:0}
+    button{padding:.34rem .55rem;font-size:.78rem}
+    .wrap{padding:.7rem .5rem 3rem}
+    .secbody{padding:.2rem .3rem .5rem}
+    thead{display:none}
+    table,tbody,tr,td{display:block;width:100%}
+    tr{border:1px solid var(--line);border-radius:4px;background:#1d1915;
+       margin:0 0 .5rem;padding:.35rem .5rem}
+    tr:hover td{background:transparent}
+    td{border-bottom:none;padding:.22rem 0;text-align:left !important;white-space:normal}
+    td:empty{padding:0}
+    td::before{content:attr(data-lab);display:inline-block;min-width:5.4rem;
+       font-size:.62rem;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);
+       vertical-align:top;padding-right:.4rem}
+    td.acts{opacity:1;width:auto;text-align:right !important;padding-top:.3rem;
+       border-top:1px solid #2a241e;margin-top:.25rem}
+    td.acts::before{content:none}
+    .acts button{font-size:.85rem;padding:.18rem .5rem}
+    .legwrap{columns:1}
+    .item .acts{opacity:1}
+  }
+  .retour{color:var(--dim);text-decoration:none;font-size:.8rem;white-space:nowrap;padding:.2rem .3rem}
+  .retour:hover{color:var(--acc2)}
+  .hid{display:none !important}
+  .hint{font-size:.78rem;color:var(--dim);margin:.8rem 0 0}
+
+  @media print{
+    body{background:#fff;color:#14110f;font-size:9pt}
+    .bar,.acts,.acts2,.addrow,.sechead button,.hint,#tip,.retour{display:none !important}
+    .wrap{max-width:none;padding:0}
+    .sec{border:none;background:none;margin:0 0 3mm}
+    .sechead{background:none;border-bottom:1px solid var(--acc);padding:0 0 1mm}
+    .sechead .t{color:#8B1A1A}
+    h2.bloc{color:#8B1A1A;border-color:#8B1A1A}
+    .grp>h2{color:#8B1A1A;border-color:#8B1A1A}
+    .gnote{background:#faf7f1;color:#5a524a}
+    .intro,.snote,.leg{background:#faf7f1;color:#5a524a}
+    .sfoot{background:#faf7f1;color:#5a524a;border-left:2px solid #8B1A1A}
+    .sfoot::before{color:#8B1A1A}
+    th{position:static;background:#2a1414;color:#f0e8d8;border:none}
+    td{border-bottom:1px solid #ddd6ca}
+    tr.off td{color:#5a524a}
+    .item{border-bottom:none;padding:.5mm 0}
+    .sec.closed .secbody,.sec.closed .snote,.sec.closed .sfoot{display:block}
+  }
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<div class="bar">
+  <a class="retour" href="index-mj.html" title="Retour à l'espace MJ">◂ MJ</a>
+  <h1>Les <span>Talents</span></h1>
+  <input type="search" id="q" placeholder="Filtrer…">
+  <button id="b-push" title="Publier la version du fichier vers la base en ligne. Le fichier fait autorité.">Push</button>
+  <button id="b-print" class="pri">PDF</button>
+  <span class="sync-flag" id="flag"></span>
+</div>
+
+<div class="wrap" id="app"></div>
+<div id="tip"></div>
+
+<script>
+var DEFAUT = {"intro": "Les 167 talents du livre de base, recoupés avec le supplément Up in Arms. Maxi indique le nombre de fois qu'un talent peut être acquis : soit 1, soit le bonus d'une caractéristique. Tests liés donne les compétences concernées : chaque acquisition du talent donne +1 DR à toute réussite de ces compétences, en plus de l'effet décrit. Le losange ◆ signale un talent que le supplément retouche ; le détail figure dans le dernier groupe.", "groups": [{"title": "Les cent soixante-sept talents", "note": "Par ordre alphabétique, en six tranches repliables. Le filtre du haut cherche dans les noms comme dans les effets.", "sections": [{"kind": "table", "title": "Talents, A à C", "note": "", "cols": ["Talent", "Maxi", "Tests liés", "Effet"], "rows": [{"c": ["Acrobaties équestres", "Bonus d'Ag", "Esquive à cheval, Chevaucher (Cheval)", "Employer n'importe quelle spécialisation de Représentation et une Esquive non pénalisée en selle. Le Mouvement peut se faire au début du round plutôt qu'à son tour."], "off": true}, {"c": ["Affable", "1", "–", "+5 permanent à la Sociabilité de départ. Ne compte pas comme des Augmentations."], "off": true}, {"c": ["Affinité avec les animaux", "Bonus de FM", "Emprise sur les animaux", "Les créatures au trait Bestial non dressées à l'agressivité restent calmes en votre présence, sauf raison contraire, et tendent à vous suivre."], "off": true}, {"c": ["Ambidextre", "2", "–", "La pénalité des tests reposant sur la main secondaire passe de −20 à −10. Pris deux fois, elle disparaît."], "off": true}, {"c": ["Âme pure", "Bonus de FM", "–", "Le seuil de tolérance à la Corruption est relevé du niveau de talent avant tout test de corruption."], "off": true}, {"c": ["Artilleur ◆", "Bonus de Dex", "–", "Ajoute son niveau en DR à tout test étendu de rechargement d'une arme à poudre noire."], "off": true}, {"c": ["Artiste", "Bonus de Dex", "Art (au choix)", "Produire un dessin fidèle avec un peu de temps et un support : avis de recherche, planche, relevé. Ajoute Art (au choix) à toute carrière entamée."], "off": true}, {"c": ["Assaut féroce", "Bonus d'Ag", "Corps à corps pour les attaques supplémentaires", "Une fois par round, après avoir touché en mêlée, dépenser un Avantage ou son Mouvement pour porter une attaque de plus."], "off": true}, {"c": ["Attirant", "Bonus de Soc", "Charme sur qui vous trouve attirant", "Dans un Charme réussi sur qui vous trouve attirant, choisir entre le DR obtenu et le dé des unités."], "off": true}, {"c": ["Baratiner", "Bonus de Soc", "Charme pour Baratiner", "Embrouiller verbalement une cible sous un flot de paroles creuses, par un test opposé de Charme."], "off": true}, {"c": ["Battement ◆", "Bonus de CC", "Corps à corps pour un Battement", "Pour son Action, avant les dés, frapper l'arme adverse. Test de Corps à corps non opposé ; réussi, l'adversaire perd 1 Avantage, et 1 de plus par DR obtenu. Sans effet contre un adversaire désarmé ou de Taille supérieure."], "off": true}, {"c": ["Béni (Savoir divin)", "1", "–", "Accès aux Bénédictions de sa divinité. Une seule Bénédiction connue en conditions normales."], "off": true}, {"c": ["Bon marcheur (Terrain)", "Bonus d'Ag", "Athlétisme pour traverser le Terrain", "Ignorer toutes les pénalités de Mouvement sur le terrain choisi : littoral, désert, marécage, rocaille, toundra, bois."], "off": true}, {"c": ["Bonnes jambes", "Bonus de F", "–", "Ajoute son niveau en DR à tout test d'Athlétisme impliquant un saut."], "off": true}, {"c": ["Bricoleur", "Bonus de Dex", "Métier pour réparer", "Toutes les compétences Métier non magiques comptent comme des compétences de Base pour réparer un objet cassé."], "off": true}, {"c": ["Brouet", "Bonus d'E", "Résistance contre la faim", "Subsister avec la moitié des rations sans pénalité, et ne tester la faim que tous les trois jours au lieu de deux."], "off": true}, {"c": ["Caïd", "1", "–", "Ignorer la perte de Statut infligée par le talent Criminel."], "off": true}, {"c": ["Cavalier émérite ◆", "Bonus d'Ag", "Chevaucher (Cheval) en combat", "Demander une Action à sa monture, et pas seulement un Mouvement, sans test de Chevaucher."], "off": true}, {"c": ["Chanceux", "Bonus de Soc", "–", "Le maximum de Points de Chance devient le nombre de Points de Destin, plus le niveau de talent."], "off": true}, {"c": ["Charge berserk", "Bonus de F", "Corps à corps le round d'une Charge berserk", "+1 dégât par niveau sur toutes les attaques du round où l'on charge ainsi."], "off": true}, {"c": ["Chat de gouttière", "Bonus d'I", "Discrétion (Urbaine)", "Inverser un test raté de Discrétion (Urbaine) si cela le transforme en réussite."], "off": true}, {"c": ["Chirurgie", "Bonus d'Int", "Guérison hors des rounds de combat", "Traiter toute Blessure Critique exigeant de la chirurgie, et opérer les atteintes internes par un test étendu de Guérison Intermédiaire (+0), hors combat, quand on a le temps de bien faire."], "off": true}, {"c": ["Claquer le fouet", "Bonus de Dex", "Conduite d'attelage ou Chevaucher en fuite ou en course", "+1 en Mouvement pour l'animal mené, au fouet, quand il fuit ou court."], "off": true}, {"c": ["Cœur vaillant", "Bonus de FM", "Calme pour retirer l'état Brisé", "Tenter un test de Calme pour retirer un état Brisé à la fin de son tour et à la fin du round."], "off": true}, {"c": ["Combat déloyal", "Bonus de CC", "Corps à corps (Bagarre)", "+1 dégât par niveau sur toute touche à mains nues. Employé en duel réglementé, c'est une tricherie."], "off": true}, {"c": ["Combat instinctif", "Bonus d'I", "–", "+10 à l'Initiative par niveau pour déterminer l'ordre de combat."], "off": true}, {"c": ["Combattant au contact", "Bonus de Dex", "Corps à corps au contact", "Aucune pénalité face à un adversaire dont l'arme est plus longue que la vôtre, et +10 pour toucher avec les règles optionnelles de Combat au contact."], "off": true}, {"c": ["Combattant en espace clos", "Bonus d'Ag", "Esquive en milieu clos", "Ignorer les pénalités de mêlée dues aux tunnels, aux lignes serrées et aux fosses de combat, et employer Esquive là où le manque de place l'interdirait."], "off": true}, {"c": ["Concocter", "Bonus d'Int", "Savoir (Apothicaire)", "Une Activité Artisanat gratuite avec Métier (Apothicaire), sans atelier."], "off": true}, {"c": ["Contorsionniste", "Bonus d'Ag", "Représentation et Agilité liées", "Se plier dans des positions impossibles, se glisser dans des espaces improbables."], "off": true}, {"c": ["Contrôle de la Frénésie", "Bonus de FM", "Corps à corps en Frénésie", "Mettre fin à sa Frénésie sur un test de Calme réussi en fin de round."], "off": true}, {"c": ["Coopératif", "Bonus de Soc", "Tests sociaux sur un supérieur", "Face à un Statut supérieur, choisir entre le DR obtenu et le dé des unités."], "off": true}, {"c": ["Costaud", "Bonus de F", "Force pour soulever", "Points d'Encombrement transportables augmentés du double du niveau de talent."], "off": true}, {"c": ["Coude-à-coude ◆", "Bonus de CC", "Corps à corps aux côtés d'un allié qui l'a aussi", "Conserver 1 Avantage perdu par niveau quand l'ennemi vous en fait perdre alors qu'un allié doté du même talent se tient à vos côtés."], "off": true}, {"c": ["Coup puissant", "Bonus de F", "–", "Ajoute son niveau aux dégâts de toute arme de corps à corps."], "off": true}, {"c": ["Criminel", "Aucun", "–", "Revenus tirés de sources illégales, avec la perte de Statut correspondante. Voir le talent Caïd."], "off": true}], "foot": ""}, {"kind": "table", "title": "Talents, D à F", "note": "", "cols": ["Talent", "Maxi", "Tests liés", "Effet"], "rows": [{"c": ["Désarmer", "Bonus d'I", "Corps à corps lié", "Pour une Action, test opposé de Corps à corps. Réussi, l'adversaire lâche une arme, qui tombe à 1d10 × 30 cm dans une direction aléatoire."], "off": true}, {"c": ["Destinée", "1", "–", "Un Augure de Morr a prédit votre mort à vos dix ans. La Destinée est convenue avec le MJ ; si le personnage meurt conformément à elle, le suivant démarre avec la moitié des PX accumulés."], "off": true}, {"c": ["Détection d'artefact", "Bonus d'I", "Intuition pour détecter un artefact", "Test d'Intuition au contact d'un artefact : la réussite révèle sa nature magique, chaque DR une règle spéciale."], "off": true}, {"c": ["Déterminé", "Bonus de F", "–", "Ajoute son niveau au Bonus de Force lors d'une Charge."], "off": true}, {"c": ["Diction instinctive", "Bonus d'I", "Langue (Magick) en incantation", "Pas d'Incantation Imparfaite sur un double obtenu à un test réussi de Langue (Magick)."], "off": true}, {"c": ["Discret", "Bonus d'Ag", "Tests de Filature", "Filer quelqu'un sans test combiné : un simple test de Perception ou de Discrétion, au plus élevé des deux."], "off": true}, {"c": ["Distraire ◆", "Bonus d'Ag", "Athlétisme pour Distraire", "Employer son Mouvement pour distraire. Test opposé d'Athlétisme contre Calme ; réussi, l'adversaire ne gagne pas d'Avantage."], "off": true}, {"c": ["Doigts de fée", "1", "–", "+5 permanent à la Dextérité de départ."], "off": true}, {"c": ["Doué en calcul", "Bonus d'Int", "Évaluation, Pari", "Résoudre mentalement la plupart des problèmes de calcul."], "off": true}, {"c": ["Dur à cuire", "Bonus d'E", "–", "Points de Blessure augmentés du Bonus d'Endurance, et le gain suit toute hausse de ce bonus."], "off": true}, {"c": ["Effraction", "Bonus de F", "Corps à corps contre un objet inanimé", "+1 dégât par niveau contre portes, fenêtres, coffres et autres objets inanimés."], "off": true}, {"c": ["Effrayant", "Bonus de F", "–", "Indice de Peur 1, augmenté de 1 par niveau supplémentaire, à volonté."], "off": true}, {"c": ["Endurci", "Bonus d'E", "–", "Ignorer un Point de Blessure perdu à cause d'un état Hémorragie, un de plus par niveau."], "off": true}, {"c": ["Ergoteur", "Bonus de Soc", "Charme en débat", "Dans un débat réussi au Charme, choisir entre le DR obtenu et le dé des unités."], "off": true}, {"c": ["Escroquer", "Bonus d'Int", "Intelligence (Escroquerie)", "Détourner de l'argent de son employeur par un test opposé d'Intelligence, à chaque gain de revenus."], "off": true}, {"c": ["Exaltant", "Bonus de Soc", "Commandement en temps de guerre", "Élargit fortement le nombre de combattants touchés par un test de Commandement en bataille."], "off": true}, {"c": ["Faire la manche", "Bonus de Soc", "Charme (Mendicité)", "Mendier avec un test de Charme toutes les demi-heures au lieu de toutes les heures."], "off": true}, {"c": ["Feinte", "Bonus de CC", "Corps à corps (Escrime) pour les Feintes", "Pour son Action, feindre contre un adversaire armé par un test opposé de Corps à corps (Escrime). Gagné, on ajoute son DR à l'attaque portée sur le même adversaire avant la fin du round suivant."], "off": true}, {"c": ["Ferveur ardente", "Bonus de Soc", "Charme pour défendre sa cause", "Double la Sociabilité pour calculer le nombre de personnes touchées par le talent Orateur, quand on plaide sa cause ou sa foi."], "off": true}, {"c": ["Flagellant", "Bonus d'E", "Tout test contre les Puissances de la Ruine", "Une demi-heure de prière et d'automutilation chaque jour, pour un nombre de Blessures égal au niveau. Jusqu'au prochain repos, on entre en Frénésie sans test si l'on possède ce talent, ajouté à la carrière."], "off": true}, {"c": ["Flairer les ennuis", "Bonus d'I", "Tout test pour repérer un fauteur de troubles", "Test d'Intuition pour repérer qui cherche la bagarre ou vous veut du mal, même sans y prêter attention."], "off": true}, {"c": ["Frappe assommante", "Bonus de CC", "Corps à corps pour une Frappe assommante", "Ignorer la pénalité de visée à la Tête avec une arme dotée de l'atout Assommante, et traiter toute arme improvisée comme si elle possédait cet atout."], "off": true}, {"c": ["Frappe blessante ◆", "Bonus d'I", "–", "Inflige son niveau en Blessures supplémentaires à chaque Blessure Critique causée."], "off": true}, {"c": ["Frappe précise", "Bonus d'I", "–", "Modifier le résultat de Localisation de 10 par niveau, en plus ou en moins."], "off": true}, {"c": ["Frappe réactive", "Bonus d'I", "Initiative liée", "Chargé, tenter un test d'Initiative Intermédiaire (+0) pour porter immédiatement une attaque gratuite."], "off": true}, {"c": ["Frénésie", "1", "–", "Peut entrer en Frénésie."], "off": true}, {"c": ["Fuite ! ◆", "Bonus d'Ag", "Athlétisme en fuite", "Mouvement compté comme supérieur de 1 quand on fuit."], "off": true}], "foot": ""}, {"kind": "table", "title": "Talents, G à L", "note": "", "cols": ["Talent", "Maxi", "Tests liés", "Effet"], "rows": [{"c": ["Grand orateur", "Bonus de Soc", "–", "Bonus de DR égal au niveau à tout test de Charme adressé à une foule."], "off": true}, {"c": ["Grimpeur", "Bonus de F", "Escalade", "Tenter l'escalade de surfaces réputées trop lisses, et ignorer les pénalités correspondantes."], "off": true}, {"c": ["Guerrier né", "1", "–", "+5 permanent à la CC de départ."], "off": true}, {"c": ["Guide fluvial", "Bonus d'I", "Savoir sur les questions fluviales", "Aucun test pour franchir une eau traître tant que la difficulté n'atteint pas −10."], "off": true}, {"c": ["Haine (Groupe)", "Bonus de FM", "Force Mentale contre le Groupe haï", "Haine dévorante envers un groupe précis, avec les effets de règle correspondants. Un nouveau groupe à chaque acquisition."], "off": true}, {"c": ["Haine sacrée", "Bonus de Soc", "–", "+1 dégât par niveau avec les Miracles."], "off": true}, {"c": ["Harmonisation aethyrique", "Bonus d'I", "Focalisation (au choix)", "Pas d'Incantation Imparfaite sur un double obtenu à un test de Focalisation réussi."], "off": true}, {"c": ["Identité secrète", "Bonus d'Int", "Divertissement (Interprétation) pour la soutenir", "Entretenir une seconde identité, plus riche ou plus pauvre, associée à une carrière choisie avec le MJ."], "off": true}, {"c": ["Imitation", "Bonus d'I", "Divertissement (Interprétation) où l'accent compte", "Reproduire tout accent entendu au moins une journée, sur un test d'Initiative."], "off": true}, {"c": ["Imperturbable", "1", "–", "+5 permanent à la Force Mentale de départ."], "off": true}, {"c": ["Impitoyable ◆", "Bonus d'Ag", "–", "Conserver un nombre d'Avantages égal au niveau quand on en dépense pour un Désengagement, et pouvoir se désengager même en ayant moins d'Avantages que ses adversaires."], "off": true}, {"c": ["Inébranlable", "Bonus de FM", "Calme contre la panique de la poudre noire", "Ne teste le Calme contre l'état Brisé dû à la poudre noire que si l'on est réellement blessé par le tir."], "off": true}, {"c": ["Infatigable", "Bonus de F", "Ramer et Natation", "Ajoute son niveau au DR de tout test opposé de Force, et augmente l'Encombrement transportable."], "off": true}, {"c": ["Insignifiant", "Bonus de Soc", "Discrétion à la vue de tous", "Correctement vêtu et à sa place, on passe inaperçu des Statuts supérieurs."], "off": true}, {"c": ["Intrigant", "Bonus d'Int", "Intelligence liée", "Une question par séance au MJ sur une situation politique ou une organisation complexe."], "off": true}, {"c": ["Invocation (Savoir divin)", "1", "–", "Connaître un Miracle de son culte, et pouvoir en acheter d'autres à un coût croissant."], "off": true}, {"c": ["Lecture rapide", "Bonus d'Int", "Recherche et Langue quand la vitesse compte", "Inverser un test de Recherche raté s'il devient réussi. Lire vite en combat sur un test de Langue."], "off": true}, {"c": ["Linguistique", "Bonus d'Int", "Langue (toutes)", "Après un mois d'exposition à une langue, un test d'Intelligence la rend accessible comme compétence de Base."], "off": true}, {"c": ["Lire/Écrire", "1", "–", "Lettré : lire et écrire toutes les langues que l'on parle. Prérequis de la compétence Recherche."], "off": true}, {"c": ["Lire sur les lèvres", "Bonus d'I", "Perception liée", "Comprendre un locuteur sans l'entendre, si l'on voit le bas de son visage."], "off": true}, {"c": ["Loup de mer", "Bonus d'Ag", "Voile en mer", "Ignorer les modificateurs négatifs dus à la météo, au roulis et aux conditions de mer, et compter pour deux marins dans l'équipage minimum d'un navire."], "off": true}], "foot": ""}, {"kind": "table", "title": "Talents, M à O", "note": "", "cols": ["Talent", "Maxi", "Tests liés", "Effet"], "rows": [{"c": ["Mâchoires d'acier", "Bonus d'E", "Résistance contre l'état Sonné", "Test de Résistance Intermédiaire (+0) immédiat pour ignorer un état Sonné, un de plus par DR."], "off": true}, {"c": ["Mage de guerre", "1", "–", "Lancer gratuitement, sans dépenser son Action, un sort de Niveau d'Incantation 5 ou moins."], "off": true}, {"c": ["Magie des Arcanes (Domaine)", "1", "–", "Accès à un des huit Domaines de Magie, ou à un savoir moins avoué comme la Nécromancie."], "off": true}, {"c": ["Magie du Chaos (Domaine)", "Nombre de sorts du Domaine", "–", "Accès aux magies du Chaos, un sort d'emblée, au prix que l'on imagine."], "off": true}, {"c": ["Magie mineure", "1", "–", "Mémoriser définitivement un nombre de sorts mineurs égal au Bonus de Force Mentale."], "off": true}, {"c": ["Magnum opus", "Aucun", "–", "Créer une œuvre d'une complexité qui laisse les autres sans voix, une par acquisition."], "off": true}, {"c": ["Mains agiles", "Bonus de Dex", "Escamotage, Corps à corps (Bagarre)", "Les passants ne bénéficient d'aucun test de Perception passif contre votre Escamotage : ils doivent s'y opposer activement."], "off": true}, {"c": ["Maître artisan (Métier)", "Bonus de Dex", "Métier (au choix)", "Ajoute la compétence Métier choisie à toute carrière entamée, ou permet de l'acheter deux fois."], "off": true}, {"c": ["Maître en déguisement", "Bonus de Soc", "Divertissement (Interprétation) sous une autre identité", "Changer d'apparence et de manières avec une posture, une grimace et des vêtements bien choisis."], "off": true}, {"c": ["Maîtrise des dés", "Bonus d'Int", "Pari et Escamotage aux dés", "Aux dés, choisir entre le DR obtenu et le dé des unités."], "off": true}, {"c": ["Maîtrise du combat", "Bonus d'Ag", "–", "Compter comme un combattant supplémentaire par niveau pour tenir des adversaires à distance."], "off": true}, {"c": ["Maniement de deux armes", "Bonus d'Ag", "Corps à corps ou Projectiles à deux armes", "Attaquer des deux armes pour son Action. Si la main directrice touche, l'arme secondaire frappe un adversaire disponible de son choix, avec le même jet de dés inversé."], "off": true}, {"c": ["Marinier", "Bonus d'Ag", "Voile fluviale", "Ignorer les pénalités dues aux tourbillons, au tangage et aux caprices d'un navire de rivière, et compter pour deux mariniers dans l'équipage minimum."], "off": true}, {"c": ["Menaçant", "Bonus de F", "Intimidation", "Bonus de DR égal au niveau à tout test d'Intimidation."], "off": true}, {"c": ["Menteur", "Bonus de Soc", "Charme quand on ment", "Un mensonge servi au Charme ne peut pas être détecté par l'Intuition de l'auditeur."], "off": true}, {"c": ["Nageur endurant", "Bonus de F", "Natation", "Bonus d'Endurance augmenté du niveau pour calculer le temps d'apnée."], "off": true}, {"c": ["Nanti", "Aucun", "–", "+1 CO par niveau à chaque gain de revenus."], "off": true}, {"c": ["Négociateur", "Bonus de Soc", "Marchandage", "Le prix obtenu au Marchandage varie de 10 % de plus, à la hausse comme à la baisse."], "off": true}, {"c": ["Noblesse", "1", "N'importe quel test influencé par le Statut", "Correctement vêtu, on est toujours tenu pour d'un Statut supérieur aux autres, sauf face à quelqu'un possédant aussi Noblesse : les Statuts se comparent alors normalement."], "off": true}, {"c": ["Noctambule", "Bonus d'E", "Charme et Ragot en fête, Résistance à l'alcool", "Inverser un test raté de Résistance à l'alcool s'il devient réussi."], "off": true}, {"c": ["Nomade", "Bonus d'Ag", "Discrétion rurale", "En milieu rural, nul ne vous détecte par un test de Perception passif : il faut chercher activement."], "off": true}, {"c": ["Numismate", "Bonus d'I", "Évaluation d'une pièce", "Juger sans test la valeur réelle d'une monnaie du Vieux Monde."], "off": true}, {"c": ["Obstiné", "Bonus de FM", "–", "Ajoute son niveau au maximum de sa réserve de Détermination."], "off": true}, {"c": ["Œil du chasseur", "Bonus d'I", "Tout test pour traquer ou capturer du gibier", "En région giboyeuse, chasser automatiquement de quoi se nourrir soi-même et un nombre de personnes égal au niveau."], "off": true}, {"c": ["Orateur", "Bonus de Soc", "–", "Élargit fortement le nombre de personnes influençables par un test de Charme en public."], "off": true}, {"c": ["Oreille absolue", "Bonus d'I", "Divertissement (Chant), Langue (langues tonales)", "Reproduire et identifier une note sans test. Ajoute Divertissement (Chant) à toute carrière entamée."], "off": true}], "foot": ""}, {"kind": "table", "title": "Talents, P à R", "note": "", "cols": ["Talent", "Maxi", "Tests liés", "Effet"], "rows": [{"c": ["Pansement de fortune", "Bonus d'Int", "Guérison pendant les rounds de combat", "Inverser un test de Guérison raté avec des Bandages, au prix de renoncer à en obtenir davantage."], "off": true}, {"c": ["Pas de côté", "Bonus d'Ag", "Esquive liée", "En gagnant un test opposé d'Esquive en défense, se déplacer de deux mètres hors de portée : on n'est plus Engagé et l'adversaire ne gagne aucune attaque gratuite."], "off": true}, {"c": ["Pêcheur", "Bonus d'I", "Tout test de pêche", "Près d'une eau suffisante, pêcher automatiquement de quoi se nourrir soi-même et un nombre de personnes égal au niveau."], "off": true}, {"c": ["Perception de la Magie", "Bonus d'I", "Intuition pour détecter un sorcier", "Test d'Intuition Accessible (+20) à chaque rencontre d'un lanceur de sorts pour le reconnaître."], "off": true}, {"c": ["Persévérant", "Bonus d'E", "Résistance pour supporter les difficultés", "Double la durée pendant laquelle un test de Résistance réussi permet d'endurer une difficulté."], "off": true}, {"c": ["Perspicace", "1", "–", "+5 permanent à l'Intelligence de départ."], "off": true}, {"c": ["Petit", "1", "–", "Taille inférieure à la moyenne humaine, avec les règles de Taille correspondantes."], "off": true}, {"c": ["Pharmacologie", "Bonus d'Int", "Métier (Apothicaire)", "Inverser un test raté de Métier (Apothicaire) s'il devient réussi."], "off": true}, {"c": ["Pied marin", "Bonus d'E", "Tout test contre le mal de mer", "Jamais de test de mal de mer en conditions normales, même par gros temps."], "off": true}, {"c": ["Pilote", "Bonus d'I", "Ramer ou Voile en eaux dangereuses", "Inverser un test raté de franchissement d'eaux périlleuses, au prix d'un renoncement."], "off": true}, {"c": ["Porte-bouclier ◆", "Bonus de F", "Tout test de défense au bouclier", "Gagner un nombre d'Avantages égal au niveau quand on se défend au bouclier et que l'on perd le test opposé."], "off": true}, {"c": ["Présence imposante", "Bonus de Soc", "Commandement", "Les Statuts inférieurs ne peuvent pas opposer leur Force Mentale à vos tests de Commandement."], "off": true}, {"c": ["Prévoyant", "Bonus d'I", "–", "Sortir de son sac l'objet utile à la situation, un nombre de fois par séance égal au niveau."], "off": true}, {"c": ["Rat d'égout", "Bonus d'Ag", "Discrétion souterraine", "Sous terre, nul ne vous détecte par un test de Perception passif."], "off": true}, {"c": ["Rechargement rapide ◆", "Bonus de Dex", "–", "Ajoute son niveau en DR à tout test de rechargement d'une arme à distance."], "off": true}, {"c": ["Réflexes foudroyants", "1", "–", "+5 permanent à l'Agilité de départ."], "off": true}, {"c": ["Renversement ◆", "Bonus de CC", "Corps à corps en défense", "En gagnant un test opposé de Corps à corps, prendre tous les Avantages de l'adversaire au lieu d'en gagner un, sans infliger de dégâts."], "off": true}, {"c": ["Résistance (Menace)", "Bonus d'E", "Tout test contre la Menace choisie", "Réussir automatiquement le premier test de la séance contre la menace choisie : magie, poison, maladie, mutation."], "off": true}, {"c": ["Résistance à la Magie", "Bonus d'E", "–", "Le DR de tout sort vous affectant est réduit de 2 par niveau. Seul le plus haut niveau de la zone compte."], "off": true}, {"c": ["Riposte", "Bonus d'Ag", "Corps à corps en défense", "Avec une arme dotée de l'atout Rapide, infliger des dégâts en étant attaqué, comme si c'était son tour."], "off": true}, {"c": ["Robuste", "Bonus d'E", "–", "Réduit tous les dégâts subis de 1 par niveau, même ceux normalement irréductibles. Toute source inflige néanmoins au moins 1 Blessure."], "off": true}], "foot": ""}, {"kind": "table", "title": "Talents, S à Z", "note": "", "cols": ["Talent", "Maxi", "Tests liés", "Effet"], "rows": [{"c": ["Sans peur (Ennemi)", "Bonus de FM", "Calme contre l'Intimidation, la Peur et la Terreur de l'Ennemi", "Un seul test de Calme Accessible (+20) suffit à ignorer l'Intimidation, la Peur et la Terreur venues de l'ennemi choisi."], "off": true}, {"c": ["Saut carpé", "1", "–", "Test d'Athlétisme Intermédiaire (+0) pour se relever immédiatement en gagnant l'état À terre."], "off": true}, {"c": ["Savant (Savoir)", "Bonus d'Int", "Savoir (au choix)", "Connaître automatiquement un nombre d'informations exactes égal au niveau, dans le domaine choisi."], "off": true}, {"c": ["Savoir-vivre (Groupe Social)", "Bonus de Soc", "Charme et Ragot (Groupe Social)", "Se fondre socialement dans le groupe choisi : criminels, cultistes, guildes, nobles, érudits, soldats."], "off": true}, {"c": ["Seconde vue", "Bonus d'I", "Tout test pour détecter les Vents de Magie", "Percevoir les Vents de la Magie."], "off": true}, {"c": ["Seigneur de guerre", "Bonus de Soc", "Commandement en temps de guerre", "Tout subalterne qui vous voit ajoute votre niveau au DR d'un test de Force Mentale par round."], "off": true}, {"c": ["Sens aiguisé (Sens)", "Bonus d'I", "Perception (Sens)", "Un des cinq sens est exceptionnel : test de Perception pour percevoir ce qui échappe normalement."], "off": true}, {"c": ["Sens de l'orientation", "Bonus d'I", "Orientation", "Savoir automatiquement où est le nord aux astres, aux arbres ou à tout autre repère."], "off": true}, {"c": ["Sixième sens", "Bonus d'I", "Intuition liée", "Le MJ vous prévient que vous êtes observé ou en danger, après un test d'Intuition secret. Permet aussi d'ignorer la Surprise sur un test réussi."], "off": true}, {"c": ["Sociable", "Bonus de Soc", "Ragot avec les voyageurs", "Inverser un test de Ragot raté s'il devient réussi."], "off": true}, {"c": ["Sorcier !", "Bonus de FM", "–", "Lanceur de sorts autodidacte. Ajoute Langue (Magick) à toute carrière entamée."], "off": true}, {"c": ["Souplesse féline", "Bonus d'Ag", "Athlétisme quand on tombe", "Test d'Athlétisme à chaque chute : la réussite réduit la hauteur de chute de 1 mètre pour le calcul des dégâts, et de 1 mètre de plus par DR."], "off": true}, {"c": ["Sprinter", "Bonus de F", "Athlétisme pour Courir", "Mouvement compté comme supérieur de 1 quand on court."], "off": true}, {"c": ["Studieux", "Bonus d'Int", "Recherche", "Inverser un test de Recherche raté s'il devient réussi."], "off": true}, {"c": ["Suborneur", "Bonus de Soc", "Subornation", "Réduit le coût de base d'un pot-de-vin de 10 % par niveau, jusqu'à un dixième du montant initial."], "off": true}, {"c": ["Tireur d'élite", "1", "–", "Ignorer les modificateurs de difficulté des tests de Projectiles dus à la taille de la cible."], "off": true}, {"c": ["Tireur de précision", "1", "–", "+5 permanent à la Capacité de Tir de départ."], "off": true}, {"c": ["Tireur embusqué", "4", "Portée longue à extrême", "Aucune pénalité de tir à portée longue, et moitié des pénalités à portée extrême."], "off": true}, {"c": ["Tir mortel", "1", "–", "Choisir la Localisation touchée au lieu d'inverser le dé."], "off": true}, {"c": ["Tir précis", "Bonus de CT", "–", "Ajoute son niveau aux dégâts de toute arme à distance."], "off": true}, {"c": ["Tir rapide", "Bonus d'Ag", "Projectiles pour un Tir rapide", "Avec une arme chargée, tirer hors de l'ordre d'Initiative avant que quiconque réagisse au round suivant."], "off": true}, {"c": ["Tir sûr", "Bonus d'I", "–", "Ignorer un nombre de PA égal à son niveau sur chaque touche."], "off": true}, {"c": ["Tour des souvenirs", "Bonus d'Int", "–", "Technique de mémorisation vérénienne : se rappeler parfaitement ce que l'on a vu ou entendu."], "off": true}, {"c": ["Trappeur", "Bonus d'I", "Perception pour repérer un piège, Piégeage", "Repérer automatiquement les pièges par un test de Perception, sans avoir à annoncer qu'on les cherche."], "off": true}, {"c": ["Travailleur qualifié (Métier)", "Bonus de Dex", "Tests étendus de Métier", "Retranche son niveau au nombre de DR exigé par tout test étendu du Métier concerné."], "off": true}, {"c": ["Très fort", "1", "–", "+5 permanent à la Force de départ."], "off": true}, {"c": ["Très résistant", "1", "–", "+5 permanent à l'Endurance de départ."], "off": true}, {"c": ["Tricheur", "Bonus d'Int", "Pari et Escamotage aux cartes", "Aux cartes, choisir entre le DR obtenu et le dé des unités."], "off": true}, {"c": ["Tueur", "1", "–", "Employer le Bonus d'Endurance de l'adversaire comme Bonus de Force s'il est plus élevé, avant tout autre modificateur."], "off": true}, {"c": ["Véloce", "1", "–", "+1 à l'Attribut de Mouvement."], "off": true}, {"c": ["Vigilance", "Bonus d'I", "Perception en mêlée", "Test de Perception Intermédiaire (+0) pour ignorer la Surprise."], "off": true}, {"c": ["Vision nocturne", "Bonus d'I", "Perception en faible luminosité", "Voir parfaitement dans l'obscurité naturelle jusqu'à 20 mètres par niveau, pour peu qu'une lueur subsiste : étoiles, lune, bioluminescence."], "off": true}, {"c": ["Visions sacrées", "Bonus d'I", "Intuition sur un sol sacré", "Reconnaître automatiquement un sol sacré, et y recevoir des visions sur un test d'Intuition."], "off": true}, {"c": ["Vivacité", "1", "–", "+5 permanent à l'Initiative de départ."], "off": true}, {"c": ["Volonté de fer", "Bonus de FM", "Calme contre l'Intimidation", "L'Intimidation ne provoque pas la Peur chez vous et ne vous empêche pas de répondre."], "off": true}, {"c": ["Voyageur aguerri", "Bonus d'Int", "Tout test sur les particularités locales", "Ajoute Savoir (Région) à toute carrière entamée, ou permet de l'acheter deux fois."], "off": true}], "foot": ""}]}, {"title": "Ce que change Up in Arms", "note": "Un talent inédit, trois refondus, deux affaiblis, un réécrit sans changement réel, un modifié, quatre étendus. Aucun talent du livre de base n'est supprimé.", "sections": [{"kind": "table", "title": "Talent inédit", "note": "Absent du livre de base.", "cols": ["Talent", "Nom anglais", "Maxi", "Tests liés", "Effet"], "rows": [{"c": ["Chef de pièce", "Crew Commander", "Bonus d'I", "Projectiles pour tirer avec une arme au défaut Servants", "Un test de Commandement Intermédiaire (+0) au profit d'un équipage servant une arme au défaut Servants, à portée de voix. Réussi, les servants emploient votre valeur de Projectiles à la place de la leur pour tirer."], "off": true}], "foot": ""}, {"kind": "table", "title": "Talents retouchés", "note": "La colonne « Ne vaut qu'avec » est la plus importante : elle dit quel sous-système optionnel déclenche la révision. Sans ce sous-système à ta table, la version du livre de base reste la bonne.", "cols": ["Talent", "Nom anglais", "Nature", "Ne vaut qu'avec", "Version Up in Arms"], "rows": [{"c": ["Artilleur", "Gunner", "Étendu", "Avantage de groupe", "Recharger une arme à poudre noire en combat compte en outre comme une action Estimer, et ce test rapporte +1 Avantage supplémentaire."], "off": true}, {"c": ["Battement", "Beat Blade", "Affaibli", "Avantage de groupe", "Le retrait d'Avantage est plafonné : 1 Avantage à la réserve adverse, et 1 de plus seulement à 6 DR, là où le livre de base en retirait 1 par DR."], "off": true}, {"c": ["Cavalier émérite", "Roughrider", "Étendu", "Combat monté", "S'ajoute à l'effet de base : on considère sa Taille comme égale à celle de sa monture pour résister à la Peur et à la Terreur causées par la seule taille de l'adversaire."], "off": true}, {"c": ["Coude-à-coude", "Drilled", "Modifié", "Avantage de groupe", "Un personnage doté de ce talent compte pour deux combattants dans le calcul de la perte d'Avantage."], "off": true}, {"c": ["Distraire", "Distract", "Réécrit", "Avantage de groupe", "Inchangé en pratique : l'effet est simplement reformulé pour parler de la réserve d'Avantage du camp adverse plutôt que de l'adversaire seul."], "off": true}, {"c": ["Frappe blessante", "Strike to Injure", "Refondu", "Blessures alternatives", "Maxi ramené à 1. L'effet change entièrement : en lançant sur une table de Blessure Critique, on lance deux fois et on retient le résultat de son choix."], "off": true}, {"c": ["Fuite !", "Flee!", "Étendu", "Poursuites", "Le Mouvement compte comme supérieur de 1 non seulement en fuite, mais aussi lorsqu'on est la proie d'une poursuite."], "off": true}, {"c": ["Impitoyable", "Relentless", "Refondu", "Avantage de groupe", "Maxi ramené à 1. L'effet change entièrement : le coût en Avantage de l'action Fuir le danger tombe à 1."], "off": true}, {"c": ["Porte-bouclier", "Shieldsman", "Refondu", "Avantage de groupe", "L'effet change entièrement. En se défendant au bouclier, une fois par tour, dépenser 2 Avantages soit pour infliger des dégâts comme si c'était son Action, soit pour repousser l'adversaire de deux mètres et rompre l'engagement."], "off": true}, {"c": ["Rechargement rapide", "Rapid Reload", "Étendu", "Avantage de groupe", "Recharger une arme à distance en combat compte en outre comme une action Estimer, et ce test rapporte +1 Avantage supplémentaire."], "off": true}, {"c": ["Renversement", "Reversal", "Affaibli", "Avantage de groupe", "On prend 1 Avantage à la réserve adverse pour l'ajouter à la sienne, et non plus la totalité. On n'inflige toujours aucun dégât si l'on procède ainsi."], "off": true}], "foot": "Deux de ces révisions affaiblissent le talent au lieu de le renforcer : Battement et Renversement perdent nettement en puissance, ce qui est cohérent avec un système où les Avantages deviennent une réserve collective."}, {"kind": "texte", "title": "Une anomalie à connaître", "note": "", "items": ["La carrière de Suivant d'armée, dans Up in Arms, accorde à son deuxième échelon un talent nommé Strong-Minded. Ce talent n'existe ni dans le livre de base, ni dans l'annexe du supplément, ni nulle part ailleurs dans l'ouvrage.", "C'est vraisemblablement une coquille de l'éditeur. Le plus proche par l'intention est Volonté de fer ; Obstiné et Imperturbable sont d'autres substitutions défendables. À trancher à la table plutôt qu'à chercher dans les livres.", "Les noms français des talents retouchés sont ceux du livre de base. Celui du talent inédit est une traduction maison, l'intitulé anglais étant rappelé à chaque fois."], "foot": ""}]}], "legend": [{"off": true, "term": "Augmentation", "def": "Point d'expérience investi dans une compétence. Le niveau de compétence vaut la caractéristique associée plus le nombre d'Augmentations prises."}, {"off": true, "term": "Compétence de base", "def": "Testable même sans aucune Augmentation : on lance simplement sur la caractéristique associée."}, {"off": true, "term": "Compétence avancée", "def": "Intestable tant qu'on n'y a pas mis au moins une Augmentation. Sans formation, le personnage ne peut même pas essayer."}, {"off": true, "term": "Compétence groupée", "def": "Se décline en spécialisations. Chaque Augmentation doit être affectée à une spécialisation précise, qui progresse séparément des autres."}, {"off": true, "term": "DR", "def": "Degré de Réussite. Différence entre les dizaines du score de compétence et les dizaines du jet, positive en réussite, négative en échec."}, {"off": true, "term": "Test étendu", "def": "Test répété jusqu'à cumuler un total de DR donné, chaque tentative consommant un temps défini."}, {"off": true, "term": "Test opposé", "def": "Les deux camps testent, le plus haut DR l'emporte."}, {"off": true, "term": "Maxi", "def": "Nombre de fois qu'un talent peut être acquis : soit 1, soit le bonus d'une caractéristique, c'est-à-dire son chiffre des dizaines."}, {"off": true, "term": "Tests liés", "def": "Compétences citées sous la ligne Tests d'un talent. Chaque acquisition du talent donne +1 DR à toute réussite de ces compétences, en plus de son effet propre."}, {"off": false, "term": "Avantage de groupe", "def": "Système optionnel d'Up in Arms qui remplace les Avantages individuels par une réserve par camp. Il conditionne huit des révisions de talents."}, {"off": false, "term": "Blessures alternatives", "def": "Chapitre optionnel d'Up in Arms sur les Blessures Critiques et la mort. Il conditionne la refonte de Frappe blessante et l'état Hémorragie."}, {"off": false, "term": "Poursuites", "def": "Chapitre optionnel d'Up in Arms. Athlétisme, Chevaucher et Conduite d'attelage y servent à mesurer la distance, un test Facile (+20) par round."}, {"off": false, "term": "Combat monté", "def": "Chapitre d'Up in Arms qui refond l'emploi de Chevaucher, de Soin aux animaux et d'Esquive en selle."}]};
+var RACINE = 'outils/talents';
+var CLIENT = Math.random().toString(36).slice(2, 10);
+var data = null;
+
+var FB_CONFIG = {
+  apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+  authDomain: "warhammer-table-jdr.firebaseapp.com",
+  databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "warhammer-table-jdr",
+  storageBucket: "warhammer-table-jdr.firebasestorage.app",
+  messagingSenderId: "347804803970",
+  appId: "1:347804803970:web:43e062299c53e59d20e59b"
+};
+
+var db = null, refData = null, refSave = null;
+try{
+  if(typeof firebase !== 'undefined'){
+    if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+    db = firebase.database();
+    refData = db.ref(RACINE + '/donnees');
+    refSave = db.ref(RACINE + '/sauvegardes');
+  }
+}catch(e){ console.warn('Firebase indisponible :', e); }
+
+/* ---------- indicateur d'état ---------- */
+var flag = document.getElementById('flag');
+var flagTimer = null;
+function etat(txt, cls){
+  if(!flag) return;
+  clearTimeout(flagTimer);
+  flag.textContent = txt;
+  flag.className = 'sync-flag ' + (cls || '');
+  if(cls === 'ok') flagTimer = setTimeout(function(){ flag.textContent = ''; flag.className = 'sync-flag'; }, 2600);
+}
+
+/* ---------- Firebase efface les tableaux vides : on remet tout d'aplomb ---------- */
+function tab(x){
+  if(Array.isArray(x)) return x;
+  if(x && typeof x === 'object'){
+    var k = Object.keys(x).sort(function(a,b){ return a - b; }), o = [];
+    for(var i = 0; i < k.length; i++) o.push(x[k[i]]);
+    return o;
+  }
+  return [];
+}
+
+/* ---------- amorçage : le fichier, puis la base prend la main dès sa réponse ---------- */
+function charger(){
+  data = normaliser(JSON.parse(JSON.stringify(DEFAUT)));
+}
+
+/* ---------- écriture groupée ---------- */
+var tmr = null, sale = false;
+function sauver(){
+  sale = true;
+  etat('modifié', 'pending');
+  clearTimeout(tmr);
+  tmr = setTimeout(ecrire, 900);
+}
+function ecrire(){
+  if(!refData){ etat('hors ligne', 'err'); return; }
+  etat('envoi…', 'pending');
+  refData.set({ payload: data, at: Date.now(), par: CLIENT }).then(function(){
+    sale = false;
+    etat('enregistré', 'ok');
+  }).catch(function(e){
+    console.warn('Écriture échouée :', e);
+    etat('échec réseau', 'err');
+    clearTimeout(tmr);
+    tmr = setTimeout(ecrire, 4000);
+  });
+}
+
+/* ---------- écoute en direct ---------- */
+var enAttente = null;
+function enEdition(){
+  var a = document.activeElement;
+  return !!(a && a.isContentEditable);
+}
+function appliquer(p){
+  data = normaliser(p);
+  rendre();
+  etat('à jour', 'ok');
+}
+if(refData){
+  refData.on('value', function(sn){
+    var v = sn.val();
+    if(!v || !v.payload) return;
+    if(v.par === CLIENT) return;
+    if(sale || enEdition()){ enAttente = v.payload; return; }
+    appliquer(v.payload);
+  }, function(e){ console.warn('Lecture impossible :', e); etat('hors ligne', 'err'); });
+}
+document.addEventListener('focusout', function(){
+  setTimeout(function(){
+    if(enAttente && !sale && !enEdition()){ var p = enAttente; enAttente = null; appliquer(p); }
+  }, 300);
+});
+
+/* ---------- publication du fichier vers la base ---------- */
+function pousserFichier(){
+  if(!refData){ alert('Hors ligne : publication impossible.'); return; }
+  if(!confirm(
+    'Publier la version du fichier vers la base ?\n\n' +
+    'Tout ce qui a été modifié en ligne sans être réintégré au fichier sera remplacé.\n' +
+    "L'état actuel de la base est sauvegardé avant écriture."
+  )) return;
+  var b = document.getElementById('b-push');
+  if(b) b.setAttribute('disabled', 'disabled');
+  etat('sauvegarde…', 'pending');
+  refData.once('value').then(function(sn){
+    var avant = sn.val();
+    if(!avant || !refSave) return null;
+    return refSave.child(String(Date.now())).set(avant);
+  }).catch(function(e){ console.warn('Sauvegarde impossible :', e); })
+  .then(function(){
+    etat('publication…', 'pending');
+    data = normaliser(JSON.parse(JSON.stringify(DEFAUT)));
+    return refData.set({ payload: data, at: Date.now(), par: CLIENT });
+  }).then(function(){
+    sale = false;
+    rendre();
+    if(b) b.removeAttribute('disabled');
+    etat('publié', 'ok');
+  }).catch(function(e){
+    console.warn('Publication échouée :', e);
+    if(b) b.removeAttribute('disabled');
+    etat('publication refusée', 'err');
+  });
+}
+
+
+/* ---------- remise en forme après lecture ---------- */
+function normaliser(d){
+  if(!d || typeof d !== 'object') d = JSON.parse(JSON.stringify(DEFAUT));
+  d.intro = d.intro || '';
+  /* ancien format à sections plates : on l'enveloppe dans un groupe unique */
+  if(!d.groups && d.sections) d.groups = [{title:'', note:'', sections: d.sections}];
+  delete d.sections;
+  d.groups = tab(d.groups);
+  for(var g = 0; g < d.groups.length; g++){
+    var G = d.groups[g];
+    G.title = G.title || '';
+    G.note  = G.note  || '';
+    G.sections = tab(G.sections);
+    for(var i = 0; i < G.sections.length; i++){
+      var s = G.sections[i];
+      s.kind  = s.kind || (s.cols ? 'table' : 'texte');
+      s.title = s.title || '';
+      s.note  = s.note  || '';
+      s.foot  = s.foot  || '';
+      if(s.kind === 'table'){
+        s.cols = tab(s.cols);
+        s.rows = tab(s.rows);
+        for(var r = 0; r < s.rows.length; r++){
+          s.rows[r] = s.rows[r] || {};
+          s.rows[r].c = tab(s.rows[r].c);
+          s.rows[r].off = !!s.rows[r].off;
+        }
+      } else {
+        s.items = tab(s.items);
+      }
+    }
+  }
+  d.legend = tab(d.legend);
+  for(var l = 0; l < d.legend.length; l++){
+    d.legend[l] = d.legend[l] || {};
+    d.legend[l].term = d.legend[l].term || '';
+    d.legend[l].def  = d.legend[l].def  || '';
+    d.legend[l].off  = !!d.legend[l].off;
+  }
+  return d;
+}
+
+function esc(s){
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function classeCol(nom){
+  var n = (nom || '').toLowerCase();
+  if(n.indexOf('enc') === 0 || n.indexOf('dr') === 0 || n.indexOf('éch') === 0 ||
+     n.indexOf('compl') === 0 || n.indexOf('pa') === 0 || n.indexOf('dégâts') === 0) return 'c';
+  return '';
+}
+
+function rendre(){
+  var h = '';
+  h += '<div class="intro" contenteditable data-t="intro">' + esc(data.intro || '') + '</div>';
+
+  for(var gi = 0; gi < data.groups.length; gi++){
+    var G = data.groups[gi];
+    h += '<div class="grp" data-g="' + gi + '">';
+    h += '<h2 contenteditable data-t="gt" data-g="' + gi + '">' + esc(G.title) + '</h2>';
+    h += '<div class="gnote" contenteditable data-t="gn" data-g="' + gi + '">' + esc(G.note) + '</div>';
+
+    for(var si = 0; si < G.sections.length; si++){
+      var s = G.sections[si];
+      var n = (s.kind === 'table') ? s.rows.length : s.items.length;
+      h += '<div class="sec" data-g="' + gi + '" data-s="' + si + '">';
+      h += '<div class="sechead">';
+      h +=   '<button data-a="fold">▾</button>';
+      h +=   '<span class="t" contenteditable data-t="st" data-g="' + gi + '" data-s="' + si + '">' + esc(s.title) + '</span>';
+      h +=   '<span class="n">' + n + '</span>';
+      h +=   '<button data-a="up">↑</button><button data-a="down">↓</button>';
+      h += '</div>';
+      h += '<div class="snote" contenteditable data-t="sn" data-g="' + gi + '" data-s="' + si + '">' + esc(s.note) + '</div>';
+      h += '<div class="secbody">';
+
+      var PIED = '<div class="sfoot" contenteditable data-t="sf" data-g="' + gi + '" data-s="' + si + '">' + esc(s.foot) + '</div>';
+
+      if(s.kind === 'table'){
+        h += '<table><thead><tr>';
+        for(var ci = 0; ci < s.cols.length; ci++)
+          h += '<th contenteditable data-t="col" data-g="' + gi + '" data-s="' + si + '" data-c="' + ci + '">' + esc(s.cols[ci]) + '</th>';
+        h += '<th></th></tr></thead><tbody>';
+        for(var ri = 0; ri < s.rows.length; ri++){
+          var r = s.rows[ri];
+          h += '<tr' + (r.off ? ' class="off"' : '') + ' data-r="' + ri + '">';
+          for(var k = 0; k < s.cols.length; k++){
+            h += '<td class="' + classeCol(s.cols[k]) + '" contenteditable data-t="cell" data-lab="' + esc(s.cols[k]) +
+                 '" data-g="' + gi + '" data-s="' + si + '" data-r="' + ri + '" data-c="' + k + '">' +
+                 esc(r.c[k] === undefined ? '' : r.c[k]) + '</td>';
+          }
+          h += '<td class="acts"><button data-a="off" title="Ligne officielle">★</button>' +
+               '<button data-a="dup" title="Dupliquer">⧉</button>' +
+               '<button data-a="del" title="Supprimer">✕</button></td></tr>';
+        }
+        h += '</tbody></table>' + PIED + '<button class="addrow" data-a="addrow">+ Ligne</button>';
+      } else {
+        h += '<div class="items">';
+        for(var ii = 0; ii < s.items.length; ii++){
+          h += '<div class="item" data-i="' + ii + '"><span class="puce">◆</span>' +
+               '<div class="txt" contenteditable data-t="item" data-g="' + gi + '" data-s="' + si + '" data-i="' + ii + '">' + esc(s.items[ii]) + '</div>' +
+               '<span class="acts"><button data-a="upitem">↑</button><button data-a="delitem">✕</button></span></div>';
+        }
+        h += '</div>' + PIED + '<button class="addrow" data-a="additem">+ Paragraphe</button>';
+      }
+      h += '</div></div>';
+    }
+    h += '</div>';
+  }
+
+  h += '<h2 class="bloc">Légende</h2>';
+  {
+    h += '<div class="legwrap">';
+    for(var li = 0; li < data.legend.length; li++){
+      var L = data.legend[li];
+      h += '<div class="leg ' + (L.off ? 'of' : 'mai') + '" data-l="' + li + '">';
+      h += '<span class="acts2"><button data-a="legoff">★</button><button data-a="legdel">✕</button></span>';
+      h += '<span class="term" contenteditable data-t="lt" data-l="' + li + '">' + esc(L.term) + '</span>. ';
+      h += '<span class="df" contenteditable data-t="ld" data-l="' + li + '">' + esc(L.def) + '</span></div>';
+    }
+    h += '</div><button class="addrow" data-a="addleg">+ Entrée de légende</button>';
+  }
+  h += '<p class="hint">Tout est modifiable : cliquer et écrire. Chaque frappe part vers la base en ligne, ' +
+       'rien à valider. L\'étoile marque une ligne officielle, en italique. Survoler une cellule affiche ' +
+       'les définitions reconnues. Le bouton PDF imprime la page, le bouton Push republie le contenu du ' +
+       'fichier par-dessus la base.</p>';
+
+  document.getElementById('app').innerHTML = h;
+  indexerLegende();
+}
+
+document.addEventListener('input', function(e){
+  var el = e.target, t = el.getAttribute('data-t');
+  if(!t) return;
+  var g = +el.getAttribute('data-g'), s = +el.getAttribute('data-s'),
+      r = +el.getAttribute('data-r'), c = +el.getAttribute('data-c'),
+      i = +el.getAttribute('data-i'), l = +el.getAttribute('data-l');
+  var v = el.textContent, S = (data.groups[g] && data.groups[g].sections) ? data.groups[g].sections[s] : null;
+  if(t === 'intro') data.intro = v;
+  else if(t === 'gt') data.groups[g].title = v;
+  else if(t === 'gn') data.groups[g].note = v;
+  else if(t === 'st') S.title = v;
+  else if(t === 'sn') S.note = v;
+  else if(t === 'sf') S.foot = v;
+  else if(t === 'col') S.cols[c] = v;
+  else if(t === 'cell') S.rows[r].c[c] = v;
+  else if(t === 'item') S.items[i] = v;
+  else if(t === 'lt'){ data.legend[l].term = v; indexerLegende(); }
+  else if(t === 'ld'){ data.legend[l].def = v; indexerLegende(); }
+  sauver();
+});
+
+document.addEventListener('keydown', function(e){
+  var el = e.target;
+  if(e.key === 'Enter' && el.hasAttribute && el.hasAttribute('contenteditable')){
+    if(el.classList && el.classList.contains('txt')) return; /* paragraphes : saut de ligne permis */
+    e.preventDefault(); el.blur();
+  }
+});
+
+document.addEventListener('click', function(e){
+  var b = e.target.closest ? e.target.closest('button[data-a]') : null;
+  if(!b) return;
+  var a = b.getAttribute('data-a');
+  var sec = b.closest('.sec'), tr = b.closest('tr'), it = b.closest('.item'), leg = b.closest('.leg');
+
+  if(a === 'fold'){ sec.classList.toggle('closed'); return; }
+  if(a === 'addleg'){
+    if(!data.legend) data.legend = [];
+    data.legend.push({off:false, term:'Nouveau mot-clé', def:'Définition.'});
+    sauver(); rendre();
+    var els = document.querySelectorAll('.leg .term');
+    if(els.length) els[els.length - 1].focus();
+    return;
+  }
+  if(leg){
+    var l = +leg.getAttribute('data-l');
+    if(a === 'legdel'){ data.legend.splice(l,1); sauver(); rendre(); return; }
+    if(a === 'legoff'){ data.legend[l].off = !data.legend[l].off; sauver(); rendre(); return; }
+  }
+  if(!sec) return;
+  var gi = +sec.getAttribute('data-g'), si = +sec.getAttribute('data-s');
+  var LST = data.groups[gi].sections, S = LST[si];
+
+  if(a === 'addrow'){
+    var vide = []; for(var i = 0; i < S.cols.length; i++) vide.push('');
+    S.rows.push({c:vide, off:false}); sauver(); rendre(); return;
+  }
+  if(a === 'additem'){ S.items.push('Nouveau paragraphe.'); sauver(); rendre(); return; }
+  if(a === 'up' || a === 'down'){
+    var d = (a === 'up') ? -1 : 1, n = si + d;
+    if(n >= 0 && n < LST.length){
+      var tmp = LST[si]; LST[si] = LST[n]; LST[n] = tmp;
+      sauver(); rendre();
+    }
+    return;
+  }
+  if(tr){
+    var r = +tr.getAttribute('data-r');
+    if(a === 'del'){ S.rows.splice(r,1); sauver(); rendre(); return; }
+    if(a === 'dup'){ S.rows.splice(r+1,0, JSON.parse(JSON.stringify(S.rows[r]))); sauver(); rendre(); return; }
+    if(a === 'off'){ S.rows[r].off = !S.rows[r].off; sauver(); rendre(); return; }
+  }
+  if(it){
+    var ii = +it.getAttribute('data-i');
+    if(a === 'delitem'){ S.items.splice(ii,1); sauver(); rendre(); return; }
+    if(a === 'upitem' && ii > 0){
+      var t2 = S.items[ii]; S.items[ii] = S.items[ii-1]; S.items[ii-1] = t2; sauver(); rendre(); return;
+    }
+  }
+});
+
+document.getElementById('b-print').onclick = function(){ window.print(); };
+document.getElementById('b-push').onclick = pousserFichier;
+
+document.getElementById('q').oninput = function(){
+  var q = this.value.trim().toLowerCase();
+  var secs = document.querySelectorAll('.sec');
+  for(var i = 0; i < secs.length; i++){
+    var lignes = secs[i].querySelectorAll('tbody tr, .item'), vis = 0;
+    for(var j = 0; j < lignes.length; j++){
+      var ok = !q || lignes[j].textContent.toLowerCase().indexOf(q) >= 0;
+      lignes[j].classList.toggle('hid', !ok);
+      if(ok) vis++;
+    }
+    var titreOk = secs[i].querySelector('.sechead .t').textContent.toLowerCase().indexOf(q) >= 0;
+    secs[i].classList.toggle('hid', !!q && vis === 0 && !titreOk);
+  }
+  var grps = document.querySelectorAll('.grp');
+  for(var g = 0; g < grps.length; g++){
+    var restant = grps[g].querySelectorAll('.sec:not(.hid)').length;
+    grps[g].classList.toggle('hid', !!q && restant === 0);
+  }
+  var legs = document.querySelectorAll('.leg');
+  for(var k = 0; k < legs.length; k++)
+    legs[k].classList.toggle('hid', !!q && legs[k].textContent.toLowerCase().indexOf(q) < 0);
+};
+
+/* ======================= INFOBULLES DE LÉGENDE ======================= */
+var IDX = [];               /* [{cle, terme, entree}] trié du plus long au plus court */
+function normal(t){
+  return String(t).toLowerCase()
+    .replace(/\s*\(.*?\)\s*/g, ' ')      /* Bénie (X) -> benie */
+    .replace(/\s+[\dx×]+\s*$/, '')       /* Recharge 3 et Addictive X -> recharge, addictive */
+    .replace(/[.,;:!?]+$/, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+function indexerLegende(){
+  IDX = [];
+  if(!data.legend) return;
+  for(var i = 0; i < data.legend.length; i++){
+    var cle = normal(data.legend[i].term);
+    if(cle.length > 2) IDX.push({cle: cle, entree: data.legend[i]});
+  }
+  IDX.sort(function(a, b){ return b.cle.length - a.cle.length; });
+}
+
+/* Reconnaît les mots-clés d'une cellule, par segment puis par occurrence dans la phrase. */
+function definitions(texte){
+  var trouve = [], vus = {};
+  function pousser(E){
+    if(!vus[E.term]){ vus[E.term] = 1; trouve.push(E); }
+  }
+  var segments = String(texte).split(/[,;.•·]/);
+  for(var s = 0; s < segments.length; s++){
+    for(var i = 0; i < IDX.length; i++){
+      if(normal(segments[s]) === IDX[i].cle){ pousser(IDX[i].entree); break; }
+    }
+  }
+  var plat = ' ' + normal(texte) + ' ';
+  for(var j = 0; j < IDX.length; j++){
+    if(IDX[j].cle.length < 5) continue;                 /* trop court : trop de faux positifs */
+    if(plat.indexOf(' ' + IDX[j].cle) >= 0) pousser(IDX[j].entree);
+  }
+  return trouve;
+}
+
+var tip = document.getElementById('tip');
+function cacherTip(){ tip.style.display = 'none'; }
+function montrerTip(cible){
+  if(!cible || document.activeElement === cible){ cacherTip(); return; }
+  var liste = definitions(cible.textContent);
+  if(!liste.length){ cacherTip(); return; }
+  var out = '';
+  for(var i = 0; i < liste.length && i < 6; i++)
+    out += '<p><b>' + esc(liste[i].term) + '.</b> ' + esc(liste[i].def) + '</p>';
+  tip.innerHTML = out;
+  tip.style.display = 'block';
+  var r = cible.getBoundingClientRect();
+  var top = r.bottom + 6;
+  if(top + tip.offsetHeight > window.innerHeight) top = Math.max(6, r.top - tip.offsetHeight - 6);
+  tip.style.top = top + 'px';
+  tip.style.left = Math.min(Math.max(6, r.left), window.innerWidth - tip.offsetWidth - 12) + 'px';
+}
+function cibleTip(e){
+  if(!e.target.closest) return null;
+  return e.target.closest('td[data-t="cell"], .item .txt, .sfoot, .snote');
+}
+document.addEventListener('mouseover', function(e){ montrerTip(cibleTip(e)); });
+document.addEventListener('mouseout', function(e){ if(cibleTip(e)) cacherTip(); });
+document.addEventListener('scroll', cacherTip, true);
+document.addEventListener('focusin', cacherTip);
+
+charger();
+rendre();
+</script>
+</body>
+</html>
