@@ -149,6 +149,30 @@
   nav { border-bottom-color: rgba(184,146,42,0.2); }
   .nav-current { color: #e3c66e !important; }
   .ornament { color: #B8922A; }
+  /* ── contrôles MJ et cartes dynamiques ── */
+  .mj-bar { display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap; margin:0 0 1rem; }
+  .mj-btn { cursor:pointer; font-family:'Cinzel',serif; font-size:0.66rem; letter-spacing:0.14em;
+    text-transform:uppercase; padding:0.42rem 0.9rem; border-radius:2px; transition:all 0.15s;
+    background:rgba(184,146,42,0.14); color:#e3c66e; border:1px solid rgba(184,146,42,0.38); }
+  .mj-btn:hover { background:rgba(184,146,42,0.28); border-color:rgba(227,198,110,0.55); }
+  .mj-btn.ghost { background:transparent; color:#555566; border-color:rgba(255,255,255,0.12); }
+  .mj-btn.ghost:hover { color:#B8922A; border-color:rgba(184,146,42,0.4); }
+  .mj-hint { font-style:italic; color:#555566; font-size:0.8rem; }
+  .card-new { background:rgba(255,255,255,0.02); border:1px dashed rgba(184,146,42,0.35);
+    border-top:3px dashed rgba(184,146,42,0.5); cursor:pointer; }
+  .card-new:hover { border-color:rgba(227,198,110,0.6); }
+  .card-new .card-name { color:#e3c66e; }
+  .card-del { position:absolute; top:0.55rem; right:0.55rem; width:26px; height:26px; border-radius:2px;
+    background:rgba(139,26,26,0.18); border:1px solid rgba(139,26,26,0.4); color:#d08a8a;
+    font-size:1rem; line-height:1; cursor:pointer; z-index:3; opacity:0; transition:opacity 0.15s; }
+  .card:hover .card-del { opacity:1; }
+  .card-del:hover { background:rgba(139,26,26,0.4); }
+  .card-edit { position:absolute; top:0.55rem; right:2.35rem; width:26px; height:26px; border-radius:2px;
+    background:rgba(184,146,42,0.16); border:1px solid rgba(184,146,42,0.4); color:#e3c66e;
+    font-size:0.8rem; line-height:1; cursor:pointer; z-index:3; opacity:0; transition:opacity 0.15s; }
+  .card:hover .card-edit { opacity:1; }
+  .card-lock { font-size:0.7rem; opacity:0.65; margin-left:0.35rem; }
+  .chargement { grid-column:1/-1; color:#555566; font-style:italic; font-size:0.9rem; padding:0.6rem 0.2rem; }
 </style>
 </head>
 <body>
@@ -174,39 +198,16 @@
 
   <div class="section-title">Personnages joueurs</div>
 
-  <div class="cards cards-3">
+  
+  <div class="mj-bar" id="mj-bar">
+    <button class="mj-btn ghost" id="mj-open" type="button">Mode MJ</button>
+    <button class="mj-btn ghost" id="mj-attach" type="button" style="display:none">Rattacher une fiche existante</button>
+    <span class="mj-hint" id="mj-hint">Les joueurs consultent, le MJ crée.</span>
+  </div>
 
-    <a class="card card-pj-a" href="ines.html">
-      <span class="card-symbol">⚜️</span>
-      <div class="card-label card-accent">Inès</div>
-      <div class="card-name">Personnage d’Inès</div>
-      <div class="card-sub">Fiche de personnage</div>
-      <div class="card-desc">Fiche vierge, prête à être remplie. Le nom s’affichera ici une fois le personnage créé.</div>
-      <span class="card-enter card-accent">Ouvrir →</span>
-    </a>
-    <a class="card card-pj-b" href="matteo.html">
-      <span class="card-symbol">⚜️</span>
-      <div class="card-label card-accent">Mattéo</div>
-      <div class="card-name">Personnage de Mattéo</div>
-      <div class="card-sub">Fiche de personnage</div>
-      <div class="card-desc">Fiche vierge, prête à être remplie. Le nom s’affichera ici une fois le personnage créé.</div>
-      <span class="card-enter card-accent">Ouvrir →</span>
-    </a>
-    <a class="card card-pj-c" href="antoine.html">
-      <span class="card-symbol">⚜️</span>
-      <div class="card-label card-accent">Antoine</div>
-      <div class="card-name">Personnage d’Antoine</div>
-      <div class="card-sub">Fiche de personnage</div>
-      <div class="card-desc">Fiche protégée par mot de passe. Le nom s’affichera ici une fois le personnage créé.</div>
-      <span class="card-enter card-accent">Ouvrir →</span>
-    </a>
-    <div class="card card-vide">
-      <span class="card-symbol">◇</span>
-      <div class="card-label">—</div>
-      <div class="card-name">Emplacement libre</div>
-      <div class="card-sub">À pourvoir</div>
-      <div class="card-desc">Personnage à créer. La fiche apparaîtra ici.</div>
-    </div>
+  <div class="cards cards-3" id="pj-grid">
+    <div class="chargement">Chargement des personnages…</div>
+  </div>
 
   </div>
 
@@ -215,5 +216,232 @@
   </footer>
 
 </div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+(function () {
+  var GROUPE = 2;
+  var MDP_MJ_HASH = "1vf7utwiu4n";
+  var PALETTE = ["a","b","c","d","e","f"];
+
+  function cyrb53(str, seed) {
+    seed = seed || 0;
+    var h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+    for (var i = 0, ch; i < str.length; i++) {
+      ch = str.charCodeAt(i);
+      h1 = Math.imul(h1 ^ ch, 2654435761);
+      h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+    h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+    h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+  }
+
+  function esc(x) {
+    return String(x == null ? "" : x)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  /* identifiant lisible, sans accent ni espace : « Hedwige Wendt » → hedwige-wendt */
+  function slug(t) {
+    return (t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
+  }
+
+  var estMJ = false;
+  try { estMJ = sessionStorage.getItem("mjAccess") === "1"; } catch (e) {}
+
+  var db = null, refP = null;
+  try {
+    if (!firebase.apps.length) firebase.initializeApp({
+      apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+      authDomain: "warhammer-table-jdr.firebaseapp.com",
+      databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "warhammer-table-jdr",
+      storageBucket: "warhammer-table-jdr.firebasestorage.app",
+      messagingSenderId: "347804803970",
+      appId: "1:347804803970:web:43e062299c53e59d20e59b"
+    });
+    db = firebase.database();
+    refP = db.ref("personnages");
+  } catch (e) { console.warn("Firebase indisponible :", e); }
+
+  var grille = document.getElementById("pj-grid");
+  var bouton = document.getElementById("mj-open");
+  var astuce = document.getElementById("mj-hint");
+  var courant = {};
+
+  function majBarre() {
+    bouton.textContent = estMJ ? "Nouveau personnage" : "Mode MJ";
+    bouton.classList.toggle("ghost", !estMJ);
+    astuce.textContent = estMJ
+      ? "Mode MJ actif : tu peux créer, rattacher, modifier et supprimer."
+      : "Les joueurs consultent, le MJ crée.";
+    var r = document.getElementById("mj-attach");
+    if (r) r.style.display = estMJ ? "" : "none";
+  }
+
+  bouton.addEventListener("click", function () {
+    if (!estMJ) {
+      var p = prompt("Mot de passe du Maître du Jeu :");
+      if (p === null) return;
+      if (cyrb53(p.trim()) !== MDP_MJ_HASH) { alert("Mot de passe incorrect."); return; }
+      try { sessionStorage.setItem("mjAccess", "1"); } catch (e) {}
+      estMJ = true; majBarre(); rendre(courant);
+      return;
+    }
+    creer();
+  });
+
+  function libre(id) { return id && !Object.prototype.hasOwnProperty.call(courant, id); }
+
+  function creer() {
+    var nom = prompt("Nom du personnage :");
+    if (nom === null) return;
+    nom = nom.trim();
+    if (!nom) { alert("Il faut un nom."); return; }
+    var id = slug(nom);
+    if (!id) { alert("Ce nom ne donne aucun identifiant utilisable."); return; }
+    if (!libre(id)) {
+      var alt = prompt("L'identifiant « " + id + " » est déjà pris.\nEn choisir un autre :", id + "-2");
+      if (alt === null) return;
+      id = slug(alt);
+      if (!id || !libre(id)) { alert("Identifiant invalide ou déjà pris."); return; }
+    }
+    var joueur = (prompt("Prénom du joueur (facultatif) :", "") || "").trim();
+    var mdp = (prompt("Mot de passe de la fiche (laisser vide pour aucun) :", "") || "").trim();
+    var n = Object.keys(courant).length;
+    var fiche = {
+      nom: nom, joueur: joueur, groupe: GROUPE,
+      soustitre: "Fiche de personnage",
+      desc: "Fiche à remplir.",
+      couleur: PALETTE[n % PALETTE.length],
+      symbole: "\u269C", etat: "active",
+      mdp: mdp ? cyrb53(mdp) : "",
+      cree: Date.now()
+    };
+    refP.child(id).set(fiche)
+      .then(function () { location.href = "fiche.html?p=" + encodeURIComponent(id); })
+      .catch(function (e) { alert("Création impossible : " + e.message); });
+  }
+
+  function rattacher() {
+    var id = (prompt("Identifiant de la fiche existante.\nC'est la valeur de FICHE_ID dans l'ancien fichier, par exemple « matteo ».") || "").trim();
+    if (!id) return;
+    if (!libre(id)) { alert("Ce personnage figure déjà dans un groupe."); return; }
+    var nom = (prompt("Nom affiché sur la carte :", id) || "").trim() || id;
+    var joueur = (prompt("Prénom du joueur (facultatif) :", "") || "").trim();
+    var n = Object.keys(courant).length;
+    refP.child(id).set({
+      nom: nom, joueur: joueur, groupe: GROUPE,
+      soustitre: "Fiche de personnage", desc: "Fiche reprise de l'ancien format.",
+      couleur: PALETTE[n % PALETTE.length], symbole: "\u269C", etat: "active",
+      mdp: "", cree: Date.now()
+    }).catch(function (e) { alert("Rattachement impossible : " + e.message); });
+  }
+
+  function modifier(id) {
+    var p = courant[id] || {};
+    var nom = prompt("Nom :", p.nom || ""); if (nom === null) return;
+    var sous = prompt("Sous-titre, par exemple « Répurgatrice · Humaine » :", p.soustitre || ""); if (sous === null) return;
+    var desc = prompt("Description courte :", p.desc || ""); if (desc === null) return;
+    var sym = prompt("Symbole :", p.symbole || "\u269C"); if (sym === null) return;
+    var coul = prompt("Couleur, une lettre de a à f :", p.couleur || "a"); if (coul === null) return;
+    var mdp = prompt("Mot de passe.\nVide = aucun. Laisser « = » pour ne pas y toucher.", "=");
+    if (mdp === null) return;
+    var maj = {
+      nom: nom.trim() || id, soustitre: sous.trim(), desc: desc.trim(),
+      symbole: sym.trim() || "\u269C",
+      couleur: PALETTE.indexOf(coul.trim()) >= 0 ? coul.trim() : (p.couleur || "a")
+    };
+    if (mdp !== "=") maj.mdp = mdp.trim() ? cyrb53(mdp.trim()) : "";
+    refP.child(id).update(maj).catch(function (e) { alert("Modification impossible : " + e.message); });
+  }
+
+  function rendre(data) {
+    courant = {};
+    Object.keys(data || {}).forEach(function (k) {
+      var p = data[k];
+      if (p && String(p.groupe) === String(GROUPE)) courant[k] = p;
+    });
+
+    grille.innerHTML = "";
+    var ids = Object.keys(courant).sort(function (a, b) {
+      return (courant[a].cree || 0) - (courant[b].cree || 0);
+    });
+
+    if (!ids.length) {
+      var v = document.createElement("div");
+      v.className = "chargement";
+      v.textContent = estMJ
+        ? "Aucun personnage dans ce groupe. Clique sur « Nouveau personnage » pour en créer un."
+        : "Aucun personnage dans ce groupe pour l'instant.";
+      grille.appendChild(v);
+    }
+
+    ids.forEach(function (id) {
+      var p = courant[id];
+      var attente = p.etat === "avenir";
+      var cls = "card card-pj-" + (p.couleur || "a") + (attente ? " card-attente" : "");
+      var el = document.createElement(attente ? "div" : "a");
+      el.className = cls;
+      if (!attente) el.href = "fiche.html?p=" + encodeURIComponent(id);
+      el.innerHTML =
+        (estMJ ? '<button class="card-edit" data-edit="' + esc(id) + '" title="Modifier la carte">\u270E</button>' +
+                 '<button class="card-del" data-del="' + esc(id) + '" title="Retirer du groupe">\u00D7</button>' : "") +
+        '<span class="card-symbol">' + esc(p.symbole || "\u269C") + '</span>' +
+        '<div class="card-label card-accent">' + esc(p.joueur || "\u2014") + '</div>' +
+        '<div class="card-name">' + esc(p.nom || id) +
+          (p.mdp ? '<span class="card-lock" title="Fiche protégée">\uD83D\uDD12</span>' : "") + '</div>' +
+        '<div class="card-sub">' + esc(p.soustitre || "Fiche de personnage") +
+          (attente ? '<span class="card-wip">fiche à venir</span>' : "") + '</div>' +
+        '<div class="card-desc">' + esc(p.desc || "") + '</div>' +
+        (attente ? "" : '<span class="card-enter card-accent">Ouvrir →</span>');
+      grille.appendChild(el);
+    });
+
+    if (estMJ) {
+      var n = document.createElement("div");
+      n.className = "card card-new";
+      n.id = "mj-new-card";
+      n.innerHTML =
+        '<span class="card-symbol">\u271A</span>' +
+        '<div class="card-label">Maître du Jeu</div>' +
+        '<div class="card-name">Nouveau personnage</div>' +
+        '<div class="card-sub">Création</div>' +
+        '<div class="card-desc">Crée la fiche, la place dans ce groupe et l\'ouvre aussitôt.</div>';
+      n.addEventListener("click", creer);
+      grille.appendChild(n);
+    }
+  }
+
+  grille.addEventListener("click", function (e) {
+    var d = e.target.closest("[data-del]");
+    if (d) {
+      e.preventDefault(); e.stopPropagation();
+      var id = d.getAttribute("data-del");
+      if (!confirm("Retirer « " + (courant[id] && courant[id].nom || id) + " » de ce groupe ?\n\n" +
+                   "La carte disparaît, mais la fiche et son contenu restent intacts dans la base. " +
+                   "Tu pourras la rattacher plus tard avec l'identifiant « " + id + " ».")) return;
+      refP.child(id).set(null).catch(function (err) { alert("Suppression impossible : " + err.message); });
+      return;
+    }
+    var m = e.target.closest("[data-edit]");
+    if (m) { e.preventDefault(); e.stopPropagation(); modifier(m.getAttribute("data-edit")); }
+  });
+
+  var att = document.getElementById("mj-attach");
+  if (att) att.addEventListener("click", rattacher);
+
+  majBarre();
+  if (refP) refP.on("value", function (snap) { rendre(snap.val()); },
+                    function (e) { grille.innerHTML = '<div class="chargement">Lecture impossible : ' + esc(e.message) + '</div>'; });
+  else grille.innerHTML = '<div class="chargement">Base en ligne indisponible.</div>';
+})();
+</script>
+
 </body>
 </html>
