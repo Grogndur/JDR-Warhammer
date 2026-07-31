@@ -7,81 +7,96 @@
 <style>
   :root{
     --bg:#12100e; --panel:#1b1815; --panel2:#221e1a; --line:#37302a;
-    --txt:#e8e0d2; --dim:#a2968a; --acc:#b8322a; --acc2:#c9a227; --off:#8d8375;
+    --txt:#e8e0d2; --dim:#a2968a; --acc:#c2452a; --acc2:#c9a227; --off:#8d8375;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--txt);
        font-family:"Iowan Old Style",Georgia,serif;font-size:15px;line-height:1.45}
 
-  /* ---------- barre d'outils ---------- */
   .bar{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,#1b1815,#161311);
        border-bottom:1px solid var(--line);padding:.6rem .9rem;display:flex;gap:.6rem;
        align-items:center;flex-wrap:wrap}
-  .bar h1{font-size:1.05rem;letter-spacing:.14em;text-transform:uppercase;margin:0 .5rem 0 0;
-          color:var(--txt);font-weight:600;white-space:nowrap}
+  .bar h1{font-size:1.02rem;letter-spacing:.13em;text-transform:uppercase;margin:0 .5rem 0 0;
+          font-weight:600;white-space:nowrap}
   .bar h1 span{color:var(--acc)}
-  input[type=search]{flex:1;min-width:170px;background:#0e0c0b;border:1px solid var(--line);
+  input[type=search]{flex:1;min-width:160px;background:#0e0c0b;border:1px solid var(--line);
        color:var(--txt);padding:.42rem .6rem;border-radius:4px;font-family:inherit;font-size:.9rem}
   input[type=search]:focus{outline:none;border-color:var(--acc2)}
   button{background:#2a2521;border:1px solid var(--line);color:var(--txt);padding:.4rem .7rem;
-       border-radius:4px;cursor:pointer;font-family:inherit;font-size:.83rem;white-space:nowrap}
+       border-radius:4px;cursor:pointer;font-family:inherit;font-size:.82rem;white-space:nowrap}
   button:hover{border-color:var(--acc2);color:#fff}
   button.pri{background:#3a1512;border-color:#5d201a}
-  .status{font-size:.78rem;color:var(--dim);min-width:80px}
+  .status{font-size:.78rem;color:var(--dim);min-width:78px}
 
-  /* ---------- structure ---------- */
-  .wrap{max-width:1280px;margin:0 auto;padding:1.1rem .9rem 4rem}
-  .grp{margin:0 0 1.6rem}
+  .wrap{max-width:1280px;margin:0 auto;padding:1rem .9rem 4rem}
+  .grp{margin:0 0 1.4rem}
   .grp>h2{font-size:1rem;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);
        border-bottom:1px solid var(--acc);padding-bottom:.3rem;margin:1.6rem 0 .5rem}
-  .gnote{font-size:.82rem;color:var(--dim);margin:.1rem 0 .7rem;padding:.5rem .7rem;
+  .grp>h2:focus{outline:none;background:#0e0c0b}
+  .gnote{font-size:.82rem;color:var(--dim);margin:.1rem 0 .8rem;padding:.5rem .7rem;
        background:var(--panel);border-left:2px solid var(--line);border-radius:0 3px 3px 0}
+  .gnote:focus{outline:none;background:#0e0c0b}
+  .gnote:empty,.grp>h2:empty{display:none}
+  .intro{font-size:.85rem;color:var(--dim);background:var(--panel);border-left:2px solid var(--acc);
+       padding:.6rem .8rem;border-radius:0 4px 4px 0;margin:0 0 1.2rem}
+  .intro:focus{outline:none;background:#0e0c0b}
 
   .sec{background:var(--panel);border:1px solid var(--line);border-radius:5px;margin:0 0 .8rem;overflow:hidden}
   .sechead{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;background:var(--panel2);
        border-bottom:1px solid var(--line)}
-  .sechead .t{font-size:.86rem;letter-spacing:.1em;text-transform:uppercase;color:var(--acc2);flex:1}
-  .sechead .n{font-size:.75rem;color:var(--dim)}
+  .sechead .t{font-size:.87rem;letter-spacing:.09em;text-transform:uppercase;color:var(--acc2);flex:1}
+  .sechead .n{font-size:.74rem;color:var(--dim)}
   .sechead button{padding:.22rem .5rem;font-size:.75rem}
-  .snote{font-size:.8rem;color:var(--dim);padding:.5rem .7rem 0}
+  .snote,.sfoot{font-size:.8rem;color:var(--dim);padding:.5rem .7rem 0}
+  .sfoot{margin:.5rem .7rem .2rem;padding:.45rem .7rem;font-style:italic;
+         border-left:2px solid var(--acc2);background:rgba(184,146,42,.05);border-radius:0 3px 3px 0}
+  .sfoot:empty{display:none}
+  .sfoot::before{content:'À retenir';display:block;font-family:'Cinzel',serif;font-style:normal;
+         font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--acc2);margin-bottom:.2rem}
   .secbody{padding:.2rem .5rem .6rem}
-  .sec.closed .secbody,.sec.closed .snote{display:none}
+  .sec.closed .secbody,.sec.closed .snote,.sec.closed .sfoot{display:none}
 
   table{width:100%;border-collapse:collapse;font-size:.83rem}
   th{position:sticky;top:44px;background:#0f0d0c;color:var(--dim);font-weight:400;text-align:left;
-     font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;padding:.4rem .45rem;
+     font-size:.67rem;letter-spacing:.08em;text-transform:uppercase;padding:.4rem .45rem;
      border-bottom:1px solid var(--line);z-index:5}
   td{border-bottom:1px solid #262019;padding:.32rem .45rem;vertical-align:top}
   tr:hover td{background:#1f1b17}
   tr.off td{color:var(--off);font-style:italic}
-  td[contenteditable]{outline:none;border-radius:3px}
-  td[contenteditable]:focus{background:#0e0c0b;box-shadow:inset 0 0 0 1px var(--acc2)}
-  td.c-px,td.c-enc,td.c-dg{white-space:nowrap}
-  td.c-enc,td.c-dg{text-align:center}
+  td.c{text-align:center;white-space:nowrap}
+  td[contenteditable]:focus,th[contenteditable]:focus{outline:none;background:#0e0c0b;box-shadow:inset 0 0 0 1px var(--acc2);border-radius:3px}
   .acts{width:1%;white-space:nowrap;opacity:0;transition:opacity .12s}
   tr:hover .acts{opacity:1}
   .acts button{padding:.1rem .34rem;font-size:.72rem;background:transparent;border-color:transparent;color:var(--dim)}
   .acts button:hover{color:#fff;border-color:var(--line)}
   .addrow{margin:.35rem 0 0;font-size:.78rem}
 
-  /* ---------- légende ---------- */
+  .items{margin:0;padding:.2rem .3rem}
+  .item{display:flex;gap:.5rem;align-items:flex-start;padding:.3rem .3rem;border-bottom:1px solid #262019}
+  .item:hover{background:#1f1b17}
+  .item .puce{color:var(--acc);flex:0 0 auto;line-height:1.5}
+  .item .txt{flex:1;font-size:.87rem}
+  .item .txt:focus{outline:none;background:#0e0c0b;box-shadow:inset 0 0 0 1px var(--acc2);border-radius:3px}
+  .item .acts{opacity:0}
+  .item:hover .acts{opacity:1}
+
   .legwrap{columns:2;column-gap:1.4rem}
   .leg{break-inside:avoid;margin:0 0 .45rem;padding:.35rem .5rem;background:var(--panel);
        border-left:2px solid var(--line);border-radius:0 3px 3px 0;font-size:.83rem}
   .leg.mai{border-left-color:var(--acc)}
   .leg .term{font-weight:700;color:var(--acc2)}
   .leg.of .term{color:#bdb2a2}
-  .leg .term[contenteditable]:focus,.leg .df[contenteditable]:focus{outline:none;background:#0e0c0b}
+  .leg .term:focus,.leg .df:focus{outline:none;background:#0e0c0b}
   .leg .acts2{float:right;opacity:0}
   .leg:hover .acts2{opacity:1}
   .leg .acts2 button{padding:.05rem .3rem;font-size:.7rem;background:transparent;border-color:transparent;color:var(--dim)}
+  h2.bloc{font-size:.98rem;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);
+       border-bottom:1px solid var(--acc);padding-bottom:.3rem;margin:1.8rem 0 .6rem}
 
-  /* ---------- infobulle ---------- */
   #tip{position:fixed;z-index:60;max-width:340px;background:#0d0b0a;border:1px solid var(--acc2);
        border-radius:4px;padding:.5rem .6rem;font-size:.8rem;display:none;box-shadow:0 6px 24px #000a}
   #tip b{color:var(--acc2)}
-  #tip p{margin:0 0 .35rem}
-  #tip p:last-child{margin:0}
+  #tip p{margin:0 0 .35rem} #tip p:last-child{margin:0}
 
 
   .sync-flag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .5rem;
@@ -118,23 +133,26 @@
   .retour{color:var(--dim);text-decoration:none;font-size:.8rem;white-space:nowrap;padding:.2rem .3rem}
   .retour:hover{color:var(--acc2)}
   .hid{display:none !important}
-  .hint{font-size:.78rem;color:var(--dim);margin:.6rem 0 0}
+  .hint{font-size:.78rem;color:var(--dim);margin:.8rem 0 0}
 
-  /* ---------- impression ---------- */
   @media print{
-    :root{--txt:#14110f;--dim:#5a524a}
     body{background:#fff;color:#14110f;font-size:9pt}
     .bar,.acts,.acts2,.addrow,.sechead button,.hint,#tip,.retour{display:none !important}
     .wrap{max-width:none;padding:0}
-    .sec{border:none;background:none}
-    .sechead{background:none;border-bottom:1px solid #8B1A1A;padding:0 0 1mm}
+    .sec{border:none;background:none;margin:0 0 3mm}
+    .sechead{background:none;border-bottom:1px solid var(--acc);padding:0 0 1mm}
     .sechead .t{color:#8B1A1A}
+    h2.bloc{color:#8B1A1A;border-color:#8B1A1A}
     .grp>h2{color:#8B1A1A;border-color:#8B1A1A}
-    .gnote,.snote,.leg{background:#faf7f1;color:#5a524a}
+    .gnote{background:#faf7f1;color:#5a524a}
+    .intro,.snote,.leg{background:#faf7f1;color:#5a524a}
+    .sfoot{background:#faf7f1;color:#5a524a;border-left:2px solid #8B1A1A}
+    .sfoot::before{color:#8B1A1A}
     th{position:static;background:#2a1414;color:#f0e8d8;border:none}
     td{border-bottom:1px solid #ddd6ca}
     tr.off td{color:#5a524a}
-    .sec.closed .secbody,.sec.closed .snote{display:block}
+    .item{border-bottom:none;padding:.5mm 0}
+    .sec.closed .secbody,.sec.closed .snote,.sec.closed .sfoot{display:block}
   }
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -145,10 +163,7 @@
 <div class="bar">
   <a class="retour" href="index-mj.html" title="Retour à l'espace MJ">◂ MJ</a>
   <h1>Armes et <span>Munitions</span></h1>
-  <input type="search" id="q" placeholder="Filtrer : nom, atout, prix…">
-  <button id="b-fold">Replier tout</button>
-  <button id="b-sec">+ Section</button>
-  <button id="b-leg">+ Entrée de légende</button>
+  <input type="search" id="q" placeholder="Filtrer…">
   <button id="b-push" title="Publier la version du fichier vers la base en ligne. Le fichier fait autorité.">Push</button>
   <button id="b-print" class="pri">PDF</button>
   <span class="sync-flag" id="flag"></span>
@@ -158,10 +173,8 @@
 <div id="tip"></div>
 
 <script>
-/* ======================= DONNÉES ======================= */
-var DEFAUT = {"groups": [{"title": "Armes de corps à corps", "note": "Rappels du livre : les armes de Cavalerie à deux mains comptent comme armes à Deux mains quand on combat à pied, et celles à une main ne s'emploient normalement pas démonté. Un personnage sans la spécialisation Fléau ajoute le défaut Dangereuse à son arme et n'en utilise aucun atout. Toute arme à une main possédant Défensive peut être employée avec Corps à corps (Parade), donc sans la pénalité de main gauche de −20.", "sections": [{"title": "Bagarre", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Coup-de-poing ferré", "Forge", "1", "5 Pa", "0", "Commune", "Personnelle", "+BF+1", "Assommante, Dissimulable"], "off": false}, {"c": ["Gantelet clouté", "Forge, cuir", "2", "15 Pa", "1", "Limitée", "Personnelle", "+BF+2", "Assommante"], "off": false}, {"c": ["Matraque plombée", "Bois, forge", "1", "10 Pa", "0", "Commune", "Très courte", "+BF+2", "Assommante, Dissimulable, Inoffensive"], "off": false}, {"c": ["Chaîne de débardeur", "Forge", "1", "8 Pa", "1", "Commune", "Courte", "+BF+2", "À Enroulement, Imprécise"], "off": false}]}, {"title": "Base", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Dague de miséricorde", "Forge", "3", "3 CO", "0", "Rare", "Très courte", "+BF+2", "Empaleuse, Perforante, Effilée, Dissimulable"], "off": false}, {"c": ["Coutelas de batelier", "Forge", "1", "10 Pa", "0", "Commune", "Courte", "+BF+3", "Rapide"], "off": false}, {"c": ["Épée courte impériale", "Forge", "2", "1 CO", "1", "Commune", "Courte", "+BF+3", "Rapide"], "off": false}, {"c": ["Braquemart d'Averland", "Forge", "2", "1 CO", "1", "Commune", "Moyenne", "+BF+4", "Taille, Imprécise"], "off": false}, {"c": ["Masse de milice", "Forge", "1", "12 Pa", "1", "Commune", "Courte", "+BF+4", "Percutante"], "off": false}, {"c": ["Marteau de fossoyeur", "Forge", "1", "15 Pa", "1", "Commune", "Courte", "+BF+4", "Percutante, Lente"], "off": false}, {"c": ["Pic de mineur", "Forge", "2", "1 CO", "1", "Commune", "Moyenne", "+BF+4", "Perforante, Lente"], "off": false}, {"c": ["Hachereau de boucher", "Forge", "1", "12 Pa", "1", "Commune", "Courte", "+BF+4", "Taille"], "off": false}, {"c": ["Serpe de Rhya", "Forge", "1", "8 Pa", "0", "Commune", "Courte", "+BF+3", "Taille, Crochet"], "off": false}, {"c": ["Bâton ferré", "Bois, forge", "1", "8 Pa", "1", "Commune", "Longue", "+BF+3", "Défensive"], "off": false}]}, {"title": "Parade", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Dague de main gauche", "Forge", "2", "1 CO", "0", "Limitée", "Très courte", "+BF+2", "Défensive, Rapide, Piège-lame"], "off": false}, {"c": ["Targe de duel", "Bois, forge", "2", "1 CO", "1", "Limitée", "Personnelle", "+BF+1", "Défensive, Protectrice 1"], "off": false}, {"c": ["Cape lestée", "Tissu", "2", "15 Pa", "0", "Limitée", "Courte", "+BF", "Défensive, À Enroulement, Inoffensive"], "off": false}, {"c": ["Pavois de milicien", "Bois", "2", "2 CO", "3", "Limitée", "Personnelle", "+BF+1", "Protectrice 3, Imprécise, Lente"], "off": false}]}, {"title": "Escrime", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Estoc de duel", "Forge", "3", "3 CO", "1", "Limitée", "Moyenne", "+BF+3", "Empaleuse, Perforante, Précise"], "off": false}, {"c": ["Canne-épée", "Forge, bois", "4", "4 CO", "1", "Rare", "Moyenne", "+BF+3", "Empaleuse, Rapide, Dissimulable"], "off": false}, {"c": ["Fleuret de salle", "Forge", "3", "1 CO", "0", "Commune", "Moyenne", "+BF+1", "Rapide, Précise, Inoffensive"], "off": false}]}, {"title": "Cavalerie", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Sabre de patrouille", "Forge", "3", "2 CO", "1", "Limitée", "Moyenne", "+BF+4", "Taille, Rapide"], "off": false}, {"c": ["Marteau de selle", "Forge", "3", "2 CO", "1", "Limitée", "Courte", "+BF+4", "Percutante, Épuisante"], "off": false}, {"c": ["Lance légère de reître", "Bois, forge", "2", "1 CO", "2", "Limitée", "Très longue", "+BF+4", "Empaleuse, Épuisante, Lente"], "off": false}]}, {"title": "Fléau", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Fléau d'armes", "Forge", "2", "2 CO", "2", "Limitée", "Moyenne", "+BF+5", "Percutante, À Enroulement, Imprécise"], "off": false}, {"c": ["Morgenstern", "Forge", "2", "2 CO", "2", "Limitée", "Moyenne", "+BF+5", "Percutante, Lente"], "off": false}, {"c": ["Chaîne de flagellant", "Forge", "1", "10 Pa", "1", "Commune", "Longue", "+BF+3", "À Enroulement, Perturbante, Imprécise"], "off": false}, {"c": ["Fléau de battage", "Bois", "1", "5 Pa", "1", "Commune", "Longue", "+BF+3", "Percutante, Imprécise"], "off": false}]}, {"title": "Deux mains", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Espadon d'Averland", "Forge", "3", "5 CO", "3", "Limitée", "Longue", "+BF+5", "Dévastatrice, Lente"], "off": false}, {"c": ["Hache de bourreau", "Forge", "3", "4 CO", "3", "Limitée", "Longue", "+BF+5", "Taille, Dévastatrice, Lente"], "off": false}, {"c": ["Maillet de forge", "Forge", "2", "3 CO", "3", "Commune", "Longue", "+BF+5", "Percutante, Lente"], "off": false}, {"c": ["Faux de guerre", "Forge", "2", "1 CO", "2", "Commune", "Très longue", "+BF+4", "Taille, Fauchante, Imprécise"], "off": false}]}, {"title": "Arme d'hast", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Hallebarde de garde", "Forge", "3", "3 CO", "3", "Commune", "Très longue", "+BF+4", "Taille, Lente"], "off": false}, {"c": ["Guisarme", "Forge", "3", "2 CO", "3", "Limitée", "Très longue", "+BF+4", "Crochet, Piège-lame, Lente"], "off": false}, {"c": ["Corsèque", "Forge", "3", "3 CO", "3", "Limitée", "Très longue", "+BF+4", "Empaleuse, Piège-lame, Lente"], "off": false}, {"c": ["Pique de Nuln", "Forge", "3", "2 CO", "4", "Limitée", "Considérable", "+BF+4", "Empaleuse, Lente, Imprécise"], "off": false}, {"c": ["Fourche de paysan", "Forge", "1", "5 Pa", "2", "Commune", "Très longue", "+BF+3", "Empaleuse, Imprécise"], "off": false}]}, {"title": "Paranaturelles", "note": "Armes conçues contre ce qui ne meurt pas d'un coup d'épée ordinaire. Les traitements (argenture, bénédiction) s'appliquent aussi aux armes des autres groupes : voir les règles d'emploi. Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Épée plaquée argent", "Forge, orfèvre", "4", "10 CO", "1", "Rare", "Moyenne", "+BF+4", "Argentée"], "off": false}, {"c": ["Épée bénie (culte au choix)", "Forge, puis temple", "4", "15 CO", "1", "Rare", "Moyenne", "+BF+4", "Bénie (X)"], "off": false}, {"c": ["Lame de fer froid", "Forge", "5", "20 CO", "1", "Exotique", "Moyenne", "+BF+4", "Fer froid, Incassable"], "off": false}, {"c": ["Épieu d'aubépine", "Bois", "1", "1 CO", "2", "Limitée", "Très longue", "+BF+3", "Empaleuse, Pieu, Fragile"], "off": false}, {"c": ["Lame d'ossuaire", "Forge, os", "4", "12 CO", "1", "Exotique", "Courte", "+BF+3", "Spectrale, Fragile"], "off": false}, {"c": ["Aiguille de sorcière", "Orfèvre", "3", "2 CO", "0", "Rare", "Très courte", "+BF+1", "Empaleuse, Brise-sort, Dissimulable, Inoffensive"], "off": false}, {"c": ["Épée de gromril", "Forge naine", "5", "80 CO", "1", "Exotique", "Moyenne", "+BF+4", "Perforante, Précise, Incassable"], "off": false}, {"c": ["Marteau à runes naines", "Forge naine", "5", "100 CO", "1", "Exotique", "Moyenne", "+BF+5", "Runique, Percutante, Incassable, Lente"], "off": false}]}]}, {"title": "Armes à distance", "note": "Rappels du livre : les Arbalètes et le Lancer peuvent être employés avec un test de Projectiles générique, mais l'arme perd alors tous ses atouts et conserve ses défauts. Même règle pour l'Ingénierie entre les mains d'un spécialiste de la Poudre noire. Fourchettes de portée : Bout portant = Portée ÷ 10, Courte = ÷ 2, Longue = × 2, Extrême = × 3.", "sections": [{"title": "Arbalète", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["(2M) Arbalète", "Ingénieur, bois", "4", "5 CO", "2", "Commune", "60", "+9", "Recharge 1"], "off": true}, {"c": ["Arbalète de poing", "Ingénieur, bois", "4", "6 CO", "0", "Limitée", "10", "+7", "Pistolet"], "off": true}, {"c": ["(2M) Arbalète lourde", "Ingénieur, bois", "4", "7 CO", "3", "Rare", "100", "+9", "Dévastatrice, Recharge 2"], "off": true}, {"c": ["(2M) Arbalète à étrier", "Ingénieur, bois", "4", "4 CO", "2", "Commune", "50", "+8", "Recharge 1"], "off": false}, {"c": ["(2M) Arbalète de chasse", "Ingénieur, bois", "4", "8 CO", "2", "Limitée", "60", "+9", "Recharge 1, Silencieuse"], "off": false}, {"c": ["Arbalète de sacoche (pliante)", "Ingénieur, bois", "4", "10 CO", "1", "Rare", "20", "+7", "Pistolet, Dissimulable, Recharge 2"], "off": false}, {"c": ["Arbalète de poing double", "Ingénieur, bois", "4", "15 CO", "1", "Rare", "10", "+7", "Pistolet, À répétition 2, Recharge 2"], "off": false}, {"c": ["(2M) Arbalète à cric", "Ingénieur, bois", "4", "12 CO", "4", "Rare", "120", "+11", "Dévastatrice, Recharge 3, Imprécise"], "off": false}, {"c": ["(2M) Arbalète naine à magasin", "Ingénieur, bois", "4", "25 CO", "3", "Exotique", "60", "+9", "À répétition 5, Recharge 4, Incassable"], "off": false}]}, {"title": "Arc", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["(2M) Arc", "Arcier (bois)", "3", "4 CO", "2", "Commune", "50", "+BF+3", "–"], "off": true}, {"c": ["(2M) Arc court", "Arcier (bois)", "3", "3 CO", "1", "Commune", "20", "+BF+2", "–"], "off": true}, {"c": ["(2M) Arc elfique", "Arcier (bois)", "3", "10 CO", "2", "Exotique", "150", "+BF+4", "Dévastatrice, Pointue"], "off": true}, {"c": ["(2M) Arc long", "Arcier (bois)", "3", "5 CO", "3", "Limitée", "100", "+BF+4", "Dévastatrice"], "off": true}, {"c": ["(2M) Arc composite kislevite", "Arcier (bois)", "3", "8 CO", "2", "Limitée", "70", "+BF+3", "Montée"], "off": false}, {"c": ["(2M) Arc de chasse", "Arcier (bois)", "3", "3 CO", "1", "Commune", "40", "+BF+2", "Silencieuse"], "off": false}, {"c": ["Sarbacane", "Bois", "1", "2 CO", "0", "Exotique", "15", "+1", "Silencieuse, Dissimulable, Inoffensive"], "off": false}]}, {"title": "Fronde et lancer", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Fronde", "Tissu", "1", "1 Pa", "0", "Commune", "60", "+6", "–"], "off": true}, {"c": ["(2M) Fustibale", "Bois, tissu", "1", "4 Pa", "2", "Limitée", "100", "+7", "–"], "off": true}, {"c": ["Hache de lancer", "Forge", "2", "1 CO", "1", "Commune", "BF x2", "+BF+3", "Taille"], "off": true}, {"c": ["Javelot", "Bois, forge", "1", "10 Pa 6 Sc", "1", "Limitée", "BF x3", "+BF+3", "Empaleuse"], "off": true}, {"c": ["Filet de rétiaire", "Tissu", "2", "1 CO", "1", "Limitée", "BF x2", "–", "Immobilisante, Sans dégâts"], "off": false}, {"c": ["Épieu de battue", "Bois, forge", "1", "15 Pa", "2", "Commune", "BF x2", "+BF+4", "Empaleuse, Imprécise"], "off": false}, {"c": ["Fiole d'eau bénite", "Temple", "–", "2 CO", "0", "Rare", "BF x2", "–", "Aspergée, Sans dégâts, Fragile"], "off": false}, {"c": ["Pot à feu", "Apothicaire", "3", "2 CO", "1", "Limitée", "BF x2", "+7", "Incendiaire, Explosion 1, Dangereuse"], "off": false}, {"c": ["Sachet de sel gemme", "Apothicaire", "1", "10 Pa", "0", "Commune", "BF", "–", "Répulsive, Sans dégâts, Fragile"], "off": false}]}, {"title": "Poudre noire et ingénierie", "note": "Toutes ces armes possèdent les atouts À poudre noire et Dévastatrice. Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["(2M) Arquebuse", "Ingénieur", "5", "4 CO", "2", "Limitée", "50", "+9", "Dangereuse, Recharge 3"], "off": true}, {"c": ["Pistolet", "Ingénieur", "5", "8 CO", "0", "Rare", "20", "+8", "Pistolet, Recharge 1"], "off": true}, {"c": ["(2M) Tromblon", "Ingénieur", "5", "2 CO", "1", "Limitée", "20", "+8", "Explosion 3, Dangereuse, Recharge 2"], "off": true}, {"c": ["(2M) Long fusil d'Hochland", "Ingénieur", "5", "100 CO", "3", "Exotique", "100", "+9", "Précise, Pointue, Recharge 4"], "off": true}, {"c": ["(2M) Arquebuse à répétition", "Ingénieur", "5", "10 CO", "3", "Rare", "30", "+9", "Dangereuse, Recharge 5, À répétition 4"], "off": true}, {"c": ["Pistolet à répétition", "Ingénieur", "5", "15 CO", "1", "Rare", "10", "+8", "Dangereuse, Pistolet, Recharge 4, À répétition 4"], "off": true}, {"c": ["(2M) Espingole d'abordage", "Ingénieur", "5", "6 CO", "2", "Limitée", "20", "+8", "Explosion 2, Dangereuse, Recharge 3"], "off": false}, {"c": ["(2M) Carabine de Nuln", "Ingénieur", "5", "15 CO", "2", "Rare", "60", "+9", "Précise, Dangereuse, Recharge 3"], "off": false}, {"c": ["Pistolet double", "Ingénieur", "5", "20 CO", "1", "Rare", "20", "+8", "Pistolet, À répétition 2, Dangereuse, Recharge 2"], "off": false}, {"c": ["Canne-pistolet", "Ingénieur", "5", "25 CO", "1", "Exotique", "10", "+7", "Pistolet, Dissimulable, Dangereuse, Recharge 2"], "off": false}]}]}, {"title": "Munitions", "note": "Lots de douze sauf mention contraire, encombrement nul par lot. Les lignes marquées d'un astérisque sont les munitions de base, reconstituées de mémoire : vérifie prix et atouts dans ton livre avant de t'en servir.", "sections": [{"title": "Arbalète", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Munition", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Carreaux (12) *", "Ingénieur, bois", "2", "5 Pa", "0", "Commune", "Comme l'arme", "–", "–"], "off": false}, {"c": ["Carreaux de qualité (12)", "Ingénieur, bois", "2", "1 CO", "0", "Rare", "Comme l'arme", "+1", "Précise"], "off": false}, {"c": ["Carreaux de rebut (12)", "Bois", "1", "2 Sc", "0", "Commune", "Comme l'arme", "−1", "Imprécise"], "off": false}, {"c": ["Carreaux à bec de faucon (12)", "Ingénieur, bois", "2", "12 Pa", "0", "Limitée", "Comme l'arme", "–", "Perforante, Effilée"], "off": false}, {"c": ["Carreaux barbelés (12)", "Ingénieur, bois", "2", "8 Pa", "0", "Commune", "Comme l'arme", "–", "Barbelée"], "off": false}, {"c": ["Carreaux à bourdon (12)", "Ingénieur, bois", "2", "6 Pa", "0", "Commune", "Comme l'arme", "–", "Assommante, Inoffensive"], "off": false}, {"c": ["Carreaux à empennage lourd (12)", "Ingénieur, bois", "2", "10 Pa", "0", "Limitée", "+50", "–", "Imprécise"], "off": false}, {"c": ["Carreaux incendiaires (12)", "Ingénieur, apothicaire", "3", "15 Pa", "0", "Limitée", "Comme l'arme", "–", "Incendiaire, Dangereuse"], "off": false}, {"c": ["Carreaux de siège (12)", "Ingénieur, bois", "2", "1 CO", "1", "Limitée", "−10", "+2", "Percutante, Imprécise"], "off": false}, {"c": ["Carreaux à ailettes de Nuln (12)", "Ingénieur", "4", "2 CO", "0", "Rare", "+50", "+1", "Précise, Pointue"], "off": false}, {"c": ["Carreau à harpon (l'unité)", "Ingénieur, bois", "2", "1 CO", "1", "Limitée", "Moitié de l'arme", "−2", "Immobilisante"], "off": false}, {"c": ["Carreau à message (l'unité)", "Ingénieur, bois", "2", "5 Sc", "0", "Commune", "Comme l'arme", "–", "Sans dégâts"], "off": false}, {"c": ["Carreau creux à eau bénite (l'unité)", "Ingénieur, temple", "3", "2 CO", "0", "Rare", "Comme l'arme", "–", "Aspergée, Fragile"], "off": false}, {"c": ["Carreau à sel gemme (l'unité)", "Ingénieur, apothicaire", "2", "1 CO", "0", "Limitée", "Comme l'arme", "−3", "Répulsive, Fragile"], "off": false}, {"c": ["Fiole fumigène montée (l'unité)", "Apothicaire", "3", "1 CO", "0", "Rare", "Moitié de l'arme", "–", "Sans dégâts, Fumigène, Fragile"], "off": false}, {"c": ["Carreau à fragmentation (l'unité)", "Ingénieur", "4", "6 CO", "0", "Exotique", "Comme l'arme", "+2", "Explosion 1, Dangereuse, Fragile"], "off": false}, {"c": ["Carreau explosif (l'unité)", "Ingénieur", "5", "10 CO", "0", "Exotique", "Comme l'arme", "+6", "Explosion 2, Dangereuse, Fragile"], "off": false}, {"c": ["Carreau à feu de Nuln (l'unité)", "Ingénieur", "5", "8 CO", "0", "Exotique", "Comme l'arme", "–", "Incendiaire, Poisseuse, Dangereuse, Fragile"], "off": false}, {"c": ["Fusée éclairante montée (l'unité)", "Ingénieur", "4", "3 CO", "0", "Rare", "Moitié de l'arme", "–", "Sans dégâts, Éclairante, Dangereuse"], "off": false}]}, {"title": "Arc", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Munition", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Flèches (12) *", "Arcier (bois)", "2", "5 Pa", "0", "Commune", "Comme l'arme", "–", "–"], "off": false}, {"c": ["Flèches elfiques (12) *", "Arcier elfique", "4", "6 Pa", "0", "Exotique", "+50", "+1", "Précise"], "off": false}, {"c": ["Flèches à fer large (12)", "Arcier (bois)", "2", "10 Pa", "0", "Commune", "Comme l'arme", "–", "Taille, Effilée"], "off": false}, {"c": ["Flèches barbelées (12)", "Arcier (bois)", "2", "8 Pa", "0", "Commune", "Comme l'arme", "–", "Barbelée"], "off": false}, {"c": ["Flèches à bec de faucon (12)", "Arcier (bois)", "2", "12 Pa", "0", "Limitée", "Comme l'arme", "–", "Perforante, Effilée"], "off": false}, {"c": ["Flèches de guerre (12)", "Arcier (bois)", "2", "1 CO", "0", "Limitée", "−10", "+1", "Perforante, Effilée"], "off": false}, {"c": ["Flèches fourchues (12)", "Arcier (bois)", "2", "12 Pa", "0", "Limitée", "Comme l'arme", "−1", "Taille, Fourchue"], "off": false}, {"c": ["Flèches sifflantes (12)", "Arcier (bois)", "2", "4 Pa", "0", "Commune", "Comme l'arme", "–", "Sans dégâts, Signal"], "off": false}, {"c": ["Flèches incendiaires (12)", "Arcier, apothicaire", "3", "15 Pa", "0", "Limitée", "Comme l'arme", "–", "Incendiaire, Dangereuse"], "off": false}, {"c": ["Flèches à empennage lourd (12)", "Arcier (bois)", "2", "10 Pa", "0", "Limitée", "+50", "–", "Imprécise"], "off": false}, {"c": ["Flèches de rebut (12)", "Bois", "1", "2 Sc", "0", "Commune", "Comme l'arme", "−1", "Imprécise"], "off": false}]}, {"title": "Fronde", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Munition", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Balles de plomb (12) *", "Forge", "1", "4 Sc", "0", "Commune", "−10", "+1", "Assommante"], "off": false}, {"c": ["Projectiles de pierre (12) *", "Ramassage", "–", "2 Sc", "0", "Commune", "Comme l'arme", "–", "Assommante"], "off": false}, {"c": ["Balles d'argent (12)", "Orfèvre", "3", "2 CO", "0", "Rare", "−10", "+1", "Assommante, Argentée"], "off": false}, {"c": ["Balles percées sifflantes (12)", "Forge", "2", "3 Sc", "0", "Commune", "−10", "–", "Sans dégâts, Signal"], "off": false}]}, {"title": "Poudre noire et ingénierie", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Munition", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Balles et poudre (12) *", "Ingénieur", "3", "3 Pa 3 Sc", "0", "Commune", "Comme l'arme", "–", "–"], "off": false}, {"c": ["Munitions improvisées et poudre *", "Ingénieur", "1", "3 Sc", "0", "Commune", "Moitié de l'arme", "–", "Imprécise"], "off": false}, {"c": ["Petites munitions et poudre *", "Ingénieur", "3", "3 Pa 3 Sc", "0", "Commune", "Comme l'arme", "–", "Explosion 1"], "off": false}, {"c": ["Balles moulées de Nuln (12)", "Ingénieur", "3", "15 Pa", "0", "Limitée", "Comme l'arme", "+1", "Précise"], "off": false}, {"c": ["Balles entaillées (12)", "Ingénieur", "3", "6 Pa", "0", "Commune", "Comme l'arme", "+2", "Imprécise, Encrassante"], "off": false}, {"c": ["Balles segmentées (12)", "Ingénieur", "3", "1 CO", "0", "Limitée", "Comme l'arme", "+2", "Explosion 1, Imprécise, Encrassante"], "off": false}, {"c": ["Balles d'argent et poudre (12)", "Orfèvre, ingénieur", "4", "3 CO", "0", "Rare", "Comme l'arme", "–", "Argentée"], "off": false}, {"c": ["Balles bénies et poudre (12)", "Ingénieur, puis temple", "4", "2 CO", "0", "Limitée", "Comme l'arme", "–", "Bénie (X)"], "off": false}, {"c": ["Grenaille de chasse (12)", "Ingénieur", "2", "10 Pa", "0", "Commune", "Moitié de l'arme", "−1", "Explosion 1, Imprécise"], "off": false}, {"c": ["Balles incendiaires (12)", "Ingénieur, apothicaire", "4", "2 CO", "0", "Rare", "Comme l'arme", "–", "Incendiaire, Traçante"], "off": false}, {"c": ["Balle explosive de Nuln (l'unité)", "Ingénieur", "5", "5 CO", "0", "Exotique", "Comme l'arme", "+4", "Explosion 1, Dangereuse"], "off": false}, {"c": ["Cartouches à sel (12)", "Ingénieur, apothicaire", "3", "15 Pa", "0", "Limitée", "Moitié de l'arme", "−3", "Répulsive, Explosion 1, Inoffensive"], "off": false}]}, {"title": "Matières et bénédictions", "note": "Traitements applicables aux flèches et aux carreaux, prix à l'unité. Une munition traitée conserve les atouts de son façonnage de base. Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat, Le Métier d'Ingénieur et Le Métier d'Apothicaire. Un tiret signifie que l'objet ne se fabrique pas dans un atelier.", "cols": ["Munition", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Pointe plaquée argent", "Orfèvre", "3", "2 CO", "0", "Rare", "Comme l'arme", "–", "Argentée"], "off": false}, {"c": ["Pointe d'argent massif", "Orfèvre", "4", "8 CO", "0", "Exotique", "Comme l'arme", "+1", "Argentée, Fragile"], "off": false}, {"c": ["Pointe de fer froid", "Forge", "5", "3 CO", "0", "Rare", "Comme l'arme", "–", "Fer froid"], "off": false}, {"c": ["Hampe d'aubépine", "Bois", "1", "1 CO", "0", "Limitée", "Comme l'arme", "−1", "Pieu, Fragile"], "off": false}, {"c": ["Éclat d'ossuaire", "Os, forge", "3", "2 CO", "0", "Rare", "Comme l'arme", "–", "Spectrale, Fragile"], "off": false}, {"c": ["Pointe de gromril", "Forge naine", "5", "25 CO", "0", "Exotique", "Comme l'arme", "+1", "Perforante, Précise, Incassable"], "off": false}, {"c": ["Pointe de pierre à sorcière", "Apothicaire", "5", "4 CO", "0", "Exotique", "Comme l'arme", "–", "Brise-sort, Fragile"], "off": false}, {"c": ["Munition bénie (Sigmar)", "Temple", "–", "1 CO", "0", "Limitée", "Comme l'arme", "–", "Bénie (Chaos)"], "off": false}, {"c": ["Munition bénie (Morr)", "Temple", "–", "1 CO", "0", "Limitée", "Comme l'arme", "–", "Bénie (Mort-vivant)"], "off": false}, {"c": ["Munition bénie (Ulric)", "Temple", "–", "1 CO", "0", "Limitée", "Comme l'arme", "–", "Bénie (Bête)"], "off": false}, {"c": ["Munition oblitérée", "Répurgateur, temple", "–", "3 CO", "0", "Rare", "Comme l'arme", "+3", "Nom vrai"], "off": false}, {"c": ["Pointe envenimée", "Apothicaire", "3", "1 CO", "0", "Limitée", "Comme l'arme", "–", "Venimeuse"], "off": false}, {"c": ["Pointe soporifique", "Apothicaire", "3", "3 CO", "0", "Rare", "Comme l'arme", "−3", "Soporifique, Inoffensive"], "off": false}, {"c": ["Pointe corrosive de Nuln", "Apothicaire", "4", "2 CO", "0", "Rare", "Comme l'arme", "–", "Corrosive"], "off": false}]}]}], "legend": [{"off": true, "term": "À Enroulement", "def": "Les tests de Corps à corps opposés à cette arme subissent −1 DR."}, {"off": true, "term": "À poudre noire", "def": "Être pris pour cible impose un test de Calme Accessible (+20) ou l'état Brisé, même si le tir manque."}, {"off": true, "term": "À répétition X", "def": "L'arme contient X munitions rechargées automatiquement après chaque tir. Épuisée, elle se recharge normalement."}, {"off": true, "term": "Assommante", "def": "Sur une touche à la Tête, test opposé de Force ou Résistance : en cas de succès, la cible gagne l'état Sonné."}, {"off": true, "term": "Dangereuse", "def": "Tout test raté comportant un 9 au dé des dizaines ou des unités entraîne une Maladresse."}, {"off": true, "term": "Défensive", "def": "+1 DR aux tests de Corps à corps quand on oppose une attaque."}, {"off": true, "term": "Dévastatrice", "def": "Les dégâts utilisent le plus élevé du dé des unités ou du DR."}, {"off": true, "term": "Empaleuse", "def": "Coup critique sur tout résultat divisible par 10 ou sur un double, réussi. Le projectile reste fiché : il faut un test de Guérison Intermédiaire pour l'extraire, un chirurgien pour une balle, et chaque projectile non retiré empêche de regagner 1 Blessure."}, {"off": true, "term": "Épuisante", "def": "Les atouts Percutante et Dévastatrice ne s'appliquent que lors d'un tour de Charge."}, {"off": true, "term": "Explosion X", "def": "Toutes les cibles à X mètres du point d'impact subissent DR + dégâts de l'arme et les états infligés."}, {"off": true, "term": "Immobilisante", "def": "La cible touchée gagne l'état Empêtré, de Force égale à celle du porteur. Tant qu'on entrave, on ne peut pas frapper avec l'arme."}, {"off": true, "term": "Imprécise", "def": "−1 DR à l'attaque. Ne peut jamais être Précise."}, {"off": true, "term": "Incassable", "def": "L'arme ne se brise pas, ne se corrode pas et ne s'émousse pas."}, {"off": true, "term": "Inoffensive", "def": "Tous les PA sont doublés contre elle et elle n'inflige pas la Blessure minimale automatique."}, {"off": true, "term": "Lente", "def": "Frappe toujours en dernier dans le round, et les adversaires gagnent +1 DR pour se défendre."}, {"off": true, "term": "Percutante", "def": "Ajoute le dé des unités du jet d'attaque aux dégâts."}, {"off": true, "term": "Perforante", "def": "Les PA non métalliques sont ignorés, et le premier point de toute autre armure l'est également."}, {"off": true, "term": "Perturbante", "def": "Au lieu d'infliger des dégâts, repousse l'adversaire d'un mètre par DR du test opposé."}, {"off": true, "term": "Piège-lame", "def": "Sur un critique obtenu en défense contre une arme à lame, permet de piéger la lame plutôt que d'infliger le critique."}, {"off": true, "term": "Pistolet", "def": "Utilisable en Combat rapproché."}, {"off": true, "term": "Pointue", "def": "+1 DR à tout test d'attaque réussi."}, {"off": true, "term": "Précise", "def": "+10 à tout test effectué avec l'arme."}, {"off": true, "term": "Protectrice X", "def": "En opposant une attaque, on est considéré comme ayant X PA partout. À partir de 2, permet aussi d'opposer les projectiles vus."}, {"off": true, "term": "Rapide", "def": "Permet d'attaquer hors de l'ordre d'Initiative, et impose −10 aux défenses en Corps à corps menées avec une arme non Rapide."}, {"off": true, "term": "Recharge X", "def": "Rechargement en test étendu de Projectiles, X DR requis. Toute interruption oblige à recommencer."}, {"off": true, "term": "Taille", "def": "Endommage de 1 point l'armure ou le bouclier touché en blessant la cible."}, {"off": false, "term": "Argentée", "def": "Blesse normalement les créatures que seules les armes d'argent ou magiques peuvent atteindre. Contre les métamorphes, +2 aux dégâts et régénération bloquée jusqu'à la fin du round suivant."}, {"off": false, "term": "Aspergée", "def": "Le réservoir se brise à l'impact. Contre les morts-vivants et les daemons, ajoute 1d10 dégâts ignorant les PA et bloque la régénération un round."}, {"off": false, "term": "Barbelée", "def": "Le projectile fiché exige un test de Guérison Difficile (−10) au lieu d'Intermédiaire, et un échec inflige 1 Blessure supplémentaire."}, {"off": false, "term": "Bénie (X)", "def": "Compte comme arme magique et donne +1 aux dégâts contre les créatures du type indiqué. Sept jours sur une munition, une saison sur une arme."}, {"off": false, "term": "Brise-garde", "def": "Les défenses menées avec une arme Défensive ou Protectrice subissent −1 DR contre cette arme."}, {"off": false, "term": "Brise-sort", "def": "Un lanceur touché doit réussir un test de Focalisation ou perdre le sort en cours d'incantation."}, {"off": false, "term": "Corrosive", "def": "Endommage définitivement de 1 PA la localisation touchée, sans possibilité de réparation."}, {"off": false, "term": "Crochet", "def": "Au lieu d'infliger des dégâts, test opposé de Force pour désarçonner, faire tomber ou désarmer la cible."}, {"off": false, "term": "Dissimulable", "def": "Se porte sous un vêtement. La repérer demande un test de Perception à −20."}, {"off": false, "term": "Éclairante", "def": "Brûle 2d10 rounds au point d'impact et éclaire vingt mètres à la ronde. Visible à plusieurs kilomètres de nuit."}, {"off": false, "term": "Effilée", "def": "−1 aux dégâts contre une cible sans armure : la pointe traverse au lieu de déchirer."}, {"off": false, "term": "Encrassante", "def": "Recharge augmentée de 1 au tir suivant, jusqu'à nettoyage du canon."}, {"off": false, "term": "Fauchante", "def": "Permet d'attaquer deux adversaires adjacents dans le même mouvement, avec −2 DR sur les deux tests."}, {"off": false, "term": "Fer froid", "def": "+2 aux dégâts contre les daemons matérialisés. Une blessure les empêche de se dématérialiser pendant un round."}, {"off": false, "term": "Fourchue", "def": "Contre une créature volante ou une cible tenant une corde ou un cordage, +2 aux dégâts et −20 aux tests de Vol ou d'Escalade qui suivent."}, {"off": false, "term": "Fragile", "def": "L'arme ou la munition est perdue à l'impact, quel qu'en soit le résultat."}, {"off": false, "term": "Fumigène", "def": "Nuage de trois mètres pendant 1d10 rounds. Les tirs qui le traversent subissent −20."}, {"off": false, "term": "Incendiaire", "def": "Doit être allumée avant le tir, ce qui prend une action. Inflige l'état Enflammé. Sur une Maladresse, l'utilisateur prend feu."}, {"off": false, "term": "Montée", "def": "Utilisable à cheval sans malus, y compris au galop."}, {"off": false, "term": "Nom vrai", "def": "Gravée du nom véritable d'une entité. Le bonus ne s'applique qu'à elle."}, {"off": false, "term": "Pieu", "def": "Sur un coup critique au Torse contre un mort-vivant sanguinaire, test opposé de Force pour le clouer au sol."}, {"off": false, "term": "Poisseuse", "def": "Le feu adhère. L'état Enflammé ne peut être retiré qu'en immergeant la cible ou en étouffant la flamme avec de la terre."}, {"off": false, "term": "Répulsive", "def": "La cible incorporelle ou possédée subit un test de Force Mentale ou recule de sa valeur de Marche."}, {"off": false, "term": "Runique", "def": "Compte comme arme magique. Une rune naine ne se copie pas et ne se vend pas."}, {"off": false, "term": "Sans dégâts", "def": "N'inflige aucune Blessure, quel que soit le résultat du test."}, {"off": false, "term": "Signal", "def": "Audible à un kilomètre."}, {"off": false, "term": "Silencieuse", "def": "Le tir ne s'entend pas au-delà de dix mètres. Repérer le tireur demande un test de Perception à −20."}, {"off": false, "term": "Soporifique", "def": "Une blessure impose un test d'Endurance ou la cible tombe Inconsciente en 1d10 rounds."}, {"off": false, "term": "Spectrale", "def": "Blesse les Éthérés comme une arme magique."}, {"off": false, "term": "Traçante", "def": "Le trait laisse une traînée lumineuse : +10 au tir suivant sur la même cible, mais tous les témoins voient d'où l'on tire."}, {"off": false, "term": "Venimeuse", "def": "Toute blessure infligée déclenche un test d'Endurance ou l'état Empoisonné."}], "intro": " Monnaie : CO couronne d'or, Pa pistole d'argent, Sc sou de cuivre. 1 CO = 20 Pa, 1 Pa = 12 Sc."};
+var DEFAUT = {"intro": "Monnaie : CO couronne d'or, Pa pistole d'argent, Sc sou de cuivre. 1 CO = 20 Pa, 1 Pa = 12 Sc. Les lignes en italique sont officielles : livre de base et supplément Up in Arms, ce dernier faisant autorité en cas de divergence. Les lignes en caractères droits sont maison. Les colonnes Métier et Compl. sont maison dans tous les cas : elles servent aux règles de fabrication et n'existent dans aucun livre.", "groups": [{"title": "Armes de corps à corps", "note": "Rappels de règle. Toute arme à une main possédant Défensive peut être employée avec Corps à corps (Parade), donc sans la pénalité de main gauche de −20. Les armes de Cavalerie à deux mains comptent comme armes à Deux mains quand on combat à pied ; la lance et la demi-lance comptent comme armes improvisées lors d'un round sans charge. Un personnage sans la spécialisation Fléau ajoute le défaut Dangereuse à son arme et n'en utilise aucun atout. Quand une ligne indique deux atouts séparés par « ou », le porteur choisit lequel s'applique avant de lancer les dés ; à défaut de choix, c'est le premier qui compte.", "sections": [{"kind": "table", "title": "Base", "note": "Un astérisque sur le Couteau à rognons signale que ses atouts Empaleuse et Pointue ne valent que contre une cible Surprise ou À terre. Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Hache", "Forge, bois", "2", "10 Pa", "1", "Commune", "Moyenne", "+BF+4", "Taille, Déséquilibrée"], "off": true}, {"c": ["Couteau à rognons", "Forge", "2", "16 Pa", "0", "Limitée", "Très courte", "+BF+1", "Empaleuse*, Perforante, Pointue*"], "off": true}, {"c": ["Gourdin", "Bois", "1", "4 Pa", "1", "Commune", "Moyenne", "+BF+4", "Inoffensive, Déséquilibrée"], "off": true}, {"c": ["Dague", "Forge", "2", "16 Pa", "0", "Commune", "Très courte", "+BF+2", "–"], "off": true}, {"c": ["Arme improvisée", "–", "–", "–", "Variable", "–", "Variable", "+BF+1", "Inoffensive, Déséquilibrée"], "off": true}, {"c": ["Couteau", "Forge", "1", "8 Pa", "0", "Commune", "Très courte", "+BF+1", "Inoffensive"], "off": true}, {"c": ["Masse", "Forge", "2", "15 Pa", "1", "Commune", "Moyenne", "+BF+4", "Assommante, Déséquilibrée"], "off": true}, {"c": ["Pic d'armes", "Forge", "2", "15 Pa", "1", "Limitée", "Moyenne", "+BF+4", "Perforante, Déséquilibrée"], "off": true}, {"c": ["Cimeterre", "Forge", "3", "1 CO", "1", "Limitée", "Courte", "+BF+4", "Taillade (1 Av)"], "off": true}, {"c": ["Épée", "Forge", "2", "1 CO", "1", "Commune", "Moyenne", "+BF+4", "–"], "off": true}, {"c": ["Marteau de guerre", "Forge", "3", "1 CO", "1", "Limitée", "Moyenne", "+BF+4", "Déséquilibrée, Assommante ou Perforante"], "off": true}], "foot": ""}, {"kind": "table", "title": "Boucliers", "note": "Les boucliers relèvent de Corps à corps (Base). Le pavois se déploie en deux Actions comme un pan de mur : tant que le porteur reste à un mètre derrière lui, il bénéficie de Protectrice 5 et Défensive contre tout tir venant de la direction annoncée. Employé comme un simple grand bouclier, il gagne Lente et Épuisante et ne fait plus que +BF+2. Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Bocle", "Forge, bois", "2", "18 Pa 2 Sc", "0", "Commune", "Personnelle", "+BF+1", "Protectrice 1, Défensive, Inoffensive"], "off": true}, {"c": ["Bouclier", "Bois, forge", "2", "2 CO", "1", "Commune", "Très courte", "+BF+2", "Protectrice 2, Défensive, Inoffensive"], "off": true}, {"c": ["Grand bouclier", "Bois, forge", "3", "3 CO", "3", "Commune", "Très courte", "+BF+3", "Protectrice 3, Défensive, Inoffensive"], "off": true}, {"c": ["Pavois", "Bois, cuir", "3", "3 CO 15 Pa", "4", "Rare", "–", "+BF+2", "Protectrice 5"], "off": true}], "foot": ""}, {"kind": "table", "title": "Bagarre", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Gantelet clouté", "Forge", "3", "2 CO", "1", "Limitée", "Personnelle", "+BF+3", "Empaleuse, Déséquilibrée"], "off": true}, {"c": ["Croc de débardeur", "Forge, bois", "1", "6 Pa", "0", "Commune", "Courte", "+BF+4", "Croc-en-jambe, Inoffensive"], "off": true}, {"c": ["(2M) Lacet étrangleur", "Tissu", "1", "1 Pa", "0", "Rare", "Personnelle", "+BF+2", "Immobilisante, Lente, Déséquilibrée, Inoffensive"], "off": true}, {"c": ["Coup-de-poing américain", "Forge", "1", "2 Pa 6 Sc", "0", "Commune", "Personnelle", "+BF+2", "–"], "off": true}, {"c": ["Gantelet verrouillé", "Forge", "3", "1 CO", "1", "Limitée", "Personnelle", "+BF+2", "Inoffensive"], "off": true}, {"c": ["Mains nues", "–", "–", "–", "0", "–", "Personnelle", "+BF+0", "Inoffensive"], "off": true}, {"c": ["Assommoir", "Cuir, tissu", "1", "1 Pa", "0", "Rare", "Personnelle", "+BF+1", "Assommante, Déséquilibrée, Inoffensive"], "off": true}], "foot": ""}, {"kind": "table", "title": "Parade", "note": "La cape a une Force de 25 pour les tests d'entrave, le filet lesté une Force de 55. Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Cape", "Tissu", "1", "10 Pa", "1", "Commune", "Courte", "+BF+0", "Immobilisante, Défensive, Inoffensive"], "off": true}, {"c": ["Main gauche", "Forge", "3", "1 CO", "0", "Rare", "Très courte", "+BF+2", "Défensive"], "off": true}, {"c": ["Brise-lame", "Forge", "3", "1 CO 2 Pa 6 Sc", "1", "Limitée", "Courte", "+BF+1", "Défensive, Piège-lame"], "off": true}, {"c": ["(2M) Filet lesté", "Tissu", "2", "1 CO 10 Pa", "1", "Rare", "Courte", "+BF+0", "Immobilisante, Défensive, Protectrice 1, Lente, Inoffensive, À enroulement"], "off": true}], "foot": ""}, {"kind": "table", "title": "Escrime", "note": "Sans la spécialisation Escrime, ces armes se manient comme des armes de Base et perdent tous leurs atouts. Une épée de cour mouchetée gagne le défaut Inoffensive. Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Fleuret", "Forge", "4", "5 CO", "1", "Limitée", "Moyenne", "+BF+3", "Rapide, Empaleuse, Pointue, Inoffensive"], "off": true}, {"c": ["Rapière", "Forge", "4", "5 CO", "1", "Limitée", "Longue", "+BF+4", "Rapide, Empaleuse"], "off": true}, {"c": ["Épée de cour", "Forge", "4", "4 CO", "1", "Limitée", "Courte", "+BF+2", "Rapide, Empaleuse, Pointue"], "off": true}], "foot": ""}, {"kind": "table", "title": "Cavalerie", "note": "Le sabre employé à pied avec Corps à corps (Base) voit sa Taillade passer à 2 Av ; avec Corps à corps (Escrime) il conserve Taillade (1 Av). Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["(2M) Marteau de cavalerie", "Forge, bois", "3", "3 CO", "3", "Limitée", "Longue", "+BF+5", "Assommante"], "off": true}, {"c": ["Demi-lance", "Bois, forge", "2", "1 CO", "2", "Limitée", "Longue", "+BF+5*", "Percutante, Empaleuse"], "off": true}, {"c": ["Lance", "Bois, forge", "2", "1 CO", "3", "Limitée", "Très longue", "+BF+6*", "Percutante, Empaleuse"], "off": true}, {"c": ["Sabre", "Forge", "3", "2 CO", "1", "Limitée", "Moyenne", "+BF+4", "Taillade (1 Av)"], "off": true}], "foot": ""}, {"kind": "table", "title": "Fléau", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Fléau de battage", "Bois", "1", "10 Pa", "1", "Commune", "Moyenne", "+BF+3", "Perturbante, Imprécise, À enroulement"], "off": true}, {"c": ["Fléau d'armes", "Forge", "2", "2 CO", "1", "Limitée", "Moyenne", "+BF+5", "Perturbante, À enroulement"], "off": true}, {"c": ["(2M) Fléau militaire", "Forge", "3", "3 CO", "2", "Rare", "Longue", "+BF+6", "Perturbante, Percutante, Épuisante, À enroulement"], "off": true}], "foot": ""}, {"kind": "table", "title": "Arme d'hast", "note": "Une guisarme à collet à ressort coûte 4 CO et donne +20 aux tests de Force pour entraver. Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["(2M) Alêne de guerre", "Forge, bois", "3", "2 CO", "2", "Limitée", "Très longue", "+BF+3", "Empaleuse, Perforante"], "off": true}, {"c": ["(2M) Vouge", "Forge, bois", "3", "2 CO", "3", "Limitée", "Longue", "+BF+4", "Défensive, Taille ou Croc-en-jambe"], "off": true}, {"c": ["(2M) Hallebarde", "Forge, bois", "3", "2 CO", "3", "Commune", "Longue", "+BF+4", "Défensive, Taille ou Empaleuse"], "off": true}, {"c": ["(2M) Guisarme à collet", "Forge, bois", "3", "2 CO", "3", "Rare", "Longue", "+BF+2", "Défensive, Immobilisante"], "off": true}, {"c": ["(2M) Pertuisane ou glaive", "Forge, bois", "3", "2 CO", "3", "Limitée", "Longue", "+BF+4", "Défensive, Empaleuse ou Taillade (2 Av)"], "off": true}, {"c": ["(2M) Bec de corbin", "Forge, bois", "3", "2 CO", "3", "Limitée", "Longue", "+BF+4", "Défensive, Taille ou Empaleuse ou Assommante"], "off": true}, {"c": ["(2M) Lance d'infanterie", "Bois, forge", "2", "15 Pa", "2", "Commune", "Très longue", "+BF+4", "Empaleuse"], "off": true}, {"c": ["(2M) Pique", "Bois, forge", "2", "18 Pa", "4", "Rare", "Considérable", "+BF+4", "Empaleuse"], "off": true}, {"c": ["(2M) Bâton", "Bois", "1", "3 Pa", "2", "Commune", "Longue", "+BF+4", "Défensive, Assommante"], "off": true}], "foot": ""}, {"kind": "table", "title": "Deux mains", "note": "L'épée bâtarde peut être maniée à une main avec Corps à corps (Base), mais gagne alors Épuisante et Lente. Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["(2M) Épée bâtarde", "Forge", "4", "8 CO", "3", "Limitée", "Longue", "+BF+5", "Dévastatrice, Défensive"], "off": true}, {"c": ["(2M) Grande hache", "Forge, bois", "3", "4 CO", "3", "Commune", "Longue", "+BF+6", "Taille, Percutante, Épuisante"], "off": true}, {"c": ["(2M) Espadon flamboyant", "Forge", "5", "30 CO", "3", "Exotique", "Longue", "+BF+5", "Dévastatrice, Taille, Taillade (2 Av)"], "off": true}, {"c": ["(2M) Pic à deux mains", "Forge, bois", "2", "9 Pa", "3", "Commune", "Moyenne", "+BF+5", "Dévastatrice, Empaleuse, Lente"], "off": true}, {"c": ["(2M) Marteau à deux mains", "Forge, bois", "3", "3 CO", "3", "Commune", "Moyenne", "+BF+6", "Dévastatrice, Assommante, Lente"], "off": true}, {"c": ["(2M) Espadon", "Forge", "4", "10 CO", "3", "Limitée", "Longue", "+BF+5", "Dévastatrice, Taille"], "off": true}], "foot": ""}, {"kind": "table", "title": "Traitements paranaturels", "note": "Section maison. Rien de tout ceci ne figure dans les livres : ce sont des traitements applicables aux armes ci-dessus pour les campagnes où l'on croise ce qui ne meurt pas d'un coup d'épée ordinaire. Un « = » en Encombrement signifie que la pièce garde le sien. Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Allonge", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Argenture d'une arme", "Orfèvre", "4", "×5 du prix", "=", "Rare", "Comme l'arme", "Comme l'arme", "Argentée"], "off": false}, {"c": ["Bénédiction d'une arme", "Temple", "–", "10 CO l'offrande", "=", "Rare", "Comme l'arme", "Comme l'arme", "Bénie (X)"], "off": false}, {"c": ["Lame de fer froid", "Forge", "5", "20 CO", "1", "Exotique", "Moyenne", "+BF+4", "Fer froid, Incassable"], "off": false}, {"c": ["Épieu d'aubépine", "Bois", "1", "1 CO", "2", "Limitée", "Très longue", "+BF+3", "Empaleuse, Pieu, Fragile"], "off": false}, {"c": ["Épée de gromril", "Forge naine", "5", "80 CO", "1", "Exotique", "Moyenne", "+BF+4", "Perforante, Pointue, Incassable"], "off": false}, {"c": ["Marteau à runes naines", "Forge naine", "5", "100 CO", "1", "Exotique", "Moyenne", "+BF+5", "Runique, Assommante, Incassable, Lente"], "off": false}], "foot": ""}]}, {"title": "Armes à distance", "note": "Rappels de règle. Fourchettes de portée : Bout portant = Portée ÷ 10, Courte = ÷ 2, Longue = × 2, Extrême = × 3. Les Arbalètes et le Lancer peuvent être employés avec un test de Projectiles générique, mais l'arme perd alors tous ses atouts et conserve ses défauts ; même règle pour l'Ingénierie entre les mains d'un spécialiste de la Poudre noire. Toutes les armes à poudre et d'ingénierie possèdent en outre l'atout À poudre noire. Les armes à mèche exigent une Action pour allumer la mèche avant le tir.", "sections": [{"kind": "table", "title": "Arc", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["(2M) Arc court", "Arcier (bois)", "3", "3 CO", "1", "Commune", "20", "+BF+2", "–"], "off": true}, {"c": ["(2M) Arc", "Arcier (bois)", "3", "4 CO", "2", "Commune", "50", "+BF+3", "–"], "off": true}, {"c": ["(2M) Arc long", "Arcier (bois)", "3", "5 CO", "3", "Limitée", "100", "+BF+4", "Dévastatrice"], "off": true}, {"c": ["(2M) Arc elfique", "Arcier elfique", "4", "10 CO", "2", "Exotique", "150", "+BF+4", "Dévastatrice, Pointue"], "off": true}], "foot": ""}, {"kind": "table", "title": "Arbalète", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["(2M) Arbalète", "Ingénieur, bois", "4", "5 CO", "2", "Commune", "60", "+9", "Recharge 1"], "off": true}, {"c": ["Arbalète de poing", "Ingénieur, bois", "4", "6 CO", "0", "Limitée", "10", "+7", "Pistolet"], "off": true}, {"c": ["(2M) Arbalète lourde", "Ingénieur, bois", "4", "7 CO", "3", "Rare", "100", "+9", "Dévastatrice, Recharge 2"], "off": true}], "foot": ""}, {"kind": "table", "title": "Fronde", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Fronde", "Tissu", "1", "1 Pa", "0", "Commune", "60", "+6", "–"], "off": true}, {"c": ["(2M) Fustibale", "Bois, tissu", "1", "4 Pa", "2", "Limitée", "100", "+7", "–"], "off": true}], "foot": ""}, {"kind": "table", "title": "Lancer", "note": "Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Hache de lancer", "Forge", "2", "1 CO", "1", "Commune", "BF x2", "+BF+3", "Taille"], "off": true}, {"c": ["Javelot", "Bois, forge", "1", "10 Pa 6 Sc", "1", "Limitée", "BF x3", "+BF+3", "Empaleuse"], "off": true}, {"c": ["Couteau de lancer", "Forge", "2", "16 Pa", "0", "Commune", "BF x2", "+BF+1", "Inoffensive"], "off": true}], "foot": ""}, {"kind": "table", "title": "Poudre noire", "note": "La hache-arquebuse et la hallebarde-arquebuse se manient aussi en corps à corps ; utilisées ainsi alors qu'elles sont chargées, toute Maladresse décharge l'arme, dans le corps du porteur pour la hache, dans celui de qui se tient derrière lui pour la hallebarde. La canne-pistolet demande un test de Perception Difficile (−20) pour être identifiée comme une arme, Très difficile (−30) pour qui ne connaît pas la poudre noire. Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["(2M) Espingole", "Ingénieur", "5", "2 CO", "1", "Limitée", "20", "+8", "Dispersion 3, Dangereuse, Recharge 2"], "off": true}, {"c": ["(2M) Long fusil de Hochland", "Ingénieur", "5", "50 CO", "3", "Exotique", "100", "+9", "Précise, Pointue, Recharge 4"], "off": true}, {"c": ["(2M) Arquebuse", "Ingénieur", "5", "4 CO", "2", "Limitée", "50", "+9", "Dangereuse, Recharge 3"], "off": true}, {"c": ["Pistolet", "Ingénieur", "5", "8 CO", "0", "Rare", "20", "+8", "Pistolet, Recharge 1"], "off": true}, {"c": ["(2M) Arquebuse à mèche", "Ingénieur", "4", "2 CO", "2", "Rare", "50", "+8", "Dangereuse, Recharge 4"], "off": true}, {"c": ["(2M) Espingole à mèche", "Ingénieur", "4", "1 CO", "1", "Rare", "20", "+7", "Dispersion 3, Dangereuse, Recharge 3"], "off": true}, {"c": ["(2M) Couleuvrine à main", "Ingénieur", "5", "5 CO", "3", "Exotique", "40", "+9", "Dangereuse, Imprécise, Recharge 5"], "off": true}, {"c": ["(2M) Arquebuse à deux canons", "Ingénieur", "5", "7 CO", "3", "Exotique", "50", "+9", "Dangereuse, À répétition 2, Recharge 4"], "off": true}, {"c": ["Pistolet patte-de-griffon", "Ingénieur", "5", "20 CO", "1", "Exotique", "10", "+7", "Imprécise, Dispersion 5, Recharge 6"], "off": true}, {"c": ["(2M) Hache-arquebuse", "Ingénieur, forge", "5", "8 CO", "1", "Exotique", "30", "+9", "Imprécise, Dangereuse, Recharge 4"], "off": true}, {"c": ["(2M) Hallebarde-arquebuse", "Ingénieur, forge", "5", "10 CO", "3", "Exotique", "30", "+9", "Imprécise, Dangereuse, Recharge 4"], "off": true}], "foot": ""}, {"kind": "table", "title": "Ingénierie", "note": "La poivrière perd son atout À répétition si le porteur n'a pas une seconde main libre pour faire tourner le barillet. Toute Maladresse au rechargement d'un mortier à main le fait exploser. Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["(2M) Arquebuse à répétition", "Ingénieur", "5", "10 CO", "3", "Rare", "30", "+9", "Dangereuse, Recharge 5, À répétition 4"], "off": true}, {"c": ["Pistolet à répétition", "Ingénieur", "5", "15 CO", "1", "Rare", "10", "+8", "Dangereuse, Pistolet, Recharge 4, À répétition 4"], "off": true}, {"c": ["Poivrière", "Ingénieur", "5", "12 CO", "1", "Rare", "10", "+8", "Dangereuse, Pistolet, Recharge 4, À répétition 4*"], "off": true}, {"c": ["(2M) Mortier à main", "Ingénieur", "5", "50 CO", "3", "Exotique", "30", "+7", "Dangereuse, Imprécise, Recharge 2"], "off": true}, {"c": ["Canne-pistolet", "Ingénieur, bois", "5", "15 CO", "1", "Exotique", "10", "+8", "Dangereuse, Imprécise, Recharge 6"], "off": true}], "foot": ""}, {"kind": "table", "title": "Machines de siège", "note": "Ces pièces se servent avec Projectiles (Arbalète), (Ingénierie) ou (Machine de siège) selon leur type. Recharger une arme dotée de Salve n'en fait pas le plein : chaque Recharge réussie n'augmente la Salve que de 1. Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Arme", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Baliste", "Ingénieur, bois", "5", "30 CO", "20", "Limitée", "150", "+12", "Précise, Recharge 3, Servants 2"], "off": true}, {"c": ["Canon léger", "Ingénieur, forge", "5", "40 CO", "30", "Limitée", "100", "+10", "Dangereuse, Recharge 4, Servants 2"], "off": true}, {"c": ["Canon moyen", "Ingénieur, forge", "5", "100 CO", "50", "Exotique", "125", "+14", "Dangereuse, Recharge 6, Servants 3"], "off": true}, {"c": ["Canon lourd", "Ingénieur, forge", "5", "250 CO", "75", "Exotique", "175", "+16", "Dangereuse, Recharge 8, Servants 4"], "off": true}, {"c": ["Mortier", "Ingénieur, forge", "5", "50 CO", "50", "Exotique", "150", "–", "Recharge 4, Servants 3"], "off": true}, {"c": ["Pierrier", "Ingénieur, forge", "5", "20 CO", "5", "Rare", "30", "+14", "Dangereuse, Recharge 4"], "off": true}, {"c": ["Catapulte légère", "Ingénieur, bois", "5", "20 CO", "25", "Limitée", "75", "+10", "Imprécise, Recharge 3, Servants 2"], "off": true}, {"c": ["Catapulte moyenne", "Ingénieur, bois", "5", "40 CO", "40", "Limitée", "100", "+15", "Imprécise, Recharge 3, Servants 3"], "off": true}, {"c": ["Catapulte lourde", "Ingénieur, bois", "5", "60 CO", "65", "Limitée", "175", "+18", "Imprécise, Recharge 4, Servants 4"], "off": true}, {"c": ["Orgue à balles", "Ingénieur", "5", "10 CO", "5", "Exotique", "50", "+9", "Dangereuse, Recharge 4, Salve 7"], "off": true}, {"c": ["Canon à salves Helblaster", "Ingénieur", "5", "500 CO", "85", "Exotique", "100", "+10", "Dangereuse, Recharge 4*, Salve 9, Servants 3"], "off": true}, {"c": ["Lance-fusées Helstorm", "Ingénieur", "5", "500 CO", "75", "Exotique", "185", "+12", "Explosion 5, Dangereuse, Imprécise, Recharge 6*, Salve 9, Servants 3"], "off": true}], "foot": ""}]}, {"title": "Munitions", "note": "Lots de douze sauf mention contraire, encombrement nul par lot sauf indication. Une munition traitée conserve les atouts de son façonnage de base.", "sections": [{"kind": "table", "title": "Traditionnelles", "note": "Un personnage en forêt peut se tailler un bâton pointu par un test étendu de Survie en extérieur Intermédiaire (+0) totalisant 10 DR, et ramasser un caillou de fronde par un test étendu de Survie en extérieur Très facile (+40) ou de Perception Intermédiaire (+0) totalisant 5 DR. Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Munition", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Flèches (12)", "Arcier (bois)", "2", "5 Pa", "0", "Commune", "Comme l'arme", "–", "Empaleuse"], "off": true}, {"c": ["Flèches barbelées (12)", "Arcier (bois)", "2", "8 Pa", "0", "Limitée", "Comme l'arme", "–", "Empaleuse, Taillade (1 Av)"], "off": true}, {"c": ["Flèches à bec de faucon (12)", "Arcier (bois)", "2", "8 Pa", "0", "Limitée", "Comme l'arme", "–", "Empaleuse, Perforante"], "off": true}, {"c": ["Flèche elfique", "Arcier elfique", "4", "6 Pa", "0", "Exotique", "+50", "+1", "Précise, Empaleuse, Perforante"], "off": true}, {"c": ["Bâton taillé", "–", "–", "–", "0", "Commune", "Moitié de l'arme", "−2", "Dangereuse, Imprécise, Inoffensive"], "off": true}, {"c": ["Carreaux (12)", "Ingénieur, bois", "2", "5 Pa", "0", "Commune", "Comme l'arme", "–", "Empaleuse"], "off": true}, {"c": ["Balles de plomb (12)", "Forge", "1", "4 Sc", "0", "Commune", "−10", "+1", "Assommante"], "off": true}, {"c": ["Balles de pierre (12)", "Forge", "1", "2 Sc", "0", "Commune", "Comme l'arme", "–", "Assommante"], "off": true}, {"c": ["Caillou", "–", "–", "–", "0", "Commune", "−10", "−2", "Imprécise, Inoffensive"], "off": true}], "foot": ""}, {"kind": "table", "title": "Poudre noire et ingénierie", "note": "Les cartouches papier donnent +10 aux tests de rechargement. La poudre d'Aqshy use les canons : tout test raté comportant un 8 ou un 9 au dé des dizaines ou des unités compte comme une Maladresse. La ferraille applique le trait Infectée. Une grosse balle impose à qui tire, et à quiconque se tient à deux mètres, un test d'Endurance Intermédiaire (+0) sous peine de l'état Assourdi. Bombes et charges incendiaires doivent être allumées avant chargement : on annonce le nombre de tours de mèche, et l'engin explose à la fin du tour prévu, tiré ou non. Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Munition", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Balles et poudre (12)", "Ingénieur", "3", "3 Pa 3 Sc", "0", "Commune", "Comme l'arme", "+1", "Empaleuse, Perforante"], "off": true}, {"c": ["Cartouches papier (12)", "Ingénieur", "3", "5 Pa", "0", "Limitée", "Comme l'arme", "+1", "Empaleuse, Perforante"], "off": true}, {"c": ["Poudre imprégnée d'Aqshy (12)", "Collège de Feu", "5", "1 CO", "0", "Exotique", "+10", "+2", "Empaleuse, Perforante"], "off": true}, {"c": ["Balles de précision et poudre", "Ingénieur", "4", "3 Pa", "0", "Commune", "Comme l'arme", "+1", "Empaleuse, Perforante, Précise"], "off": true}, {"c": ["Projectile improvisé et poudre", "–", "1", "3 Sc", "0", "Commune", "Moitié de l'arme", "–", "–"], "off": true}, {"c": ["Grenaille et poudre (12)", "Ingénieur", "3", "3 Pa 3 Sc", "0", "Commune", "Comme l'arme", "–", "Dispersion +3"], "off": true}, {"c": ["Ferraille et poudre (12)", "Ingénieur", "1", "2 Pa", "0", "Commune", "Moitié de l'arme", "−1", "Dispersion +3, Infectée"], "off": true}, {"c": ["Grosses balles et poudre (12)", "Ingénieur", "4", "1 CO", "0", "Limitée", "Comme l'arme", "+2", "Empaleuse, Percutante, Perforante"], "off": true}, {"c": ["Bombe", "Ingénieur", "5", "3 CO", "0", "Limitée", "Comme l'arme", "+5", "Explosion 5, Dangereuse, Percutante"], "off": true}, {"c": ["Charge incendiaire", "Ingénieur, apothicaire", "4", "1 CO", "0", "Limitée", "Comme l'arme", "Spécial", "Explosion 4, Dangereuse"], "off": true}, {"c": ["Grappin de tir", "Ingénieur", "4", "2 CO", "1", "Limitée", "Moitié de l'arme", "+2", "Perforante, Recharge +2"], "off": true}], "foot": ""}, {"kind": "table", "title": "Munitions de siège", "note": "* Une carcasse animale inflige +4 dégâts dans Explosion 3, et toute cible dans Explosion 20 doit réussir un test d'Endurance Très facile (+60) ou développer une Plaie purulente. ** Un projectile incendiaire n'inflige pas de dégâts mais donne DR+1 états Enflammé à chaque cible touchée. Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Munition", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Trait de baliste", "Ingénieur, bois", "3", "4 Pa", "0", "Limitée", "Comme l'arme", "–", "Perforante, Empaleuse"], "off": true}, {"c": ["Boulet et poudre", "Ingénieur, forge", "4", "8 Pa", "1", "Limitée", "Comme l'arme", "–", "Explosion +2, Percutante"], "off": true}, {"c": ["Mitraille et poudre", "Ingénieur", "4", "6 Pa 6 Sc", "0", "Exotique", "Quart de l'arme", "−2", "Dispersion +5"], "off": true}, {"c": ["Carcasse animale", "–", "–", "–", "0", "Commune", "Moitié de l'arme", "Spécial*", "Explosion +3 ou Explosion +20"], "off": true}, {"c": ["Projectile incendiaire", "Ingénieur, apothicaire", "4", "1 CO", "0", "Limitée", "Moitié de l'arme", "Spécial**", "Explosion +4, Dangereuse"], "off": true}, {"c": ["Bloc de pierre", "Carrier", "1", "8 Pa", "1", "Commune", "Comme l'arme", "–", "Dévastatrice, Percutante"], "off": true}, {"c": ["Bombe de mortier", "Ingénieur", "5", "3 CO", "0", "Rare", "Comme l'arme", "+12", "Explosion +5, Dangereuse, Percutante"], "off": true}, {"c": ["Balles et poudre pour un tir de pierrier", "Ingénieur", "3", "2 Pa 2 Sc", "0", "Commune", "Comme l'arme", "+1", "Empaleuse, Perforante, Dispersion +3"], "off": true}, {"c": ["Grenaille et poudre pour un tir de pierrier", "Ingénieur", "3", "2 Pa 2 Sc", "0", "Commune", "Comme l'arme", "–", "Dispersion +6"], "off": true}, {"c": ["Fusée Helstorm", "Ingénieur", "5", "5 CO", "1", "Exotique", "Comme l'arme", "–", "–"], "off": true}], "foot": ""}, {"kind": "table", "title": "Traitements paranaturels", "note": "Section maison, prix à l'unité. Applicable aux flèches et aux carreaux. Métier indique qui sait fabriquer la pièce, Compl. sa complexité : 1 vaut DR 2 et une heure, 2 vaut DR 4 et quatre heures, 3 vaut DR 6 et un jour, 4 vaut DR 8 et trois jours, 5 vaut DR 12 et une semaine. Matières à la moitié du prix. Barèmes complets dans La Forge, Artisanat et Le Métier d'Ingénieur. Un tiret signifie que l'objet ne se fabrique pas en atelier.", "cols": ["Munition", "Métier", "Compl.", "Prix", "Enc", "Disponibilité", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Pointe plaquée argent", "Orfèvre", "3", "2 CO", "0", "Rare", "Comme l'arme", "–", "Argentée"], "off": false}, {"c": ["Pointe de fer froid", "Forge", "5", "3 CO", "0", "Rare", "Comme l'arme", "–", "Fer froid"], "off": false}, {"c": ["Hampe d'aubépine", "Bois", "1", "1 CO", "0", "Limitée", "Comme l'arme", "−1", "Pieu, Fragile"], "off": false}, {"c": ["Pointe de gromril", "Forge naine", "5", "25 CO", "0", "Exotique", "Comme l'arme", "+1", "Perforante, Pointue, Incassable"], "off": false}, {"c": ["Munition bénie (Sigmar)", "Temple", "–", "1 CO", "0", "Limitée", "Comme l'arme", "–", "Bénie (Chaos)"], "off": false}, {"c": ["Munition bénie (Morr)", "Temple", "–", "1 CO", "0", "Limitée", "Comme l'arme", "–", "Bénie (Mort-vivant)"], "off": false}, {"c": ["Munition bénie (Ulric)", "Temple", "–", "1 CO", "0", "Limitée", "Comme l'arme", "–", "Bénie (Bête)"], "off": false}, {"c": ["Pointe envenimée", "Apothicaire", "3", "1 CO", "0", "Limitée", "Comme l'arme", "–", "Venimeuse"], "off": false}, {"c": ["Pointe soporifique", "Apothicaire", "3", "3 CO", "0", "Rare", "Comme l'arme", "−3", "Soporifique, Inoffensive"], "off": false}], "foot": ""}]}], "legend": [{"off": true, "term": "Assommante", "def": "Sur une touche à la Tête, test opposé de Force ou Résistance : en cas de succès, la cible gagne l'état Sonné."}, {"off": true, "term": "Croc-en-jambe", "def": "Nouveau, Up in Arms. Après avoir touché, on peut dépenser 2 Avantages et tenter un test opposé de Force ou Athlétisme. Réussi, l'adversaire gagne l'état À terre ; s'il était monté, il subit d'abord une chute de deux mètres. Raté, rien d'autre ne se produit que les effets normaux d'un test opposé perdu."}, {"off": true, "term": "Dangereuse", "def": "Tout test raté comportant un 9 au dé des dizaines ou des unités entraîne une Maladresse."}, {"off": true, "term": "Dispersion X", "def": "Nouveau, Up in Arms. L'arme crache une gerbe de projectiles. À bout portant, la cible est unique et l'arme gagne +X dégâts. De la portée courte à la portée longue, le tir touche la cible et les X créatures visibles les plus proches, aucune ne pouvant être à plus de X mètres d'une autre. À portée extrême, même effet mais l'arme perd X dégâts."}, {"off": true, "term": "Défensive", "def": "+1 DR aux tests de Corps à corps quand on oppose une attaque."}, {"off": true, "term": "Déséquilibrée", "def": "Nouveau, Up in Arms. Le poids concentré dans la tête rend l'arme mauvaise à la parade : −1 DR quand on l'emploie pour opposer une attaque."}, {"off": true, "term": "Dévastatrice", "def": "Les dégâts utilisent le plus élevé du dé des unités ou du DR."}, {"off": true, "term": "Empaleuse", "def": "Coup critique sur tout résultat divisible par 10 ou sur un double, réussi. Le projectile reste fiché : il faut un test de Guérison Intermédiaire pour l'extraire, un chirurgien pour une balle, et chaque projectile non retiré empêche de regagner 1 Blessure."}, {"off": true, "term": "Explosion X", "def": "Toutes les cibles à X mètres du point d'impact subissent DR + dégâts de l'arme et les états infligés."}, {"off": true, "term": "Fragile", "def": "L'arme ou la munition est perdue à l'impact, quel qu'en soit le résultat."}, {"off": true, "term": "Immobilisante", "def": "La cible touchée gagne l'état Empêtré, de Force égale à celle du porteur. Tant qu'on entrave, on ne peut pas frapper avec l'arme."}, {"off": true, "term": "Imprécise", "def": "−1 DR à l'attaque. Ne peut jamais être Précise."}, {"off": true, "term": "Incassable", "def": "L'arme ne se brise pas, ne se corrode pas et ne s'émousse pas."}, {"off": true, "term": "Infectée", "def": "Trait de créature appliqué par certaines munitions, voir le livre de base."}, {"off": true, "term": "Inoffensive", "def": "Tous les PA sont doublés contre elle et elle n'inflige pas la Blessure minimale automatique."}, {"off": true, "term": "Lente", "def": "Frappe toujours en dernier dans le round, et les adversaires gagnent +1 DR pour se défendre."}, {"off": true, "term": "Percutante", "def": "Ajoute le dé des unités du jet d'attaque aux dégâts."}, {"off": true, "term": "Perforante", "def": "Les PA non métalliques sont ignorés, et le premier point de toute autre armure l'est également."}, {"off": true, "term": "Perturbante", "def": "Au lieu d'infliger des dégâts, repousse l'adversaire d'un mètre par DR du test opposé."}, {"off": true, "term": "Pistolet", "def": "Utilisable en Combat rapproché."}, {"off": true, "term": "Piège-lame", "def": "Sur un critique obtenu en défense contre une arme à lame, permet de piéger la lame plutôt que d'infliger le critique."}, {"off": true, "term": "Pointue", "def": "+1 DR à tout test d'attaque réussi."}, {"off": true, "term": "Protectrice X", "def": "Révisée par Up in Arms. Chaque fois que l'on oppose une attaque avec Corps à corps, on bénéficie de X PA supplémentaires, même si c'est l'arme de la main directrice qui a paré. À partir de 2, permet aussi d'opposer les tirs vus."}, {"off": true, "term": "Précise", "def": "+10 à tout test effectué avec l'arme."}, {"off": true, "term": "Rapide", "def": "Permet d'attaquer hors de l'ordre d'Initiative, et impose −10 aux défenses en Corps à corps menées avec une arme non Rapide."}, {"off": true, "term": "Recharge X", "def": "Rechargement en test étendu de Projectiles, X DR requis. Toute interruption oblige à recommencer."}, {"off": true, "term": "Salve X", "def": "Nouveau, Up in Arms. L'arme peut tirer X fois avant rechargement. Chaque tir supplémentaire dans le même tour impose un cumul de −10 aux Projectiles. Recharger n'augmente la Salve que de 1 par Recharge réussie."}, {"off": true, "term": "Servants X", "def": "Nouveau, Up in Arms. Défaut. L'arme réclame X servants possédant la compétence de Projectiles adéquate ; l'un d'eux est désigné pour lancer le test. Servant manquant : temps de recharge doublé, puis défaut Imprécise, puis défaut Dangereuse, cumulativement. Un défaut déjà présent devient à la place −10 aux Projectiles. Une maladresse affecte tout l'équipage."}, {"off": true, "term": "Taillade (X Av)", "def": "Nouveau, Up in Arms. Si l'arme cause des dégâts critiques, la cible gagne en plus l'état Hémorragie. On peut dépenser X Avantages pour infliger un état Hémorragie supplémentaire."}, {"off": true, "term": "Taille", "def": "Endommage de 1 point l'armure ou le bouclier touché en blessant la cible."}, {"off": true, "term": "À enroulement", "def": "Les tests de Corps à corps opposés à cette arme subissent −1 DR."}, {"off": true, "term": "À poudre noire", "def": "Être pris pour cible impose un test de Calme Accessible (+20) ou l'état Brisé, même si le tir manque."}, {"off": true, "term": "À répétition X", "def": "L'arme contient X munitions rechargées automatiquement après chaque tir. Épuisée, elle se recharge normalement."}, {"off": true, "term": "Épuisante", "def": "Les atouts Percutante et Dévastatrice ne s'appliquent que lors d'un tour de Charge."}, {"off": false, "term": "Argentée", "def": "Maison. Blesse normalement les créatures que seules les armes d'argent ou magiques peuvent atteindre. Contre les métamorphes, +2 aux dégâts et régénération bloquée jusqu'à la fin du round suivant."}, {"off": false, "term": "Bénie (X)", "def": "Maison. Compte comme arme magique et donne +1 aux dégâts contre les créatures du type indiqué. Sept jours sur une munition, une saison sur une arme."}, {"off": false, "term": "Dissimulable", "def": "Maison. Se porte sous un vêtement. La repérer demande un test de Perception Difficile (−20)."}, {"off": false, "term": "Encrassante", "def": "Maison. Recharge augmentée de 1 au tir suivant, jusqu'au nettoyage du canon. Sert surtout aux incidents du guide Le Métier d'Ingénieur."}, {"off": false, "term": "Fer froid", "def": "Maison. +2 aux dégâts contre les daemons matérialisés. Une blessure les empêche de se dématérialiser pendant un round."}, {"off": false, "term": "Pieu", "def": "Maison. Sur un coup critique au Torse contre un mort-vivant sanguinaire, test opposé de Force pour le clouer au sol."}, {"off": false, "term": "Runique", "def": "Maison. Compte comme arme magique. Une rune naine ne se copie pas et ne se vend pas."}, {"off": false, "term": "Soporifique", "def": "Maison. Une blessure impose un test d'Endurance ou la cible tombe Inconsciente en 1d10 rounds."}, {"off": false, "term": "Venimeuse", "def": "Maison. Toute blessure infligée déclenche un test d'Endurance ou l'état Empoisonné."}]};
 var RACINE = 'outils/armes';
-var CACHE  = 'armes_cache_v1';
 var CLIENT = Math.random().toString(36).slice(2, 10);
 var data = null;
 
@@ -207,16 +220,9 @@ function tab(x){
   return [];
 }
 
-/* ---------- lecture initiale : cache local, puis la base fait autorité ---------- */
+/* ---------- amorçage : le fichier, puis la base prend la main dès sa réponse ---------- */
 function charger(){
-  try{
-    var brut = localStorage.getItem(CACHE);
-    if(brut){ data = normaliser(JSON.parse(brut)); }
-  }catch(e){}
-  if(!data) data = normaliser(JSON.parse(JSON.stringify(DEFAUT)));
-}
-function cacher(){
-  try{ localStorage.setItem(CACHE, JSON.stringify(data)); }catch(e){}
+  data = normaliser(JSON.parse(JSON.stringify(DEFAUT)));
 }
 
 /* ---------- écriture groupée ---------- */
@@ -224,7 +230,6 @@ var tmr = null, sale = false;
 function sauver(){
   sale = true;
   etat('modifié', 'pending');
-  cacher();
   clearTimeout(tmr);
   tmr = setTimeout(ecrire, 900);
 }
@@ -250,7 +255,6 @@ function enEdition(){
 }
 function appliquer(p){
   data = normaliser(p);
-  cacher();
   rendre();
   etat('à jour', 'ok');
 }
@@ -291,7 +295,6 @@ function pousserFichier(){
     return refData.set({ payload: data, at: Date.now(), par: CLIENT });
   }).then(function(){
     sale = false;
-    cacher();
     rendre();
     if(b) b.removeAttribute('disabled');
     etat('publié', 'ok');
@@ -305,23 +308,33 @@ function pousserFichier(){
 
 /* ---------- remise en forme après lecture ---------- */
 function normaliser(d){
-  if(!d || typeof d !== 'object') return JSON.parse(JSON.stringify(DEFAUT));
+  if(!d || typeof d !== 'object') d = JSON.parse(JSON.stringify(DEFAUT));
+  d.intro = d.intro || '';
+  /* ancien format à sections plates : on l'enveloppe dans un groupe unique */
+  if(!d.groups && d.sections) d.groups = [{title:'', note:'', sections: d.sections}];
+  delete d.sections;
   d.groups = tab(d.groups);
   for(var g = 0; g < d.groups.length; g++){
     var G = d.groups[g];
     G.title = G.title || '';
-    G.note = G.note || '';
+    G.note  = G.note  || '';
     G.sections = tab(G.sections);
     for(var i = 0; i < G.sections.length; i++){
       var s = G.sections[i];
+      s.kind  = s.kind || (s.cols ? 'table' : 'texte');
       s.title = s.title || '';
-      s.note = s.note || '';
-      s.cols = tab(s.cols);
-      s.rows = tab(s.rows);
-      for(var r = 0; r < s.rows.length; r++){
-        s.rows[r] = s.rows[r] || {};
-        s.rows[r].c = tab(s.rows[r].c);
-        s.rows[r].off = !!s.rows[r].off;
+      s.note  = s.note  || '';
+      s.foot  = s.foot  || '';
+      if(s.kind === 'table'){
+        s.cols = tab(s.cols);
+        s.rows = tab(s.rows);
+        for(var r = 0; r < s.rows.length; r++){
+          s.rows[r] = s.rows[r] || {};
+          s.rows[r].c = tab(s.rows[r].c);
+          s.rows[r].off = !!s.rows[r].off;
+        }
+      } else {
+        s.items = tab(s.items);
       }
     }
   }
@@ -329,211 +342,205 @@ function normaliser(d){
   for(var l = 0; l < d.legend.length; l++){
     d.legend[l] = d.legend[l] || {};
     d.legend[l].term = d.legend[l].term || '';
-    d.legend[l].def = d.legend[l].def || '';
-    d.legend[l].off = !!d.legend[l].off;
+    d.legend[l].def  = d.legend[l].def  || '';
+    d.legend[l].off  = !!d.legend[l].off;
   }
   return d;
 }
 
 function esc(s){
-  return String(s == null ? '' : s)
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 function classeCol(nom){
-  var n = nom.toLowerCase();
-  if(n.indexOf('prix') === 0) return 'c-px';
-  if(n.indexOf('enc') === 0) return 'c-enc';
-  if(n.indexOf('dég') === 0) return 'c-dg';
+  var n = (nom || '').toLowerCase();
+  if(n.indexOf('enc') === 0 || n.indexOf('dr') === 0 || n.indexOf('éch') === 0 ||
+     n.indexOf('compl') === 0 || n.indexOf('pa') === 0 || n.indexOf('dégâts') === 0) return 'c';
   return '';
 }
 
 function rendre(){
   var h = '';
-  for(var gi = 0; gi < data.groups.length; gi++){
-    var g = data.groups[gi];
-    h += '<div class="grp">';
-    h += '<h2 contenteditable data-t="gt" data-g="' + gi + '">' + esc(g.title) + '</h2>';
-    if(g.note !== undefined)
-      h += '<div class="gnote" contenteditable data-t="gn" data-g="' + gi + '">' + esc(g.note) + '</div>';
+  h += '<div class="intro" contenteditable data-t="intro">' + esc(data.intro || '') + '</div>';
 
-    for(var si = 0; si < g.sections.length; si++){
-      var s = g.sections[si];
+  for(var gi = 0; gi < data.groups.length; gi++){
+    var G = data.groups[gi];
+    h += '<div class="grp" data-g="' + gi + '">';
+    h += '<h2 contenteditable data-t="gt" data-g="' + gi + '">' + esc(G.title) + '</h2>';
+    h += '<div class="gnote" contenteditable data-t="gn" data-g="' + gi + '">' + esc(G.note) + '</div>';
+
+    for(var si = 0; si < G.sections.length; si++){
+      var s = G.sections[si];
+      var n = (s.kind === 'table') ? s.rows.length : s.items.length;
       h += '<div class="sec" data-g="' + gi + '" data-s="' + si + '">';
       h += '<div class="sechead">';
       h +=   '<button data-a="fold">▾</button>';
       h +=   '<span class="t" contenteditable data-t="st" data-g="' + gi + '" data-s="' + si + '">' + esc(s.title) + '</span>';
-      h +=   '<span class="n">' + s.rows.length + '</span>';
+      h +=   '<span class="n">' + n + '</span>';
       h +=   '<button data-a="up">↑</button><button data-a="down">↓</button>';
-      h +=   '<button data-a="delsec">Supprimer</button>';
       h += '</div>';
-      h += '<div class="snote" contenteditable data-t="sn" data-g="' + gi + '" data-s="' + si + '">' + esc(s.note || '') + '</div>';
-      h += '<div class="secbody"><table><thead><tr>';
-      for(var ci = 0; ci < s.cols.length; ci++)
-        h += '<th contenteditable data-t="col" data-g="' + gi + '" data-s="' + si + '" data-c="' + ci + '">' + esc(s.cols[ci]) + '</th>';
-      h += '<th></th></tr></thead><tbody>';
+      h += '<div class="snote" contenteditable data-t="sn" data-g="' + gi + '" data-s="' + si + '">' + esc(s.note) + '</div>';
+      h += '<div class="secbody">';
 
-      for(var ri = 0; ri < s.rows.length; ri++){
-        var r = s.rows[ri];
-        h += '<tr' + (r.off ? ' class="off"' : '') + ' data-r="' + ri + '">';
-        for(var k = 0; k < s.cols.length; k++){
-          var val = r.c[k] === undefined ? '' : r.c[k];
-          var cl = classeCol(s.cols[k]);
-          var atout = (s.cols[k].toLowerCase().indexOf('atout') === 0) ? ' data-atout="1"' : '';
-          h += '<td class="' + cl + '" contenteditable data-t="cell" data-lab="' + esc(s.cols[k]) +
-               '" data-g="' + gi + '" data-s="' + si +
-               '" data-r="' + ri + '" data-c="' + k + '"' + atout + '>' + esc(val) + '</td>';
+      var PIED = '<div class="sfoot" contenteditable data-t="sf" data-g="' + gi + '" data-s="' + si + '">' + esc(s.foot) + '</div>';
+
+      if(s.kind === 'table'){
+        h += '<table><thead><tr>';
+        for(var ci = 0; ci < s.cols.length; ci++)
+          h += '<th contenteditable data-t="col" data-g="' + gi + '" data-s="' + si + '" data-c="' + ci + '">' + esc(s.cols[ci]) + '</th>';
+        h += '<th></th></tr></thead><tbody>';
+        for(var ri = 0; ri < s.rows.length; ri++){
+          var r = s.rows[ri];
+          h += '<tr' + (r.off ? ' class="off"' : '') + ' data-r="' + ri + '">';
+          for(var k = 0; k < s.cols.length; k++){
+            h += '<td class="' + classeCol(s.cols[k]) + '" contenteditable data-t="cell" data-lab="' + esc(s.cols[k]) +
+                 '" data-g="' + gi + '" data-s="' + si + '" data-r="' + ri + '" data-c="' + k + '">' +
+                 esc(r.c[k] === undefined ? '' : r.c[k]) + '</td>';
+          }
+          h += '<td class="acts"><button data-a="off" title="Ligne officielle">★</button>' +
+               '<button data-a="dup" title="Dupliquer">⧉</button>' +
+               '<button data-a="del" title="Supprimer">✕</button></td></tr>';
         }
-        h += '<td class="acts">' +
-             '<button data-a="off" title="Marquer comme ligne du livre">★</button>' +
-             '<button data-a="dup" title="Dupliquer">⧉</button>' +
-             '<button data-a="del" title="Supprimer">✕</button></td>';
-        h += '</tr>';
+        h += '</tbody></table>' + PIED + '<button class="addrow" data-a="addrow">+ Ligne</button>';
+      } else {
+        h += '<div class="items">';
+        for(var ii = 0; ii < s.items.length; ii++){
+          h += '<div class="item" data-i="' + ii + '"><span class="puce">◆</span>' +
+               '<div class="txt" contenteditable data-t="item" data-g="' + gi + '" data-s="' + si + '" data-i="' + ii + '">' + esc(s.items[ii]) + '</div>' +
+               '<span class="acts"><button data-a="upitem">↑</button><button data-a="delitem">✕</button></span></div>';
+        }
+        h += '</div>' + PIED + '<button class="addrow" data-a="additem">+ Paragraphe</button>';
       }
-      h += '</tbody></table>';
-      h += '<button class="addrow" data-a="addrow">+ Ligne</button>';
       h += '</div></div>';
     }
-    h += '<button data-a="addsec" data-g="' + gi + '">+ Section dans ce groupe</button>';
     h += '</div>';
   }
 
-  /* légende */
-  h += '<div class="grp"><h2>Légende des atouts et défauts</h2>';
-  h += '<div class="gnote">Entrées officielles en gris, ajouts maison en rouge. Cliquer sur ★ bascule de l\'un à l\'autre.</div>';
-  h += '<div class="legwrap">';
-  for(var li = 0; li < data.legend.length; li++){
-    var L = data.legend[li];
-    h += '<div class="leg ' + (L.off ? 'of' : 'mai') + '" data-l="' + li + '">';
-    h += '<span class="acts2"><button data-a="legoff">★</button><button data-a="legdel">✕</button></span>';
-    h += '<span class="term" contenteditable data-t="lt" data-l="' + li + '">' + esc(L.term) + '</span>. ';
-    h += '<span class="df" contenteditable data-t="ld" data-l="' + li + '">' + esc(L.def) + '</span>';
-    h += '</div>';
+  h += '<h2 class="bloc">Légende</h2>';
+  {
+    h += '<div class="legwrap">';
+    for(var li = 0; li < data.legend.length; li++){
+      var L = data.legend[li];
+      h += '<div class="leg ' + (L.off ? 'of' : 'mai') + '" data-l="' + li + '">';
+      h += '<span class="acts2"><button data-a="legoff">★</button><button data-a="legdel">✕</button></span>';
+      h += '<span class="term" contenteditable data-t="lt" data-l="' + li + '">' + esc(L.term) + '</span>. ';
+      h += '<span class="df" contenteditable data-t="ld" data-l="' + li + '">' + esc(L.def) + '</span></div>';
+    }
+    h += '</div><button class="addrow" data-a="addleg">+ Entrée de légende</button>';
   }
-  h += '</div></div>';
-  h += '<p class="hint">Tout est modifiable : cliquer dans une cellule, un titre ou une définition et écrire. Synchronisation automatique avec la base en ligne, sans rien à valider. Survoler une cellule d\'atouts affiche les définitions reconnues.</p>';
+  h += '<p class="hint">Tout est modifiable : cliquer et écrire. Chaque frappe part vers la base en ligne, ' +
+       'rien à valider. L\'étoile marque une ligne officielle, en italique. Survoler une cellule affiche ' +
+       'les définitions reconnues. Le bouton PDF imprime la page, le bouton Push republie le contenu du ' +
+       'fichier par-dessus la base.</p>';
 
   document.getElementById('app').innerHTML = h;
   indexerLegende();
 }
 
-/* ======================= ÉDITION ======================= */
 document.addEventListener('input', function(e){
   var el = e.target, t = el.getAttribute('data-t');
   if(!t) return;
   var g = +el.getAttribute('data-g'), s = +el.getAttribute('data-s'),
-      r = +el.getAttribute('data-r'), c = +el.getAttribute('data-c'), l = +el.getAttribute('data-l');
-  var v = el.textContent;
-  if(t === 'gt') data.groups[g].title = v;
+      r = +el.getAttribute('data-r'), c = +el.getAttribute('data-c'),
+      i = +el.getAttribute('data-i'), l = +el.getAttribute('data-l');
+  var v = el.textContent, S = (data.groups[g] && data.groups[g].sections) ? data.groups[g].sections[s] : null;
+  if(t === 'intro') data.intro = v;
+  else if(t === 'gt') data.groups[g].title = v;
   else if(t === 'gn') data.groups[g].note = v;
-  else if(t === 'st') data.groups[g].sections[s].title = v;
-  else if(t === 'sn') data.groups[g].sections[s].note = v;
-  else if(t === 'col') data.groups[g].sections[s].cols[c] = v;
-  else if(t === 'cell') data.groups[g].sections[s].rows[r].c[c] = v;
+  else if(t === 'st') S.title = v;
+  else if(t === 'sn') S.note = v;
+  else if(t === 'sf') S.foot = v;
+  else if(t === 'col') S.cols[c] = v;
+  else if(t === 'cell') S.rows[r].c[c] = v;
+  else if(t === 'item') S.items[i] = v;
   else if(t === 'lt'){ data.legend[l].term = v; indexerLegende(); }
   else if(t === 'ld'){ data.legend[l].def = v; indexerLegende(); }
   sauver();
 });
 
-/* Entrée = valider la cellule au lieu d'insérer un saut de ligne */
 document.addEventListener('keydown', function(e){
-  if(e.key === 'Enter' && e.target.hasAttribute && e.target.hasAttribute('contenteditable')){
-    e.preventDefault(); e.target.blur();
+  var el = e.target;
+  if(e.key === 'Enter' && el.hasAttribute && el.hasAttribute('contenteditable')){
+    if(el.classList && el.classList.contains('txt')) return; /* paragraphes : saut de ligne permis */
+    e.preventDefault(); el.blur();
   }
 });
 
-/* ======================= ACTIONS ======================= */
 document.addEventListener('click', function(e){
   var b = e.target.closest ? e.target.closest('button[data-a]') : null;
   if(!b) return;
   var a = b.getAttribute('data-a');
-  var sec = b.closest('.sec');
-  var tr  = b.closest('tr');
-  var leg = b.closest('.leg');
+  var sec = b.closest('.sec'), tr = b.closest('tr'), it = b.closest('.item'), leg = b.closest('.leg');
 
   if(a === 'fold'){ sec.classList.toggle('closed'); return; }
-
-  if(sec){
-    var g = +sec.getAttribute('data-g'), s = +sec.getAttribute('data-s');
-    var S = data.groups[g].sections[s];
-    if(a === 'addrow'){
-      var vide = []; for(var i = 0; i < S.cols.length; i++) vide.push('');
-      S.rows.push({c:vide, off:false}); sauver(); rendre(); return;
-    }
-    if(a === 'delsec'){
-      if(confirm('Supprimer la section « ' + S.title + ' » et ses ' + S.rows.length + ' lignes ?')){
-        data.groups[g].sections.splice(s,1); sauver(); rendre();
-      }
-      return;
-    }
-    if(a === 'up' || a === 'down'){
-      var d = (a === 'up') ? -1 : 1, n = s + d;
-      if(n >= 0 && n < data.groups[g].sections.length){
-        var tmp = data.groups[g].sections[s];
-        data.groups[g].sections[s] = data.groups[g].sections[n];
-        data.groups[g].sections[n] = tmp;
-        sauver(); rendre();
-      }
-      return;
-    }
-    if(tr){
-      var r = +tr.getAttribute('data-r');
-      if(a === 'del'){ S.rows.splice(r,1); sauver(); rendre(); return; }
-      if(a === 'dup'){ S.rows.splice(r+1, 0, JSON.parse(JSON.stringify(S.rows[r]))); sauver(); rendre(); return; }
-      if(a === 'off'){ S.rows[r].off = !S.rows[r].off; sauver(); rendre(); return; }
-    }
+  if(a === 'addleg'){
+    if(!data.legend) data.legend = [];
+    data.legend.push({off:false, term:'Nouveau mot-clé', def:'Définition.'});
+    sauver(); rendre();
+    var els = document.querySelectorAll('.leg .term');
+    if(els.length) els[els.length - 1].focus();
+    return;
   }
-
-  if(a === 'addsec'){
-    var gi = +b.getAttribute('data-g');
-    var modele = data.groups[gi].sections[0];
-    var cols = modele ? modele.cols.slice() : ['Nom','Prix','Enc','Disponibilité','Portée','Dégâts','Atouts et Défauts'];
-    data.groups[gi].sections.push({title:'Nouvelle section', note:'', cols:cols, rows:[]});
-    sauver(); rendre(); return;
-  }
-
   if(leg){
     var l = +leg.getAttribute('data-l');
     if(a === 'legdel'){ data.legend.splice(l,1); sauver(); rendre(); return; }
     if(a === 'legoff'){ data.legend[l].off = !data.legend[l].off; sauver(); rendre(); return; }
   }
+  if(!sec) return;
+  var gi = +sec.getAttribute('data-g'), si = +sec.getAttribute('data-s');
+  var LST = data.groups[gi].sections, S = LST[si];
+
+  if(a === 'addrow'){
+    var vide = []; for(var i = 0; i < S.cols.length; i++) vide.push('');
+    S.rows.push({c:vide, off:false}); sauver(); rendre(); return;
+  }
+  if(a === 'additem'){ S.items.push('Nouveau paragraphe.'); sauver(); rendre(); return; }
+  if(a === 'up' || a === 'down'){
+    var d = (a === 'up') ? -1 : 1, n = si + d;
+    if(n >= 0 && n < LST.length){
+      var tmp = LST[si]; LST[si] = LST[n]; LST[n] = tmp;
+      sauver(); rendre();
+    }
+    return;
+  }
+  if(tr){
+    var r = +tr.getAttribute('data-r');
+    if(a === 'del'){ S.rows.splice(r,1); sauver(); rendre(); return; }
+    if(a === 'dup'){ S.rows.splice(r+1,0, JSON.parse(JSON.stringify(S.rows[r]))); sauver(); rendre(); return; }
+    if(a === 'off'){ S.rows[r].off = !S.rows[r].off; sauver(); rendre(); return; }
+  }
+  if(it){
+    var ii = +it.getAttribute('data-i');
+    if(a === 'delitem'){ S.items.splice(ii,1); sauver(); rendre(); return; }
+    if(a === 'upitem' && ii > 0){
+      var t2 = S.items[ii]; S.items[ii] = S.items[ii-1]; S.items[ii-1] = t2; sauver(); rendre(); return;
+    }
+  }
 });
 
-/* ======================= BARRE ======================= */
-document.getElementById('b-sec').onclick = function(){
-  data.groups.push({title:'Nouveau groupe', note:'', sections:[]});
-  sauver(); rendre();
-};
-document.getElementById('b-leg').onclick = function(){
-  data.legend.push({off:false, term:'Nouvel atout', def:'Définition.'});
-  sauver(); rendre();
-  var els = document.querySelectorAll('.leg .term');
-  if(els.length) els[els.length-1].focus();
-};
-document.getElementById('b-fold').onclick = function(){
-  var secs = document.querySelectorAll('.sec');
-  var fermer = !document.querySelector('.sec.closed');
-  for(var i = 0; i < secs.length; i++) secs[i].classList.toggle('closed', fermer);
-  this.textContent = fermer ? 'Déplier tout' : 'Replier tout';
-};
 document.getElementById('b-print').onclick = function(){ window.print(); };
 document.getElementById('b-push').onclick = pousserFichier;
 
-/* ======================= FILTRE ======================= */
 document.getElementById('q').oninput = function(){
   var q = this.value.trim().toLowerCase();
   var secs = document.querySelectorAll('.sec');
   for(var i = 0; i < secs.length; i++){
-    var lignes = secs[i].querySelectorAll('tbody tr'), visibles = 0;
+    var lignes = secs[i].querySelectorAll('tbody tr, .item'), vis = 0;
     for(var j = 0; j < lignes.length; j++){
       var ok = !q || lignes[j].textContent.toLowerCase().indexOf(q) >= 0;
       lignes[j].classList.toggle('hid', !ok);
-      if(ok) visibles++;
+      if(ok) vis++;
     }
-    secs[i].classList.toggle('hid', q && visibles === 0);
+    var titreOk = secs[i].querySelector('.sechead .t').textContent.toLowerCase().indexOf(q) >= 0;
+    secs[i].classList.toggle('hid', !!q && vis === 0 && !titreOk);
+  }
+  var grps = document.querySelectorAll('.grp');
+  for(var g = 0; g < grps.length; g++){
+    var restant = grps[g].querySelectorAll('.sec:not(.hid)').length;
+    grps[g].classList.toggle('hid', !!q && restant === 0);
   }
   var legs = document.querySelectorAll('.leg');
   for(var k = 0; k < legs.length; k++)
-    legs[k].classList.toggle('hid', q && legs[k].textContent.toLowerCase().indexOf(q) < 0);
+    legs[k].classList.toggle('hid', !!q && legs[k].textContent.toLowerCase().indexOf(q) < 0);
 };
 
 /* ======================= INFOBULLES DE LÉGENDE ======================= */

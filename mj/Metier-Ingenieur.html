@@ -7,7 +7,7 @@
 <style>
   :root{
     --bg:#12100e; --panel:#1b1815; --panel2:#221e1a; --line:#37302a;
-    --txt:#e8e0d2; --dim:#a2968a; --acc:#c46a1e; --acc2:#c9a227; --off:#8d8375;
+    --txt:#e8e0d2; --dim:#a2968a; --acc:#c2452a; --acc2:#c9a227; --off:#8d8375;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--txt);
@@ -28,7 +28,15 @@
   button.pri{background:#3a1512;border-color:#5d201a}
   .status{font-size:.78rem;color:var(--dim);min-width:78px}
 
-  .wrap{max-width:1240px;margin:0 auto;padding:1rem .9rem 4rem}
+  .wrap{max-width:1280px;margin:0 auto;padding:1rem .9rem 4rem}
+  .grp{margin:0 0 1.4rem}
+  .grp>h2{font-size:1rem;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);
+       border-bottom:1px solid var(--acc);padding-bottom:.3rem;margin:1.6rem 0 .5rem}
+  .grp>h2:focus{outline:none;background:#0e0c0b}
+  .gnote{font-size:.82rem;color:var(--dim);margin:.1rem 0 .8rem;padding:.5rem .7rem;
+       background:var(--panel);border-left:2px solid var(--line);border-radius:0 3px 3px 0}
+  .gnote:focus{outline:none;background:#0e0c0b}
+  .gnote:empty,.grp>h2:empty{display:none}
   .intro{font-size:.85rem;color:var(--dim);background:var(--panel);border-left:2px solid var(--acc);
        padding:.6rem .8rem;border-radius:0 4px 4px 0;margin:0 0 1.2rem}
   .intro:focus{outline:none;background:#0e0c0b}
@@ -55,6 +63,7 @@
   td{border-bottom:1px solid #262019;padding:.32rem .45rem;vertical-align:top}
   tr:hover td{background:#1f1b17}
   tr.off td{color:var(--off);font-style:italic}
+  td.c{text-align:center;white-space:nowrap}
   td[contenteditable]:focus,th[contenteditable]:focus{outline:none;background:#0e0c0b;box-shadow:inset 0 0 0 1px var(--acc2);border-radius:3px}
   .acts{width:1%;white-space:nowrap;opacity:0;transition:opacity .12s}
   tr:hover .acts{opacity:1}
@@ -134,6 +143,8 @@
     .sechead{background:none;border-bottom:1px solid var(--acc);padding:0 0 1mm}
     .sechead .t{color:#8B1A1A}
     h2.bloc{color:#8B1A1A;border-color:#8B1A1A}
+    .grp>h2{color:#8B1A1A;border-color:#8B1A1A}
+    .gnote{background:#faf7f1;color:#5a524a}
     .intro,.snote,.leg{background:#faf7f1;color:#5a524a}
     .sfoot{background:#faf7f1;color:#5a524a;border-left:2px solid #8B1A1A}
     .sfoot::before{color:#8B1A1A}
@@ -153,10 +164,6 @@
   <a class="retour" href="index-mj.html" title="Retour à l'espace MJ">◂ MJ</a>
   <h1>Le Métier d'<span>Ingénieur</span></h1>
   <input type="search" id="q" placeholder="Filtrer…">
-  <button id="b-fold">Replier tout</button>
-  <button id="b-tab">+ Tableau</button>
-  <button id="b-txt">+ Texte</button>
-  <button id="b-leg">+ Légende</button>
   <button id="b-push" title="Publier la version du fichier vers la base en ligne. Le fichier fait autorité.">Push</button>
   <button id="b-print" class="pri">PDF</button>
   <span class="sync-flag" id="flag"></span>
@@ -166,9 +173,8 @@
 <div id="tip"></div>
 
 <script>
-var DEFAUT = {"sections": [{"kind": "texte", "title": "Ce que le métier est réellement", "note": "", "items": ["Un ingénieur de l'Empire n'est pas un inventeur libre. Il sort de l'École impériale d'ingénierie, il appartient à une guilde, et la poudre noire est un produit d'État. Trois conséquences pour un personnage joueur, et ce sont les trois moteurs d'histoire du métier :", "La licence. Fabriquer une arme à poudre sans patente est un délit, la vendre est un crime. Un ingénieur sans papiers travaille pour des gens qui n'en demandent pas.", "Les pièces. Un ressort correct, un canon foré droit, une platine qui ne casse pas : rien de tout cela ne se trouve dans un village. Tout ce qui est Rare ou Exotique se commande à Nuln ou à Altdorf, et s'attend des semaines.", "La réputation. La guilde consigne les travaux. Un engin qui explose au visage d'un client revient dans le dossier de son auteur, et un maître ingénieur radié n'est plus qu'un forgeron bavard.", "Compétences employées dans tout ce document : Métier (Ingénieur) pour construire et réparer, Savoir (Ingénierie) pour comprendre, identifier et concevoir, Projectiles (Ingénierie) pour tirer, Outils de profession comme matériel obligatoire. Sans outils, tous les tests subissent au minimum −20, et rien de Complexe n'est possible."], "foot": ""}, {"kind": "texte", "title": "Les quatre choses qu'un ingénieur fait à la table", "note": "", "items": ["Entretenir et réparer. Un test simple de Métier (Ingénieur). Sans entretien après usage, une arme à poudre gagne le défaut Encrassante puis, au deuxième oubli, Dangereuse.", "Fabriquer. Test étendu de Métier (Ingénieur), un jet par période de travail, jusqu'à obtenir le nombre de DR requis par la complexité de l'objet. Matières premières : la moitié du prix indiqué, perdues en cas d'abandon.", "Modifier. Améliorer un objet existant, avec la même mécanique mais un seul DR de moins. Une arme ne peut porter que deux modifications, et chacune apporte un défaut avec son atout.", "Improviser. Bricoler en pleine scène, un seul jet, avec ce qu'on a sous la main. Toujours possible, toujours pénalisé de −20, et l'objet obtenu est Fragile et Dangereuse. C'est ce que les joueurs feront le plus souvent, et c'est très bien."], "foot": ""}, {"kind": "table", "title": "Complexité : le seul curseur à retenir", "note": "", "cols": ["Complexité", "DR requis", "Par tentative", "Pièces", "Exemples"], "rows": [{"c": ["1 · Simple", "2", "1 heure", "Commune", "Mèche lente, cartouches, réparation de crosse, piège à mâchoires"], "off": false}, {"c": ["2 · Soignée", "4", "1 jour", "Commune", "Pistolet, arbalète, serrure de sûreté, treuil, longue-vue simple"], "off": false}, {"c": ["3 · Précise", "6", "3 jours", "Limitée", "Arquebuse, mécanisme d'horlogerie, grappin à ressort, mine à pression"], "off": false}, {"c": ["4 · Complexe", "8", "1 semaine", "Rare", "Arme à répétition, long fusil rayé, baliste, engin unique"], "off": false}, {"c": ["5 · Exceptionnelle", "12", "1 mois", "Exotique", "Canon, mortier, orgue de Nuln, prototype à vapeur"], "off": false}], "foot": "Les armes à poudre noire, les arbalètes et les munitions spéciales portent Ingénieur dans la colonne Métier du document Armes et Munitions, avec leur complexité. Les carreaux explosifs et le feu de Nuln y figurent en complexité 5."}, {"kind": "table", "title": "Ce qui est réalisable, échelon par échelon", "note": "Un ingénieur peut tenter n'importe quoi. Ce tableau dit ce que sa guilde lui reconnaît le droit de faire, ce qui conditionne l'accès aux pièces, aux ateliers et aux commandes. Travailler au-delà de son échelon est possible, avec un malus de −20 et sans fournisseur officiel.", "cols": ["Échelon", "Titre", "Travaux reconnus", "Autorisations et limites"], "rows": [{"c": ["1", "Étudiant ingénieur", "Entretien, réparations de complexité 1 et 2, fabrication de munitions et de poudre, mèches, pièges simples, outillage", "Travaille sous la responsabilité d'un maître. Ne peut pas signer un travail ni acheter de poudre en quantité"], "off": false}, {"c": ["2", "Ingénieur", "Fabrication jusqu'à la complexité 3, modification d'armes, mécanismes, serrurerie, ouvrages de siège légers", "Patente personnelle. Peut acheter de la poudre, tenir un atelier, prendre un apprenti"], "off": false}, {"c": ["3", "Maître ingénieur", "Complexité 4, armes à répétition, machines de guerre légères, conception d'engins originaux", "Peut faire homologuer un engin nouveau par la guilde, et vendre à l'armée"], "off": false}, {"c": ["4", "Ingénieur agréé", "Complexité 5, artillerie lourde, prototypes, direction d'un chantier ou d'une batterie", "Commande d'État, accès aux fonderies de Nuln, responsabilité pénale en cas de désastre"], "off": false}], "foot": ""}, {"kind": "table", "title": "Modifications d'armes", "note": "Le cœur du métier en jeu : rendre meilleure une arme existante. Prix indiqué en supplément du prix de l'arme, main-d'œuvre comprise si le personnage ne le fait pas lui-même. Maximum deux modifications par arme, et chacune impose sa contrepartie.", "cols": ["Modification", "Éch.", "Coût", "DR", "Pièces", "Effet et contrepartie"], "rows": [{"c": ["Canon rayé", "3", "8 CO", "6", "Rare", "L'arme gagne Précise. Recharge augmentée de 1 : la balle force dans les rayures"], "off": false}, {"c": ["Platine améliorée", "2", "5 CO", "4", "Limitée", "Recharge réduite de 1. L'entretien devient obligatoire après chaque usage, sinon Dangereuse"], "off": false}, {"c": ["Second canon", "3", "10 CO", "6", "Rare", "Gagne À répétition 2. Enc +1 et Recharge doublée pour tout recharger"], "off": false}, {"c": ["Crosse allégée", "2", "2 CO", "4", "Commune", "Enc réduit de 1. L'arme gagne Fragile : elle casse sur une Maladresse"], "off": false}, {"c": ["Hausse et guidon", "2", "3 CO", "4", "Limitée", "+10 au test quand on consacre une action à Viser. Inutile en tir précipité"], "off": false}, {"c": ["Baïonnette à douille", "1", "1 CO", "2", "Commune", "L'arme sert d'arme d'hast, dégâts +BF+3, Empaleuse. Impossible de tirer tant qu'elle est montée"], "off": false}, {"c": ["Cric intégré", "3", "6 CO", "6", "Rare", "Arbalètes : Recharge réduite de 1 et dégâts +1. Enc +1, l'arme devient Imprécise"], "off": false}, {"c": ["Magasin à gravité", "4", "15 CO", "8", "Rare", "Arbalètes : gagne À répétition 4. Doit être tenue verticale, sinon le carreau ne descend pas"], "off": false}, {"c": ["Chambre renforcée", "3", "7 CO", "6", "Rare", "Armes à poudre : perd Dangereuse. Enc +1 et prix de revente doublé, les acheteurs se battent pour ça"], "off": false}, {"c": ["Crosse pliante", "3", "9 CO", "6", "Rare", "L'arme gagne Dissimulable. Dégâts −1 et une action pour la déployer"], "off": false}, {"c": ["Écouvillon d'atelier", "1", "15 Pa", "2", "Commune", "Nécessaire d'entretien complet. Annule Encrassante en dix minutes de travail"], "off": false}, {"c": ["Gravure de guilde", "2", "3 CO", "4", "Limitée", "Aucun effet mécanique. Prouve l'origine légale de l'arme, ce qui règle bien des contrôles"], "off": false}], "foot": ""}, {"kind": "table", "title": "Engins, outils et pièges", "note": "", "cols": ["Objet", "Éch.", "Coût", "DR", "Pièces", "Effet"], "rows": [{"c": ["Piège à mâchoires", "1", "1 CO", "2", "Commune", "Dégâts 9 à la jambe, état Empêtré de Force 40. Se pose en une action, se repère à un test de Perception"], "off": false}, {"c": ["Mine à pression", "3", "8 CO", "6", "Limitée", "Dégâts +12, Explosion 3, Dangereuse à la pose. Une action et un test de Métier pour l'armer"], "off": false}, {"c": ["Charge de sape", "3", "12 CO", "6", "Rare", "Ouvre une brèche dans un mur de pierre. Mèche de 1d10 rounds, Explosion 5 pour qui reste trop près"], "off": false}, {"c": ["Grappin à ressort", "3", "10 CO", "6", "Limitée", "Envoie un grappin à vingt mètres. +20 aux tests d'Escalade sur la corde ainsi fixée"], "off": false}, {"c": ["Lanterne à réflecteur", "2", "4 CO", "4", "Limitée", "Faisceau dirigé de trente mètres, invisible depuis l'arrière. Enc 1"], "off": false}, {"c": ["Longue-vue", "3", "15 CO", "6", "Rare", "+20 aux tests de Perception à distance. Fragile"], "off": false}, {"c": ["Passe-partout mécanique", "2", "5 CO", "4", "Rare", "+10 aux tests de Crochetage. Sa possession est un délit dans la plupart des villes"], "off": false}, {"c": ["Serrure de sûreté", "2", "3 CO", "4", "Limitée", "Crochetage à −20. Une Maladresse casse l'outil dans la serrure"], "off": false}, {"c": ["Fusée de signalement", "2", "2 CO", "4", "Limitée", "Visible à cinq kilomètres de nuit. Une action pour l'allumer, Dangereuse"], "off": false}, {"c": ["Pompe à bras", "2", "6 CO", "4", "Limitée", "Vide une cave, alimente une lance à incendie. Deux servants, Enc 4"], "off": false}, {"c": ["Chariot blindé", "4", "60 CO", "8", "Rare", "Protectrice 4 pour les occupants, vitesse réduite d'un cran, deux chevaux nécessaires"], "off": false}, {"c": ["Prothèse articulée", "4", "40 CO", "8", "Rare", "Remplace une main ou un pied perdu. Annule les pénalités permanentes correspondantes sauf en action fine"], "off": false}], "foot": ""}, {"kind": "table", "title": "Machines de guerre", "note": "Rarement possédées par des personnages, souvent rencontrées ou servies pendant une scène. Chaque pièce demande le nombre de servants indiqué : un servant en moins double la Recharge. Rappel du livre : les armes d'Ingénierie peuvent être employées par un spécialiste de la Poudre noire, mais elles perdent alors tous leurs atouts et gardent leurs défauts.", "cols": ["Pièce", "Éch.", "Coût", "Portée", "Dégâts", "Servants", "Atouts et Défauts"], "rows": [{"c": ["Baliste", "3", "40 CO", "200", "+15", "2", "Empaleuse, Percutante, Recharge 4, Imprécise"], "off": false}, {"c": ["Catapulte légère", "4", "70 CO", "300", "+15", "3", "Explosion 4, Recharge 6, Imprécise, tir indirect"], "off": false}, {"c": ["Canon léger", "4", "120 CO", "400", "+20", "3", "À poudre noire, Explosion 3, Percutante, Recharge 6, Dangereuse"], "off": false}, {"c": ["Grand canon", "5", "300 CO", "600", "+25", "4", "À poudre noire, Explosion 4, Percutante, Recharge 8, Dangereuse"], "off": false}, {"c": ["Mortier", "5", "200 CO", "300", "+18", "3", "À poudre noire, Explosion 5, Recharge 8, Imprécise, tir indirect"], "off": false}, {"c": ["Orgue de Nuln", "5", "250 CO", "60", "+9 par tube", "3", "À poudre noire, six tubes tirés en une action, Recharge 8, Dangereuse"], "off": false}], "foot": "Le tir indirect ignore les couverts mais impose un test de Savoir (Ingénierie) pour régler la hausse : un échec décale le point d'impact de 1d10 mètres par DR manquant, dans une direction déterminée au dé."}, {"kind": "table", "title": "Quand ça tourne mal", "note": "Sur une Maladresse au tir avec une arme à poudre ou d'ingénierie, ou sur une Maladresse au test de Métier pendant l'usage d'un engin, jeter 1d10.", "cols": ["1d10", "Incident"], "rows": [{"c": ["1", "Ratage sec. L'amorce ne prend pas. Une action pour réamorcer, rien de cassé"], "off": false}, {"c": ["2", "Encrassement. L'arme gagne Encrassante jusqu'à un nettoyage complet"], "off": false}, {"c": ["3", "Détente faussée. Recharge augmentée de 1 jusqu'à réparation, test de Métier de complexité 1"], "off": false}, {"c": ["4", "Retour de flamme. Le tireur subit un état Aveuglé pour 1d10 rounds"], "off": false}, {"c": ["5", "Étincelle dans la giberne. Test d'Agilité ou état Enflammé"], "off": false}, {"c": ["6", "Pièce brisée. L'arme est inutilisable jusqu'à une réparation de complexité 2, pièces Limitées"], "off": false}, {"c": ["7", "Canon fendu. Réparation de complexité 3 avec pièces Rares, ou l'arme est perdue"], "off": false}, {"c": ["8", "Éclatement partiel. Dégâts de l'arme moitié au tireur, armure appliquée normalement"], "off": false}, {"c": ["9", "Éclatement. Dégâts complets de l'arme au tireur, l'arme est détruite"], "off": false}, {"c": ["10", "Détonation. Comme ci-dessus, plus Explosion 2 centrée sur le tireur. Sur une machine de guerre, la pièce est perdue et les servants sont à terre"], "off": false}], "foot": "Un ingénieur qui a lui-même construit ou entretenu l'engin soustrait 2 au résultat, minimum 1. Une arme portant Chambre renforcée en soustrait 2 de plus. C'est la récompense concrète du métier : les autres subissent la table, lui la corrige."}, {"kind": "texte", "title": "Pièces, fournisseurs et poudre", "note": "", "items": ["Disponibilité des pièces. Commune se trouve chez un forgeron, Limitée dans une ville avec guilde, Rare à Nuln, Altdorf ou chez les Nains, Exotique se commande et s'attend 1d10 semaines. En chemin, une commande peut être volée, taxée ou détournée : c'est du matériel militaire.", "Poudre noire. Produit d'État. La détenir en quantité exige une patente d'ingénieur ou un mandat. Sans papiers, le prix double et le vendeur se souvient du visage de l'acheteur.", "Prix de revente. Un engin d'occasion se vend la moitié de son prix, un engin non homologué le quart, et il est saisi sans indemnité si un contrôle le trouve.", "Réparation. Coût en matières égal au quart du prix de l'objet, complexité inférieure d'un cran à celle de sa fabrication.", "Guilde. Un ingénieur affilié obtient +10 à ses tests d'achat de pièces et l'accès aux ateliers. En échange, il consigne ses travaux et paie une cotisation de 2 CO par an."], "foot": ""}, {"kind": "texte", "title": "Notes de MJ", "note": "", "items": ["Le vrai plaisir est dans l'improvisation. Un joueur ingénieur cherchera à bricoler pendant les scènes, pas à remplir des fiches de fabrication. Dis oui souvent, applique le −20, la Fragilité et la Dangerosité, et laisse la table découvrir le résultat. C'est là que le métier devient mémorable.", "Le temps est la vraie limite, pas l'argent. Une semaine d'atelier, c'est une semaine où le reste du groupe fait autre chose et où l'intrigue avance sans lui. Ça règle seul les excès.", "Deux modifications maximum par arme, sinon un pistolet finit rayé, à double canon, renforcé, pliant et à hausse, et le grimdark disparaît.", "Le mandat et la licence sont des leviers narratifs. Retirer la patente d'un personnage lui coûte plus qu'un combat perdu, et la lui rendre est une récompense qui ne déséquilibre rien.", "Pour un ingénieur nain, remplace la guilde impériale par le clan et la licence par le devoir : il ne demande pas l'autorisation, il rend des comptes. Les pièces Rares deviennent Limitées pour lui, les Exotiques restent hors de portée sans retour au foyer."], "foot": ""}, {"kind": "texte", "title": "Résumé pour le joueur, en cinq lignes", "note": "", "items": ["Ta compétence clé est Métier (Ingénieur), tes outils sont obligatoires, et tout ce que tu construis se résout par un test étendu dont le nombre de DR dépend de la complexité, de 2 pour une mèche à 12 pour un canon. Tu peux tenter n'importe quoi, même au-dessus de ton échelon, avec −20 et sans fournisseur. Tu paies la moitié du prix en matières, tu perds tout sur une Maladresse. Tu es le seul personnage capable de corriger la table des incidents plutôt que de la subir. Et la question qui décidera de ta carrière n'est pas de savoir ce que tu sais faire, mais qui t'autorise à le faire."], "foot": ""}], "legend": [], "intro": "Avertissement. Ce document est presque entièrement maison. Le livre décrit la carrière mais ne dit pas ce qu'un ingénieur peut concrètement produire, ni à quel prix, ni en combien de temps. Tout ce qui suit est un cadre de jeu proposé pour combler ce vide, aligné sur les compétences et les prix officiels. Les noms d'échelons sont donnés dans l'ordre du livre mais à vérifier dans ta traduction. Monnaie : CO couronne d'or, Pa pistole d'argent, Sc sou de cuivre. 1 CO = 20 Pa, 1 Pa = 12 Sc."};
+var DEFAUT = {"intro": "Avertissement. Les armes, munitions et machines de siège citées ici suivent désormais le supplément Up in Arms, qui fait autorité sur le livre de base. Les colonnes Échelon, DR et Pièces restent maison. Ce document est presque entièrement maison. Le livre décrit la carrière mais ne dit pas ce qu'un ingénieur peut concrètement produire, ni à quel prix, ni en combien de temps. Tout ce qui suit est un cadre de jeu proposé pour combler ce vide, aligné sur les compétences et les prix officiels. Les noms d'échelons sont donnés dans l'ordre du livre mais à vérifier dans ta traduction. Monnaie : CO couronne d'or, Pa pistole d'argent, Sc sou de cuivre. 1 CO = 20 Pa, 1 Pa = 12 Sc.", "groups": [{"title": "", "note": "", "sections": [{"kind": "texte", "title": "Ce que le métier est réellement", "note": "", "items": ["Un ingénieur de l'Empire n'est pas un inventeur libre. Il sort de l'École impériale d'ingénierie, il appartient à une guilde, et la poudre noire est un produit d'État. Trois conséquences pour un personnage joueur, et ce sont les trois moteurs d'histoire du métier :", "La licence. Fabriquer une arme à poudre sans patente est un délit, la vendre est un crime. Un ingénieur sans papiers travaille pour des gens qui n'en demandent pas.", "Les pièces. Un ressort correct, un canon foré droit, une platine qui ne casse pas : rien de tout cela ne se trouve dans un village. Tout ce qui est Rare ou Exotique se commande à Nuln ou à Altdorf, et s'attend des semaines.", "La réputation. La guilde consigne les travaux. Un engin qui explose au visage d'un client revient dans le dossier de son auteur, et un maître ingénieur radié n'est plus qu'un forgeron bavard.", "Compétences employées dans tout ce document : Métier (Ingénieur) pour construire et réparer, Savoir (Ingénierie) pour comprendre, identifier et concevoir, Projectiles (Ingénierie) pour tirer, Outils de profession comme matériel obligatoire. Sans outils, tous les tests subissent au minimum −20, et rien de Complexe n'est possible."], "foot": ""}, {"kind": "texte", "title": "Les quatre choses qu'un ingénieur fait à la table", "note": "", "items": ["Entretenir et réparer. Un test simple de Métier (Ingénieur). Sans entretien après usage, une arme à poudre gagne le défaut Encrassante puis, au deuxième oubli, Dangereuse.", "Fabriquer. Test étendu de Métier (Ingénieur), un jet par période de travail, jusqu'à obtenir le nombre de DR requis par la complexité de l'objet. Matières premières : la moitié du prix indiqué, perdues en cas d'abandon.", "Modifier. Améliorer un objet existant, avec la même mécanique mais un seul DR de moins. Une arme ne peut porter que deux modifications, et chacune apporte un défaut avec son atout.", "Improviser. Bricoler en pleine scène, un seul jet, avec ce qu'on a sous la main. Toujours possible, toujours pénalisé de −20, et l'objet obtenu est Fragile et Dangereuse. C'est ce que les joueurs feront le plus souvent, et c'est très bien."], "foot": ""}, {"kind": "table", "title": "Complexité : le seul curseur à retenir", "note": "", "cols": ["Complexité", "DR requis", "Par tentative", "Pièces", "Exemples"], "rows": [{"c": ["1 · Simple", "2", "1 heure", "Commune", "Mèche lente, cartouches, réparation de crosse, piège à mâchoires"], "off": false}, {"c": ["2 · Soignée", "4", "1 jour", "Commune", "Pistolet, arbalète, serrure de sûreté, treuil, longue-vue simple"], "off": false}, {"c": ["3 · Précise", "6", "3 jours", "Limitée", "Arquebuse, espingole, mécanisme d'horlogerie, grappin à ressort, mine à pression"], "off": false}, {"c": ["4 · Complexe", "8", "1 semaine", "Rare", "Arme à répétition, long fusil de Hochland, baliste, engin unique"], "off": false}, {"c": ["5 · Exceptionnelle", "12", "1 mois", "Exotique", "Canon, mortier, canon à salves Helblaster, prototype à vapeur"], "off": false}], "foot": "Les armes à poudre noire, les arbalètes et les munitions spéciales portent Ingénieur dans la colonne Métier du document Armes et Munitions, avec leur complexité. Les carreaux explosifs et le feu de Nuln y figurent en complexité 5."}, {"kind": "table", "title": "Ce qui est réalisable, échelon par échelon", "note": "Un ingénieur peut tenter n'importe quoi. Ce tableau dit ce que sa guilde lui reconnaît le droit de faire, ce qui conditionne l'accès aux pièces, aux ateliers et aux commandes. Travailler au-delà de son échelon est possible, avec un malus de −20 et sans fournisseur officiel.", "cols": ["Échelon", "Titre", "Travaux reconnus", "Autorisations et limites"], "rows": [{"c": ["1", "Étudiant ingénieur", "Entretien, réparations de complexité 1 et 2, fabrication de munitions et de poudre, mèches, pièges simples, outillage", "Travaille sous la responsabilité d'un maître. Ne peut pas signer un travail ni acheter de poudre en quantité"], "off": false}, {"c": ["2", "Ingénieur", "Fabrication jusqu'à la complexité 3, modification d'armes, mécanismes, serrurerie, ouvrages de siège légers", "Patente personnelle. Peut acheter de la poudre, tenir un atelier, prendre un apprenti"], "off": false}, {"c": ["3", "Maître ingénieur", "Complexité 4, armes à répétition, machines de guerre légères, conception d'engins originaux", "Peut faire homologuer un engin nouveau par la guilde, et vendre à l'armée"], "off": false}, {"c": ["4", "Ingénieur agréé", "Complexité 5, artillerie lourde, prototypes, direction d'un chantier ou d'une batterie", "Commande d'État, accès aux fonderies de Nuln, responsabilité pénale en cas de désastre"], "off": false}], "foot": ""}, {"kind": "table", "title": "Modifications d'armes", "note": "Section maison, mais désormais calée sur les atouts officiels d'Up in Arms. Prix indiqué en supplément du prix de l'arme, main-d'œuvre comprise si le personnage ne le fait pas lui-même. Maximum deux modifications par arme, et chacune impose sa contrepartie. Plusieurs de ces modifications produisent des armes qui existent déjà en catalogue officiel : dans ce cas, achète plutôt que de modifier, c'est moins cher et moins risqué.", "cols": ["Modification", "Éch.", "Coût", "DR", "Pièces", "Effet et contrepartie"], "rows": [{"c": ["Canon rayé", "3", "8 CO", "6", "Rare", "L'arme gagne Précise et Pointue. Recharge augmentée de 1 : la balle force dans les rayures. C'est le principe du long fusil de Hochland"], "off": false}, {"c": ["Platine améliorée", "2", "5 CO", "4", "Limitée", "Recharge réduite de 1. L'entretien devient obligatoire après chaque usage, sinon Dangereuse"], "off": false}, {"c": ["Second canon", "3", "10 CO", "6", "Rare", "Gagne À répétition 2. Enc +1 et Recharge doublée pour tout recharger. Équivaut à une arquebuse à deux canons, en catalogue à 7 CO"], "off": false}, {"c": ["Crosse allégée", "2", "2 CO", "4", "Commune", "Enc réduit de 1. L'arme gagne Fragile : elle casse sur une Maladresse"], "off": false}, {"c": ["Hausse et guidon", "2", "3 CO", "4", "Limitée", "+10 au test quand on consacre une Action à Viser. Sans effet en tir précipité"], "off": false}, {"c": ["Baïonnette à douille", "1", "1 CO", "2", "Commune", "L'arme sert d'arme d'hast, dégâts +BF+3, Empaleuse. Impossible de tirer tant qu'elle est montée"], "off": false}, {"c": ["Cric intégré", "3", "6 CO", "6", "Rare", "Arbalètes : Recharge réduite de 1 et dégâts +1. Enc +1, l'arme devient Imprécise"], "off": false}, {"c": ["Magasin à gravité", "4", "15 CO", "8", "Rare", "Arbalètes : gagne À répétition 4. Doit être tenue verticale, sinon le carreau ne descend pas"], "off": false}, {"c": ["Chambre renforcée", "3", "7 CO", "6", "Rare", "Armes à poudre : perd Dangereuse. Enc +1 et prix de revente doublé, les acheteurs se battent pour ça"], "off": false}, {"c": ["Crosse pliante", "3", "9 CO", "6", "Rare", "Repérer l'arme sous un vêtement demande un test de Perception Difficile (−20), Très difficile (−30) pour qui ne connaît pas la poudre noire. Dégâts −1 et une action pour la déployer"], "off": false}, {"c": ["Écouvillon d'atelier", "1", "15 Pa", "2", "Commune", "Nécessaire d'entretien complet. Annule Encrassante en dix minutes de travail"], "off": false}, {"c": ["Gravure de guilde", "2", "3 CO", "4", "Limitée", "Aucun effet mécanique. Prouve l'origine légale de l'arme, ce qui règle bien des contrôles"], "off": false}, {"c": ["Culasse à mèche remplacée par une platine à silex", "3", "6 CO", "6", "Rare", "Supprime l'Action d'allumage des armes à mèche et Recharge réduite de 1. Les pièces se commandent à Nuln"], "off": false}, {"c": ["Chargeur à cartouches papier", "2", "2 CO", "4", "Limitée", "+10 aux tests de rechargement, cumulable avec la munition du même nom. Une pluie franche ruine le contenu"], "off": false}], "foot": ""}, {"kind": "table", "title": "Engins, outils et pièges", "note": "", "cols": ["Objet", "Éch.", "Coût", "DR", "Pièces", "Effet"], "rows": [{"c": ["Piège à mâchoires", "1", "1 CO", "2", "Commune", "Dégâts 9 à la jambe, état Empêtré de Force 40. Se pose en une action, se repère à un test de Perception"], "off": false}, {"c": ["Mine à pression", "3", "8 CO", "6", "Limitée", "Dégâts +12, Explosion 3, Dangereuse à la pose. Une action et un test de Métier pour l'armer"], "off": false}, {"c": ["Charge de sape", "3", "12 CO", "6", "Rare", "Ouvre une brèche dans un mur de pierre. Mèche de 1d10 rounds, Explosion 5 pour qui reste trop près"], "off": false}, {"c": ["Grappin à ressort", "3", "10 CO", "6", "Limitée", "Envoie un grappin à vingt mètres. +20 aux tests d'Escalade sur la corde ainsi fixée"], "off": false}, {"c": ["Lanterne à réflecteur", "2", "4 CO", "4", "Limitée", "Faisceau dirigé de trente mètres, invisible depuis l'arrière. Enc 1"], "off": false}, {"c": ["Longue-vue", "3", "15 CO", "6", "Rare", "+20 aux tests de Perception à distance. Fragile"], "off": false}, {"c": ["Passe-partout mécanique", "2", "5 CO", "4", "Rare", "+10 aux tests de Crochetage. Sa possession est un délit dans la plupart des villes"], "off": false}, {"c": ["Serrure de sûreté", "2", "3 CO", "4", "Limitée", "Crochetage à −20. Une Maladresse casse l'outil dans la serrure"], "off": false}, {"c": ["Fusée de signalement", "2", "2 CO", "4", "Limitée", "Visible à cinq kilomètres de nuit. Une action pour l'allumer, Dangereuse"], "off": false}, {"c": ["Pompe à bras", "2", "6 CO", "4", "Limitée", "Vide une cave, alimente une lance à incendie. Deux servants, Enc 4"], "off": false}, {"c": ["Chariot blindé", "4", "60 CO", "8", "Rare", "Protectrice 4 pour les occupants, vitesse réduite d'un cran, deux chevaux nécessaires"], "off": false}, {"c": ["Prothèse articulée", "4", "40 CO", "8", "Rare", "Remplace une main ou un pied perdu. Annule les pénalités permanentes correspondantes sauf en action fine"], "off": false}], "foot": ""}, {"kind": "table", "title": "Machines de guerre", "note": "Table officielle Up in Arms, qui remplace les machines maison de la version précédente. Le défaut Servants X est officiel : un servant manquant double la Recharge, deux ajoutent Imprécise, trois ajoutent Dangereuse, et un défaut déjà présent devient à la place −10 aux Projectiles. La qualité Salve X permet de tirer X fois avant rechargement, chaque tir supplémentaire dans le même tour imposant un cumul de −10 ; recharger n'augmente la Salve que de 1 par Recharge réussie. Les colonnes Éch. et DR sont maison et servent à la fabrication. Profils complets dans Armes et Munitions.", "cols": ["Pièce", "Éch.", "Prix", "DR", "Portée", "Dégâts", "Atouts et Défauts"], "rows": [{"c": ["Baliste", "3", "30 CO", "8", "150", "+12", "Précise, Recharge 3, Servants 2"], "off": true}, {"c": ["Pierrier", "3", "20 CO", "8", "30", "+14", "Dangereuse, Recharge 4"], "off": true}, {"c": ["Catapulte légère", "3", "20 CO", "8", "75", "+10", "Imprécise, Recharge 3, Servants 2"], "off": true}, {"c": ["Catapulte moyenne", "4", "40 CO", "8", "100", "+15", "Imprécise, Recharge 3, Servants 3"], "off": true}, {"c": ["Catapulte lourde", "4", "60 CO", "12", "175", "+18", "Imprécise, Recharge 4, Servants 4"], "off": true}, {"c": ["Canon léger", "4", "40 CO", "8", "100", "+10", "Dangereuse, Recharge 4, Servants 2"], "off": true}, {"c": ["Canon moyen", "4", "100 CO", "12", "125", "+14", "Dangereuse, Recharge 6, Servants 3"], "off": true}, {"c": ["Canon lourd", "5", "250 CO", "12", "175", "+16", "Dangereuse, Recharge 8, Servants 4"], "off": true}, {"c": ["Mortier", "5", "50 CO", "12", "150", "–", "Recharge 4, Servants 3"], "off": true}, {"c": ["Orgue à balles", "4", "10 CO", "8", "50", "+9", "Dangereuse, Recharge 4, Salve 7"], "off": true}, {"c": ["Canon à salves Helblaster", "5", "500 CO", "12", "100", "+10", "Dangereuse, Recharge 4, Salve 9, Servants 3"], "off": true}, {"c": ["Lance-fusées Helstorm", "5", "500 CO", "12", "185", "+12", "Explosion 5, Dangereuse, Imprécise, Recharge 6, Salve 9, Servants 3"], "off": true}], "foot": "Une pièce d'artillerie ne se fabrique pas dans un atelier de bourg : il faut une fonderie, donc Nuln, Altdorf ou un karak. Le prix ci-dessus est celui de l'achat ; la fabrication coûte la moitié en matières et engage la responsabilité pénale de l'ingénieur agréé qui la signe."}, {"kind": "table", "title": "Quand ça tourne mal", "note": "Sur une Maladresse au tir avec une arme à poudre ou d'ingénierie, ou sur une Maladresse au test de Métier pendant l'usage d'un engin, jeter 1d10.", "cols": ["1d10", "Incident"], "rows": [{"c": ["1", "Ratage sec. L'amorce ne prend pas. Une action pour réamorcer, rien de cassé"], "off": false}, {"c": ["2", "Encrassement. L'arme gagne Encrassante jusqu'à un nettoyage complet"], "off": false}, {"c": ["3", "Détente faussée. Recharge augmentée de 1 jusqu'à réparation, test de Métier de complexité 1"], "off": false}, {"c": ["4", "Retour de flamme. Le tireur subit un état Aveuglé pour 1d10 rounds"], "off": false}, {"c": ["5", "Étincelle dans la giberne. Test d'Agilité ou état Enflammé"], "off": false}, {"c": ["6", "Pièce brisée. L'arme est inutilisable jusqu'à une réparation de complexité 2, pièces Limitées"], "off": false}, {"c": ["7", "Canon fendu. Réparation de complexité 3 avec pièces Rares, ou l'arme est perdue"], "off": false}, {"c": ["8", "Éclatement partiel. Dégâts de l'arme moitié au tireur, armure appliquée normalement"], "off": false}, {"c": ["9", "Éclatement. Dégâts complets de l'arme au tireur, l'arme est détruite"], "off": false}, {"c": ["10", "Détonation. Comme ci-dessus, plus Explosion 2 centrée sur le tireur. Sur une machine de guerre, la pièce est perdue et les servants sont à terre"], "off": false}], "foot": "Un ingénieur qui a lui-même construit ou entretenu l'engin soustrait 2 au résultat, minimum 1. Une arme portant Chambre renforcée en soustrait 2 de plus. C'est la récompense concrète du métier : les autres subissent la table, lui la corrige."}, {"kind": "texte", "title": "Pièces, fournisseurs et poudre", "note": "", "items": ["Disponibilité des pièces. Commune se trouve chez un forgeron, Limitée dans une ville avec guilde, Rare à Nuln, Altdorf ou chez les Nains, Exotique se commande et s'attend 1d10 semaines. En chemin, une commande peut être volée, taxée ou détournée : c'est du matériel militaire.", "Poudre noire. Produit d'État. La détenir en quantité exige une patente d'ingénieur ou un mandat. Sans papiers, le prix double et le vendeur se souvient du visage de l'acheteur.", "Prix de revente. Un engin d'occasion se vend la moitié de son prix, un engin non homologué le quart, et il est saisi sans indemnité si un contrôle le trouve.", "Réparation. Coût en matières égal au quart du prix de l'objet, complexité inférieure d'un cran à celle de sa fabrication.", "Guilde. Un ingénieur affilié obtient +10 à ses tests d'achat de pièces et l'accès aux ateliers. En échange, il consigne ses travaux et paie une cotisation de 2 CO par an."], "foot": ""}, {"kind": "texte", "title": "Notes de MJ", "note": "", "items": ["Le vrai plaisir est dans l'improvisation. Un joueur ingénieur cherchera à bricoler pendant les scènes, pas à remplir des fiches de fabrication. Dis oui souvent, applique le −20, la Fragilité et la Dangerosité, et laisse la table découvrir le résultat. C'est là que le métier devient mémorable.", "Le temps est la vraie limite, pas l'argent. Une semaine d'atelier, c'est une semaine où le reste du groupe fait autre chose et où l'intrigue avance sans lui. Ça règle seul les excès.", "Deux modifications maximum par arme, sinon un pistolet finit rayé, à double canon, renforcé, pliant et à hausse, et le grimdark disparaît.", "Le mandat et la licence sont des leviers narratifs. Retirer la patente d'un personnage lui coûte plus qu'un combat perdu, et la lui rendre est une récompense qui ne déséquilibre rien.", "Pour un ingénieur nain, remplace la guilde impériale par le clan et la licence par le devoir : il ne demande pas l'autorisation, il rend des comptes. Les pièces Rares deviennent Limitées pour lui, les Exotiques restent hors de portée sans retour au foyer."], "foot": ""}, {"kind": "texte", "title": "Résumé pour le joueur, en cinq lignes", "note": "", "items": ["Ta compétence clé est Métier (Ingénieur), tes outils sont obligatoires, et tout ce que tu construis se résout par un test étendu dont le nombre de DR dépend de la complexité, de 2 pour une mèche à 12 pour un canon. Tu peux tenter n'importe quoi, même au-dessus de ton échelon, avec −20 et sans fournisseur. Tu paies la moitié du prix en matières, tu perds tout sur une Maladresse. Tu es le seul personnage capable de corriger la table des incidents plutôt que de la subir. Et la question qui décidera de ta carrière n'est pas de savoir ce que tu sais faire, mais qui t'autorise à le faire."], "foot": ""}]}], "legend": [{"off": true, "term": "Servants X", "def": "Défaut officiel Up in Arms. L'arme réclame X servants possédant la compétence de Projectiles adéquate ; l'un d'eux est désigné pour lancer le test. Un servant manquant double la Recharge, deux ajoutent Imprécise, trois ajoutent Dangereuse. Un défaut déjà présent devient à la place −10 aux Projectiles. Une maladresse affecte tout l'équipage."}, {"off": true, "term": "Salve X", "def": "Atout officiel Up in Arms. L'arme tire X fois avant rechargement. Chaque tir supplémentaire dans le même tour impose un cumul de −10 aux Projectiles. Recharger n'augmente la Salve que de 1 par Recharge réussie."}, {"off": true, "term": "Recharge X", "def": "Rechargement en test étendu de Projectiles, X DR requis. Toute interruption oblige à recommencer."}, {"off": true, "term": "Dangereuse", "def": "Tout test raté comportant un 9 au dé des dizaines ou des unités entraîne une Maladresse."}, {"off": true, "term": "Imprécise", "def": "−1 DR à l'attaque. Ne peut jamais être Précise."}, {"off": true, "term": "Précise", "def": "+10 à tout test effectué avec l'arme."}, {"off": true, "term": "Pointue", "def": "+1 DR à tout test d'attaque réussi."}, {"off": true, "term": "À répétition X", "def": "L'arme contient X munitions rechargées automatiquement après chaque tir. Épuisée, elle se recharge normalement."}, {"off": true, "term": "Explosion X", "def": "Toutes les cibles à X mètres du point d'impact subissent DR + dégâts de l'arme et les états infligés."}, {"off": true, "term": "À poudre noire", "def": "Être pris pour cible impose un test de Calme Accessible (+20) ou l'état Brisé, même si le tir manque. Toutes les armes à poudre et d'ingénierie le possèdent."}, {"off": true, "term": "Protectrice X", "def": "Chaque fois que l'on oppose une attaque avec Corps à corps, on bénéficie de X PA supplémentaires. Employé ici pour les occupants d'un chariot blindé."}, {"off": false, "term": "Encrassante", "def": "Maison. Recharge augmentée de 1 au tir suivant, jusqu'au nettoyage du canon."}, {"off": false, "term": "Fragile", "def": "L'objet est perdu ou brisé au premier incident sérieux."}, {"off": false, "term": "Éch.", "def": "Maison. Échelon de guilde exigé pour que le travail soit reconnu. Travailler au-delà de son échelon coûte −20 et se fait sans couverture de la guilde."}, {"off": false, "term": "DR", "def": "Degrés de Réussite à totaliser dans le test étendu de Métier (Ingénieur) pour achever la pièce."}, {"off": false, "term": "Pièces", "def": "Disponibilité des composants. Commune chez un forgeron, Limitée en ville à guilde, Rare à Nuln, Altdorf ou chez les Nains, Exotique se commande et s'attend 1d10 semaines."}]};
 var RACINE = 'outils/ingenieur';
-var CACHE  = 'ingenieur_cache_v1';
 var CLIENT = Math.random().toString(36).slice(2, 10);
 var data = null;
 
@@ -214,16 +220,9 @@ function tab(x){
   return [];
 }
 
-/* ---------- lecture initiale : cache local, puis la base fait autorité ---------- */
+/* ---------- amorçage : le fichier, puis la base prend la main dès sa réponse ---------- */
 function charger(){
-  try{
-    var brut = localStorage.getItem(CACHE);
-    if(brut){ data = normaliser(JSON.parse(brut)); }
-  }catch(e){}
-  if(!data) data = normaliser(JSON.parse(JSON.stringify(DEFAUT)));
-}
-function cacher(){
-  try{ localStorage.setItem(CACHE, JSON.stringify(data)); }catch(e){}
+  data = normaliser(JSON.parse(JSON.stringify(DEFAUT)));
 }
 
 /* ---------- écriture groupée ---------- */
@@ -231,7 +230,6 @@ var tmr = null, sale = false;
 function sauver(){
   sale = true;
   etat('modifié', 'pending');
-  cacher();
   clearTimeout(tmr);
   tmr = setTimeout(ecrire, 900);
 }
@@ -257,7 +255,6 @@ function enEdition(){
 }
 function appliquer(p){
   data = normaliser(p);
-  cacher();
   rendre();
   etat('à jour', 'ok');
 }
@@ -298,7 +295,6 @@ function pousserFichier(){
     return refData.set({ payload: data, at: Date.now(), par: CLIENT });
   }).then(function(){
     sale = false;
-    cacher();
     rendre();
     if(b) b.removeAttribute('disabled');
     etat('publié', 'ok');
@@ -312,33 +308,42 @@ function pousserFichier(){
 
 /* ---------- remise en forme après lecture ---------- */
 function normaliser(d){
-  if(!d || typeof d !== 'object') return JSON.parse(JSON.stringify(DEFAUT));
+  if(!d || typeof d !== 'object') d = JSON.parse(JSON.stringify(DEFAUT));
   d.intro = d.intro || '';
-  d.sections = tab(d.sections);
-  for(var i = 0; i < d.sections.length; i++){
-    var s = d.sections[i];
-    s.kind = s.kind || 'texte';
-    s.title = s.title || '';
-    s.note = s.note || '';
-    s.foot = s.foot || '';
-    if(s.kind === 'table'){
-      s.cols = tab(s.cols);
-      s.rows = tab(s.rows);
-      for(var r = 0; r < s.rows.length; r++){
-        s.rows[r] = s.rows[r] || {};
-        s.rows[r].c = tab(s.rows[r].c);
-        s.rows[r].off = !!s.rows[r].off;
+  /* ancien format à sections plates : on l'enveloppe dans un groupe unique */
+  if(!d.groups && d.sections) d.groups = [{title:'', note:'', sections: d.sections}];
+  delete d.sections;
+  d.groups = tab(d.groups);
+  for(var g = 0; g < d.groups.length; g++){
+    var G = d.groups[g];
+    G.title = G.title || '';
+    G.note  = G.note  || '';
+    G.sections = tab(G.sections);
+    for(var i = 0; i < G.sections.length; i++){
+      var s = G.sections[i];
+      s.kind  = s.kind || (s.cols ? 'table' : 'texte');
+      s.title = s.title || '';
+      s.note  = s.note  || '';
+      s.foot  = s.foot  || '';
+      if(s.kind === 'table'){
+        s.cols = tab(s.cols);
+        s.rows = tab(s.rows);
+        for(var r = 0; r < s.rows.length; r++){
+          s.rows[r] = s.rows[r] || {};
+          s.rows[r].c = tab(s.rows[r].c);
+          s.rows[r].off = !!s.rows[r].off;
+        }
+      } else {
+        s.items = tab(s.items);
       }
-    } else {
-      s.items = tab(s.items);
     }
   }
   d.legend = tab(d.legend);
   for(var l = 0; l < d.legend.length; l++){
     d.legend[l] = d.legend[l] || {};
     d.legend[l].term = d.legend[l].term || '';
-    d.legend[l].def = d.legend[l].def || '';
-    d.legend[l].off = !!d.legend[l].off;
+    d.legend[l].def  = d.legend[l].def  || '';
+    d.legend[l].off  = !!d.legend[l].off;
   }
   return d;
 }
@@ -348,7 +353,8 @@ function esc(s){
 }
 function classeCol(nom){
   var n = (nom || '').toLowerCase();
-  if(n.indexOf('enc') === 0 || n.indexOf('dr') === 0 || n.indexOf('éch') === 0 || n.indexOf('serv') === 0) return 'c';
+  if(n.indexOf('enc') === 0 || n.indexOf('dr') === 0 || n.indexOf('éch') === 0 ||
+     n.indexOf('compl') === 0 || n.indexOf('pa') === 0 || n.indexOf('dégâts') === 0) return 'c';
   return '';
 }
 
@@ -356,56 +362,62 @@ function rendre(){
   var h = '';
   h += '<div class="intro" contenteditable data-t="intro">' + esc(data.intro || '') + '</div>';
 
-  for(var si = 0; si < data.sections.length; si++){
-    var s = data.sections[si];
-    var n = (s.kind === 'table') ? s.rows.length : s.items.length;
-    h += '<div class="sec" data-s="' + si + '">';
-    h += '<div class="sechead">';
-    h +=   '<button data-a="fold">▾</button>';
-    h +=   '<span class="t" contenteditable data-t="st" data-s="' + si + '">' + esc(s.title) + '</span>';
-    h +=   '<span class="n">' + n + '</span>';
-    h +=   '<button data-a="up">↑</button><button data-a="down">↓</button>';
-    h +=   '<button data-a="delsec">Supprimer</button>';
-    h += '</div>';
-    h += '<div class="snote" contenteditable data-t="sn" data-s="' + si + '">' + esc(s.note || '') + '</div>';
-    h += '<div class="secbody">';
+  for(var gi = 0; gi < data.groups.length; gi++){
+    var G = data.groups[gi];
+    h += '<div class="grp" data-g="' + gi + '">';
+    h += '<h2 contenteditable data-t="gt" data-g="' + gi + '">' + esc(G.title) + '</h2>';
+    h += '<div class="gnote" contenteditable data-t="gn" data-g="' + gi + '">' + esc(G.note) + '</div>';
 
-    var PIED = s.foot || s.foot === '' ? '<div class="sfoot" contenteditable data-t="sf" data-s="' + si + '">' + esc(s.foot || '') + '</div>' : '';
-    if(s.kind === 'table'){
-      h += '<table><thead><tr>';
-      for(var ci = 0; ci < s.cols.length; ci++)
-        h += '<th contenteditable data-t="col" data-s="' + si + '" data-c="' + ci + '">' + esc(s.cols[ci]) + '</th>';
-      h += '<th></th></tr></thead><tbody>';
-      for(var ri = 0; ri < s.rows.length; ri++){
-        var r = s.rows[ri];
-        h += '<tr' + (r.off ? ' class="off"' : '') + ' data-r="' + ri + '">';
-        for(var k = 0; k < s.cols.length; k++){
-          var mot = (s.cols[k] || '').toLowerCase();
-          var cle = (mot.indexOf('atout') === 0 || mot.indexOf('mots') >= 0 || mot.indexOf('effet') === 0) ? ' data-atout="1"' : '';
-          h += '<td class="' + classeCol(s.cols[k]) + '" contenteditable data-t="cell" data-lab="' + esc(s.cols[k]) +
-               '" data-s="' + si +
-               '" data-r="' + ri + '" data-c="' + k + '"' + cle + '>' + esc(r.c[k] === undefined ? '' : r.c[k]) + '</td>';
+    for(var si = 0; si < G.sections.length; si++){
+      var s = G.sections[si];
+      var n = (s.kind === 'table') ? s.rows.length : s.items.length;
+      h += '<div class="sec" data-g="' + gi + '" data-s="' + si + '">';
+      h += '<div class="sechead">';
+      h +=   '<button data-a="fold">▾</button>';
+      h +=   '<span class="t" contenteditable data-t="st" data-g="' + gi + '" data-s="' + si + '">' + esc(s.title) + '</span>';
+      h +=   '<span class="n">' + n + '</span>';
+      h +=   '<button data-a="up">↑</button><button data-a="down">↓</button>';
+      h += '</div>';
+      h += '<div class="snote" contenteditable data-t="sn" data-g="' + gi + '" data-s="' + si + '">' + esc(s.note) + '</div>';
+      h += '<div class="secbody">';
+
+      var PIED = '<div class="sfoot" contenteditable data-t="sf" data-g="' + gi + '" data-s="' + si + '">' + esc(s.foot) + '</div>';
+
+      if(s.kind === 'table'){
+        h += '<table><thead><tr>';
+        for(var ci = 0; ci < s.cols.length; ci++)
+          h += '<th contenteditable data-t="col" data-g="' + gi + '" data-s="' + si + '" data-c="' + ci + '">' + esc(s.cols[ci]) + '</th>';
+        h += '<th></th></tr></thead><tbody>';
+        for(var ri = 0; ri < s.rows.length; ri++){
+          var r = s.rows[ri];
+          h += '<tr' + (r.off ? ' class="off"' : '') + ' data-r="' + ri + '">';
+          for(var k = 0; k < s.cols.length; k++){
+            h += '<td class="' + classeCol(s.cols[k]) + '" contenteditable data-t="cell" data-lab="' + esc(s.cols[k]) +
+                 '" data-g="' + gi + '" data-s="' + si + '" data-r="' + ri + '" data-c="' + k + '">' +
+                 esc(r.c[k] === undefined ? '' : r.c[k]) + '</td>';
+          }
+          h += '<td class="acts"><button data-a="off" title="Ligne officielle">★</button>' +
+               '<button data-a="dup" title="Dupliquer">⧉</button>' +
+               '<button data-a="del" title="Supprimer">✕</button></td></tr>';
         }
-        h += '<td class="acts"><button data-a="off" title="Ligne du livre">★</button>' +
-             '<button data-a="dup" title="Dupliquer">⧉</button>' +
-             '<button data-a="del" title="Supprimer">✕</button></td></tr>';
+        h += '</tbody></table>' + PIED + '<button class="addrow" data-a="addrow">+ Ligne</button>';
+      } else {
+        h += '<div class="items">';
+        for(var ii = 0; ii < s.items.length; ii++){
+          h += '<div class="item" data-i="' + ii + '"><span class="puce">◆</span>' +
+               '<div class="txt" contenteditable data-t="item" data-g="' + gi + '" data-s="' + si + '" data-i="' + ii + '">' + esc(s.items[ii]) + '</div>' +
+               '<span class="acts"><button data-a="upitem">↑</button><button data-a="delitem">✕</button></span></div>';
+        }
+        h += '</div>' + PIED + '<button class="addrow" data-a="additem">+ Paragraphe</button>';
       }
-      h += '</tbody></table>' + PIED + '<button class="addrow" data-a="addrow">+ Ligne</button>';
-    } else {
-      h += '<div class="items">';
-      for(var ii = 0; ii < s.items.length; ii++){
-        h += '<div class="item" data-i="' + ii + '"><span class="puce">◆</span>' +
-             '<div class="txt" contenteditable data-t="item" data-s="' + si + '" data-i="' + ii + '">' + esc(s.items[ii]) + '</div>' +
-             '<span class="acts"><button data-a="upitem">↑</button><button data-a="delitem">✕</button></span></div>';
-      }
-      h += '</div>' + PIED + '<button class="addrow" data-a="additem">+ Paragraphe</button>';
+      h += '</div></div>';
     }
-    h += '</div>';
     h += '</div>';
   }
 
-  if(data.legend && data.legend.length){
-    h += '<h2 class="bloc">Légende</h2><div class="legwrap">';
+  h += '<h2 class="bloc">Légende</h2>';
+  {
+    h += '<div class="legwrap">';
     for(var li = 0; li < data.legend.length; li++){
       var L = data.legend[li];
       h += '<div class="leg ' + (L.off ? 'of' : 'mai') + '" data-l="' + li + '">';
@@ -413,9 +425,12 @@ function rendre(){
       h += '<span class="term" contenteditable data-t="lt" data-l="' + li + '">' + esc(L.term) + '</span>. ';
       h += '<span class="df" contenteditable data-t="ld" data-l="' + li + '">' + esc(L.def) + '</span></div>';
     }
-    h += '</div>';
+    h += '</div><button class="addrow" data-a="addleg">+ Entrée de légende</button>';
   }
-  h += '<p class="hint">Tout est modifiable : cliquer et écrire. Synchronisation automatique avec la base en ligne, sans rien à valider. Survoler une cellule d\'effet affiche les définitions reconnues.</p>';
+  h += '<p class="hint">Tout est modifiable : cliquer et écrire. Chaque frappe part vers la base en ligne, ' +
+       'rien à valider. L\'étoile marque une ligne officielle, en italique. Survoler une cellule affiche ' +
+       'les définitions reconnues. Le bouton PDF imprime la page, le bouton Push republie le contenu du ' +
+       'fichier par-dessus la base.</p>';
 
   document.getElementById('app').innerHTML = h;
   indexerLegende();
@@ -424,16 +439,19 @@ function rendre(){
 document.addEventListener('input', function(e){
   var el = e.target, t = el.getAttribute('data-t');
   if(!t) return;
-  var s = +el.getAttribute('data-s'), r = +el.getAttribute('data-r'),
-      c = +el.getAttribute('data-c'), i = +el.getAttribute('data-i'), l = +el.getAttribute('data-l');
-  var v = el.textContent;
+  var g = +el.getAttribute('data-g'), s = +el.getAttribute('data-s'),
+      r = +el.getAttribute('data-r'), c = +el.getAttribute('data-c'),
+      i = +el.getAttribute('data-i'), l = +el.getAttribute('data-l');
+  var v = el.textContent, S = (data.groups[g] && data.groups[g].sections) ? data.groups[g].sections[s] : null;
   if(t === 'intro') data.intro = v;
-  else if(t === 'st') data.sections[s].title = v;
-  else if(t === 'sn') data.sections[s].note = v;
-  else if(t === 'sf') data.sections[s].foot = v;
-  else if(t === 'col') data.sections[s].cols[c] = v;
-  else if(t === 'cell') data.sections[s].rows[r].c[c] = v;
-  else if(t === 'item') data.sections[s].items[i] = v;
+  else if(t === 'gt') data.groups[g].title = v;
+  else if(t === 'gn') data.groups[g].note = v;
+  else if(t === 'st') S.title = v;
+  else if(t === 'sn') S.note = v;
+  else if(t === 'sf') S.foot = v;
+  else if(t === 'col') S.cols[c] = v;
+  else if(t === 'cell') S.rows[r].c[c] = v;
+  else if(t === 'item') S.items[i] = v;
   else if(t === 'lt'){ data.legend[l].term = v; indexerLegende(); }
   else if(t === 'ld'){ data.legend[l].def = v; indexerLegende(); }
   sauver();
@@ -454,27 +472,32 @@ document.addEventListener('click', function(e){
   var sec = b.closest('.sec'), tr = b.closest('tr'), it = b.closest('.item'), leg = b.closest('.leg');
 
   if(a === 'fold'){ sec.classList.toggle('closed'); return; }
+  if(a === 'addleg'){
+    if(!data.legend) data.legend = [];
+    data.legend.push({off:false, term:'Nouveau mot-clé', def:'Définition.'});
+    sauver(); rendre();
+    var els = document.querySelectorAll('.leg .term');
+    if(els.length) els[els.length - 1].focus();
+    return;
+  }
   if(leg){
     var l = +leg.getAttribute('data-l');
     if(a === 'legdel'){ data.legend.splice(l,1); sauver(); rendre(); return; }
     if(a === 'legoff'){ data.legend[l].off = !data.legend[l].off; sauver(); rendre(); return; }
   }
   if(!sec) return;
-  var si = +sec.getAttribute('data-s'), S = data.sections[si];
+  var gi = +sec.getAttribute('data-g'), si = +sec.getAttribute('data-s');
+  var LST = data.groups[gi].sections, S = LST[si];
 
   if(a === 'addrow'){
     var vide = []; for(var i = 0; i < S.cols.length; i++) vide.push('');
     S.rows.push({c:vide, off:false}); sauver(); rendre(); return;
   }
   if(a === 'additem'){ S.items.push('Nouveau paragraphe.'); sauver(); rendre(); return; }
-  if(a === 'delsec'){
-    if(confirm('Supprimer la section « ' + S.title + ' » ?')){ data.sections.splice(si,1); sauver(); rendre(); }
-    return;
-  }
   if(a === 'up' || a === 'down'){
     var d = (a === 'up') ? -1 : 1, n = si + d;
-    if(n >= 0 && n < data.sections.length){
-      var tmp = data.sections[si]; data.sections[si] = data.sections[n]; data.sections[n] = tmp;
+    if(n >= 0 && n < LST.length){
+      var tmp = LST[si]; LST[si] = LST[n]; LST[n] = tmp;
       sauver(); rendre();
     }
     return;
@@ -494,30 +517,6 @@ document.addEventListener('click', function(e){
   }
 });
 
-document.getElementById('b-tab').onclick = function(){
-  var modele = null;
-  for(var i = 0; i < data.sections.length; i++) if(data.sections[i].kind === 'table'){ modele = data.sections[i]; break; }
-  data.sections.push({kind:'table', title:'Nouveau tableau', note:'', foot:'',
-    cols: modele ? modele.cols.slice() : ['Objet','Coût','Disponibilité','Effet'], rows:[]});
-  sauver(); rendre();
-};
-document.getElementById('b-txt').onclick = function(){
-  data.sections.push({kind:'texte', title:'Nouvelle section', note:'', foot:'', items:['À rédiger.']});
-  sauver(); rendre();
-};
-document.getElementById('b-leg').onclick = function(){
-  if(!data.legend) data.legend = [];
-  data.legend.push({off:false, term:'Nouveau mot-clé', def:'Définition.'});
-  sauver(); rendre();
-  var els = document.querySelectorAll('.leg .term');
-  if(els.length) els[els.length-1].focus();
-};
-document.getElementById('b-fold').onclick = function(){
-  var secs = document.querySelectorAll('.sec');
-  var fermer = !document.querySelector('.sec.closed');
-  for(var i = 0; i < secs.length; i++) secs[i].classList.toggle('closed', fermer);
-  this.textContent = fermer ? 'Déplier tout' : 'Replier tout';
-};
 document.getElementById('b-print').onclick = function(){ window.print(); };
 document.getElementById('b-push').onclick = pousserFichier;
 
@@ -533,6 +532,11 @@ document.getElementById('q').oninput = function(){
     }
     var titreOk = secs[i].querySelector('.sechead .t').textContent.toLowerCase().indexOf(q) >= 0;
     secs[i].classList.toggle('hid', !!q && vis === 0 && !titreOk);
+  }
+  var grps = document.querySelectorAll('.grp');
+  for(var g = 0; g < grps.length; g++){
+    var restant = grps[g].querySelectorAll('.sec:not(.hid)').length;
+    grps[g].classList.toggle('hid', !!q && restant === 0);
   }
   var legs = document.querySelectorAll('.leg');
   for(var k = 0; k < legs.length; k++)
