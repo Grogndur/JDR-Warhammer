@@ -191,6 +191,23 @@
   .orph .o-id { font-family:monospace; font-size:0.75rem; color:#8a7d6c; }
   .orph .o-vide { color:#555566; font-style:italic; font-size:0.8rem; }
   .modal-close { margin-top:0.6rem; width:100%; }
+  .mf { display:block; margin-bottom:0.75rem; }
+  .mf > span { display:block; font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.14em;
+    text-transform:uppercase; color:rgba(200,165,90,0.85); margin-bottom:0.25rem; }
+  .mf input[type=text], .mf textarea { width:100%; background:rgba(184,112,42,0.07);
+    border:1px solid rgba(184,146,42,0.28); color:#f0e8d8; font-family:'Crimson Text',serif;
+    font-size:0.92rem; padding:0.45rem 0.6rem; border-radius:2px; resize:vertical; }
+  .mf input:focus, .mf textarea:focus { outline:none; border-color:#d4b45a; }
+  .teintes { display:flex; gap:0.5rem; flex-wrap:wrap; }
+  .teinte { width:auto; flex:1; min-width:72px; cursor:pointer; border-radius:2px; padding:0.5rem 0.3rem;
+    font-family:'Cinzel',serif; font-size:0.56rem; letter-spacing:0.06em; text-transform:uppercase;
+    color:#f0e8d8; border:1px solid rgba(255,255,255,0.14); transition:all 0.15s; }
+  .teinte:hover { filter:brightness(1.35); }
+  .teinte.on { border-color:#f0e8d8; box-shadow:0 0 0 1px #f0e8d8 inset; }
+  .mf-ligne { display:flex; gap:0.6rem; align-items:center; font-size:0.88rem; color:#d4c8a8; }
+  .orph-del { flex:0 0 auto; background:rgba(139,26,26,0.2); border:1px solid rgba(139,26,26,0.45);
+    color:#d08a8a; border-radius:2px; width:26px; height:26px; cursor:pointer; font-size:0.95rem; }
+  .orph-del:hover { background:rgba(139,26,26,0.45); }
 </style>
 </head>
 <body>
@@ -240,6 +257,8 @@
   var GROUPE = 1;
   var MDP_MJ_HASH = "1vf7utwiu4n";
   var PALETTE = ["a","b","c","d","e","f"];
+  var TEINTES = { a:["#9B2020","Rouge sang"], b:["#5E804F","Vert forêt"], c:["#4A6878","Bleu ardoise"],
+                  d:["#A0632D","Ocre brûlé"], e:["#8A806A","Grès"], f:["#674EA7","Violet"] };
 
   function cyrb53(str, seed) {
     seed = seed || 0;
@@ -402,7 +421,17 @@
               (f.joueur ? '<span class="o-id">' + esc(f.joueur) + '</span>' : '') +
               '<span class="o-id">' + esc(f.id) + '</span>';
             b.addEventListener("click", function () { boite.remove(); poser(f); });
-            liste.appendChild(b);
+            var ligne = document.createElement("div");
+            ligne.style.cssText = "display:flex;gap:0.4rem;align-items:stretch";
+            b.style.marginBottom = "0";
+            ligne.appendChild(b);
+            var x = document.createElement("button");
+            x.type = "button"; x.className = "orph-del"; x.innerHTML = "\u00D7";
+            x.title = "Supprimer définitivement cette fiche";
+            x.addEventListener("click", function (ev) { ev.stopPropagation(); jeter(f, ligne); });
+            ligne.appendChild(x);
+            ligne.style.marginBottom = "0.5rem";
+            liste.appendChild(ligne);
           });
         });
       })
@@ -410,6 +439,22 @@
         liste.innerHTML = '<div class="chargement">Lecture impossible : ' + esc(e.message) +
           '. Vérifie que la base autorise la lecture de fiches/.</div>';
       });
+  }
+
+  /* Suppression définitive d'une fiche orpheline. On la recopie d'abord dans
+     corbeille/ : même une suppression volontaire doit rester réversible. */
+  function jeter(f, ligne) {
+    var quoi = f.nom ? ("« " + f.nom + " »") : ("la fiche « " + f.id + " »");
+    if (!confirm("Supprimer définitivement " + quoi + " ?\n\n" +
+                 "Tout le contenu de la fiche est effacé. Une copie est gardée dans la corbeille " +
+                 "de la base, mais il faudra passer par moi pour la ressortir.")) return;
+    if (prompt("Pour confirmer, recopie l'identifiant : " + f.id) !== f.id) { alert("Annulé."); return; }
+    var src = firebase.database().ref("fiches/" + f.id);
+    src.once("value").then(function (snap) {
+      return firebase.database().ref("corbeille/" + f.id + "_" + Date.now()).set(snap.val() || {});
+    }).then(function () { return src.set(null); })
+      .then(function () { if (ligne) ligne.remove(); })
+      .catch(function (e) { alert("Suppression impossible : " + e.message); });
   }
 
   /* Crée la carte à partir d'une fiche existante. Le nom vient de la fiche elle-même,
@@ -426,26 +471,61 @@
     }).catch(function (e) { alert("Rattachement impossible : " + e.message); });
   }
 
+  /* Édition de la carte dans une vraie fenêtre : les couleurs se choisissent
+     à l'œil, pas au clavier. Le symbole n'est plus demandé. */
   function modifier(id) {
     var p = courant[id] || {};
-    var nom = prompt("Nom :", p.nom || ""); if (nom === null) return;
-    var sous = prompt("Sous-titre, par exemple « Répurgatrice · Humaine » :", p.soustitre || ""); if (sous === null) return;
-    var desc = prompt("Description courte :", p.desc || ""); if (desc === null) return;
-    var sym = prompt("Symbole :", p.symbole || "\u269C"); if (sym === null) return;
-    var coul = prompt("Couleur, une lettre de a à f :", p.couleur || "a"); if (coul === null) return;
-    var att = confirm("Carte « fiche à venir » ?\n\n" +
-      "OK   = carte visible mais non cliquable, pour un personnage annoncé dont la fiche n'est pas prête.\n" +
-      "Annuler = carte normale, cliquable, qui ouvre la fiche.");
-    var mdp = prompt("Mot de passe.\nVide = aucun. Laisser « = » pour ne pas y toucher.", "=");
-    if (mdp === null) return;
-    var maj = {
-      nom: nom.trim() || id, soustitre: sous.trim(), desc: desc.trim(),
-      symbole: sym.trim() || "\u269C",
-      couleur: PALETTE.indexOf(coul.trim()) >= 0 ? coul.trim() : (p.couleur || "a"),
-      etat: att ? "avenir" : "active"
-    };
-    if (mdp !== "=") maj.mdp = mdp.trim() ? cyrb53(mdp.trim()) : "";
-    refP.child(id).update(maj).catch(function (e) { alert("Modification impossible : " + e.message); });
+    var choisie = p.couleur || "a";
+
+    var boite = document.createElement("div");
+    boite.className = "modal";
+    var pastilles = PALETTE.map(function (c) {
+      return '<button type="button" class="teinte' + (c === choisie ? " on" : "") + '" data-c="' + c +
+             '" style="background:' + TEINTES[c][0] + '">' + TEINTES[c][1] + '</button>';
+    }).join("");
+
+    boite.innerHTML =
+      '<div class="modal-box"><h3>Modifier la carte</h3>' +
+      '<div class="modal-sub">Ces champs n\'habillent que la carte du groupe. Le contenu de la fiche n\'est pas touché.</div>' +
+      '<label class="mf"><span>Nom du personnage</span><input type="text" id="f-nom" value="' + esc(p.nom || "") + '"></label>' +
+      '<label class="mf"><span>Joueur</span><input type="text" id="f-joueur" value="' + esc(p.joueur || "") + '"></label>' +
+      '<label class="mf"><span>Sous-titre, par exemple Répurgatrice · Humaine</span><input type="text" id="f-sous" value="' + esc(p.soustitre || "") + '"></label>' +
+      '<label class="mf"><span>Description</span><textarea id="f-desc" rows="3">' + esc(p.desc || "") + '</textarea></label>' +
+      '<div class="mf"><span>Couleur de la carte</span><div class="teintes" id="f-teintes">' + pastilles + '</div></div>' +
+      '<div class="mf"><label class="mf-ligne"><input type="checkbox" id="f-avenir"' + (p.etat === "avenir" ? " checked" : "") + '>' +
+        'Fiche à venir : carte visible mais non cliquable</label></div>' +
+      '<label class="mf"><span>Mot de passe. Vide = aucun</span><input type="text" id="f-mdp" value="" placeholder="' +
+        (p.mdp ? "inchangé si laissé vide" : "aucun") + '"></label>' +
+      '<div class="mf-ligne" style="gap:0.5rem"><button class="mj-btn" id="f-ok" type="button" style="flex:1">Enregistrer</button>' +
+      '<button class="mj-btn ghost modal-close" type="button" style="flex:1">Annuler</button></div></div>';
+    document.body.appendChild(boite);
+
+    boite.addEventListener("click", function (e) {
+      if (e.target === boite || e.target.classList.contains("modal-close")) { boite.remove(); return; }
+      var t = e.target.closest(".teinte");
+      if (t) {
+        choisie = t.getAttribute("data-c");
+        boite.querySelectorAll(".teinte").forEach(function (b) { b.classList.remove("on"); });
+        t.classList.add("on");
+      }
+    });
+
+    boite.querySelector("#f-ok").addEventListener("click", function () {
+      var maj = {
+        nom: (boite.querySelector("#f-nom").value || "").trim() || id,
+        joueur: (boite.querySelector("#f-joueur").value || "").trim(),
+        soustitre: (boite.querySelector("#f-sous").value || "").trim(),
+        desc: (boite.querySelector("#f-desc").value || "").trim(),
+        couleur: choisie,
+        etat: boite.querySelector("#f-avenir").checked ? "avenir" : "active"
+      };
+      var m = (boite.querySelector("#f-mdp").value || "").trim();
+      if (m) maj.mdp = cyrb53(m);
+      else if (!p.mdp) maj.mdp = "";
+      refP.child(id).update(maj)
+        .then(function () { boite.remove(); })
+        .catch(function (e) { alert("Modification impossible : " + e.message); });
+    });
   }
 
   function rendre(data) {

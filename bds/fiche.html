@@ -568,6 +568,12 @@
 
 <div class="layout">
 
+  <div class="tpl-warn" id="sync-alerte" style="display:none;border-color:rgba(139,26,26,0.6);background:rgba(139,26,26,0.12)">
+    <strong style="color:#e08080">Synchronisation coupée</strong> : impossible de lire la
+    sauvegarde en ligne. Tes modifications restent dans ce navigateur mais ne partent pas vers
+    la base, et rien ne sera écrasé. Recharge la page une fois la connexion revenue.
+  </div>
+
   <div class="tpl-warn" id="tpl-warn" style="display:none;">
     <strong>Aucun personnage demandé</strong> — cette page s'ouvre normalement depuis la carte d'un
     personnage, sur la page de son groupe. Ce que tu saisis ici n'est enregistré nulle part.
@@ -1859,11 +1865,17 @@ renderSkillsAdv = function() { _origRenderSkillsAdv(); applyAdvSkillEditable(); 
     }
   }
 
+  /* Verrou de sécurité. Tant que la lecture initiale n'a pas abouti, on n'écrit
+     rien en ligne. Sans lui, une lecture lente ou en échec laissait la fiche
+     afficher son état vide par défaut, et la moindre frappe écrasait la vraie
+     sauvegarde. Le cache local, lui, continue de tourner normalement. */
+  var lectureFaite = false;
+
   // save() : cache local instantane + ecriture Firebase regroupee (600 ms).
   var timer = null;
   save = function() {
     try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch (e) {}
-    if (!fbRef) return;
+    if (!fbRef || !lectureFaite) return;
     clearTimeout(timer);
     timer = setTimeout(function() {
       fbRef.set(JSON.parse(JSON.stringify(state)))
@@ -1879,8 +1891,15 @@ renderSkillsAdv = function() { _origRenderSkillsAdv(); applyAdvSkillEditable(); 
     fbRef.once("value").then(function(snap){
       var enLigne = snap.val();
       if (enLigne) { fusion(enLigne); renderAll(); }
-      else { fbRef.set(JSON.parse(JSON.stringify(state))); }
-    }).catch(function(e){ console.warn("Lecture en ligne echouee, cache local conserve :", e); });
+      lectureFaite = true;
+      if (!enLigne) fbRef.set(JSON.parse(JSON.stringify(state)));
+    }).catch(function(e){
+      /* Lecture impossible : on reste en local plutot que de risquer
+         d'ecraser une fiche qu'on n'a pas reussi a lire. */
+      console.warn("Lecture en ligne echouee, ecriture desactivee :", e);
+      var b = document.getElementById("sync-alerte");
+      if (b) b.style.display = "block";
+    });
   };
 })();
 
