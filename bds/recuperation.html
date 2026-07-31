@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Récupération de fiches</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#0a0a0f; --parchment:#f0e8d8; --parchment-dark:#d4c8a8; --GLD:#B8922A;
+          --GLD-LT:#e3c66e; --SUB:#555566; --blood:#8B1A1A; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--ink); color:var(--parchment); font-family:'Crimson Text',serif; min-height:100vh; }
+  nav { border-bottom:1px solid rgba(184,146,42,0.2); padding:0.6rem 1.5rem; font-size:0.82rem; }
+  nav a { color:var(--SUB); text-decoration:none; font-style:italic; }
+  nav a:hover { color:var(--GLD); }
+  .wrap { max-width:820px; margin:0 auto; padding:2rem 1.2rem 4rem; }
+  h1 { font-family:'Cinzel',serif; font-size:1.9rem; color:var(--GLD-LT); letter-spacing:0.04em; margin-bottom:0.4rem; }
+  .sub { font-style:italic; color:var(--parchment-dark); margin-bottom:1.6rem; line-height:1.6; }
+  .avis { border:1px solid rgba(184,146,42,0.3); border-left:3px solid var(--GLD);
+          background:rgba(184,146,42,0.06); padding:0.9rem 1.1rem; margin-bottom:1.6rem;
+          font-size:0.9rem; line-height:1.6; color:var(--parchment-dark); }
+  .avis strong { color:var(--GLD-LT); font-family:'Cinzel',serif; letter-spacing:0.04em; }
+  .fiche { border:1px solid rgba(184,146,42,0.22); border-top:3px solid var(--GLD);
+           background:rgba(20,20,26,0.8); border-radius:3px; padding:1.1rem 1.2rem; margin-bottom:1rem; }
+  .fiche h2 { font-family:'Cinzel',serif; font-size:1.1rem; color:var(--parchment); margin-bottom:0.15rem; }
+  .fiche .id { font-family:monospace; font-size:0.78rem; color:#8a7d6c; margin-bottom:0.7rem; }
+  .cmp { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; margin-bottom:0.9rem; }
+  .col { border:1px solid rgba(255,255,255,0.08); border-radius:2px; padding:0.6rem 0.7rem; font-size:0.85rem; }
+  .col h3 { font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase;
+            color:rgba(200,165,90,0.85); margin-bottom:0.4rem; }
+  .col .n { color:var(--parchment); }
+  .col .d { color:var(--SUB); font-size:0.8rem; }
+  .col.mieux { border-color:rgba(94,128,79,0.55); background:rgba(94,128,79,0.08); }
+  .verdict { font-size:0.88rem; line-height:1.55; margin-bottom:0.8rem; color:var(--parchment-dark); }
+  .verdict.gain { color:#9fc48a; }
+  .btns { display:flex; gap:0.5rem; flex-wrap:wrap; }
+  button { cursor:pointer; font-family:'Cinzel',serif; font-size:0.66rem; letter-spacing:0.13em;
+           text-transform:uppercase; padding:0.45rem 0.9rem; border-radius:2px; transition:all 0.15s;
+           background:rgba(184,146,42,0.14); color:var(--GLD-LT); border:1px solid rgba(184,146,42,0.38); }
+  button:hover { background:rgba(184,146,42,0.28); }
+  button.danger { background:rgba(139,26,26,0.18); color:#e0a09a; border-color:rgba(139,26,26,0.45); }
+  button.danger:hover { background:rgba(139,26,26,0.35); }
+  button:disabled { opacity:0.4; cursor:default; }
+  .vide { color:var(--SUB); font-style:italic; padding:1rem 0; }
+  .log { font-family:monospace; font-size:0.78rem; color:#8a7d6c; margin-top:0.6rem; white-space:pre-wrap; }
+</style>
+</head>
+<body>
+<nav><a href="index-bds.html">◂ De Boue et de Sang</a></nav>
+<div class="wrap">
+  <h1>Récupération de fiches</h1>
+  <div class="sub">Cette page inspecte la mémoire de <em>ce</em> navigateur et la compare à la sauvegarde en ligne.</div>
+
+  <div class="avis">
+    <strong>À faire sur l'ordinateur du joueur</strong>, avec le même navigateur qu'il utilise d'habitude.
+    Chaque fiche laisse une copie complète dans la mémoire du navigateur où elle a été remplie. Si une
+    sauvegarde en ligne s'est vidée, cette copie permet souvent de tout retrouver.
+    Rien n'est modifié tant que tu ne cliques pas sur « Restaurer en ligne ».
+  </div>
+
+  <div id="liste"><div class="vide">Lecture de la mémoire du navigateur…</div></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+(function () {
+  var DB = "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app";
+  var MDP_MJ_HASH = "1vf7utwiu4n";
+
+  function cyrb53(str, seed) {
+    seed = seed || 0;
+    var h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+    for (var i = 0, ch; i < str.length; i++) {
+      ch = str.charCodeAt(i);
+      h1 = Math.imul(h1 ^ ch, 2654435761);
+      h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+    h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+    h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+  }
+  function esc(x) {
+    return String(x == null ? "" : x).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  /* Mesure grossière du remplissage : on compte les valeurs réellement saisies,
+     ce qui permet de dire laquelle des deux versions est la plus complète. */
+  function richesse(o) {
+    var n = 0;
+    (function creuse(v) {
+      if (v == null) return;
+      if (Array.isArray(v)) { v.forEach(creuse); return; }
+      if (typeof v === "object") { Object.keys(v).forEach(function (k) { creuse(v[k]); }); return; }
+      if (typeof v === "string") { if (v.trim() !== "") n++; return; }
+      if (typeof v === "number") { if (v !== 0) n++; return; }
+      if (typeof v === "boolean") { if (v) n++; }
+    })(o);
+    return n;
+  }
+  function nomDe(o) { return (o && o.identite && o.identite.nom || "").trim(); }
+  function poids(o) { try { return Math.round(JSON.stringify(o).length / 1024); } catch (e) { return 0; } }
+
+  try {
+    if (!firebase.apps.length) firebase.initializeApp({
+      apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+      authDomain: "warhammer-table-jdr.firebaseapp.com",
+      databaseURL: DB, projectId: "warhammer-table-jdr",
+      storageBucket: "warhammer-table-jdr.firebasestorage.app",
+      messagingSenderId: "347804803970",
+      appId: "1:347804803970:web:43e062299c53e59d20e59b"
+    });
+  } catch (e) {}
+
+  var liste = document.getElementById("liste");
+  var locales = [];
+  for (var i = 0; i < localStorage.length; i++) {
+    var k = localStorage.key(i);
+    var m = k && k.match(/^fiche_(.+)_cache$/);
+    if (!m) continue;
+    try { locales.push({ id: m[1], data: JSON.parse(localStorage.getItem(k)) }); } catch (e) {}
+  }
+
+  if (!locales.length) {
+    liste.innerHTML = '<div class="vide">Aucune fiche en mémoire dans ce navigateur. ' +
+      'Ce n\'est pas celui qui a servi à remplir les fiches, ou la mémoire a été effacée.</div>';
+    return;
+  }
+
+  liste.innerHTML = "";
+  locales.sort(function (a, b) { return a.id.localeCompare(b.id); });
+
+  locales.forEach(function (f) {
+    var bloc = document.createElement("div");
+    bloc.className = "fiche";
+    var rl = richesse(f.data), nl = nomDe(f.data);
+    bloc.innerHTML =
+      '<h2>' + esc(nl || "Fiche sans nom") + '</h2>' +
+      '<div class="id">' + esc(f.id) + '</div>' +
+      '<div class="cmp">' +
+        '<div class="col" id="loc-' + esc(f.id) + '"><h3>Dans ce navigateur</h3>' +
+          '<div class="n">' + esc(nl || "nom non saisi") + '</div>' +
+          '<div class="d">' + rl + ' valeurs remplies · ' + poids(f.data) + ' Ko</div></div>' +
+        '<div class="col" id="dis-' + esc(f.id) + '"><h3>En ligne</h3>' +
+          '<div class="d">lecture…</div></div>' +
+      '</div>' +
+      '<div class="verdict" id="ver-' + esc(f.id) + '">Comparaison en cours.</div>' +
+      '<div class="btns">' +
+        '<button data-dl="' + esc(f.id) + '">Télécharger la copie locale</button>' +
+        '<button class="danger" data-up="' + esc(f.id) + '" disabled>Restaurer en ligne</button>' +
+      '</div><div class="log" id="log-' + esc(f.id) + '"></div>';
+    liste.appendChild(bloc);
+
+    fetch(DB + "/fiches/" + encodeURIComponent(f.id) + ".json")
+      .then(function (r) { return r.json(); })
+      .then(function (enLigne) {
+        var rd = richesse(enLigne), nd = nomDe(enLigne);
+        document.getElementById("dis-" + f.id).innerHTML =
+          '<h3>En ligne</h3><div class="n">' + esc(nd || (enLigne ? "nom non saisi" : "aucune donnée")) + '</div>' +
+          '<div class="d">' + rd + ' valeurs remplies · ' + poids(enLigne) + ' Ko</div>';
+        var v = document.getElementById("ver-" + f.id);
+        var b = document.querySelector('[data-up="' + f.id + '"]');
+        if (rl > rd) {
+          v.className = "verdict gain";
+          v.textContent = "La copie de ce navigateur est plus complète que la sauvegarde en ligne : " +
+            rl + " valeurs contre " + rd + ". La restaurer ferait regagner ce qui manque.";
+          document.getElementById("loc-" + f.id).classList.add("mieux");
+          b.disabled = false;
+        } else if (rl === rd) {
+          v.textContent = "Les deux versions sont équivalentes. Rien à récupérer.";
+        } else {
+          v.textContent = "La sauvegarde en ligne est plus complète que la copie locale. " +
+            "Ne restaure pas, tu perdrais des données.";
+          document.getElementById("dis-" + f.id).classList.add("mieux");
+        }
+      })
+      .catch(function (e) {
+        document.getElementById("ver-" + f.id).textContent = "Lecture en ligne impossible : " + e.message;
+      });
+  });
+
+  liste.addEventListener("click", function (e) {
+    var d = e.target.closest("[data-dl]");
+    if (d) {
+      var id = d.getAttribute("data-dl");
+      var f = locales.filter(function (x) { return x.id === id; })[0];
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(f.data, null, 2)], { type: "application/json" }));
+      a.download = "fiche-" + id + ".json";
+      a.click();
+      return;
+    }
+    var u = e.target.closest("[data-up]");
+    if (!u) return;
+    var id = u.getAttribute("data-up");
+    var f = locales.filter(function (x) { return x.id === id; })[0];
+    var log = document.getElementById("log-" + id);
+
+    var p = prompt("Restauration de « " + id + " ».\nMot de passe du Maître du Jeu :");
+    if (p === null) return;
+    if (cyrb53(p.trim()) !== MDP_MJ_HASH) { alert("Mot de passe incorrect."); return; }
+    if (!confirm("Écraser la sauvegarde en ligne de « " + id + " » par la copie de ce navigateur ?\n\n" +
+                 "La version en ligne actuelle est d'abord recopiée dans la corbeille.")) return;
+
+    u.disabled = true;
+    log.textContent = "Sauvegarde de la version en ligne…";
+    var src = firebase.database().ref("fiches/" + id);
+    src.once("value").then(function (snap) {
+      return firebase.database().ref("corbeille/avant-restauration_" + id + "_" + Date.now()).set(snap.val() || {});
+    }).then(function () {
+      log.textContent = "Écriture de la copie locale…";
+      return src.set(JSON.parse(JSON.stringify(f.data)));
+    }).then(function () {
+      log.textContent = "Restauration terminée. Ouvre la fiche pour vérifier.";
+    }).catch(function (err) {
+      log.textContent = "Échec : " + err.message;
+      u.disabled = false;
+    });
+  });
+})();
+</script>
+</body>
+</html>
