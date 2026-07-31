@@ -173,6 +173,24 @@
   .card:hover .card-edit { opacity:1; }
   .card-lock { font-size:0.7rem; opacity:0.65; margin-left:0.35rem; }
   .chargement { grid-column:1/-1; color:#555566; font-style:italic; font-size:0.9rem; padding:0.6rem 0.2rem; }
+  .modal { position:fixed; inset:0; z-index:200; background:rgba(9,8,12,0.92);
+    display:flex; align-items:center; justify-content:center; padding:1.5rem; }
+  .modal-box { width:100%; max-width:520px; max-height:78vh; overflow:auto;
+    background:rgba(20,20,26,0.98); border:1px solid rgba(184,146,42,0.3);
+    border-top:3px solid #B8922A; border-radius:3px; padding:1.6rem 1.4rem; }
+  .modal-box h3 { font-family:'Cinzel',serif; font-size:1.05rem; letter-spacing:0.05em;
+    color:#e3c66e; margin-bottom:0.4rem; }
+  .modal-box .modal-sub { font-style:italic; color:#d4c8a8; font-size:0.85rem;
+    line-height:1.5; margin-bottom:1.1rem; }
+  .orph { display:flex; align-items:center; gap:0.8rem; width:100%; text-align:left;
+    background:rgba(184,146,42,0.06); border:1px solid rgba(184,146,42,0.22);
+    border-radius:2px; padding:0.6rem 0.8rem; margin-bottom:0.5rem; cursor:pointer;
+    color:inherit; font-family:inherit; transition:all 0.15s; }
+  .orph:hover { background:rgba(184,146,42,0.18); border-color:rgba(227,198,110,0.5); }
+  .orph .o-nom { font-family:'Cinzel',serif; font-size:0.95rem; color:#f0e8d8; flex:1; }
+  .orph .o-id { font-family:monospace; font-size:0.75rem; color:#8a7d6c; }
+  .orph .o-vide { color:#555566; font-style:italic; font-size:0.8rem; }
+  .modal-close { margin-top:0.6rem; width:100%; }
 </style>
 </head>
 <body>
@@ -270,7 +288,8 @@
   var grille = document.getElementById("pj-grid");
   var bouton = document.getElementById("mj-open");
   var astuce = document.getElementById("mj-hint");
-  var courant = {};
+  var courant = {};   /* personnages de ce groupe */
+  var tous = {};      /* tous les personnages, tous groupes confondus */
 
   function majBarre() {
     bouton.textContent = estMJ ? "Nouveau personnage" : "Mode MJ";
@@ -294,9 +313,12 @@
     creer();
   });
 
-  function libre(id) { return id && !Object.prototype.hasOwnProperty.call(courant, id); }
+  /* Un identifiant est libre s'il n'est rattaché à AUCUN groupe, pas seulement à celui-ci :
+     sans quoi on proposerait de rattacher ici un personnage déjà placé ailleurs. */
+  function libre(id) { return !!id && !Object.prototype.hasOwnProperty.call(tous, id); }
+  function groupeDe(id) { return tous[id] && tous[id].groupe; }
 
-  function creer() {
+  async function creer() {
     var nom = prompt("Nom du personnage :");
     if (nom === null) return;
     nom = nom.trim();
@@ -309,6 +331,16 @@
       id = slug(alt);
       if (!id || !libre(id)) { alert("Identifiant invalide ou déjà pris."); return; }
     }
+    /* Une fiche peut exister dans fiches/ sans être rattachée : la reprendre par
+       accident écraserait un personnage. On prévient avant d'aller plus loin. */
+    var occupe = false;
+    try {
+      var rep = await fetch(DB_URL + "/fiches/" + encodeURIComponent(id) + "/identite/nom.json");
+      var dejaNom = await rep.json();
+      occupe = dejaNom != null && String(dejaNom).trim() !== "";
+      if (occupe && !confirm("Une fiche nommée « " + dejaNom + " » existe déjà sous l'identifiant « " + id +
+          " ».\n\nContinuer la rattacherait à ce groupe au lieu de créer un personnage neuf. Poursuivre ?")) return;
+    } catch (e) {}
     var joueur = (prompt("Prénom du joueur (facultatif) :", "") || "").trim();
     var mdp = (prompt("Mot de passe de la fiche (laisser vide pour aucun) :", "") || "").trim();
     var n = Object.keys(courant).length;
@@ -326,16 +358,69 @@
       .catch(function (e) { alert("Création impossible : " + e.message); });
   }
 
+  var DB_URL = "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app";
+
+  /* Liste les fiches présentes dans fiches/ qui ne figurent encore dans aucun groupe.
+     On interroge en « shallow » pour ne récupérer que les clés : une fiche complète
+     peut peser lourd à cause du portrait, inutile de la télécharger pour un nom. */
   function rattacher() {
-    var id = (prompt("Identifiant de la fiche existante.\nC'est la valeur de FICHE_ID dans l'ancien fichier, par exemple « matteo ».") || "").trim();
-    if (!id) return;
-    if (!libre(id)) { alert("Ce personnage figure déjà dans un groupe."); return; }
-    var nom = (prompt("Nom affiché sur la carte :", id) || "").trim() || id;
-    var joueur = (prompt("Prénom du joueur (facultatif) :", "") || "").trim();
+    var boite = document.createElement("div");
+    boite.className = "modal";
+    boite.innerHTML =
+      '<div class="modal-box"><h3>Rattacher une fiche existante</h3>' +
+      '<div class="modal-sub">Fiches présentes dans la base et rattachées à aucun groupe. ' +
+      'Clique sur celle que tu veux placer ici. Son contenu n\'est pas touché.</div>' +
+      '<div id="orph-liste"><div class="chargement">Lecture de la base…</div></div>' +
+      '<button class="mj-btn ghost modal-close" type="button">Fermer</button></div>';
+    document.body.appendChild(boite);
+    boite.addEventListener("click", function (e) {
+      if (e.target === boite || e.target.classList.contains("modal-close")) boite.remove();
+    });
+    var liste = boite.querySelector("#orph-liste");
+
+    fetch(DB_URL + "/fiches.json?shallow=true").then(function (r) { return r.json(); })
+      .then(function (cles) {
+        var orph = Object.keys(cles || {}).filter(function (k) { return libre(k); }).sort();
+        if (!orph.length) {
+          liste.innerHTML = '<div class="chargement">Aucune fiche orpheline : ' +
+            'toutes celles de la base figurent déjà dans un groupe.</div>';
+          return;
+        }
+        return Promise.all(orph.map(function (k) {
+          return fetch(DB_URL + "/fiches/" + encodeURIComponent(k) + "/identite.json")
+            .then(function (r) { return r.json(); })
+            .then(function (i) { return { id: k, nom: (i && i.nom) || "", joueur: (i && i.joueur) || "" }; })
+            .catch(function () { return { id: k, nom: "", joueur: "" }; });
+        })).then(function (fiches) {
+          liste.innerHTML = "";
+          fiches.forEach(function (f) {
+            var b = document.createElement("button");
+            b.type = "button";
+            b.className = "orph";
+            b.innerHTML =
+              '<span class="o-nom">' + (f.nom ? esc(f.nom) : '<span class="o-vide">fiche encore vierge</span>') + '</span>' +
+              (f.joueur ? '<span class="o-id">' + esc(f.joueur) + '</span>' : '') +
+              '<span class="o-id">' + esc(f.id) + '</span>';
+            b.addEventListener("click", function () { boite.remove(); poser(f); });
+            liste.appendChild(b);
+          });
+        });
+      })
+      .catch(function (e) {
+        liste.innerHTML = '<div class="chargement">Lecture impossible : ' + esc(e.message) +
+          '. Vérifie que la base autorise la lecture de fiches/.</div>';
+      });
+  }
+
+  /* Crée la carte à partir d'une fiche existante. Le nom vient de la fiche elle-même,
+     donc aucun risque de se tromper d'identifiant. */
+  function poser(f) {
+    var nom = (prompt("Nom affiché sur la carte :", f.nom || f.id) || "").trim() || f.id;
+    if (!libre(f.id)) { alert("Ce personnage figure déjà dans le groupe " + groupeDe(f.id) + "."); return; }
     var n = Object.keys(courant).length;
-    refP.child(id).set({
-      nom: nom, joueur: joueur, groupe: GROUPE,
-      soustitre: "Fiche de personnage", desc: "Fiche reprise de l'ancien format.",
+    refP.child(f.id).set({
+      nom: nom, joueur: f.joueur || "", groupe: GROUPE,
+      soustitre: "Fiche de personnage", desc: "",
       couleur: PALETTE[n % PALETTE.length], symbole: "\u269C", etat: "active",
       mdp: "", cree: Date.now()
     }).catch(function (e) { alert("Rattachement impossible : " + e.message); });
@@ -348,21 +433,25 @@
     var desc = prompt("Description courte :", p.desc || ""); if (desc === null) return;
     var sym = prompt("Symbole :", p.symbole || "\u269C"); if (sym === null) return;
     var coul = prompt("Couleur, une lettre de a à f :", p.couleur || "a"); if (coul === null) return;
+    var att = confirm("Carte « fiche à venir » ?\n\n" +
+      "OK   = carte visible mais non cliquable, pour un personnage annoncé dont la fiche n'est pas prête.\n" +
+      "Annuler = carte normale, cliquable, qui ouvre la fiche.");
     var mdp = prompt("Mot de passe.\nVide = aucun. Laisser « = » pour ne pas y toucher.", "=");
     if (mdp === null) return;
     var maj = {
       nom: nom.trim() || id, soustitre: sous.trim(), desc: desc.trim(),
       symbole: sym.trim() || "\u269C",
-      couleur: PALETTE.indexOf(coul.trim()) >= 0 ? coul.trim() : (p.couleur || "a")
+      couleur: PALETTE.indexOf(coul.trim()) >= 0 ? coul.trim() : (p.couleur || "a"),
+      etat: att ? "avenir" : "active"
     };
     if (mdp !== "=") maj.mdp = mdp.trim() ? cyrb53(mdp.trim()) : "";
     refP.child(id).update(maj).catch(function (e) { alert("Modification impossible : " + e.message); });
   }
 
   function rendre(data) {
-    courant = {};
-    Object.keys(data || {}).forEach(function (k) {
-      var p = data[k];
+    courant = {}; tous = data || {};
+    Object.keys(tous).forEach(function (k) {
+      var p = tous[k];
       if (p && String(p.groupe) === String(GROUPE)) courant[k] = p;
     });
 
