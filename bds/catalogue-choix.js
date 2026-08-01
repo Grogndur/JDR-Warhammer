@@ -171,17 +171,30 @@
         });
     },
 
-    munitions: function () {
-      choisir('Munitions et équipement', 'Munitions du catalogue. Ajoutées à l\'inventaire.',
-        C.munitions,
-        function (m) {
-          return { nom: m.n, marque: OFF(m), meta: m.s + ' · ' + m.px + ' · ' + m.dis,
-                   desc: (m.deg && m.deg !== '–' ? 'Dégâts ' + m.deg + '. ' : '') + (m.at || ''),
-                   cle: m.n + ' ' + m.s };
+    /* Inventaire : munitions et équipement dans la même liste. Elle ne prétend
+       pas être exhaustive, la table d'équipement du livre de base n'y est pas.
+       La saisie manuelle reste le moyen normal d'ajouter le reste. */
+    inventaire: function () {
+      var l = [];
+      (C.munitions || []).forEach(function (m) {
+        l.push({ n: m.n, cat: 'Munition', px: m.px, dis: m.dis,
+                 de: (m.deg && m.deg !== '–' ? 'Dégâts ' + m.deg + '. ' : '') + (m.at || ''),
+                 sc: m.s, off: m.off });
+      });
+      (C.equipement || []).forEach(function (e) {
+        l.push({ n: e.n, cat: 'Équipement', px: e.px, dis: e.dis, de: e.de, sc: e.src, off: true });
+      });
+      choisir('Munitions et équipement',
+        'Liste partielle : l\'équipement courant du livre de base n\'y figure pas. Tu peux toujours saisir à la main.',
+        l,
+        function (o) {
+          return { nom: o.n, marque: o.off ? '' : 'maison',
+                   meta: o.cat + (o.px ? ' · ' + o.px : '') + (o.dis ? ' · ' + o.dis : ''),
+                   desc: o.de, cle: o.n + ' ' + o.cat + ' ' + o.sc + ' ' + o.de };
         },
-        function (m) {
-          poser('inv-name-new', m.n);
-          poser('inv-detail-new', m.s + (m.px ? ' · ' + m.px : ''));
+        function (o) {
+          poser('inv-name-new', o.n);
+          poser('inv-detail-new', o.px ? (o.cat + ' · ' + o.px) : o.cat);
         });
     }
   };
@@ -202,7 +215,7 @@
     bouton('skill-name', '\u2630 Catalogue', function () { CAT.competences(false); });
     bouton('wep-name', '\u2630 Catalogue', function () { CAT.armes(); });
     bouton('ap-name', '\u2630 Catalogue', function () { CAT.armures(); });
-    bouton('inv-name-new', '\u2630 Munitions', function () { CAT.munitions(); });
+    bouton('inv-name-new', '\u2630 Catalogue', function () { CAT.inventaire(); });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installer);
