@@ -106,11 +106,22 @@
         <div class="portal-desc">Crée une carrière vierge et l'ouvre pour la remplir. Elle apparaît ensuite ici, prête à l'emploi.</div>
         <span class="portal-enter">Créer →</span>
       </a>
+      <a class="portal portal-carriere portal-modele" id="btn-officielle" href="#">
+        <span class="portal-symbol" style="font-size:2rem;">📖</span>
+        <div class="portal-system">Livre de base · Up in Arms</div>
+        <div class="portal-name">Partir d'une officielle</div>
+        <div class="portal-desc">Choisis parmi les 64 carrières du livre de base et les 15 d'Up in Arms. La carrière est recopiée dans une fiche modifiable, l'originale reste intacte.</div>
+        <span class="portal-enter">Choisir →</span>
+      </a>
       <!-- Les carrières existantes sont injectées ici -->
     </div>
   </div>
 
 </div>
+
+<!-- Carrières officielles : servent de point de départ, ne remplacent rien -->
+<script src="catalogue-carrieres.js"></script>
+<script src="carrieres-choix.js"></script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -144,6 +155,23 @@ function initHub() {
     set(r, { titre:"", cree:Date.now() })
       .then(() => { location.href = "carriere-template.html?c=" + r.key; })
       .catch(err => alert("Création impossible : " + err.message));
+  });
+
+  // Partir d'une carrière officielle : on duplique, on n'écrase jamais.
+  const btnOff = document.getElementById("btn-officielle");
+  if (btnOff) btnOff.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (!refCarrieres) { alert("Firebase indisponible."); return; }
+    if (typeof window.ouvrirCatalogueCarrieres !== "function") {
+      alert("Catalogue des carrières indisponible : vérifie que catalogue-carrieres.js est bien déposé.");
+      return;
+    }
+    window.ouvrirCatalogueCarrieres((fiche, nom) => {
+      const r = push(refCarrieres);
+      set(r, fiche)
+        .then(() => { location.href = "carriere-template.html?c=" + r.key; })
+        .catch(err => alert("Création impossible : " + err.message));
+    });
   });
 
   // Liste
