@@ -321,19 +321,36 @@
     backdrop-filter: none !important;
     margin: 0; padding: 0.4rem 0.6rem !important;
   }
-  /* Calque de fond : il déborde de 32 px dans la bordure, soit la feuillure
-     vide du cadre, et s'arrête avant la partie pleine. */
+  /* Calque de fond : parchemin, recouvert d'un voile de la couleur de la
+     campagne. Superposition simple, sans fusion ni filtre : le résultat est le
+     même dans tous les cas, au repos comme au survol.
+     Il déborde de 32 px dans la bordure, soit la feuillure vide du cadre. */
   .portal::before {
     content: '';
     position: absolute;
     inset: -32px;
     z-index: -1;
     pointer-events: none;
-    background-image: url('ornements/parchemin.jpg');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
+    background-size: 100% 100%, 100% 100%;
+    background-repeat: no-repeat, no-repeat;
+    /* La feuille d'origine met ce calque à opacité nulle et ne le révèle qu'au
+       survol : c'est ce qui faisait disparaître le parchemin au repos. */
+    opacity: 1 !important;
+    transition: none !important;
   }
-  /* Le cadre, posé au-dessus de tout. */
+  .portal-eclipse::before {
+    background-image: linear-gradient(rgba(46,36,74,0.86), rgba(46,36,74,0.86)),
+                      url('ornements/parchemin.jpg'); }
+  .portal-bds::before {
+    background-image: linear-gradient(rgba(70,26,26,0.86), rgba(70,26,26,0.86)),
+                      url('ornements/parchemin.jpg'); }
+  .portal-table::before,
+  .portal-mj::before,
+  .portal-carriere::before {
+    background-image: linear-gradient(rgba(60,48,26,0.86), rgba(60,48,26,0.86)),
+                      url('ornements/parchemin.jpg'); }
+
+  /* Le cadre, posé au-dessus de tout : rien ne peut le recouvrir. */
   .portal::after {
     content: '';
     position: absolute;
@@ -343,12 +360,6 @@
     border: 52px solid transparent;
     border-image: url('ornements/cadre-carte.png') 165 / 52px / 0 round;
   }
-  /* La teinte accompagne le parchemin sur le même calque, en fusion. */
-  .portal-eclipse::before  { background-color: #5c4a90; background-blend-mode: multiply; }
-  .portal-bds::before      { background-color: #8a3434; background-blend-mode: multiply; }
-  .portal-table::before,
-  .portal-mj::before,
-  .portal-carriere::before { background-color: #7a6236; background-blend-mode: multiply; }
   .portal > * { position: relative; z-index: 1; }
 
   @media (max-width: 620px) {
@@ -381,7 +392,6 @@
      L'éclaircir au survol le révélait à travers ces ajours : la carte semblait
      recouvrir le cadre. On n'y touche donc plus. L'effet de survol se limite
      au sceau, qui pivote, et au léger soulèvement de la carte. */
-  .portal::before { transition: none; }
 
 </style>
 </head>
