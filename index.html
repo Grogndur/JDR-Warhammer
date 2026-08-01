@@ -371,6 +371,16 @@
     .portal::before, .portal::after { inset: -21px; }
   }
 
+  /* ══════ LISIBILITÉ DES INTITULÉS ══════
+     Les titres de section et la ligne d'introduction se détachaient mal du
+     fond de carte. Un ton légèrement plus clair et une ombre portée discrète
+     suffisent à les décoller, sans les rendre voyants. */
+  .section-title { color: #7a7a8e; }
+  header > div { color: #7a7a8e !important; }
+  .section-title, header > div {
+    text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.7);
+  }
+
 </style>
 </head>
 <body>
