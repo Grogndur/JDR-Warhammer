@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mecaniques des personnages</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+ :root{--ink:#0a0a0f;--parch:#f0e8d8;--pd:#d4c8a8;--GLD:#B8922A;--GLT:#e3c66e;--SUB:#555566}
+ *{margin:0;padding:0;box-sizing:border-box}
+ body{background:var(--ink);color:var(--parch);font-family:'Crimson Text',serif;min-height:100vh}
+ .wrap{max-width:760px;margin:0 auto;padding:2.2rem 1.2rem 4rem}
+ h1{font-family:'Cinzel',serif;font-size:1.8rem;color:var(--GLT);margin-bottom:.4rem}
+ .sub{font-style:italic;color:var(--pd);margin-bottom:1.4rem;line-height:1.6}
+ .avis{border:1px solid rgba(184,146,42,.3);border-left:3px solid var(--GLD);background:rgba(184,146,42,.06);
+  padding:.9rem 1.1rem;margin-bottom:1.4rem;font-size:.9rem;line-height:1.6;color:var(--pd)}
+ .avis strong{color:var(--GLT);font-family:'Cinzel',serif}
+ table{width:100%;border-collapse:collapse;font-size:.88rem;margin-bottom:1.3rem}
+ th{text-align:left;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(200,165,90,.8);border-bottom:1px solid rgba(184,146,42,.3);padding:.5rem .4rem;font-weight:400}
+ td{border-bottom:1px solid rgba(255,255,255,.06);padding:.55rem .4rem;vertical-align:top}
+ td.n{font-family:'Cinzel',serif}
+ .et{font-size:.8rem}.ok{color:#9fc48a}.no{color:#e0a09a}
+ button{cursor:pointer;font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;
+  padding:.55rem 1.1rem;border-radius:2px;background:rgba(184,146,42,.16);color:var(--GLT);
+  border:1px solid rgba(184,146,42,.4)}
+ button:hover{background:rgba(184,146,42,.3)}button:disabled{opacity:.4;cursor:default}
+ .log{font-family:monospace;font-size:.8rem;color:#8a7d6c;margin-top:1rem;white-space:pre-wrap;line-height:1.7}
+</style></head><body><div class="wrap">
+<h1>Mecaniques des personnages</h1>
+<div class="sub">Verifie et repare le lien entre chaque personnage et ses mecaniques exclusives.</div>
+<div class="avis"><strong>Ce que fait cette page.</strong> Une carte creee par rattachement manuel ne porte pas
+la liste des mecaniques du personnage : ses sections n apparaissent alors pas sur la fiche. Cette page ajoute
+la liste manquante.
+<br>Elle ne touche a rien d autre : ni le nom, ni la couleur, ni le mot de passe, ni le contenu de la fiche.
+Les donnees des mecaniques vivent dans la fiche, pas dans la carte, et ne sont donc jamais en jeu.</div>
+<div id="tab"><div class="et">Lecture en cours…</div></div>
+<button id="go" disabled>Reparer les cartes incompletes</button>
+<div class="log" id="log"></div></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+var MOD = {"cade": ["cabinet-enquete", "ombre-du-marteau"], "reiner": ["livre-de-comptes", "reputation"], "kevan": ["deploiement-ordre"], "kantagoran": ["postes-de-tir", "livre-kantagoran"], "tryxx": ["livre-tryxx"], "ephraim": ["sceaux"], "azart": ["collection-secrete"], "sareth": ["traces-ombre", "sorts-sareth"], "den": ["arene-tournois"]};
+var TITRES = {"cabinet-enquete": "Le Cabinet d'Enquête", "ombre-du-marteau": "L'Ombre du Marteau", "livre-de-comptes": "Le Livre de comptes", "reputation": "La Réputation", "deploiement-ordre": "Déploiement de l'Ordre", "postes-de-tir": "Postes de tir, Souffle et Carquois", "livre-kantagoran": "Le Livre", "livre-tryxx": "Le Livre", "sceaux": "Les Sceaux", "collection-secrete": "Collection secrète", "traces-ombre": "Traces d'Ombre", "sorts-sareth": "Sorts, tradition Ulgu", "arene-tournois": "Arène et Tournois"};
+var MDP = "1vf7utwiu4n";
+function cyrb53(str,seed){seed=seed||0;var h1=0xdeadbeef^seed,h2=0x41c6ce57^seed;
+ for(var i=0,ch;i<str.length;i++){ch=str.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677);}
+ h1=Math.imul(h1^(h1>>>16),2246822507);h1^=Math.imul(h2^(h2>>>13),3266489909);
+ h2=Math.imul(h2^(h2>>>16),2246822507);h2^=Math.imul(h1^(h1>>>13),3266489909);
+ return (4294967296*(2097151&h2)+(h1>>>0)).toString(36);}
+function esc(x){return String(x==null?"":x).replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+firebase.initializeApp({apiKey:"AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+ authDomain:"warhammer-table-jdr.firebaseapp.com",
+ databaseURL:"https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+ projectId:"warhammer-table-jdr",storageBucket:"warhammer-table-jdr.firebasestorage.app",
+ messagingSenderId:"347804803970",appId:"1:347804803970:web:43e062299c53e59d20e59b"});
+var db=firebase.database(), manquants=[];
+db.ref("personnages").once("value").then(function(s){
+ var d=s.val()||{}, h='<table><thead><tr><th>Personnage</th><th>Mecaniques attendues</th><th>Etat</th></tr></thead><tbody>';
+ Object.keys(MOD).forEach(function(id){
+  var p=d[id], a=MOD[id];
+  var ok = p && Array.isArray(p.modules) && a.every(function(m){return p.modules.indexOf(m)>=0;});
+  if(p && !ok) manquants.push(id);
+  h+='<tr><td class="n">'+esc(p?p.nom:id)+'</td>'
+   +'<td class="et">'+a.map(function(m){return esc(TITRES[m]||m)}).join('<br>')+'</td>'
+   +'<td class="et '+(ok?'ok':'no')+'">'+(!p?'carte absente':(ok?'complete':'a reparer'))+'</td></tr>';
+ });
+ document.getElementById("tab").innerHTML=h+'</tbody></table>';
+ var b=document.getElementById("go");
+ if(!manquants.length){ b.textContent="Tout est deja en ordre"; }
+ else { b.disabled=false; b.textContent="Reparer "+manquants.length+" carte(s)"; }
+}).catch(function(e){ document.getElementById("tab").innerHTML='<div class="et no">Lecture impossible : '+esc(e.message)+'</div>'; });
+
+document.getElementById("go").addEventListener("click",function(){
+ var p=prompt("Mot de passe du Maitre du Jeu :"); if(p===null)return;
+ if(cyrb53(p.trim())!==MDP){alert("Mot de passe incorrect.");return;}
+ this.disabled=true;
+ var log=document.getElementById("log");
+ var suite=Promise.resolve();
+ manquants.forEach(function(id){
+  suite=suite.then(function(){
+   return db.ref("personnages/"+id+"/modules").set(MOD[id]).then(function(){
+    log.textContent+=id+" : "+MOD[id].join(", ")+"\n";
+   });
+  });
+ });
+ suite.then(function(){ log.textContent+="\nTermine. Recharge la fiche du personnage."; })
+      .catch(function(e){ log.textContent+="\nECHEC : "+e.message; });
+});
+</script></body></html>
