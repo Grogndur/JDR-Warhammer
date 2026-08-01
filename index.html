@@ -184,15 +184,15 @@
     border-image: url('ornements/cadre-carte.png') 165 / 52px / 0 round;
   }
   .portal-eclipse::before {
-    background-image: linear-gradient(rgba(62, 46, 104, 0.74), rgba(62, 46, 104, 0.74)),
+    background-image: linear-gradient(rgba(46, 34, 78, 0.84), rgba(46, 34, 78, 0.84)),
                       url('ornements/parchemin.jpg'); }
   .portal-bds::before {
-    background-image: linear-gradient(rgba(92, 34, 32, 0.74), rgba(92, 34, 32, 0.74)),
+    background-image: linear-gradient(rgba(68, 26, 24, 0.84), rgba(68, 26, 24, 0.84)),
                       url('ornements/parchemin.jpg'); }
   .portal-table::before,
   .portal-mj::before,
   .portal-carriere::before {
-    background-image: linear-gradient(rgba(78, 62, 34, 0.74), rgba(78, 62, 34, 0.74)),
+    background-image: linear-gradient(rgba(58, 46, 26, 0.84), rgba(58, 46, 26, 0.84)),
                       url('ornements/parchemin.jpg'); }
 
   /* ── Sceau posé sur le cadre, dans l'angle ──
@@ -201,19 +201,15 @@
      l'impression d'avoir été cacheté sur lui. */
   .portal-sceau {
     position: absolute;
-    top: 4px; left: 6px;
-    width: 76px; height: 76px;
+    top: 10px; left: 12px;
+    width: 68px; height: 68px;
     margin: 0 !important;
     z-index: 4;
   }
-  /* Le texte occupe toute la carte et se centre sur les deux axes. */
-  .portal {
-    display: flex !important;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 210px;
-  }
+  /* Le contenu est centré verticalement sans passer la carte en boîte souple,
+     qui déréglait l'affichage des textes. */
+  .portal { min-height: 200px; }
+  .portal-system { padding-top: 0.2rem; }
   .portal > * { position: relative; z-index: 1; }
 
   /* Au survol, seule la luminosité du fond change : plus de déplacement ni de
@@ -230,8 +226,8 @@
   @media (max-width: 620px) {
     .banner-frame { padding: 17px !important; }
     .banner-frame::after { border-width: 46px; border-image-width: 46px; }
-    .portal { padding: 34px 34px 34px !important; min-height: 170px; }
-    .portal-sceau { width: 58px; height: 58px; top: 2px; left: 4px; }
+    .portal { padding: 34px 34px 34px !important; min-height: 160px; }
+    .portal-sceau { width: 54px; height: 54px; top: 6px; left: 8px; }
     .portal::after { border-width: 34px; border-image-width: 34px; }
     .portal::before { inset: 13px; }
   }
