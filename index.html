@@ -266,78 +266,9 @@
   .pf-cap-bottom { bottom: 2px; transform: translateX(-50%) scaleY(-1); }
 
   @media (min-width: 1040px) { .page-frame { display: block; } }
-  /* ══════ ORNEMENTS ILLUSTRÉS ══════
-     Les images sont peintes sur fond noir. Le mode de fusion « screen » fait
-     disparaître ce noir entièrement : l'objet émerge du fond de la page sans
-     découpe ni halo, quelle que soit la teinte du fond derrière lui. */
-  .orn { position: absolute; pointer-events: none; z-index: 2;
-         mix-blend-mode: screen; user-select: none; }
-  .orn img { display: block; width: 100%; height: auto; }
-
-  /* Arche de charpente, posée en couronnement de la bannière. Elle déborde
-     volontairement de part et d'autre pour ne pas paraître encadrée. */
-  .banner-hero { position: relative; }
-  .orn-arche { top: -7%; left: 50%; width: 128%;
-               transform: translateX(-50%); opacity: 0.92; z-index: 1; }
-  .orn-arche::after { content: ''; position: absolute; inset: 0;
-    background: linear-gradient(to bottom, transparent 55%, rgba(10,10,15,0.85) 100%); }
-
-  /* Gargouilles en haut, cierges en bas : fixés aux marges de la fenêtre,
-     hors du flux, pour tenir le regard sans gêner la lecture. */
-  .orn-fixe { position: fixed; }
-  .orn-garg-l { top: 2vh;    left: -1.5vw;  width: 190px; opacity: 0.42; }
-  .orn-garg-r { top: 2vh;    right: -1.5vw; width: 190px; opacity: 0.42;
-                transform: scaleX(-1); }
-  .orn-cierge-l { bottom: -2vh; left: 0.5vw;  width: 175px; opacity: 0.62; }
-  .orn-cierge-r { bottom: -2vh; right: 0.5vw; width: 175px; opacity: 0.62;
-                  transform: scaleX(-1); }
-  /* la flamme respire, très lentement et de façon irrégulière */
-  .orn-cierge-l img, .orn-cierge-r img { animation: flamme 5.5s ease-in-out infinite; }
-  .orn-cierge-r img { animation-delay: -2.3s; animation-duration: 6.8s; }
-  @keyframes flamme {
-    0%, 100% { opacity: 0.90; filter: brightness(1); }
-    38%      { opacity: 1;    filter: brightness(1.09); }
-    64%      { opacity: 0.94; filter: brightness(0.97); }
-  }
-
-  /* Sceau de cire : remplace le symbole des portails. */
-  .portal-sceau { display: block; width: 74px; height: 74px; margin-bottom: 0.9rem;
-                  mix-blend-mode: screen; }
-  .portal-sceau img { display: block; width: 100%; height: 100%;
-                      transition: transform 0.35s ease, filter 0.35s ease; }
-  .portal:hover .portal-sceau img { transform: rotate(-4deg) scale(1.06);
-                                    filter: brightness(1.18); }
-  /* chaque campagne garde sa teinte : la cire est virée sans nouvelle image */
-  .portal-eclipse .portal-sceau img { filter: hue-rotate(255deg) saturate(0.85) brightness(1.05); }
-  .portal-eclipse:hover .portal-sceau img { filter: hue-rotate(255deg) saturate(0.9) brightness(1.22);
-                                            transform: rotate(-4deg) scale(1.06); }
-  .portal-table .portal-sceau img,
-  .portal-mj .portal-sceau img { filter: hue-rotate(28deg) saturate(0.7) brightness(1.02); }
-
-  /* Écrans étroits : on retire tout ce qui empiéterait sur la lecture. */
-  @media (max-width: 900px) {
-    .orn-garg-l, .orn-garg-r { display: none; }
-    .orn-cierge-l, .orn-cierge-r { width: 118px; opacity: 0.4; }
-  }
-  @media (max-width: 620px) {
-    .orn-cierge-l, .orn-cierge-r { display: none; }
-    .orn-arche { width: 142%; top: -5%; }
-    .portal-sceau { width: 60px; height: 60px; }
-  }
-  /* Certains préfèrent que rien ne bouge. */
-  @media (prefers-reduced-motion: reduce) {
-    .orn-cierge-l img, .orn-cierge-r img { animation: none; }
-  }
-
 </style>
 </head>
 <body>
-
-<!-- ORNEMENTS ILLUSTRÉS : gargouilles en haut, cierges en bas -->
-<div class="orn orn-fixe orn-garg-l"><img src="ornements/gargouille.jpg" alt="" loading="lazy"></div>
-<div class="orn orn-fixe orn-garg-r"><img src="ornements/gargouille.jpg" alt="" loading="lazy"></div>
-<div class="orn orn-fixe orn-cierge-l"><img src="ornements/cierges.jpg" alt="" loading="lazy"></div>
-<div class="orn orn-fixe orn-cierge-r"><img src="ornements/cierges.jpg" alt="" loading="lazy"></div>
 
 <!-- CADRES LATÉRAUX -->
 <div class="page-frame page-frame-left">
@@ -353,7 +284,6 @@
 
   <!-- BANNIÈRE HÉRO -->
   <div class="banner-hero">
-    <div class="orn orn-arche"><img src="ornements/arche.jpg" alt=""></div>
     <div class="banner-frame">
       <span class="corner corner-tl"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="gld1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6e5418"/><stop offset="0.45" stop-color="#e3c66e"/><stop offset="1" stop-color="#8a6a1e"/></linearGradient></defs><g fill="none" stroke="url(#gld1)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 60 C9 30 30 9 60 9"/><path d="M9 42 C9 24 24 9 42 9"/><path d="M22 22 c11 -1 17 6 16 16 c-1 -8 6 -13 14 -12"/><path d="M9 9 l18 0 M9 9 l0 18"/></g><circle cx="9" cy="9" r="3.6" fill="url(#gld1)"/><circle cx="60" cy="9" r="2.3" fill="url(#gld1)"/><circle cx="9" cy="60" r="2.3" fill="url(#gld1)"/></svg></span>
       <span class="corner corner-tr"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="gld2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6e5418"/><stop offset="0.45" stop-color="#e3c66e"/><stop offset="1" stop-color="#8a6a1e"/></linearGradient></defs><g fill="none" stroke="url(#gld2)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 60 C9 30 30 9 60 9"/><path d="M9 42 C9 24 24 9 42 9"/><path d="M22 22 c11 -1 17 6 16 16 c-1 -8 6 -13 14 -12"/><path d="M9 9 l18 0 M9 9 l0 18"/></g><circle cx="9" cy="9" r="3.6" fill="url(#gld2)"/><circle cx="60" cy="9" r="2.3" fill="url(#gld2)"/><circle cx="9" cy="60" r="2.3" fill="url(#gld2)"/></svg></span>
@@ -381,7 +311,7 @@
 
     <!-- L'ÉCLIPSE -->
     <a class="portal portal-eclipse" href="eclipse/index-eclipse.html">
-      <span class="portal-sceau"><img src="ornements/sceau.jpg" alt="" loading="lazy"></span>
+      <span class="portal-symbol" style="font-size:2.2rem;">🌘</span>
       <div class="portal-system">Warhammer FRP 4e édition</div>
       <div class="portal-name">L'Éclipse</div>
       <div class="portal-desc">Espace dédié à la campagne L'Éclipse.</div>
@@ -390,7 +320,7 @@
 
     <!-- DE BOUE ET DE SANG -->
     <a class="portal portal-bds" href="bds/index-bds.html">
-      <span class="portal-sceau"><img src="ornements/sceau.jpg" alt="" loading="lazy"></span>
+      <span class="portal-symbol"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M12 2.2c0 0-7.2 8.6-7.2 13.1a7.2 7.2 0 0 0 14.4 0C19.2 10.8 12 2.2 12 2.2Z"/><path fill="rgba(255,255,255,0.22)" d="M9.2 11.5c-1 1.4-1.5 2.7-1.5 3.9a4.3 4.3 0 0 0 1.6 3.3c-2-.6-2.9-2.4-2.9-4.1 0-1.2.9-2.6 2.8-3.1Z"/></svg></span>
       <div class="portal-system">Warhammer FRP 4e édition</div>
       <div class="portal-name">De Boue et de Sang</div>
       <div class="portal-arc">Arcs I &amp; II</div>
@@ -404,7 +334,7 @@
 
   <div class="portals">
     <a class="portal portal-table" href="table.html">
-      <span class="portal-sceau"><img src="ornements/sceau.jpg" alt="" loading="lazy"></span>
+      <span class="portal-symbol" style="font-size:2.2rem;">🎲</span>
       <div class="portal-system">Visio · dés · cartes · ambiance</div>
       <div class="portal-name">La Table virtuelle</div>
       <div class="portal-desc">L'espace de jeu en ligne : caméras, lancers de dés partagés, images et son d'ambiance.</div>
@@ -416,7 +346,7 @@
 
   <div class="portals">
     <a class="portal portal-carriere" id="lien-mj" href="mj/index-mj.html">
-      <span class="portal-sceau"><img src="ornements/sceau.jpg" alt="" loading="lazy"></span>
+      <span class="portal-symbol" style="font-size:2rem;">⚔</span>
       <div class="portal-system">Espace MJ · verrouillé</div>
       <div class="portal-name">Maître du Jeu</div>
       <div class="portal-desc">Créateur de carrières, compléments de règles et tables d'équipement. Tout est éditable en ligne, et chaque page s'imprime en PDF pour les joueurs.</div>
