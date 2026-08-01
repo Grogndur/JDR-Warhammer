@@ -338,10 +338,13 @@
     inset: 20px;
     z-index: -1;
     pointer-events: none;
-    background-image: url('ornements/parchemin.jpg');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-    transition: opacity 0.3s ease;
+    /* Deux couches fondues en multiplication : la teinte de la campagne
+       colore le parchemin au lieu de le masquer. Une ombre interne, elle,
+       serait peinte par-dessus et le ferait disparaître. */
+    background-size: 100% 100%, 100% 100%;
+    background-repeat: no-repeat, no-repeat;
+    background-blend-mode: multiply;
+    transition: filter 0.3s ease;
   }
   .portal::after {
     content: '';
@@ -354,11 +357,14 @@
   }
   /* La teinte est posée par une ombre interne démesurée : elle colore le
      calque de fond sans exiger un troisième pseudo-élément. */
-  .portal-eclipse::before  { box-shadow: inset 0 0 0 2000px rgba(58, 42, 96, 0.86); }
-  .portal-bds::before      { box-shadow: inset 0 0 0 2000px rgba(74, 30, 30, 0.86); }
+  .portal-eclipse::before {
+    background-image: linear-gradient(#4e3c7a, #4e3c7a), url('ornements/parchemin.jpg'); }
+  .portal-bds::before {
+    background-image: linear-gradient(#702a2a, #702a2a), url('ornements/parchemin.jpg'); }
   .portal-table::before,
   .portal-mj::before,
-  .portal-carriere::before { box-shadow: inset 0 0 0 2000px rgba(64, 52, 30, 0.86); }
+  .portal-carriere::before {
+    background-image: linear-gradient(#5e4928, #5e4928), url('ornements/parchemin.jpg'); }
   .portal > * { position: relative; z-index: 1; }
 
   /* Au survol, seule la luminosité du fond change : plus de déplacement ni de
