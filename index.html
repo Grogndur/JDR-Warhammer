@@ -161,96 +161,208 @@
   @media (max-width: 680px) { .portals { grid-template-columns: 1fr; } }
 
   .portal { display: block; text-decoration: none; border-radius: 3px; padding: 2rem 1.75rem; transition: all 0.3s ease; position: relative; overflow: hidden; cursor: pointer; backdrop-filter: blur(2px); }
-  .portal::before {
-    content: '';
-    position: absolute;
-    inset: 20px;
-    z-index: -1;
-    pointer-events: none;
-    /* La teinte est posée en voile semi-transparent par-dessus le parchemin :
-       elle en laisse voir un tiers. La fusion en multiplication, essayée
-       auparavant, écrasait complètement le grain. */
-    background-size: 100% 100%, 100% 100%;
-    background-repeat: no-repeat, no-repeat;
-    transition: filter 0.3s ease;
+  .portal::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s; }
+  .portal:hover { transform: translateY(-3px); }
+  .portal:hover::before { opacity: 1; }
+
+  /* Eclipse portal */
+  .portal-eclipse {
+    background: rgba(103,78,167,0.22);
+    border: 1px solid rgba(140,111,208,0.30);
+    border-top: 3px solid #8c6fd0;
   }
-  .portal::after {
+  .portal-eclipse::before { background: linear-gradient(135deg, rgba(140,111,208,0.10) 0%, transparent 60%); }
+  .portal-eclipse:hover { border-color: rgba(155,127,212,0.6); background: rgba(103,78,167,0.32); box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(140,111,208,0.14); }
+
+  /* Boue et Sang portal */
+  .portal-bds {
+    background: rgba(139,26,26,0.18);
+    border: 1px solid rgba(139,26,26,0.25);
+    border-top: 3px solid #8B1A1A;
+  }
+  .portal-bds::before { background: linear-gradient(135deg, rgba(139,26,26,0.08) 0%, transparent 60%); }
+  .portal-bds:hover { border-color: rgba(139,26,26,0.55); background: rgba(139,26,26,0.26); box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(139,26,26,0.12); }
+
+  /* Table virtuelle (outil de jeu) */
+  .portal-table {
+    background: rgba(184,146,42,0.14);
+    border: 1px solid rgba(184,146,42,0.35);
+    border-top: 3px solid var(--GLD);
+  }
+  .portal-table::before { background: linear-gradient(135deg, rgba(227,198,110,0.12) 0%, transparent 60%); }
+  .portal-table:hover { border-color: rgba(227,198,110,0.65); background: rgba(184,146,42,0.22); box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(227,198,110,0.14); }
+
+  /* Carrières */
+  .portal-carriere {
+    background: rgba(74,58,26,0.16);
+    border: 1px solid rgba(184,146,42,0.3);
+    border-top: 3px solid rgba(184,146,42,0.7);
+  }
+  .portal-carriere::before { background: linear-gradient(135deg, rgba(227,198,110,0.10) 0%, transparent 60%); }
+  .portal-carriere:hover { border-color: rgba(227,198,110,0.55); background: rgba(184,146,42,0.2); box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(227,198,110,0.12); }
+  .portal-carriere .portal-symbol { color: var(--GLD-LT); }
+  .portal-carriere .portal-system { color: rgba(200,165,90,0.85); }
+  .portal-carriere .portal-enter { background: rgba(184,146,42,0.16); color: var(--GLD-LT); border: 1px solid rgba(184,146,42,0.35); }
+  .portal-carriere:hover .portal-enter { background: rgba(184,146,42,0.28); border-color: rgba(227,198,110,0.55); }
+  /* carte modèle en pointillés, pour dupliquer */
+  .portal-modele { border-style: dashed; opacity: 0.9; }
+
+  .portal-symbol { display: block; width: 2.5rem; height: 2.5rem; margin-bottom: 1rem; line-height: 1; }
+  .portal-symbol svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); }
+  .portal-eclipse .portal-symbol { color: #9b7fd4; }
+  .portal-bds .portal-symbol { color: #a3262a; }
+  .portal-system { font-family: 'Crimson Text', serif; font-style: italic; font-size: 0.8rem; letter-spacing: 0.1em; margin-bottom: 0.4rem; }
+  .portal-eclipse .portal-system { color: rgba(155,127,212,0.85); }
+  .portal-bds .portal-system { color: rgba(180,60,60,0.8); }
+
+  .portal-name { font-family: 'Cinzel', serif; font-size: clamp(1.2rem, 3vw, 1.7rem); font-weight: 700; color: var(--parchment); letter-spacing: 0.04em; margin-bottom: 0.3rem; line-height: 1.15; }
+  .portal-arc { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 1rem; }
+  .portal-eclipse .portal-arc { color: #9b7fd4; opacity: 0.8; }
+  .portal-bds .portal-arc { color: #c05050; opacity: 0.8; }
+
+  .portal-desc { font-size: 0.92rem; color: var(--parchment-dark); line-height: 1.55; font-style: italic; margin-bottom: 1.25rem; }
+
+  .portal-enter { display: inline-flex; align-items: center; gap: 0.5rem; font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 0.45rem 1rem; border-radius: 2px; transition: all 0.2s; }
+  .portal-eclipse .portal-enter { background: rgba(140,111,208,0.18); color: #b59ce6; border: 1px solid rgba(140,111,208,0.35); }
+  .portal-eclipse:hover .portal-enter { background: rgba(140,111,208,0.30); border-color: rgba(155,127,212,0.55); }
+  .portal-bds .portal-enter { background: rgba(139,26,26,0.2); color: #c06060; border: 1px solid rgba(139,26,26,0.35); }
+  .portal-bds:hover .portal-enter { background: rgba(139,26,26,0.3); border-color: rgba(139,26,26,0.55); }
+
+  /* DIVIDER */
+  .ornament { text-align: center; color: var(--GLD); opacity: 0.35; font-size: 1rem; letter-spacing: 0.6em; margin: 0.5rem 0; }
+
+  /* FOOTER */
+  footer { text-align: center; padding: 2rem 0; color: var(--SUB); font-size: 0.8rem; font-style: italic; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 3rem; }
+
+  /* ====== CADRES LATÉRAUX DE PAGE (fer forgé gothique) ====== */
+  .page-frame {
+    position: fixed; top: 0; bottom: 0; width: 30px;
+    z-index: 2; pointer-events: none; display: none;
+    background: linear-gradient(90deg, #14141a 0%, #2d2d37 22%, #0c0c11 55%, #20202a 80%, #14141a 100%);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.9), 0 0 22px rgba(0,0,0,0.65);
+  }
+  .page-frame-left  { left: 0;  border-right: 1px solid rgba(0,0,0,0.8); }
+  .page-frame-right { right: 0; border-left: 1px solid rgba(0,0,0,0.8); }
+  /* liseré doré vieilli, vertical */
+  .page-frame::before {
+    content: ''; position: absolute; inset: 6px 5px;
+    border-radius: 2px; border: 2px solid transparent;
+    background: linear-gradient(180deg, var(--GLD-DK), var(--GLD-LT) 18%, var(--GLD-DK) 38%, var(--GLD-LT) 58%, var(--GLD-DK) 78%, var(--GLD-LT) 92%, var(--GLD-DK)) border-box;
+    -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+  }
+  /* rivets forgés répétés sur toute la hauteur */
+  .page-frame::after {
+    content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 9px;
+    transform: translateX(-50%);
+    background-image: radial-gradient(circle, var(--GLD-LT) 0 1.4px, var(--GLD) 1.4px 2.5px, var(--GLD-DK) 2.5px 3.1px, transparent 3.2px);
+    background-size: 9px 52px; background-repeat: repeat-y; background-position: center 26px;
+    opacity: 0.9;
+  }
+  /* fleurons gothiques en haut et en bas de chaque rail */
+  .pf-cap { position: absolute; left: 50%; transform: translateX(-50%); width: 26px; height: 42px; }
+  .pf-cap svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8)); }
+  .pf-cap-top { top: 2px; }
+  .pf-cap-bottom { bottom: 2px; transform: translateX(-50%) scaleY(-1); }
+
+  @media (min-width: 1040px) { .page-frame { display: block; } }
+  /* ══════ SCEAU DE CIRE EN ICÔNE DE CARTE ══════ */
+  .portal-sceau { display: block; width: 68px; height: 68px; margin-bottom: 0.85rem; }
+  .portal-sceau img { display: block; width: 100%; height: 100%;
+    filter: drop-shadow(0 3px 7px rgba(0,0,0,0.65));
+    transition: transform 0.3s ease, filter 0.3s ease; }
+  .portal:hover .portal-sceau img {
+    transform: rotate(-3deg) scale(1.05);
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.75)) brightness(1.12); }
+  @media (max-width: 620px) { .portal-sceau { width: 56px; height: 56px; } }
+
+  /* ══════ CADRE ILLUSTRÉ DE LA BANNIÈRE ══════
+     Le cadre est porté par un calque posé par-dessus l'image : une bordure
+     est toujours peinte sous le contenu, l'image repasserait donc devant les
+     ornements d'angle. Sur les 74 px, 27 débordent vers l'extérieur (partie
+     pleine) et 47 forment la feuillure, qui recouvre l'image. */
+  .banner-hero { max-width: 820px; }
+  .banner-frame {
+    position: relative;
+    background: none !important;
+    box-shadow: none !important;
+    padding: 27px !important;
+    border: none !important;
+  }
+  .banner-frame::after {
     content: '';
     position: absolute;
     inset: 0;
-    z-index: 3;
+    border: 74px solid transparent;
+    border-image: url('ornements/cadre.png') 154 / 74px / 0 round;
     pointer-events: none;
-    border: 52px solid transparent;
-    border-image: url('ornements/cadre-carte.png') 165 / 52px / 0 round;
+    z-index: 3;
   }
-  .portal-eclipse::before {
-    background-image: linear-gradient(rgba(46, 34, 78, 0.84), rgba(46, 34, 78, 0.84)),
-                      url('ornements/parchemin.jpg'); }
-  .portal-bds::before {
-    background-image: linear-gradient(rgba(68, 26, 24, 0.84), rgba(68, 26, 24, 0.84)),
-                      url('ornements/parchemin.jpg'); }
-  .portal-table::before,
-  .portal-mj::before,
-  .portal-carriere::before {
-    background-image: linear-gradient(rgba(58, 46, 26, 0.84), rgba(58, 46, 26, 0.84)),
-                      url('ornements/parchemin.jpg'); }
+  .banner-frame > .corner, .banner-frame > .rivet,
+  .banner-frame::before { display: none !important; }
+  .banner-window { margin: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.8); }
+  .banner-window img { width: 100%; height: auto; }
 
-  /* ── Sceau posé sur le cadre, dans l'angle ──
-     Il sort du flux pour libérer la place : le texte peut alors se centrer
-     dans toute la hauteur de la carte. Placé au-dessus du cadre, il donne
-     l'impression d'avoir été cacheté sur lui. */
-  .portal-sceau {
+  /* ══════ CARTES : CADRE ET PARCHEMIN ══════
+     Le fond n'est plus porté par la carte mais par un calque intérieur : il
+     remplit la feuillure du cadre sans ressortir par les vides de la bordure. */
+  .portal, .portal-eclipse, .portal-bds, .portal-table,
+  .portal-mj, .portal-carriere {
+    border: 52px solid transparent !important;
+    border-image: url('ornements/cadre-carte.png') 165 / 52px / 0 round !important;
+    background-color: transparent !important;
+    background-image: none !important;
+  }
+  .portal {
+    position: relative; isolation: isolate; z-index: 0;
+    border-radius: 0 !important; overflow: visible !important;
+    backdrop-filter: none !important;
+    margin: 0; padding: 0.4rem 0.6rem !important;
+  }
+  /* Calque de fond : il déborde de 32 px dans la bordure, soit la feuillure
+     vide du cadre, et s'arrête avant la partie pleine. */
+  .portal::before {
+    content: '';
     position: absolute;
-    top: 10px; left: 12px;
-    width: 68px; height: 68px;
-    margin: 0 !important;
-    z-index: 4;
+    inset: -32px;
+    z-index: -1;
+    pointer-events: none;
+    background-image: url('ornements/parchemin.jpg');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
   }
-  /* Le contenu est centré verticalement sans passer la carte en boîte souple,
-     qui déréglait l'affichage des textes. */
-  .portal { min-height: 200px; }
-  .portal-system { padding-top: 0.2rem; }
+  /* teinte propre à chaque campagne, posée par-dessus le parchemin */
+  .portal::after {
+    content: '';
+    position: absolute;
+    inset: -32px;
+    z-index: -1;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    opacity: 0.82;
+  }
+  .portal-eclipse::after  { background: #2a2140; }
+  .portal-bds::after      { background: #3a1a1a; }
+  .portal-table::after,
+  .portal-mj::after,
+  .portal-carriere::after { background: #33291a; }
   .portal > * { position: relative; z-index: 1; }
-
-  /* Au survol, seule la luminosité du fond change : plus de déplacement ni de
-     halo, qui débordaient du cadre. */
-  .portal:hover, .portal-eclipse:hover, .portal-bds:hover,
-  .portal-table:hover, .portal-mj:hover, .portal-carriere:hover {
-    transform: none !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    border-color: transparent !important;
-  }
-  .portal:hover::before { filter: brightness(1.20); }
 
   @media (max-width: 620px) {
     .banner-frame { padding: 17px !important; }
     .banner-frame::after { border-width: 46px; border-image-width: 46px; }
-    .portal { padding: 34px 34px 34px !important; min-height: 160px; }
-    .portal-sceau { width: 54px; height: 54px; top: 6px; left: 8px; }
-    .portal::after { border-width: 34px; border-image-width: 34px; }
-    .portal::before { inset: 13px; }
+    .portal, .portal-eclipse, .portal-bds, .portal-table,
+    .portal-mj, .portal-carriere { border-width: 34px !important;
+                                   border-image-width: 34px !important; }
+    .portal::before, .portal::after { inset: -21px; }
   }
 
-  /* ══════ LISIBILITÉ DES INTITULÉS ══════
-     Les titres de section et la ligne d'introduction se détachaient mal du
-     fond de carte. Un ton légèrement plus clair et une ombre portée discrète
-     suffisent à les décoller, sans les rendre voyants. */
+  /* ══════ LISIBILITÉ DES INTITULÉS ══════ */
   .section-title { color: #7a7a8e; }
   header > div { color: #7a7a8e !important; }
   .section-title, header > div {
     text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.7);
   }
-
-  /* ══════ CARTES : MISE EN PAGE ══════
-     Les boutons d'action sont retirés : la carte entière est cliquable, ils
-     n'apportaient rien. Le texte est centré, le sceau reste à sa place. */
-  .portal-enter { display: none !important; }
-  .portal-system, .portal-name, .portal-arc, .portal-desc { text-align: center; }
-  .portal-desc { margin-bottom: 0.2rem; }
-
-  /* Le sceau était suivi d'un vide trop large avant le texte. */
-  .portal-system { margin-top: 0 !important; }
 
 </style>
 </head>
