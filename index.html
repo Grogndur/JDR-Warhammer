@@ -328,7 +328,7 @@
     position: relative; isolation: isolate; z-index: 0;
     overflow: visible !important;
     backdrop-filter: none !important;
-    padding: 52px 52px 46px !important;
+    padding: 38px 52px 38px !important;
   }
   /* Fond : parchemin sous la teinte de la campagne. Il s'arrête à la limite
      de la partie pleine du cadre, donc remplit la feuillure sans déborder. */
@@ -344,9 +344,9 @@
     background-size: 100% 100%, 100% 100%;
     background-repeat: no-repeat, no-repeat;
     background-blend-mode: multiply;
-    /* Le grain est déjà accentué dans l'image elle-même : un simple relevé
-       suffit ici. */
-    filter: brightness(1.16);
+    /* Le niveau qui rend la matière lisible est celui qu'avait le survol :
+       il devient l'état normal, et le survol monte d'autant. */
+    filter: brightness(1.34);
     transition: filter 0.3s ease;
   }
   .portal::after {
@@ -379,12 +379,12 @@
     box-shadow: none !important;
     border-color: transparent !important;
   }
-  .portal:hover::before { filter: brightness(1.32); }
+  .portal:hover::before { filter: brightness(1.52); }
 
   @media (max-width: 620px) {
     .banner-frame { padding: 17px !important; }
     .banner-frame::after { border-width: 46px; border-image-width: 46px; }
-    .portal { padding: 34px 34px 30px !important; }
+    .portal { padding: 26px 34px 26px !important; }
     .portal::after { border-width: 34px; border-image-width: 34px; }
     .portal::before { inset: 13px; }
   }
@@ -405,6 +405,10 @@
   .portal-enter { display: none !important; }
   .portal-system, .portal-name, .portal-arc, .portal-desc { text-align: center; }
   .portal-desc { margin-bottom: 0.2rem; }
+
+  /* Le sceau était suivi d'un vide trop large avant le texte. */
+  .portal-sceau { margin-bottom: 0.35rem !important; }
+  .portal-system { margin-top: 0 !important; }
 
 </style>
 </head>
