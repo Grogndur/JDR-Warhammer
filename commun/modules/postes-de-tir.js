@@ -47,6 +47,34 @@ function carquoisDelete(i) {
   if(confirm("Retirer ce type de flèche ?")) { viseeData.carquois.splice(i,1); viseeSave(); viseeRenderCarquois(); }
 }
 
+function souffleChange(delta) {
+  const before = viseeData.souffle;
+  viseeData.souffle = Math.max(0, Math.min(3, viseeData.souffle + delta));
+  viseeSave();
+  viseeRenderSouffle();
+  if(delta > 0 && viseeData.souffle > before) {
+    const pips = document.querySelectorAll("#souffle-pips .souffle-pip");
+    const last = pips[viseeData.souffle - 1];
+    if(last) { last.classList.add("flash"); setTimeout(function(){ last.classList.remove("flash"); }, 500); }
+  }
+}
+
+function posteAdd() {
+  const nameEl = document.getElementById("poste-name");
+  const descEl = document.getElementById("poste-desc");
+  if(!nameEl || !nameEl.value.trim()) return;
+  viseeData.postes.push({ name:nameEl.value.trim(), desc:descEl ? descEl.value.trim() : "" });
+  nameEl.value = "";
+  if(descEl) descEl.value = "";
+  viseeSave();
+  viseeRenderPostes();
+  viseeToggleForm("poste");
+}
+
+function posteDelete(i) {
+  if(confirm("Supprimer ce poste de tir ?")) { viseeData.postes.splice(i,1); viseeSave(); viseeRenderPostes(); }
+}
+
 function viseeLoad() {
   const raw = MODULES.lire("postes-de-tir");
   if(raw) try {

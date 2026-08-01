@@ -21,6 +21,18 @@ function coinsHTML(count, itemIdx) {
   return h;
 }
 
+function toggleCacheDescForm(val) {
+  const fields = { 'planque': 'cache-desc-field', 'perdu': 'perdu-note-field', 'donné': 'donne-note-field' };
+  ['cache-desc-field','perdu-note-field','donne-note-field'].forEach(id => {
+    const f = document.getElementById(id);
+    if (f) f.style.display = 'none';
+  });
+  if (fields[val]) {
+    const f = document.getElementById(fields[val]);
+    if (f) f.style.display = 'flex';
+  }
+}
+
 function addCollItem() {
   const name=document.getElementById('coll-name').value.trim(); if(!name) return;
   if(!state.collection) state.collection=[];

@@ -75,6 +75,11 @@ function poidsSeuil(v) {
   return POIDS_SEUILS[POIDS_SEUILS.length-1];
 }
 
+function poidsAdjust(d) {
+  dfData.poids = Math.max(0, Math.min(10, (dfData.poids||0) + d));
+  dfSave(); dfRenderPoids();
+}
+
 function dfLoad() {
   const raw = MODULES.lire("deploiement-ordre");
   if(raw) try {

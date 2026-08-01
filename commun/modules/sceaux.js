@@ -108,6 +108,92 @@ function renderSeuilTable() {
   // axeJetAffinite, effetRoll).
 }
 
+function axeJetAffinite(mode) {
+  const n = Math.ceil(Math.random()*20);
+  const palier = getPalier(n);
+
+  // Récupération du résultat (cas spécial : Nova si Mald et n=20)
+  let res;
+  if(mode === 'mald' && n === 20) {
+    res = AFFINITE_RESULTS.mald.nova;
+  } else {
+    res = AFFINITE_RESULTS[mode][palier];
+  }
+
+  const el = document.getElementById('affinite-result');
+  if(!el || !res) return;
+
+  // Classe visuelle : intensité par palier (feu-1/2/3 ou glace-1/2/3)
+  const couleurClass = (mode === 'crit') ? ('feu-'+palier) : ('glace-'+palier);
+  el.className = 'affinite-result visible ' + couleurClass;
+
+  const modeLabel = (mode === 'crit') ? 'Critique (Feu)' : 'Maladresse (Glace)';
+  const palierLabel = 'Palier ' + palier + (mode === 'mald' && n === 20 ? ' + Nova' : '');
+  document.getElementById('affinite-dice').innerHTML =
+    'd20 = <strong>'+n+'</strong> &middot; '+palierLabel+' &middot; '+modeLabel;
+  document.getElementById('affinite-palier').textContent = res.palier;
+  document.getElementById('affinite-name').textContent = res.name;
+  document.getElementById('affinite-desc').innerHTML = res.desc;
+
+  // ════ APPLICATION AUTOMATIQUE DU DÉPLACEMENT D'AXE ════
+  // Palier 1 → ±1 ; Palier 2 → ±2 ; Palier 3 (et Nova) → ±3
+  const delta = (mode === 'crit' ? palier : -palier);
+  const ancien = sceauData.axe;
+  sceauData.axe = Math.max(-5, Math.min(5, sceauData.axe + delta));
+  const applique = sceauData.axe - ancien;
+
+  // Flash visuel : indicateur du déplacement d'axe
+  if(applique !== 0){
+    sceauSave();
+    renderAxe();
+    renderSeuilTable();
+    const flash = document.createElement('div');
+    const sens     = applique > 0 ? 'Embrasement' : 'Glaciation';
+    const couleur  = applique > 0 ? '#e06030' : 'rgba(138,172,204,0.95)';
+    const bg       = applique > 0 ? 'rgba(224,80,48,0.1)' : 'rgba(138,172,204,0.1)';
+    const border   = applique > 0 ? 'rgba(224,96,48,0.4)' : 'rgba(138,172,204,0.4)';
+    flash.style.cssText = 'font-family:Cinzel,serif;font-size:0.62rem;letter-spacing:0.1em;margin-top:0.45rem;padding:0.3rem 0.45rem;border-radius:1px;text-align:center;color:'+couleur+';background:'+bg+';border:1px solid '+border+';';
+    flash.textContent = 'Axe déplacé : '+(applique>0?'+':'')+applique+' vers '+sens.toLowerCase()+' (position : '+(sceauData.axe>0?'+':'')+sceauData.axe+')';
+    const ancienFlash = el.querySelector('.axe-flash');
+    if(ancienFlash) ancienFlash.remove();
+    flash.classList.add('axe-flash');
+    el.appendChild(flash);
+  }
+}
+
+function effetRoll(type) {
+  const n=Math.ceil(Math.random()*10);
+  const el=document.getElementById('result-'+type);
+  const rows=document.querySelectorAll('#table-'+type+' li');
+  if(el){
+    // innerHTML pour preserver les balises <strong> et <em> de la description
+    const contenu = rows[n-1] ? rows[n-1].innerHTML : '';
+    el.innerHTML = '<strong>Résultat : '+n+'</strong> — '+contenu;
+    el.className = 'effet-result '+type+' visible';
+  }
+  // ════ APPLICATION AUTOMATIQUE DES EFFETS QUI MODIFIENT L'AXE ════
+  // Feu n=9 (Surge pur) : axe descend de 2 vers la Glaciation
+  if(type==='feu' && n===9){
+    sceauData.axe = Math.max(-5, sceauData.axe - 2);
+    sceauSave(); renderAxe(); renderSeuilTable();
+  }
+  // Feu n=10 (Bascule totale) : axe revient à l'équilibre (0)
+  if(type==='feu' && n===10){
+    sceauData.axe = 0;
+    sceauSave(); renderAxe(); renderSeuilTable();
+  }
+  // Glace n=10 (Rupture inverse) : axe remis à 0
+  if(type==='glace' && n===10){
+    sceauData.axe = 0;
+    sceauSave(); renderAxe(); renderSeuilTable();
+  }
+}
+
+function axeMove(d) {
+  sceauData.axe = Math.max(-5, Math.min(5, sceauData.axe+d));
+  sceauSave(); renderAxe(); renderSeuilTable();
+}
+
 function sceauLoad() {
   const raw = MODULES.lire("sceaux");
   if(raw) try {
