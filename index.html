@@ -364,6 +364,19 @@
     text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 10px rgba(0,0,0,0.7);
   }
 
+  /* ══════ SURVOL DES CARTES ══════
+     Au survol, une couleur de fond était posée sur la carte : elle s'étend
+     sous la bordure et ressort par les vides du cadre, qui semblait alors
+     recouvert. On la neutralise et on éclaircit le calque de fond à la
+     place, ce qui reste contenu à l'intérieur. */
+  .portal:hover, .portal-eclipse:hover, .portal-bds:hover,
+  .portal-table:hover, .portal-mj:hover, .portal-carriere:hover {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  .portal::before { transition: filter 0.3s ease; }
+  .portal:hover::before { filter: brightness(1.18); }
+
 </style>
 </head>
 <body>
