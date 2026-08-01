@@ -266,6 +266,18 @@
   .pf-cap-bottom { bottom: 2px; transform: translateX(-50%) scaleY(-1); }
 
   @media (min-width: 1040px) { .page-frame { display: block; } }
+  /* ══════ SCEAU DE CIRE EN ICÔNE DE CARTE ══════
+     Image détourée à fond transparent : elle se pose sur n'importe quelle
+     teinte de carte sans halo ni rectangle. */
+  .portal-sceau { display: block; width: 68px; height: 68px; margin-bottom: 0.85rem; }
+  .portal-sceau img { display: block; width: 100%; height: 100%;
+    filter: drop-shadow(0 3px 7px rgba(0,0,0,0.65));
+    transition: transform 0.3s ease, filter 0.3s ease; }
+  .portal:hover .portal-sceau img {
+    transform: rotate(-3deg) scale(1.05);
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.75)) brightness(1.12); }
+  @media (max-width: 620px) { .portal-sceau { width: 56px; height: 56px; } }
+
 </style>
 </head>
 <body>
@@ -311,7 +323,7 @@
 
     <!-- L'ÉCLIPSE -->
     <a class="portal portal-eclipse" href="eclipse/index-eclipse.html">
-      <span class="portal-symbol" style="font-size:2.2rem;">🌘</span>
+      <span class="portal-sceau"><img src="ornements/sceau-violet.png" alt="" loading="lazy"></span>
       <div class="portal-system">Warhammer FRP 4e édition</div>
       <div class="portal-name">L'Éclipse</div>
       <div class="portal-desc">Espace dédié à la campagne L'Éclipse.</div>
@@ -320,7 +332,7 @@
 
     <!-- DE BOUE ET DE SANG -->
     <a class="portal portal-bds" href="bds/index-bds.html">
-      <span class="portal-symbol"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M12 2.2c0 0-7.2 8.6-7.2 13.1a7.2 7.2 0 0 0 14.4 0C19.2 10.8 12 2.2 12 2.2Z"/><path fill="rgba(255,255,255,0.22)" d="M9.2 11.5c-1 1.4-1.5 2.7-1.5 3.9a4.3 4.3 0 0 0 1.6 3.3c-2-.6-2.9-2.4-2.9-4.1 0-1.2.9-2.6 2.8-3.1Z"/></svg></span>
+      <span class="portal-sceau"><img src="ornements/sceau-rouge.png" alt="" loading="lazy"></span>
       <div class="portal-system">Warhammer FRP 4e édition</div>
       <div class="portal-name">De Boue et de Sang</div>
       <div class="portal-arc">Arcs I &amp; II</div>
@@ -334,7 +346,7 @@
 
   <div class="portals">
     <a class="portal portal-table" href="table.html">
-      <span class="portal-symbol" style="font-size:2.2rem;">🎲</span>
+      <span class="portal-sceau"><img src="ornements/sceau-or.png" alt="" loading="lazy"></span>
       <div class="portal-system">Visio · dés · cartes · ambiance</div>
       <div class="portal-name">La Table virtuelle</div>
       <div class="portal-desc">L'espace de jeu en ligne : caméras, lancers de dés partagés, images et son d'ambiance.</div>
@@ -346,7 +358,7 @@
 
   <div class="portals">
     <a class="portal portal-carriere" id="lien-mj" href="mj/index-mj.html">
-      <span class="portal-symbol" style="font-size:2rem;">⚔</span>
+      <span class="portal-sceau"><img src="ornements/sceau-or.png" alt="" loading="lazy"></span>
       <div class="portal-system">Espace MJ · verrouillé</div>
       <div class="portal-name">Maître du Jeu</div>
       <div class="portal-desc">Créateur de carrières, compléments de règles et tables d'équipement. Tout est éditable en ligne, et chaque page s'imprime en PDF pour les joueurs.</div>
