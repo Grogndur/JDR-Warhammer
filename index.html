@@ -162,7 +162,7 @@
 
   .portal { display: block; text-decoration: none; border-radius: 3px; padding: 2rem 1.75rem; transition: all 0.3s ease; position: relative; overflow: hidden; cursor: pointer; backdrop-filter: blur(2px); }
   .portal::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s; }
-  .portal:hover { transform: translateY(-3px); }
+  .portal:hover { transform: none; }
   .portal:hover::before { opacity: 1; }
 
   /* Eclipse portal */
@@ -344,11 +344,11 @@
     border-image: url('ornements/cadre-carte.png') 165 / 52px / 0 round;
   }
   /* La teinte accompagne le parchemin sur le même calque, en fusion. */
-  .portal-eclipse::before  { background-color: #2a2140; background-blend-mode: multiply; }
-  .portal-bds::before      { background-color: #3a1a1a; background-blend-mode: multiply; }
+  .portal-eclipse::before  { background-color: #5c4a90; background-blend-mode: multiply; }
+  .portal-bds::before      { background-color: #8a3434; background-blend-mode: multiply; }
   .portal-table::before,
   .portal-mj::before,
-  .portal-carriere::before { background-color: #33291a; background-blend-mode: multiply; }
+  .portal-carriere::before { background-color: #7a6236; background-blend-mode: multiply; }
   .portal > * { position: relative; z-index: 1; }
 
   @media (max-width: 620px) {
