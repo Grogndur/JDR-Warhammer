@@ -278,6 +278,49 @@
     filter: drop-shadow(0 4px 10px rgba(0,0,0,0.75)) brightness(1.12); }
   @media (max-width: 620px) { .portal-sceau { width: 56px; height: 56px; } }
 
+  /* ══════ CADRE ILLUSTRÉ DE LA BANNIÈRE ══════
+     Découpage en neuf : les quatre coins gardent leur taille, les quatre côtés
+     se répètent. Le cadre s'adapte donc à toute proportion sans que les
+     ornements d'angle ne se déforment. */
+  .banner-frame {
+    background: none !important;
+    box-shadow: none !important;
+    padding: 34px 40px !important;
+    border: 44px solid transparent;
+    border-image: url('ornements/cadre.png') 188 / 44px / 0 round;
+  }
+  /* les ornements vectoriels d'origine cèdent la place */
+  .banner-frame > .corner, .banner-frame > .rivet,
+  .banner-frame::before { display: none !important; }
+  .banner-window { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.85),
+                               0 0 26px rgba(0,0,0,0.7); }
+
+  /* ══════ PARCHEMIN EN FOND DE CARTE ══════
+     La texture passe sous la teinte de la carte, en fusion douce et à faible
+     opacité : elle se devine comme une matière au lieu de se poser comme une
+     feuille. Le texte reste parfaitement lisible. */
+  .portal { position: relative; isolation: isolate; }
+  .portal::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('ornements/parchemin.jpg');
+    background-size: 340px auto;
+    mix-blend-mode: soft-light;
+    opacity: 0.30;
+    pointer-events: none;
+    z-index: 0;
+    border-radius: inherit;
+  }
+  /* le contenu repasse devant la texture */
+  .portal > * { position: relative; z-index: 1; }
+
+  @media (max-width: 620px) {
+    .banner-frame { border-width: 30px; border-image-width: 30px;
+                    padding: 20px 24px !important; }
+    .portal::after { opacity: 0.24; background-size: 260px auto; }
+  }
+
 </style>
 </head>
 <body>
