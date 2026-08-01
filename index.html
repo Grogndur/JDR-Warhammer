@@ -279,46 +279,58 @@
   @media (max-width: 620px) { .portal-sceau { width: 56px; height: 56px; } }
 
   /* ══════ CADRE ILLUSTRÉ DE LA BANNIÈRE ══════
-     Découpage en neuf : les quatre coins gardent leur taille, les quatre côtés
-     se répètent. Le cadre s'adapte donc à toute proportion sans que les
-     ornements d'angle ne se déforment. */
+     Découpage en neuf : les quatre coins gardent leur taille, les côtés se
+     répètent. Aucun écart entre le cadre et l'image : la bannière vient se
+     loger exactement dans la feuillure. */
+  .banner-hero { max-width: 780px; }
   .banner-frame {
     background: none !important;
     box-shadow: none !important;
-    padding: 34px 40px !important;
-    border: 44px solid transparent;
-    border-image: url('ornements/cadre.png') 188 / 44px / 0 round;
+    padding: 0 !important;
+    border: 40px solid transparent;
+    border-image: url('ornements/cadre.png') 188 / 40px / 0 round;
   }
-  /* les ornements vectoriels d'origine cèdent la place */
   .banner-frame > .corner, .banner-frame > .rivet,
   .banner-frame::before { display: none !important; }
-  .banner-window { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.85),
-                               0 0 26px rgba(0,0,0,0.7); }
+  .banner-window { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.85); }
+  .banner-window img { width: 100%; height: auto; }
 
-  /* ══════ PARCHEMIN EN FOND DE CARTE ══════
-     La texture passe sous la teinte de la carte, en fusion douce et à faible
-     opacité : elle se devine comme une matière au lieu de se poser comme une
-     feuille. Le texte reste parfaitement lisible. */
-  .portal { position: relative; isolation: isolate; }
+  /* ══════ CARTES : PARCHEMIN ET CADRE ══════
+     Le parchemin est posé une seule fois et couvre la carte entière, sans
+     répétition. Il passe sous la teinte de la campagne, en fusion douce, et
+     reste assez discret pour ne pas gêner la lecture. */
+  /* Les règles de couleur propres à chaque campagne posent une bordure fine :
+     elle est remplacée ici par le cadre illustré, d'où la priorité forcée. */
+  .portal, .portal-eclipse, .portal-bds, .portal-table,
+  .portal-mj, .portal-carriere {
+    border: 30px solid transparent !important;
+    border-image: url('ornements/cadre-carte.png') 165 / 30px / 0 round !important;
+  }
+  /* Le cadre occupe déjà 30 px : on réduit le rembourrage intérieur pour que
+     la carte ne devienne pas démesurée. overflow visible, sinon le cadre
+     serait rogné par le rayon d'angle. */
+  .portal { position: relative; isolation: isolate;
+            padding: 1.1rem 1rem !important; overflow: visible !important;
+            border-radius: 0 !important; backdrop-filter: none !important; }
   .portal::after {
     content: '';
     position: absolute;
     inset: 0;
     background-image: url('ornements/parchemin.jpg');
-    background-size: 340px auto;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     mix-blend-mode: soft-light;
-    opacity: 0.30;
+    opacity: 0.34;
     pointer-events: none;
     z-index: 0;
-    border-radius: inherit;
   }
-  /* le contenu repasse devant la texture */
   .portal > * { position: relative; z-index: 1; }
 
   @media (max-width: 620px) {
-    .banner-frame { border-width: 30px; border-image-width: 30px;
-                    padding: 20px 24px !important; }
-    .portal::after { opacity: 0.24; background-size: 260px auto; }
+    .banner-frame { border-width: 26px; border-image-width: 26px; }
+    .portal { border-width: 20px; border-image-width: 20px; }
+    .portal::after { opacity: 0.28; }
   }
 
 </style>
