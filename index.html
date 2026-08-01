@@ -294,8 +294,12 @@
   .banner-frame > .corner, .banner-frame > .rivet,
   .banner-frame::before { display: none !important; }
   /* 74 px de bordure dont 36 % de cadre plein : les 47 px restants sont vides,
-     l'image vient exactement s'y loger. */
-  .banner-window { margin: -47px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.8); }
+     l'image vient s'y loger. Elle passe DERRIÈRE le cadre : la bordure est
+     dessinée par-dessus, les ornements d'angle recouvrent donc l'image au lieu
+     d'être masqués par elle. */
+  .banner-frame { position: relative; z-index: 0; }
+  .banner-window { position: relative; z-index: -1;
+                   margin: -47px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.8); }
   .banner-window img { width: 100%; height: auto; }
 
   /* ══════ CARTES : CADRE ET PARCHEMIN ══════ */
@@ -303,6 +307,9 @@
   .portal-mj, .portal-carriere {
     border: 52px solid transparent !important;
     border-image: url('ornements/cadre-carte.png') 165 / 52px / 0 round !important;
+    /* Sans cela la teinte de la carte s'étend sous toute la bordure et
+       ressort par les vides du cadre, débordant tout autour. */
+    background-clip: padding-box !important;
   }
   .portal {
     position: relative; isolation: isolate;
@@ -316,7 +323,7 @@
   .portal::after {
     content: '';
     position: absolute;
-    inset: -52px;
+    inset: 0;
     background-image: url('ornements/parchemin.jpg');
     background-size: 100% 100%;
     background-repeat: no-repeat;
@@ -333,7 +340,7 @@
     .portal, .portal-eclipse, .portal-bds, .portal-table,
     .portal-mj, .portal-carriere { border-width: 34px !important;
                                    border-image-width: 34px !important; }
-    .portal::after { inset: -34px; opacity: 0.28; }
+    .portal::after { opacity: 0.28; }
   }
 
 </style>
