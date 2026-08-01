@@ -4,6 +4,11 @@
 /* ── portée propre au module ── */
 (function () {
 
+/* Les champs du panneau « légendaire » portent le préfixe court « leg »,
+   alors que la catégorie s'appelle « legendaire » : sans cette équivalence,
+   le bouton d'ajout cherchait un champ qui n'existe pas et ne faisait rien. */
+function idCat(cat) { return cat === 'legendaire' ? 'leg' : cat; }
+
 
 let livreData = { legendaire:[], lieux:[], faune:[] };
 
@@ -69,9 +74,9 @@ function livreToggleForm(cat) {
 }
 
 function livreAdd(cat) {
-  const nameEl = document.getElementById('l-'+cat+'-name');
-  const avEl   = document.getElementById('l-'+cat+'-avantage');
-  const stEl   = document.getElementById('l-'+cat+'-statut');
+  const nameEl = document.getElementById('l-'+idCat(cat)+'-name');
+  const avEl   = document.getElementById('l-'+idCat(cat)+'-avantage');
+  const stEl   = document.getElementById('l-'+idCat(cat)+'-statut');
   if(!nameEl||!nameEl.value.trim()) return;
   livreData[cat].push({ name:nameEl.value.trim(), avantage:avEl?avEl.value.trim():'', statut:stEl?stEl.value:'pressenti' });
   if(nameEl) nameEl.value='';
