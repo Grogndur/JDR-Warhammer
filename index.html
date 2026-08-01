@@ -393,6 +393,37 @@
      recouvrir le cadre. On n'y touche donc plus. L'effet de survol se limite
      au sceau, qui pivote, et au léger soulèvement de la carte. */
 
+  /* ══════ BOUTONS ET ACCROCHES ══════
+     Tous les boutons suivent le modèle de L'Éclipse, qui s'illumine nettement
+     au survol : fond léger, liseré assorti, éclat franc au passage. Chacun
+     reprend la couleur de sa carte. */
+  .portal-table .portal-enter,
+  .portal-mj .portal-enter {
+    background: rgba(184,146,42,0.18);
+    color: #e3c66e;
+    border: 1px solid rgba(184,146,42,0.35);
+    transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+  .portal-table:hover .portal-enter,
+  .portal-mj:hover .portal-enter {
+    background: rgba(184,146,42,0.32);
+    border-color: rgba(227,198,110,0.6);
+    color: #f0dc9a;
+  }
+  .portal-eclipse .portal-enter, .portal-bds .portal-enter,
+  .portal-carriere .portal-enter {
+    transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  }
+  .portal-eclipse:hover .portal-enter { color: #d0bcf2; }
+  .portal-bds:hover .portal-enter     { background: rgba(160,40,40,0.34);
+                                        border-color: rgba(200,80,80,0.6);
+                                        color: #e08a8a; }
+
+  /* L'accroche de la table et de l'espace du meneur restait violette : elle
+     prend la teinte dorée de sa carte. */
+  .portal-table .portal-system,
+  .portal-mj .portal-system { color: rgba(200,165,90,0.9); }
+
 </style>
 </head>
 <body>
@@ -465,7 +496,7 @@
       <div class="portal-system">Visio · dés · cartes · ambiance</div>
       <div class="portal-name">La Table virtuelle</div>
       <div class="portal-desc">L'espace de jeu en ligne : caméras, lancers de dés partagés, images et son d'ambiance.</div>
-      <span class="portal-enter">Ouvrir →</span>
+      <span class="portal-enter">Entrer →</span>
     </a>
   </div>
 
@@ -477,7 +508,7 @@
       <div class="portal-system">Espace MJ · verrouillé</div>
       <div class="portal-name">Maître du Jeu</div>
       <div class="portal-desc">Créateur de carrières, compléments de règles et tables d'équipement. Tout est éditable en ligne, et chaque page s'imprime en PDF pour les joueurs.</div>
-      <span class="portal-enter">🔒 Entrer →</span>
+      <span class="portal-enter">Entrer →</span>
     </a>
   </div>
 
