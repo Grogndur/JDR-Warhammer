@@ -903,7 +903,7 @@
 
 
   <!-- MÉCANIQUES PROPRES AU PERSONNAGE -->
-  <div id="modules-zone"></div>
+  <div id="modules-zone" style="display:contents"></div>
 
   <!-- NOTES SESSION -->
   <div class="card full">
@@ -1188,8 +1188,12 @@ var MODULES = (function () {
         st.textContent = m.css;
         document.head.appendChild(st);
       }
+      /* Le conteneur du module doit s'effacer de la mise en page : la fiche est
+         une grille à deux colonnes, et les blocs pleine largeur s'appuient sur
+         grid-column. Un div intermédiaire visible casserait cet ancrage. */
       var hote = document.createElement("div");
       hote.setAttribute("data-module", m.id);
+      hote.style.display = "contents";
       hote.innerHTML = m.html || "";
       zone.appendChild(hote);
       prets++;
