@@ -373,7 +373,7 @@
       cree: Date.now()
     };
     refP.child(id).set(fiche)
-      .then(function () { location.href = "fiche.html?p=" + encodeURIComponent(id); })
+      .then(function () { location.href = "../commun/fiche.html?p=" + encodeURIComponent(id); })
       .catch(function (e) { alert("Création impossible : " + e.message); });
   }
 
@@ -555,7 +555,7 @@
       var cls = "card card-pj-" + (p.couleur || "a") + (attente ? " card-attente" : "");
       var el = document.createElement(attente ? "div" : "a");
       el.className = cls;
-      if (!attente) el.href = "fiche.html?p=" + encodeURIComponent(id);
+      if (!attente) el.href = "../commun/fiche.html?p=" + encodeURIComponent(id);
       el.innerHTML =
         (estMJ ? '<button class="card-edit" data-edit="' + esc(id) + '" title="Modifier la carte">\u270E</button>' +
                  '<button class="card-del" data-del="' + esc(id) + '" title="Retirer du groupe">\u00D7</button>' : "") +
