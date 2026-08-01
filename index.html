@@ -344,6 +344,10 @@
     background-size: 100% 100%, 100% 100%;
     background-repeat: no-repeat, no-repeat;
     background-blend-mode: multiply;
+    /* La teinte multipliée écrase le grain du parchemin : on le relève un peu
+       et on accentue son contraste, sans quoi la matière ne se devinait qu'au
+       survol. */
+    filter: brightness(1.16) contrast(1.14);
     transition: filter 0.3s ease;
   }
   .portal::after {
@@ -376,7 +380,7 @@
     box-shadow: none !important;
     border-color: transparent !important;
   }
-  .portal:hover::before { filter: brightness(1.22); }
+  .portal:hover::before { filter: brightness(1.34) contrast(1.14); }
 
   @media (max-width: 620px) {
     .banner-frame { padding: 17px !important; }
