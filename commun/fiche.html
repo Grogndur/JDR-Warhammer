@@ -1197,9 +1197,15 @@ var MODULES = (function () {
       hote.innerHTML = m.html || "";
       zone.appendChild(hote);
       prets++;
-      /* On ne démarre qu'une fois la fiche chargée : une mécanique lit l'état,
-         qui n'existe pas encore au moment où son fichier est interprété. */
-      if (MODULES._pret) { try { m.demarrer(); } catch (e) { console.warn(m.id, e); } }
+      /* Démarrage différé, toujours. Une mécanique s'enregistre en tête de son
+         fichier mais déclare ses données plus bas : la démarrer sur-le-champ
+         reviendrait à lire une variable qui n'existe pas encore. On laisse donc
+         le fichier finir de s'exécuter avant de lancer quoi que ce soit. */
+      if (MODULES._pret) {
+        setTimeout(function () {
+          try { m.demarrer(); } catch (e) { console.warn(m.id, e); }
+        }, 0);
+      }
     },
 
     /* Charge la liste des mécaniques d'un personnage, dans l'ordre donné. */
@@ -1218,9 +1224,11 @@ var MODULES = (function () {
 
     demarrerTous: function () {
       MODULES._pret = true;
-      Object.keys(inscrits).forEach(function (id) {
-        try { inscrits[id].demarrer(); } catch (e) { console.warn(id, e); }
-      });
+      setTimeout(function () {
+        Object.keys(inscrits).forEach(function (id) {
+          try { inscrits[id].demarrer(); } catch (e) { console.warn(id, e); }
+        });
+      }, 0);
     },
     liste: function () { return Object.keys(inscrits); }
   };
