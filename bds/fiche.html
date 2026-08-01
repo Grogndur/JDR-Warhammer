@@ -550,6 +550,9 @@
     firebase.database().ref("personnages/" + id).once("value").then(function (snap) {
       var p = snap.val();
       var nom = habiller(p);
+      if (p && p.modules && p.modules.length && typeof MODULES === "object") {
+        MODULES.charger(p.modules);
+      }
       if (p && p.mdp) demander(p, nom); else ouvrir();
     }).catch(function (e) { sansAnnuaire(e.message); });
   } catch (e) { sansAnnuaire(e.message); }
@@ -886,6 +889,9 @@
   </div>
 
 
+  <!-- MÉCANIQUES PROPRES AU PERSONNAGE -->
+  <div id="modules-zone"></div>
+
   <!-- NOTES SESSION -->
   <div class="card full">
     <div class="card-title">Notes de session</div>
@@ -894,6 +900,78 @@
   </div>
 
 </div>
+
+
+<script>
+/* ═══════════ MÉCANIQUES PROPRES AU PERSONNAGE ═══════════
+   Une mécanique exclusive vit dans son fichier, sous modules/. La fiche charge
+   celles que porte le personnage, insère leur mise en forme et leur affichage,
+   puis les démarre. Leurs données sont rangées dans l'état de la fiche, donc
+   sauvegardées en ligne comme le reste, au lieu de rester dans le navigateur. */
+var MODULES = (function () {
+  var inscrits = {}, attendus = 0, prets = 0;
+
+  function etat() {
+    if (typeof state !== "object" || !state) return {};
+    if (!state.mods) state.mods = {};
+    return state.mods;
+  }
+
+  return {
+    /* Appelées par le code des mécaniques à la place du stockage du navigateur. */
+    lire: function (id) {
+      var d = etat()[id];
+      return d == null ? null : JSON.stringify(d);
+    },
+    ecrire: function (id, valeur) {
+      try { etat()[id] = (typeof valeur === "string") ? JSON.parse(valeur) : valeur; }
+      catch (e) { etat()[id] = valeur; }
+      if (typeof save === "function") save();
+    },
+
+    enregistrer: function (m) {
+      inscrits[m.id] = m;
+      var zone = document.getElementById("modules-zone");
+      if (!zone) return;
+      if (m.css) {
+        var st = document.createElement("style");
+        st.textContent = m.css;
+        document.head.appendChild(st);
+      }
+      var hote = document.createElement("div");
+      hote.setAttribute("data-module", m.id);
+      hote.innerHTML = m.html || "";
+      zone.appendChild(hote);
+      prets++;
+      /* On ne démarre qu'une fois la fiche chargée : une mécanique lit l'état,
+         qui n'existe pas encore au moment où son fichier est interprété. */
+      if (MODULES._pret) { try { m.demarrer(); } catch (e) { console.warn(m.id, e); } }
+    },
+
+    /* Charge la liste des mécaniques d'un personnage, dans l'ordre donné. */
+    charger: function (liste, fini) {
+      liste = liste || [];
+      attendus = liste.length;
+      if (!attendus) { fini && fini(); return; }
+      var reste = attendus;
+      liste.forEach(function (id) {
+        var sc = document.createElement("script");
+        sc.src = "modules/" + id + ".js";
+        sc.onload = sc.onerror = function () { if (--reste === 0) fini && fini(); };
+        document.head.appendChild(sc);
+      });
+    },
+
+    demarrerTous: function () {
+      MODULES._pret = true;
+      Object.keys(inscrits).forEach(function (id) {
+        try { inscrits[id].demarrer(); } catch (e) { console.warn(id, e); }
+      });
+    },
+    liste: function () { return Object.keys(inscrits); }
+  };
+})();
+</script>
 
 <script>
 // ══ LIGNE CARRIÈRE ÉDITABLE ══
@@ -1893,6 +1971,9 @@ renderSkillsAdv = function() { _origRenderSkillsAdv(); applyAdvSkillEditable(); 
       if (enLigne) { fusion(enLigne); renderAll(); }
       lectureFaite = true;
       if (!enLigne) fbRef.set(JSON.parse(JSON.stringify(state)));
+      /* Les mécaniques ne démarrent qu'ici : elles lisent l'état, qui n'est
+         complet qu'une fois la sauvegarde en ligne fusionnée. */
+      if (typeof MODULES === "object") MODULES.demarrerTous();
     }).catch(function(e){
       /* Lecture impossible : on reste en local plutot que de risquer
          d'ecraser une fiche qu'on n'a pas reussi a lire. */
