@@ -311,64 +311,73 @@
   .banner-window { margin: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.8); }
   .banner-window img { width: 100%; height: auto; }
 
-  /* ══════ CARTES : CADRE ET PARCHEMIN ══════ */
+  /* ══════ CARTES : CADRE ET PARCHEMIN ══════
+     Même principe que la bannière : le cadre est porté par un calque posé
+     au-dessus, jamais par la bordure, car une bordure est toujours peinte sous
+     le contenu de son élément. Rien ne peut donc plus passer devant lui.
+     Sur les 52 px du cadre, 20 sont pleins et 32 forment la feuillure. */
   .portal, .portal-eclipse, .portal-bds, .portal-table,
   .portal-mj, .portal-carriere {
-    border: 52px solid transparent !important;
-    border-image: url('ornements/cadre-carte.png') 165 / 52px / 0 round !important;
-    /* Sans cela la teinte de la carte s'étend sous toute la bordure et
-       ressort par les vides du cadre, débordant tout autour. */
-    /* Le fond n'est plus porté par la carte elle-même mais par un calque
-       intérieur : il remplit ainsi la feuillure du cadre sans ressortir par
-       les vides de la bordure. */
+    border: none !important;
     background-color: transparent !important;
     background-image: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
   }
   .portal {
-    position: relative; isolation: isolate;
-    border-radius: 0 !important; overflow: visible !important;
+    position: relative; isolation: isolate; z-index: 0;
+    overflow: visible !important;
     backdrop-filter: none !important;
-    /* le contenu remonte sous la feuillure, comme pour la bannière */
-    margin: 0; padding: 0.4rem 0.6rem !important;
+    padding: 52px 52px 46px !important;
   }
-  /* Le parchemin couvre la carte une seule fois, étiré aux dimensions exactes :
-     aucune répétition possible, quelle que soit la proportion de la carte. */
-  /* Calque de fond : il déborde de 32 px dans la bordure, soit précisément la
-     feuillure vide du cadre, et s'arrête avant la partie pleine. */
+  /* Fond : parchemin sous la teinte de la campagne. Il s'arrête à la limite
+     de la partie pleine du cadre, donc remplit la feuillure sans déborder. */
   .portal::before {
     content: '';
     position: absolute;
-    inset: -32px;
+    inset: 20px;
     z-index: -1;
     pointer-events: none;
     background-image: url('ornements/parchemin.jpg');
     background-size: 100% 100%;
     background-repeat: no-repeat;
+    transition: opacity 0.3s ease;
   }
-  /* teinte propre à chaque campagne, posée par-dessus le parchemin */
   .portal::after {
     content: '';
     position: absolute;
-    inset: -32px;
-    z-index: -1;
+    inset: 0;
+    z-index: 3;
     pointer-events: none;
-    mix-blend-mode: multiply;
-    opacity: 0.82;
+    border: 52px solid transparent;
+    border-image: url('ornements/cadre-carte.png') 165 / 52px / 0 round;
   }
-  .portal-eclipse::after  { background: #2a2140; }
-  .portal-bds::after      { background: #3a1a1a; }
-  .portal-table::after,
-  .portal-mj::after,
-  .portal-carriere::after { background: #33291a; }
+  /* La teinte est posée par une ombre interne démesurée : elle colore le
+     calque de fond sans exiger un troisième pseudo-élément. */
+  .portal-eclipse::before  { box-shadow: inset 0 0 0 2000px rgba(58, 42, 96, 0.86); }
+  .portal-bds::before      { box-shadow: inset 0 0 0 2000px rgba(74, 30, 30, 0.86); }
+  .portal-table::before,
+  .portal-mj::before,
+  .portal-carriere::before { box-shadow: inset 0 0 0 2000px rgba(64, 52, 30, 0.86); }
   .portal > * { position: relative; z-index: 1; }
+
+  /* Au survol, seule la luminosité du fond change : plus de déplacement ni de
+     halo, qui débordaient du cadre. */
+  .portal:hover, .portal-eclipse:hover, .portal-bds:hover,
+  .portal-table:hover, .portal-mj:hover, .portal-carriere:hover {
+    transform: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
+  }
+  .portal:hover::before { filter: brightness(1.22); }
 
   @media (max-width: 620px) {
     .banner-frame { padding: 17px !important; }
     .banner-frame::after { border-width: 46px; border-image-width: 46px; }
-    .portal, .portal-eclipse, .portal-bds, .portal-table,
-    .portal-mj, .portal-carriere { border-width: 34px !important;
-                                   border-image-width: 34px !important; }
-    .portal::before, .portal::after { inset: -21px; }
+    .portal { padding: 34px 34px 30px !important; }
+    .portal::after { border-width: 34px; border-image-width: 34px; }
+    .portal::before { inset: 13px; }
   }
 
   /* ══════ LISIBILITÉ DES INTITULÉS ══════
