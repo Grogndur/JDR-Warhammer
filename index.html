@@ -279,46 +279,46 @@
   @media (max-width: 620px) { .portal-sceau { width: 56px; height: 56px; } }
 
   /* ══════ CADRE ILLUSTRÉ DE LA BANNIÈRE ══════
-     Découpage en neuf : les quatre coins gardent leur taille, les côtés se
-     répètent. Aucun écart entre le cadre et l'image : la bannière vient se
-     loger exactement dans la feuillure. */
-  .banner-hero { max-width: 780px; }
+     La découpe vaut 154 px : c'est la largeur de l'ornement d'angle mesurée
+     dans l'image. Sur ces 154 px, le cadre lui-même n'occupe que 55 px, le
+     reste étant la feuillure vide. L'image doit donc remonter sous cette
+     feuillure, sinon un écart apparaît entre le cadre et elle. */
+  .banner-hero { max-width: 820px; }
   .banner-frame {
     background: none !important;
     box-shadow: none !important;
     padding: 0 !important;
-    border: 40px solid transparent;
-    border-image: url('ornements/cadre.png') 188 / 40px / 0 round;
+    border: 74px solid transparent;
+    border-image: url('ornements/cadre.png') 154 / 74px / 0 round;
   }
   .banner-frame > .corner, .banner-frame > .rivet,
   .banner-frame::before { display: none !important; }
-  .banner-window { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.85); }
+  /* 74 px de bordure dont 36 % de cadre plein : les 47 px restants sont vides,
+     l'image vient exactement s'y loger. */
+  .banner-window { margin: -47px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.8); }
   .banner-window img { width: 100%; height: auto; }
 
-  /* ══════ CARTES : PARCHEMIN ET CADRE ══════
-     Le parchemin est posé une seule fois et couvre la carte entière, sans
-     répétition. Il passe sous la teinte de la campagne, en fusion douce, et
-     reste assez discret pour ne pas gêner la lecture. */
-  /* Les règles de couleur propres à chaque campagne posent une bordure fine :
-     elle est remplacée ici par le cadre illustré, d'où la priorité forcée. */
+  /* ══════ CARTES : CADRE ET PARCHEMIN ══════ */
   .portal, .portal-eclipse, .portal-bds, .portal-table,
   .portal-mj, .portal-carriere {
-    border: 30px solid transparent !important;
-    border-image: url('ornements/cadre-carte.png') 165 / 30px / 0 round !important;
+    border: 52px solid transparent !important;
+    border-image: url('ornements/cadre-carte.png') 165 / 52px / 0 round !important;
   }
-  /* Le cadre occupe déjà 30 px : on réduit le rembourrage intérieur pour que
-     la carte ne devienne pas démesurée. overflow visible, sinon le cadre
-     serait rogné par le rayon d'angle. */
-  .portal { position: relative; isolation: isolate;
-            padding: 1.1rem 1rem !important; overflow: visible !important;
-            border-radius: 0 !important; backdrop-filter: none !important; }
+  .portal {
+    position: relative; isolation: isolate;
+    border-radius: 0 !important; overflow: visible !important;
+    backdrop-filter: none !important;
+    /* le contenu remonte sous la feuillure, comme pour la bannière */
+    margin: 0; padding: 0.4rem 0.6rem !important;
+  }
+  /* Le parchemin couvre la carte une seule fois, étiré aux dimensions exactes :
+     aucune répétition possible, quelle que soit la proportion de la carte. */
   .portal::after {
     content: '';
     position: absolute;
-    inset: 0;
+    inset: -52px;
     background-image: url('ornements/parchemin.jpg');
-    background-size: cover;
-    background-position: center;
+    background-size: 100% 100%;
     background-repeat: no-repeat;
     mix-blend-mode: soft-light;
     opacity: 0.34;
@@ -328,9 +328,12 @@
   .portal > * { position: relative; z-index: 1; }
 
   @media (max-width: 620px) {
-    .banner-frame { border-width: 26px; border-image-width: 26px; }
-    .portal { border-width: 20px; border-image-width: 20px; }
-    .portal::after { opacity: 0.28; }
+    .banner-frame { border-width: 46px; border-image-width: 46px; }
+    .banner-window { margin: -29px; }
+    .portal, .portal-eclipse, .portal-bds, .portal-table,
+    .portal-mj, .portal-carriere { border-width: 34px !important;
+                                   border-image-width: 34px !important; }
+    .portal::after { inset: -34px; opacity: 0.28; }
   }
 
 </style>
