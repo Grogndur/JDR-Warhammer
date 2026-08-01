@@ -374,8 +374,11 @@
     background: transparent !important;
     box-shadow: none !important;
   }
-  .portal::before { transition: filter 0.3s ease; }
-  .portal:hover::before { filter: brightness(1.18); }
+  /* Le calque de fond passe derrière les ornements d'angle, qui sont ajourés.
+     L'éclaircir au survol le révélait à travers ces ajours : la carte semblait
+     recouvrir le cadre. On n'y touche donc plus. L'effet de survol se limite
+     au sceau, qui pivote, et au léger soulèvement de la carte. */
+  .portal::before { transition: none; }
 
 </style>
 </head>
