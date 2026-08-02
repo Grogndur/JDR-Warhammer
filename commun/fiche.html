@@ -362,6 +362,20 @@
   .statut-tier option { background:var(--ink); color:var(--parchment); }
   .statut-rank { color:var(--parchment); font-size:1.15rem; width:44px; text-align:center; padding:0.1rem 0; }
   .statut-tier:focus, .statut-rank:focus { outline:none; border-color:rgba(184,146,42,0.55); }
+
+  /* ══════ ACCÈS ET PROTECTION ══════ */
+  .acces-bar { grid-column:1/-1; display:flex; gap:.5rem; align-items:center;
+    flex-wrap:wrap; margin:.2rem 0 .6rem; }
+  .acces-bar button { cursor:pointer; font-family:'Cinzel',serif; font-size:.62rem;
+    letter-spacing:.13em; text-transform:uppercase; padding:.4rem .85rem; border-radius:2px;
+    background:rgba(184,146,42,.14); color:#e3c66e; border:1px solid rgba(184,146,42,.36);
+    transition:all .15s; }
+  .acces-bar button:hover { background:rgba(184,146,42,.28); }
+  .acces-bar button.ghost { background:transparent; color:#6d6152;
+    border-color:rgba(255,255,255,.12); }
+  .acces-bar button.ghost:hover { color:#B8922A; border-color:rgba(184,146,42,.4); }
+  .acces-note { font-size:.78rem; color:#6d6152; font-style:italic; }
+  @media print { .acces-bar { display:none; } }
 </style>
 <!-- Firebase : sauvegarde en ligne, partagee entre tous les appareils -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -904,6 +918,13 @@
 
   <!-- MÉCANIQUES PROPRES AU PERSONNAGE -->
   <div id="modules-zone" style="display:contents"></div>
+
+  <!-- ACCÈS ET PROTECTION -->
+  <div class="acces-bar" id="acces-bar">
+    <button type="button" id="btn-mdp">Protéger cette fiche</button>
+    <button type="button" id="btn-mj" class="ghost">Mode MJ</button>
+    <span class="acces-note" id="acces-note"></span>
+  </div>
 
   <!-- NOTES SESSION -->
   <div class="card full">
@@ -2301,5 +2322,78 @@ function renderPortrait() {
 load();
 </script>
 <button class="pdf-btn" onclick="window.print()" title="Exporter cette fiche en PDF (etat actuel)">PDF</button>
+
+<script>
+/* ═══════════ PROTECTION DE LA FICHE ═══════════
+   Le joueur choisit lui-même son mot de passe. Le Maître du Jeu garde un accès
+   permanent : il ouvre n'importe quelle fiche avec le sien, et cet accès vaut
+   pour toute la session, ce qui permet de passer d'un personnage à l'autre
+   sans rien ressaisir. */
+(function () {
+  var MDP_MJ_HASH = "1vf7utwiu4n";
+  var id = window.PERSO_ID;
+  var bar = document.getElementById("acces-bar");
+  if (!bar) return;
+  if (!id) { bar.style.display = "none"; return; }
+
+  var btnMdp = document.getElementById("btn-mdp");
+  var btnMj  = document.getElementById("btn-mj");
+  var note   = document.getElementById("acces-note");
+  var refP   = null;
+  try { refP = firebase.database().ref("personnages/" + id); } catch (e) {}
+
+  function estMJ() {
+    try { return sessionStorage.getItem("mjAccess") === "1"; } catch (e) { return false; }
+  }
+  function peint(protegee) {
+    btnMdp.textContent = protegee ? "Changer le mot de passe" : "Proteger cette fiche";
+    btnMj.textContent  = estMJ() ? "Mode MJ actif" : "Mode MJ";
+    btnMj.classList.toggle("ghost", !estMJ());
+    note.textContent = protegee
+      ? "Fiche protegee. Le Maitre du Jeu y accede toujours."
+      : "Fiche ouverte a qui a le lien.";
+  }
+
+  var actuel = "";
+  if (refP) refP.child("mdp").on("value", function (snap) {
+    actuel = snap.val() || "";
+    peint(!!actuel);
+  });
+  else peint(false);
+
+  btnMdp.addEventListener("click", function () {
+    if (actuel && !estMJ()) {
+      var v = prompt("Mot de passe actuel :");
+      if (v === null) return;
+      var hv = window.cyrb53(v.trim());
+      if (hv !== actuel && hv !== MDP_MJ_HASH) { alert("Mot de passe incorrect."); return; }
+    }
+    var n = prompt("Nouveau mot de passe.\nLaisser vide pour retirer la protection.", "");
+    if (n === null) return;
+    n = n.trim();
+    if (!refP) { alert("Base en ligne indisponible."); return; }
+    refP.child("mdp").set(n ? window.cyrb53(n) : "")
+      .then(function () {
+        try { sessionStorage.setItem("pw_ok_" + id, "1"); } catch (e) {}
+        alert(n ? "Fiche protegee." : "Protection retiree.");
+      })
+      .catch(function (e) { alert("Impossible d enregistrer : " + e.message); });
+  });
+
+  btnMj.addEventListener("click", function () {
+    if (estMJ()) {
+      try { sessionStorage.removeItem("mjAccess"); } catch (e) {}
+      peint(!!actuel);
+      return;
+    }
+    var p = prompt("Mot de passe du Maitre du Jeu :");
+    if (p === null) return;
+    if (window.cyrb53(p.trim()) !== MDP_MJ_HASH) { alert("Mot de passe incorrect."); return; }
+    try { sessionStorage.setItem("mjAccess", "1"); } catch (e) {}
+    peint(!!actuel);
+    alert("Mode MJ actif pour cette session : toutes les fiches s ouvrent sans mot de passe.");
+  });
+})();
+</script>
 </body>
 </html>
