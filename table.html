@@ -1117,7 +1117,8 @@ if(refJets){
 // Le calque #dice3d est dimensionné pour s'arrêter au bandeau du haut, à la barre
 // du bas et au journal : les dés rebondissent sur ces bords et restent visibles.
 let boxU = null, boxD = null, box3dPret = false;
-const TEINTE_DIZAINE = { background:"#e6dcc3", foreground:"#2a2018", texture:"none", material:"plastic" };
+const TEINTE_DIZAINE = { background:"#14110d", foreground:"#e6dcc3", texture:"none", material:"plastic" };
+const TEINTE_UNITE   = { background:"#efe6d2", foreground:"#1a1510", texture:"none", material:"plastic" };
 
 function couleurDe(n){                                   // une teinte stable par lanceur
   let h = 0; for(const c of (n||"Aventurier")) h = (h*31 + c.charCodeAt(0)) % 360;
@@ -1172,14 +1173,14 @@ function lancerDes3D(des, n){
   if(!box3dPret || !boxU || !des || !des.vals || !des.vals.length) return;
   viderTableLocal();                                  // les dés du jet précédent disparaissent
   try{
-    if(des.pct){                                        // test : dizaine distincte, unité couleur joueur
+    if(des.pct){                                        // test : dizaine noire, unité claire
       if(boxD){
         if(boxD.updateConfig) boxD.updateConfig({ theme_customColorset: TEINTE_DIZAINE });
         boxD.roll("1d10@" + des.vals[0]);
-        if(boxU.updateConfig) boxU.updateConfig({ theme_customColorset: teinteJoueur(n) });
+        if(boxU.updateConfig) boxU.updateConfig({ theme_customColorset: TEINTE_UNITE });
         boxU.roll("1d10@" + des.vals[1]);
       } else {                                          // repli : deux d10 de même couleur
-        if(boxU.updateConfig) boxU.updateConfig({ theme_customColorset: teinteJoueur(n) });
+        if(boxU.updateConfig) boxU.updateConfig({ theme_customColorset: TEINTE_UNITE });
         boxU.roll("2d10@" + des.vals.join(","));
       }
       return;
