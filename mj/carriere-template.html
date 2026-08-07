@@ -146,8 +146,9 @@
   body.verrouille .soustitre-input, body.verrouille .desc-input, body.verrouille .ech-nom,
   body.verrouille .statut-rang, body.verrouille .statut-tier, body.verrouille .regle-titre { pointer-events:none; }
 
-  /* Descriptions vides masquées en lecture : la fiche reste une liste de noms. */
-  body.verrouille .entry-desc:placeholder-shown,
+  /* En lecture, la fiche est une liste de noms : aucune description d'entrée.
+     Les champs restent intacts et réapparaissent en mode édition. */
+  body.verrouille .entry-desc { display:none !important; }
   body.verrouille .ech-desc:placeholder-shown,
   body.verrouille .desc-input:placeholder-shown { display:none !important; }
   body.verrouille .entry { padding-bottom:0.35rem; }
