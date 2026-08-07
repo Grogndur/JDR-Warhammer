@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Importer les carrières maison</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script>
+  window.FIREBASE_CONFIG = {
+    apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+    authDomain: "warhammer-table-jdr.firebaseapp.com",
+    databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "warhammer-table-jdr",
+    storageBucket: "warhammer-table-jdr.firebasestorage.app",
+    messagingSenderId: "347804803970",
+    appId: "1:347804803970:web:43e062299c53e59d20e59b"
+  };
+</script>
+<style>
+  :root {
+    --ink:#09080c; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
+    --GLD:#B8922A; --GLD-LT:#e3c66e; --VIO2:#a07830; --SUB:#5a5040; --blood:#8B1A1A;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--ink); color:var(--parchment); font-family:'Crimson Text',serif; min-height:100vh; }
+  body::before { content:''; position:fixed; inset:0;
+    background: radial-gradient(ellipse at 25% 0%, rgba(184,146,42,0.07) 0%, transparent 55%),
+                radial-gradient(ellipse at 75% 100%, rgba(74,58,26,0.08) 0%, transparent 50%);
+    pointer-events:none; z-index:0; }
+
+  nav { position:sticky; top:0; z-index:100; background:rgba(9,8,12,0.93); backdrop-filter:blur(8px);
+        border-bottom:1px solid rgba(184,146,42,0.2); padding:0.6rem 1.5rem; display:flex; align-items:center; gap:1rem; }
+  nav a { color:var(--SUB); text-decoration:none; font-size:0.82rem; font-style:italic; transition:color 0.2s; }
+  nav a:hover { color:var(--GLD); }
+  .nav-current { color:var(--VIO2) !important; font-style:normal; font-family:'Cinzel',serif; font-size:0.82rem; }
+  .nav-sep { color:var(--SUB); opacity:0.3; }
+
+  .wrap { position:relative; z-index:1; max-width:900px; margin:0 auto; padding:2rem 1rem 4rem; }
+
+  .hub-eyebrow { font-family:'Cinzel',serif; font-size:0.66rem; letter-spacing:0.24em; text-transform:uppercase; color:var(--SUB); }
+  .hub-title { font-family:'Cinzel',serif; font-size:2.1rem; font-weight:700; letter-spacing:0.04em; margin:0.4rem 0 0.3rem; color:var(--GLD-LT); }
+  .hub-sub { font-style:italic; color:var(--parchment-dark); font-size:1rem; line-height:1.6; }
+  .hub-head { border-bottom:1px solid rgba(184,146,42,0.18); padding-bottom:1.4rem; margin-bottom:1.6rem; }
+
+  .avis { border-left:3px solid var(--GLD); background:rgba(74,58,26,0.16); padding:0.9rem 1.1rem;
+          font-size:0.92rem; line-height:1.6; color:var(--parchment-dark); margin-bottom:2rem; }
+  .avis b { color:var(--GLD-LT); font-weight:600; }
+
+  .fiche { border:1px solid rgba(184,146,42,0.28); border-top:3px solid rgba(184,146,42,0.7);
+           background:rgba(74,58,26,0.13); padding:1.4rem 1.5rem; margin-bottom:1.4rem; border-radius:3px; }
+  .fiche h2 { font-family:'Cinzel',serif; font-size:1.35rem; font-weight:700; color:var(--parchment);
+              letter-spacing:0.03em; margin-bottom:0.25rem; }
+  .fiche .meta { font-size:0.85rem; font-style:italic; color:var(--VIO2); margin-bottom:0.7rem; }
+  .fiche .resume { font-size:0.92rem; color:var(--parchment-dark); line-height:1.6; margin-bottom:0.9rem; }
+  .fiche .chiffres { font-size:0.8rem; color:var(--SUB); letter-spacing:0.04em; margin-bottom:1rem; }
+
+  .actions { display:flex; flex-wrap:wrap; align-items:center; gap:0.6rem; }
+  button, select { font-family:'Crimson Text',serif; font-size:0.9rem; }
+  button { background:rgba(184,146,42,0.14); border:1px solid rgba(184,146,42,0.45); color:var(--GLD-LT);
+           padding:0.45rem 0.9rem; border-radius:2px; cursor:pointer; transition:all 0.2s; letter-spacing:0.03em; }
+  button:hover:not(:disabled) { background:rgba(184,146,42,0.28); border-color:var(--GLD-LT); }
+  button:disabled { opacity:0.4; cursor:default; }
+  button.danger { border-color:rgba(139,26,26,0.6); color:#e0a0a0; background:rgba(139,26,26,0.12); }
+  button.danger:hover:not(:disabled) { background:rgba(139,26,26,0.25); }
+  select { background:#151318; border:1px solid rgba(184,146,42,0.35); color:var(--parchment);
+           padding:0.42rem 0.5rem; border-radius:2px; max-width:20rem; }
+  .sep { color:var(--SUB); font-size:0.82rem; font-style:italic; }
+  .etat { font-size:0.85rem; font-style:italic; margin-top:0.7rem; min-height:1.2rem; }
+  .etat.ok { color:#8fbf72; }
+  .etat.err { color:#e0a0a0; }
+  .etat.wait { color:var(--VIO2); }
+  .pied { margin-top:2rem; font-size:0.85rem; font-style:italic; color:var(--SUB); line-height:1.6; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="carrieres.html">◂ Les carrières</a>
+  <span class="nav-sep">·</span>
+  <a href="index-mj.html">Maître du Jeu</a>
+  <span class="nav-sep">·</span>
+  <span class="nav-current">Import</span>
+</nav>
+
+<div class="wrap">
+  <div class="hub-head">
+    <div class="hub-eyebrow">Espace MJ · Warhammer FRP 4e</div>
+    <div class="hub-title">Importer les carrières maison</div>
+    <div class="hub-sub">Quatre carrières déjà rédigées, prêtes à être versées dans l'outil de carrières.
+      Chacune arrive complète : échelons nommés, statuts, compétences, talents, possessions, notes par
+      échelon et encadrés de règles.</div>
+  </div>
+
+  <div class="avis">
+    <b>Créer</b> ajoute une nouvelle fiche sans rien toucher d'existant.
+    <b>Remplacer</b> écrase intégralement la fiche choisie dans la liste : à utiliser pour compléter une fiche
+    déjà commencée. L'opération est immédiate et sans annulation, alors vérifiez la fiche sélectionnée avant
+    de valider. Une fois les quatre carrières en place, cette page ne sert plus à rien et peut être supprimée
+    du dépôt.
+  </div>
+
+  <div id="fiches"></div>
+
+  <div class="pied">
+    Après import, retournez à l'espace des carrières : les fiches y apparaissent et s'ouvrent normalement
+    dans l'éditeur. Les encadrés de règles se retrouvent en bas de chaque fiche, sous les quatre échelons,
+    et sortent dans l'export PDF.
+  </div>
+</div>
+
+<script>
+window.FICHES_MAISON = {"Chevalier errant": {"titre": "Chevalier errant", "soustitre": "Humain · classe Guerrier · sans ordre, sans terre, sans bannière", "description": "Un chevalier sans ordre, sans terre et sans bannière, qui possède les armes et le cheval mais aucune institution pour payer son entretien. Il ferre sa monture lui-même, dort dehors et se fait un nom vallée par vallée. Variante maison du Chevalier officiel, deux crans de statut plus bas à chaque échelon.", "image": "", "schema": {"CC": [false, true, false, false], "CT": [false, false, false, false], "F": [true, false, false, false], "E": [false, false, false, false], "I": [true, false, false, false], "Ag": [true, false, false, false], "Dex": [false, false, false, false], "Int": [false, false, false, false], "FM": [false, false, true, false], "Soc": [false, false, false, true]}, "echelons": [{"nom": "Sans-terre", "stTier": "Argent", "stRang": "1", "description": "Savoir (Héraldique) devient Survie en extérieur, Savoir-vivre devient Dur à cuire. Il ferre son cheval lui-même et dort dehors : il n'a jamais appris les blasons ni les usages de table.", "competences": [{"nom": "Athlétisme", "desc": ""}, {"nom": "Chevaucher (Cheval)", "desc": ""}, {"nom": "Corps à corps (Cavalerie)", "desc": "Spécialisation imposée par la carrière."}, {"nom": "Emprise sur les animaux", "desc": ""}, {"nom": "Guérison", "desc": ""}, {"nom": "Métier (Maréchal-ferrant)", "desc": ""}, {"nom": "Soin aux animaux", "desc": ""}, {"nom": "Survie en extérieur", "desc": "Modifié par rapport à la carrière officielle."}], "talents": [{"nom": "Cavalier émérite", "desc": ""}, {"nom": "Costaud", "desc": ""}, {"nom": "Guerrier né", "desc": ""}, {"nom": "Dur à cuire", "desc": "Modifié par rapport à la carrière officielle."}], "possessions": [{"nom": "veste en cuir", "desc": ""}, {"nom": "chemise de mailles", "desc": ""}, {"nom": "cheval de selle avec selle et harnais", "desc": ""}, {"nom": "bouclier", "desc": ""}, {"nom": "outils de la profession (Maréchal-ferrant)", "desc": ""}]}, {"nom": "Chevalier errant", "stTier": "Argent", "stRang": "3", "description": "Langue (Bataille) devient Orientation : il n'a jamais servi dans une armée. L'armure de plates devient une demi-armure recomposée pièce par pièce sur des morts et chez des forgerons de village.", "competences": [{"nom": "Calme", "desc": ""}, {"nom": "Corps à corps (au choix)", "desc": ""}, {"nom": "Esquive", "desc": ""}, {"nom": "Intimidation", "desc": ""}, {"nom": "Orientation", "desc": "Modifié par rapport à la carrière officielle."}, {"nom": "Résistance", "desc": ""}], "talents": [{"nom": "Coup puissant", "desc": ""}, {"nom": "Menaçant", "desc": ""}, {"nom": "Porte-Bouclier", "desc": ""}, {"nom": "Voyageur aguerri", "desc": ""}], "possessions": [{"nom": "destrier avec selle et harnais", "desc": ""}, {"nom": "arme de Corps à corps (au choix)", "desc": ""}, {"nom": "lance de cavalerie", "desc": ""}, {"nom": "demi-armure dépareillée et heaume cabossé", "desc": "Modifié par rapport à la carrière officielle."}]}, {"nom": "Lame éprouvée", "stTier": "Argent", "stRang": "5", "description": "Seigneur de guerre devient Réflexes de combat, et la petite unité de Chevaliers disparaît faute d'ordre pour la lui fournir. Commandement reste : personne n'organise la défense d'un hameau à sa place, et mener des paysans armés de fourches est plus dur que mener des chevaliers dressés à obéir.", "competences": [{"nom": "Charme", "desc": ""}, {"nom": "Commandement", "desc": ""}, {"nom": "Résistance à l'alcool", "desc": ""}, {"nom": "Savoir (Guerre)", "desc": ""}], "talents": [{"nom": "Cœur vaillant", "desc": ""}, {"nom": "Inébranlable", "desc": ""}, {"nom": "Sans peur (au choix)", "desc": ""}, {"nom": "Réflexes de combat", "desc": "Modifié par rapport à la carrière officielle."}], "possessions": [{"nom": "cheval de bât", "desc": ""}, {"nom": "un gamin ramassé en route qui lui sert d'écuyer", "desc": "Modifié par rapport à la carrière officielle."}, {"nom": "un nom connu dans trois vallées", "desc": ""}]}, {"nom": "Chevalier sans bannière", "stTier": "Or", "stRang": "1", "description": "Signes secrets (Ordre chevaleresque) devient Ragot, Exaltant devient Impitoyable. Aucun réseau ne le renseigne : il apprend dans les tavernes qui est la crapule du coin et où se trouve son prochain contrat. Ragot repose sur la Sociabilité, qui monte à ce même échelon.", "competences": [{"nom": "Ragot", "desc": "Modifié par rapport à la carrière officielle."}, {"nom": "Savoir (au choix)", "desc": ""}], "talents": [{"nom": "Désarmer", "desc": ""}, {"nom": "Frappe blessante", "desc": ""}, {"nom": "Impitoyable", "desc": "Modifié par rapport à la carrière officielle."}, {"nom": "Volonté de fer", "desc": ""}], "possessions": [{"nom": "heaume sans cimier", "desc": ""}, {"nom": "écuyer qui a choisi de le suivre", "desc": ""}, {"nom": "un nom que les gens prononcent avant de l'avoir vu arriver", "desc": "Modifié par rapport à la carrière officielle."}]}], "regles": [{"titre": "Ce qui a été retiré, et ce que ça dit", "texte": "Toutes les modifications visent une seule chose : couper les liens institutionnels. Disparaissent donc Savoir (Héraldique), Savoir-vivre, Langue (Bataille), Seigneur de guerre, Signes secrets (Ordre chevaleresque), la petite puis la grande unité de Chevaliers, et le cimier qui annonce à qui l'on a affaire.\n\nCe qui les remplace tient au terrain et à la route : Survie en extérieur, Dur à cuire, Orientation, Réflexes de combat, Impitoyable. Un homme qui dort dehors, qui sait où il est, et qui ne lâche pas.\n\nUne seule caractéristique change : Endurance au dernier échelon, à la place de Sociabilité. Il ne monte pas en cour, il tient plus longtemps que les autres."}, {"titre": "Deux choses qu'il fallait lui laisser", "texte": "Commandement : c'est la compétence dont un errant a le plus besoin, pas celle de l'ordre chevaleresque. Il n'a pas d'unité, donc il improvise avec ce qui se présente : miliciens, paysans, mercenaires payés à la pièce.\n\nSociabilité : sans progression sociale, il n'était plus qu'un bloc de combat, et Endurance qui monte cumulée à Dur à cuire en faisait surtout une éponge à dégâts. Endurance sort, Sociabilité revient, le cumul disparaît et Dur à cuire redevient un simple marqueur de dureté."}, {"titre": "Le statut, ou l'absence de terre", "texte": "Argent 1, Argent 3, Argent 5, Or 1, contre Argent 3, Argent 5, Or 2, Or 4 pour le Chevalier officiel. Deux crans de moins à chaque échelon, sur toute la carrière.\n\nC'est la traduction mécanique exacte du concept : il a les armes et le cheval, il n'a ni fief, ni rente, ni ordre pour payer son entretien. Son statut final vient de sa réputation, pas de son sang."}, {"titre": "Il n'est pas moins droit", "texte": "Rien ici ne le rend brutal ni vénal. Cœur vaillant, Inébranlable et Volonté de fer restent en place et sont le cœur de la carrière. Ce qui change, c'est que sa droiture ne repose sur aucune institution : personne ne la lui impose, personne ne la lui reprochera, personne ne le radiera.\n\nUn chevalier d'ordre obéit à une règle écrite. Celui-ci obéit à une règle qu'il s'est donnée seul, ce qui la rend à la fois plus fragile et plus impressionnante."}, {"titre": "Le vœu · option de table", "texte": "Facultatif, sans coût en PX. Le joueur formule son vœu à la création, en une phrase.\n\nUne fois par séance, lorsqu'il agit de façon manifestement conforme à son vœu et que cela lui coûte quelque chose, il peut relancer un test raté .\n\nS'il enfreint sciemment son vœu, il perd cette relance jusqu'à ce qu'il ait réparé le tort, à ton appréciation.\n\nMJ : le vœu doit être coûteux et vérifiable en jeu. Ne jamais refuser l'hospitalité, ne jamais laisser un mort sans sépulture, ne jamais tirer l'épée le premier. Un vœu qui ne gêne jamais n'est pas un vœu."}]}, "Spadassin Asraï": {"titre": "Spadassin Asraï", "soustitre": "Elfe sylvain, demi-elfe sylvain · classe Escroc", "description": "Un Asraï exilé qui vend sa lame dans les villes humaines, là où sa lenteur à se lier et sa froideur passent pour de la maîtrise. Variante maison du Spadassin officiel, réorientée vers le duel à deux lames et la réputation plutôt que vers la brutalité de gros bras.", "image": "", "schema": {"CC": [true, false, false, false], "CT": [false, false, false, false], "F": [false, false, false, false], "E": [true, false, false, false], "I": [false, true, false, false], "Ag": [true, false, false, false], "Dex": [false, false, false, false], "Int": [false, false, false, false], "FM": [false, false, false, true], "Soc": [false, false, true, false]}, "echelons": [{"nom": "Gredin", "stTier": "Bronze", "stRang": "2", "description": "", "competences": [{"nom": "Athlétisme", "desc": ""}, {"nom": "Corps à corps (Base)", "desc": ""}, {"nom": "Discrétion (Urbaine)", "desc": ""}, {"nom": "Esquive", "desc": ""}, {"nom": "Intimidation", "desc": ""}, {"nom": "Intuition", "desc": ""}, {"nom": "Perception", "desc": ""}, {"nom": "Résistance", "desc": ""}], "talents": [{"nom": "Ambidextre", "desc": ""}, {"nom": "Combat instinctif", "desc": ""}, {"nom": "Combat déloyal", "desc": ""}, {"nom": "Guerrier né", "desc": ""}], "possessions": [{"nom": "deux épées dépareillées ramassées sur des morts", "desc": ""}, {"nom": "veste de cuir", "desc": ""}, {"nom": "cape usée", "desc": ""}, {"nom": "nécessaire d'affûtage", "desc": ""}]}, {"nom": "Lame à louer", "stTier": "Argent", "stRang": "1", "description": "", "competences": [{"nom": "Calme", "desc": ""}, {"nom": "Corps à corps (Base)", "desc": ""}, {"nom": "Escalade", "desc": ""}, {"nom": "Marchandage", "desc": ""}, {"nom": "Ragot", "desc": ""}, {"nom": "Subornation", "desc": ""}], "talents": [{"nom": "Danse des lames", "desc": ""}, {"nom": "Réflexes de combat", "desc": ""}, {"nom": "Esquive latérale", "desc": ""}, {"nom": "Criminel", "desc": ""}], "possessions": [{"nom": "chemise de mailles", "desc": ""}, {"nom": "deux épées correctes achetées de sa solde", "desc": ""}, {"nom": "bourse de contrat", "desc": ""}, {"nom": "cheval de selle avec selle et harnais", "desc": ""}]}, {"nom": "Spadassin Asraï", "stTier": "Argent", "stRang": "4", "description": "", "competences": [{"nom": "Commandement", "desc": ""}, {"nom": "Corps à corps (Base)", "desc": ""}, {"nom": "Orientation", "desc": ""}, {"nom": "Survie", "desc": ""}], "talents": [{"nom": "Riposte", "desc": ""}, {"nom": "Frappe précise", "desc": ""}, {"nom": "Désarmer", "desc": ""}, {"nom": "Menaçant", "desc": ""}], "possessions": [{"nom": "paire de lames appariées faites pour lui", "desc": ""}, {"nom": "armure légère", "desc": ""}, {"nom": "réputation qui le précède dans trois villes", "desc": ""}]}, {"nom": "Maître des lames", "stTier": "Or", "stRang": "1", "description": "", "competences": [{"nom": "Corps à corps (Base)", "desc": ""}, {"nom": "Esquive", "desc": ""}], "talents": [{"nom": "Deux fronts", "desc": ""}, {"nom": "Frappe blessante", "desc": ""}, {"nom": "Assaut féroce", "desc": ""}, {"nom": "Renversement", "desc": ""}], "possessions": [{"nom": "lames de facture elfique", "desc": ""}, {"nom": "protections de qualité", "desc": ""}, {"nom": "contrats qui viennent à lui", "desc": ""}]}], "regles": [{"titre": "Port de deux épées", "texte": "Une arme dans chaque main, deux lames d'une main de type identique ou proche. Sans le talent Ambidextre, la main faible subit le malus habituel.\n\nUne seule lame bénéficie de la qualité Défensive à la fois, celle que le personnage désigne au début de son tour. Les qualités des deux armes ne se cumulent jamais.\n\nLe port de deux armes n'accorde aucune attaque supplémentaire."}, {"titre": "Danse des lames · talent", "texte": "Prérequis : Ambidextre, deux armes de mêlée d'une main en main.\n\nAu début de son tour, le personnage annonce sa garde. Elle vaut jusqu'à son tour suivant.\n\nLame haute : +1 DR à ses tests de Corps à corps offensifs. Il ne bénéficie de la qualité Défensive d'aucune de ses deux armes.\n\nLame basse : la qualité Défensive s'applique normalement et il gagne +10 en Esquive."}, {"titre": "Seconde lame · manœuvre", "texte": "Prérequis : Danse des lames. Débloquée en cours de jeu, à la discrétion du MJ.\n\nLorsqu'il remporte un test de Corps à corps opposé, le personnage peut dépenser 1 Avantage pour ajouter +2 dégâts fixes à sa touche. Une seule fois par round.\n\nCe bonus est fixe : ni Bonus de Force, ni DR, ni bonus d'arme ne s'y ajoutent une seconde fois."}, {"titre": "Deux fronts · talent", "texte": "Prérequis : quatrième niveau de carrière, deux armes de mêlée d'une main en main.\n\nLe personnage ignore l'Avantage que la supériorité numérique accorde à ses adversaires, jusqu'à deux assaillants. Aucun bonus offensif."}, {"titre": "Intimidation froide · option de carrière", "texte": "Prérequis : premier niveau de carrière.\n\nQuand le personnage menace par la parole, la posture ou la réputation, sans contact ni démonstration de force, son test d'Intimidation utilise Sociabilité au lieu de Force. Le test reste opposé au Calme de la cible.\n\nToute intimidation physique reste en Force : saisir, bousculer, briser un objet, imposer sa masse, exhiber une arme sanglante.\n\nMJ : la distinction est le garde-fou. Elle donne au personnage une menace froide, propre à un demi-Asraï que rien ne rend impressionnant physiquement, sans lui offrir les deux registres à la fois."}, {"titre": "Note d'équilibrage", "texte": "Progression de caractéristiques : CC, E et Ag au premier niveau, I au deuxième, Soc au troisième, FM au quatrième. Ni Force ni CT : ses dégâts n'augmentent que par le DR de ses tests, donc par sa CC, et il ne tire pas. Sociabilité porte les quatre compétences sociales de la carrière, Marchandage, Ragot, Subornation et Commandement, et rappelle qu'un mercenaire négocie autant qu'il frappe.\n\nLe seul écart réel avec le Spadassin officiel est l'accès à Ambidextre dès le premier niveau, contre le quatrième. La compensation est lourde : aucune progression en CT ni en Soc, aucune compétence de tir, aucun talent de projectile, aucune arme de jet dans les possessions.\n\nAucune de ces règles n'ajoute de jet de dés au round. La Danse des lames est un choix annoncé, la Seconde lame une dépense d'Avantage, Deux fronts un effet passif."}, {"titre": "À vérifier dans le livre français", "texte": "Formulations exactes de Esquive latérale, Menaçant et Combat instinctif. La carrière relève de la classe Escroc, avec les coûts de changement de carrière habituels.\n\nEspèces : elfe sylvain, demi-elfe sylvain. Classe : Escroc."}]}, "Guerrière Faucon Asraï": {"titre": "Guerrière Faucon Asraï", "soustitre": "Elfe sylvain, demi-elfe sylvain · classe Rôdeur · Pics de Pin, Montagnes Grises", "description": "Une Asraï des Pics de Pin liée depuis l'enfance à un faucon géant recueilli au nid. Elle chasse et combat depuis les airs quand le ciel est ouvert, et redevient une simple rôdeuse sous le couvert des arbres. Carrière maison calquée sur la progression du Chasseur officiel.", "image": "", "schema": {"CC": [false, false, false, false], "CT": [false, true, false, false], "F": [true, false, false, false], "E": [true, false, false, false], "I": [false, false, true, false], "Ag": [false, false, false, true], "Dex": [true, false, false, false], "Int": [false, false, false, false], "FM": [false, false, false, false], "Soc": [false, false, false, false]}, "echelons": [{"nom": "Traqueur", "stTier": "Bronze", "stRang": "2", "description": "Échelon officiel du Chasseur, à un échange près : Projectiles (Fronde) devient Pistage, la fronde cédant la place au couteau dans les possessions.", "competences": [{"nom": "Emprise sur les animaux", "desc": ""}, {"nom": "Escalade", "desc": ""}, {"nom": "Piégeage", "desc": ""}, {"nom": "Perception", "desc": ""}, {"nom": "Pistage", "desc": ""}, {"nom": "Résistance", "desc": ""}, {"nom": "Savoir (Bêtes)", "desc": ""}, {"nom": "Survie en extérieur", "desc": ""}], "talents": [{"nom": "Bon marcheur (au choix)", "desc": ""}, {"nom": "Dur à cuire", "desc": ""}, {"nom": "Nomade", "desc": ""}, {"nom": "Trappeur", "desc": ""}], "possessions": [{"nom": "assortiment de différents pièges à animaux", "desc": ""}, {"nom": "arme simple", "desc": ""}, {"nom": "bottes", "desc": ""}, {"nom": "cape épaisse", "desc": ""}, {"nom": "couteau de dépeçage et nécessaire d'affûtage", "desc": ""}]}, {"nom": "Fille des aires", "stTier": "Bronze", "stRang": "4", "description": "L'oiseau n'est pas montable. Il grandit, il apprend, il suit. Signes secrets (Chasseurs) de l'officiel est remplacé par Dressage : elle n'appartient à aucune confrérie de chasse impériale.", "competences": [{"nom": "Calme", "desc": ""}, {"nom": "Corps à corps (Base)", "desc": ""}, {"nom": "Discrétion (Rurale)", "desc": ""}, {"nom": "Dressage (Faucon géant)", "desc": ""}, {"nom": "Intuition", "desc": ""}, {"nom": "Projectiles (Arc)", "desc": ""}], "talents": [{"nom": "Œil du chasseur", "desc": ""}, {"nom": "Tireur de précision", "desc": ""}, {"nom": "Tir précis", "desc": ""}, {"nom": "Tir rapide", "desc": ""}], "possessions": [{"nom": "arc et dix flèches", "desc": ""}, {"nom": "gantelet et jets de cuir", "desc": ""}, {"nom": "cordes et crampons de nid", "desc": ""}, {"nom": "oisillon recueilli", "desc": "Modifié par rapport à la carrière officielle."}]}, {"nom": "Chevaucheuse de crête", "stTier": "Argent", "stRang": "1", "description": "", "competences": [{"nom": "Chevaucher (Faucon géant)", "desc": ""}, {"nom": "Esquive", "desc": ""}, {"nom": "Orientation", "desc": ""}, {"nom": "Soin aux animaux", "desc": ""}], "talents": [{"nom": "Tir en vol", "desc": ""}, {"nom": "Sans peur (Animaux)", "desc": ""}, {"nom": "Sens aiguisé (au choix)", "desc": ""}, {"nom": "Tireur d'élite", "desc": ""}], "possessions": [{"nom": "arc long asraï", "desc": ""}, {"nom": "harnais de vol et sangles de cuisse", "desc": ""}, {"nom": "sac à dos", "desc": ""}, {"nom": "sac de couchage", "desc": ""}, {"nom": "faucon géant adulte", "desc": "Modifié par rapport à la carrière officielle."}]}, {"nom": "Guerrière Faucon Asraï", "stTier": "Argent", "stRang": "3", "description": "", "competences": [{"nom": "Chevaucher (Faucon géant)", "desc": ""}, {"nom": "Corps à corps (Cavalerie)", "desc": ""}], "talents": [{"nom": "Frappe et retrait", "desc": ""}, {"nom": "Sans peur (Monstres)", "desc": ""}, {"nom": "Tir sûr", "desc": ""}, {"nom": "Tireur embusqué", "desc": ""}], "possessions": [{"nom": "flèches de guerre", "desc": ""}, {"nom": "lance de cavalerie", "desc": ""}, {"nom": "armure légère elfique", "desc": ""}, {"nom": "faucon de guerre dressé au combat", "desc": ""}]}], "regles": [{"titre": "Le lien", "texte": "Un faucon des Pics de Pin ne s'achète ni ne se dompte. Il se recueille au nid, oisillon ou œuf abandonné, et il grandit avec celle qui l'a nourri. Le terme humain de cavalière est impropre : les Asraï y voient une fraternité, pas une monture.\n\nUn adulte atteint quinze à vingt pieds d'envergure. Il combat du bec et des serres, jamais sur ordre, toujours par accord.\n\nPerte : si le faucon meurt, il n'est pas remplacé. Un nouvel oisillon impose des années et un retour aux crags, et le personnage redevient entre-temps une archère à pied."}, {"titre": "Où le faucon peut voler · la vraie limite", "texte": "Il lui faut du ciel ouvert et une aire de posé dégagée. Il ne suit ni sous une voûte forestière dense, ni en souterrain, ni dans une ruelle, ni dans un bâtiment. En ville, il tourne au-dessus des toits et attend.\n\nIl affole les chevaux, terrifie les paysans et attire toutes les flèches d'un champ de bataille. En Averland, une cavalière de faucon est un événement, jamais une discrétion.\n\nMJ : l'équilibre de la carrière se règle ici, pas dans les chiffres. En crypte, en mine ou dans une salle de conseil, la joueuse tient une excellente archère elfe et rien de plus."}, {"titre": "Tir en vol · talent", "texte": "Prérequis : troisième échelon, Chevaucher (Faucon géant).\n\nElle tire sans malus depuis un faucon qui se déplace jusqu'à la moitié de son allure de vol. Au-delà, jusqu'à l'allure pleine, le tir reste possible à (-20) .\n\nElle est sanglée : elle ne teste Chevaucher pour rester en selle qu'en cas de manœuvre brutale, de piqué ou de blessure de l'oiseau."}, {"titre": "Frappe et retrait · talent", "texte": "Prérequis : quatrième échelon.\n\nUne fois par combat, le faucon traverse la zone d'engagement en ligne droite. La guerrière y effectue son attaque de tir normale , sans jet ni attaque supplémentaire.\n\nAu terme du mouvement, elle est hors de portée du sol : aucun adversaire à pied ne peut l'engager au corps à corps avant son prochain tour. Les tireurs, eux, la visent normalement.\n\nAlternative au tir : le faucon frappe des serres au passage, une seule attaque, résolue avec le profil de l'oiseau."}, {"titre": "Fondre sur la proie · manœuvre", "texte": "Prérequis : troisième échelon, Chevaucher (Faucon géant).\n\nLe faucon plonge d'au moins la moitié de son allure de vol, en ligne droite, et entre au contact. Ce round, ses attaques de serres infligent +2 dégâts et il gagne 1 Avantage de charge.\n\nLe prix : il termine son mouvement engagé au sol ou à hauteur d'homme. Toute la protection de l'altitude disparaît, la cavalière redevient une cible de mêlée ordinaire, et reprendre de la hauteur coûte un round complet.\n\nRestrictions : elle ne tire pas pendant le round de piqué, un arc long ne se manie pas dans une descente. Fondre sur la proie et Frappe et retrait ne peuvent pas être employées le même round.\n\nMJ : un oiseau de 26 Blessures sans armure, au contact de trois fantassins, meurt en deux rounds. C'est le sens de la manœuvre : un gain net, un risque net, et une décision qui se paie."}, {"titre": "Faucon de guerre · profil indicatif", "texte": "M 2 · CC 40 · CT — · F 40 · E 35 · I 50 · Ag 55 · Dex — · Int 20 · FM 35 · Soc — · B 26\n\nTraits : Arme +7 (serres), Morsure +6 (bec), Taille (Grande), Vol 110. Facultatif : Dressé (Domptée, Guerre, Monture).\n\nCompétences : Perception 60, Athlétisme 55.\n\nUne attaque : les deux traits offrent deux profils de dégâts au choix, pas deux attaques. Le Griffon et l'Hippogriffe fonctionnent de la même façon. Le faucon frappe une fois par round, des serres pour agripper et déséquilibrer, du bec pour achever.\n\nCalibrage : le comparable officiel est le Pégase , monture volante de Taille (Grande) à 28 Blessures et Arme +7, et non le Griffon, Énorme et à 76 Blessures, ni l'Hippogriffe et ses 36 Blessures avec Arme et Morsure à +9. Une monture de personnage joueur à ce niveau ne meurt jamais, et toute la tension de la carrière disparaît avec elle. Les 26 Blessures suivent la formule officielle, BF plus deux fois le BE plus le BFM, doublée pour la Taille (Grande).\n\nTouches : une attaque dirigée vers la cavalière peut frapper l'oiseau, et réciproquement. Détermine la cible avant de localiser, l'oiseau offrant une surface bien plus vaste.\n\nLe jour seulement : un rapace ne vole pas de nuit, ni dans le brouillard, ni dans une tempête. Les yeux qui lui donnent sa Vol 110 ne servent à rien sans lumière. C'est la seconde contrainte majeure de la carrière, après le terrain.\n\nMoral : c'est un animal. Le feu, la fumée et les cris de masse lui coûtent un test de Calme, et un faucon blessé rompt le contact avant de mourir, même contre l'avis de sa cavalière."}, {"titre": "Note d'équilibrage", "texte": "Progression de caractéristiques : F, E et Dex au premier échelon, CT au deuxième, I au troisième, exactement comme le Chasseur officiel. Seule la quatrième change, Agilité au lieu d'Intelligence, ce qui correspond au vol et non à la maîtrise des meutes. Toujours ni CC, ni FM, ni Sociabilité.\n\nŒil du chasseur, Tireur de précision, Tir précis, Tir rapide, Tireur d'élite, Tir sûr et Tireur embusqué sont tous officiels et restent à leur échelon d'origine. Les seuls ajouts maison sont Tir en vol, Frappe et retrait et Fondre sur la proie, dont aucun n'accorde d'attaque supplémentaire.\n\nLe contrepoids du faucon n'est pas chiffré : c'est le terrain, la visibilité qu'il impose, et le fait qu'il soit un personnage à perdre plutôt qu'une pièce d'équipement."}, {"titre": "À vérifier", "texte": "Existence d'une spécialisation Chevaucher (Faucon géant) acceptée à ta table, la compétence étant groupée.\n\nLes noms des échelons deux et trois sont provisoires."}]}, "Sorcière de village": {"titre": "Sorcière de village", "soustitre": "Variante divinatoire · classe Rôdeur · deux lignes modifiées", "description": "Variante divinatoire du Sorcier de village officiel : deux lignes seulement changent, pour une praticienne tournée vers les présages et la lecture des signes plutôt que vers l'herboristerie pure. Reste illégale aux yeux des répurgateurs, comme l'originale.", "image": "", "schema": {"CC": [false, false, false, false], "CT": [false, false, false, false], "F": [false, false, false, false], "E": [true, false, false, false], "I": [true, false, false, false], "Ag": [false, false, false, false], "Dex": [true, false, false, false], "Int": [false, true, false, false], "FM": [false, false, false, true], "Soc": [false, false, true, false]}, "echelons": [{"nom": "Apprentie sorcière de village", "stTier": "Bronze", "stRang": "1", "description": "Deux échanges : Savoir (Folklore) devient Savoir (Présages), Mains agiles devient Seconde vue.", "competences": [{"nom": "Focalisation", "desc": ""}, {"nom": "Intuition", "desc": "Spécialisation imposée par la carrière."}, {"nom": "Langue (Magick)", "desc": ""}, {"nom": "Perception", "desc": ""}, {"nom": "Résistance", "desc": ""}, {"nom": "Savoir (Présages)", "desc": "Modifié par rapport à la carrière officielle."}, {"nom": "Savoir (Herbes)", "desc": ""}, {"nom": "Survie en extérieur", "desc": ""}], "talents": [{"nom": "Bon marcheur (Régions boisées)", "desc": ""}, {"nom": "Magie mineure", "desc": ""}, {"nom": "Nomade", "desc": ""}, {"nom": "Seconde vue", "desc": "Modifié par rapport à la carrière officielle."}], "possessions": [{"nom": "1d10 porte-bonheurs", "desc": ""}, {"nom": "bâton de combat", "desc": ""}, {"nom": "sac à dos", "desc": ""}]}, {"nom": "Sorcière de village", "stTier": "Bronze", "stRang": "2", "description": "Échelon officiel. Seules les possessions gagnent deux objets, sans effet mécanique.", "competences": [{"nom": "Calme", "desc": ""}, {"nom": "Guérison", "desc": ""}, {"nom": "Ragot", "desc": ""}, {"nom": "Métier (Colifichets)", "desc": ""}, {"nom": "Métier (Herboriste)", "desc": ""}, {"nom": "Savoir (Région)", "desc": ""}], "talents": [{"nom": "Affinité avec les animaux", "desc": ""}, {"nom": "Harmonisation aethyrique", "desc": ""}, {"nom": "Magie des Arcanes (Magie naturelle)", "desc": ""}, {"nom": "Sixième sens", "desc": ""}], "possessions": [{"nom": "cataplasme de soin", "desc": ""}, {"nom": "nécessaire antipoison", "desc": ""}, {"nom": "Outils de la profession (Herboriste)", "desc": ""}, {"nom": "bol de lecture et paquet de cartes usées", "desc": "Modifié par rapport à la carrière officielle."}]}, {"nom": "Maîtresse sorcière de village", "stTier": "Bronze", "stRang": "3", "description": "Échelon officiel, inchangé.", "competences": [{"nom": "Marchandage", "desc": ""}, {"nom": "Savoir (Esprits)", "desc": ""}, {"nom": "Savoir (Généalogie)", "desc": ""}, {"nom": "Savoir (Magie)", "desc": ""}], "talents": [{"nom": "Âme pure", "desc": ""}, {"nom": "Maître artisan (Herboriste)", "desc": ""}, {"nom": "Perception de la magie", "desc": ""}, {"nom": "Résistance (Maladie)", "desc": ""}], "possessions": [{"nom": "apprenti", "desc": ""}, {"nom": "cabane isolée", "desc": ""}]}, {"nom": "Sage de village", "stTier": "Bronze", "stRang": "5", "description": "Échelon officiel. Seules les possessions gagnent un objet.", "competences": [{"nom": "Intimidation", "desc": ""}, {"nom": "Prière", "desc": ""}], "talents": [{"nom": "Obstiné", "desc": ""}, {"nom": "Sens aiguisé (au choix)", "desc": ""}, {"nom": "Travailleur qualifié (Herboriste)", "desc": ""}, {"nom": "Vision nocturne", "desc": ""}], "possessions": [{"nom": "assortiment de crânes d'animaux", "desc": ""}, {"nom": "cape de cérémonie et couronne de fleurs", "desc": ""}, {"nom": "jeu de runes de bois gravées", "desc": "Modifié par rapport à la carrière officielle."}]}], "regles": [{"titre": "Ce qui la distingue du Mystique", "texte": "La divination du Mystique est savante et spectaculaire : astrologie, prophétie, représentation, Focalisation d'Azyr. Elle s'énonce devant un public.\n\nCelle de la sorcière de village est domestique et sale. Elle lit ce qui traîne : les entrailles, le vol des corbeaux, la façon dont le lait tourne, le nom que porte un enfant mort-né. Elle ne prédit pas, elle remarque.\n\nC'est pourquoi ni Savoir (Astrologie) ni Savoir (Prophétie) n'apparaissent ici. Les lui donner reviendrait à la déguiser en Mystique."}, {"titre": "Pourquoi ces deux échanges et pas d'autres", "texte": "Présages contre Folklore : dans un village, les présages sont du folklore et le folklore est fait de présages. L'usage réel à la table est presque identique, mais le don porte enfin un nom dès la création.\n\nSeconde vue contre Mains agiles : le talent le moins employé de l'échelon contre celui qui installe tout. Il apporte peu de puissance et beaucoup de personnage. Il rend aussi cohérente la chaîne officielle, Perception de la magie apparaissant à l'échelon 3 sans que rien ne l'ait précédée.\n\nLe reste de la matière était déjà là : Sixième sens et Harmonisation aethyrique au deuxième échelon, Perception de la magie au troisième. Il manquait un nom, pas des règles."}, {"titre": "Le présage en séance · outil de MJ", "texte": "Facultatif, hors carrière. À l'initiative du MJ, pas de la joueuse.\n\nUne fois par séance, un test de Savoir (Présages) permet de distiller un indice sous forme d' image ambiguë , jamais d'information claire. Une couleur, un objet, un geste, un nom.\n\nUn échec ne donne rien de faux : il donne une image qui se rapporte à autre chose, et que la table interprétera de travers d'elle-même. C'est le meilleur usage du talent Seconde vue.\n\nMJ : l'outil sert à placer des fils narratifs, pas à résoudre des énigmes. S'il commence à donner des réponses, il faut le retirer."}]}};
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, set, push }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+let db = null, refCarrieres = null;
+try {
+  const app = initializeApp(window.FIREBASE_CONFIG || {});
+  db = getDatabase(app);
+  refCarrieres = ref(db, "carrieres");
+} catch (e) { console.error(e); }
+
+const FICHES = window.FICHES_MAISON || {};
+const zone = document.getElementById('fiches');
+let existantes = [];   // [{ cle, libelle }]
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function compte(fiche) {
+  let c = 0, t = 0, p = 0;
+  (fiche.echelons || []).forEach(e => {
+    c += (e.competences || []).length;
+    t += (e.talents || []).length;
+    p += (e.possessions || []).length;
+  });
+  return c + ' compétences · ' + t + ' talents · ' + p + ' possessions · '
+       + (fiche.regles || []).length + ' encadrés de règles';
+}
+
+// --- construction des cartes
+Object.keys(FICHES).forEach((nom, i) => {
+  const f = FICHES[nom];
+  const bloc = document.createElement('div');
+  bloc.className = 'fiche';
+  bloc.innerHTML =
+    '<h2>' + esc(f.titre) + '</h2>' +
+    '<div class="meta">' + esc(f.soustitre) + '</div>' +
+    '<div class="resume">' + esc(f.description) + '</div>' +
+    '<div class="chiffres">' + esc(compte(f)) + '</div>' +
+    '<div class="actions">' +
+      '<button data-act="creer" data-i="' + i + '">Créer une nouvelle fiche</button>' +
+      '<span class="sep">ou remplacer</span>' +
+      '<select data-sel="' + i + '"><option value="">— choisir une fiche existante —</option></select>' +
+      '<button class="danger" data-act="remplacer" data-i="' + i + '" disabled>Remplacer</button>' +
+    '</div>' +
+    '<div class="etat" data-etat="' + i + '"></div>';
+  zone.appendChild(bloc);
+});
+
+const NOMS = Object.keys(FICHES);
+
+function etat(i, cls, txt) {
+  const el = document.querySelector('[data-etat="' + i + '"]');
+  if (el) { el.className = 'etat ' + cls; el.textContent = txt; }
+}
+
+// --- liste des fiches déjà en base
+if (refCarrieres) {
+  onValue(refCarrieres, snap => {
+    const data = snap.val() || {};
+    existantes = Object.entries(data)
+      .filter(([k]) => k !== 'carriere-template')
+      .map(([k, v]) => ({
+        cle: k,
+        libelle: ((v && v.titre && v.titre.trim()) ? v.titre.trim() : 'Sans titre') +
+                 '  (' + k.slice(-6) + ')'
+      }))
+      .sort((a, b) => a.libelle.localeCompare(b.libelle, 'fr'));
+    document.querySelectorAll('select[data-sel]').forEach(sel => {
+      const garde = sel.value;
+      sel.innerHTML = '<option value="">— choisir une fiche existante —</option>' +
+        existantes.map(e => '<option value="' + esc(e.cle) + '">' + esc(e.libelle) + '</option>').join('');
+      if (garde) sel.value = garde;
+      sel.dispatchEvent(new Event('change'));
+    });
+  }, e => {
+    NOMS.forEach((_, i) => etat(i, 'err', 'Base injoignable : ' + e.message));
+  });
+} else {
+  NOMS.forEach((_, i) => etat(i, 'err', 'Firebase indisponible.'));
+}
+
+zone.addEventListener('change', ev => {
+  const sel = ev.target.closest('select[data-sel]');
+  if (!sel) return;
+  const i = sel.dataset.sel;
+  const btn = zone.querySelector('button[data-act="remplacer"][data-i="' + i + '"]');
+  if (btn) btn.disabled = !sel.value;
+});
+
+zone.addEventListener('click', ev => {
+  const btn = ev.target.closest('button[data-act]');
+  if (!btn) return;
+  const i = +btn.dataset.i;
+  const nom = NOMS[i];
+  const fiche = JSON.parse(JSON.stringify(FICHES[nom]));
+
+  if (!refCarrieres) { etat(i, 'err', 'Firebase indisponible.'); return; }
+
+  if (btn.dataset.act === 'creer') {
+    fiche.cree = Date.now();
+    etat(i, 'wait', 'création en cours…');
+    const r = push(refCarrieres);
+    set(r, fiche)
+      .then(() => etat(i, 'ok', 'Fiche créée. Ouvrir : carriere-template.html?c=' + r.key))
+      .catch(e => etat(i, 'err', 'Échec : ' + e.message));
+    return;
+  }
+
+  const sel = zone.querySelector('select[data-sel="' + i + '"]');
+  const cle = sel && sel.value;
+  if (!cle) { etat(i, 'err', 'Aucune fiche sélectionnée.'); return; }
+  const libelle = (existantes.find(e => e.cle === cle) || {}).libelle || cle;
+  if (!confirm('Remplacer intégralement la fiche « ' + libelle +' » par ' + fiche.titre + ' ?\n\nCette action est immédiate et sans annulation.')) return;
+  fiche.cree = Date.now();
+  etat(i, 'wait', 'remplacement en cours…');
+  set(ref(db, 'carrieres/' + cle), fiche)
+    .then(() => etat(i, 'ok', 'Fiche remplacée. Ouvrir : carriere-template.html?c=' + cle))
+    .catch(e => etat(i, 'err', 'Échec : ' + e.message));
+});
+</script>
+</body>
+</html>

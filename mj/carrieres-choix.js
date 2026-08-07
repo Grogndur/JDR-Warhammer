@@ -53,8 +53,9 @@
     for (var i = 0; i < 4; i++) {
       var e = c.ech[i] || {};
       d.echelons.push({
+        nom: e.nom || '',
         stTier: e.tier || '', stRang: e.rang || '',
-        description: e.nom || '',
+        description: '',
         competences: (e.competences || []).map(function (x) { return { nom: x.nom, desc: '' }; }),
         talents: (e.talents || []).map(function (x) { return { nom: x.nom, desc: '' }; }),
         possessions: (e.possessions || []).map(function (x) { return { nom: x.nom, desc: '' }; })
