@@ -150,6 +150,18 @@
   body.verrouille .statut-tier { pointer-events:none; }
   body.verrouille .regle-titre { pointer-events:none; }
   body.verrouille .zone-hint { display:none !important; }
+  .entry-info { flex-shrink:0; width:26px; height:26px; border-radius:2px; background:rgba(184,146,42,0.12);
+               border:1px solid rgba(184,146,42,0.35); color:var(--GLD-LT); cursor:pointer; font-size:0.8rem;
+               line-height:1; transition:all 0.15s; }
+  .entry-info:hover { background:rgba(184,146,42,0.26); border-color:rgba(184,146,42,0.6); }
+  .entry.ouvert .entry-info { background:rgba(184,146,42,0.26); }
+  .entry-cat { display:none; margin-top:0.5rem; padding:0.55rem 0.75rem; border-left:2px solid rgba(184,146,42,0.45);
+               background:rgba(184,146,42,0.07); font-size:0.86rem; line-height:1.55; color:var(--parchment-dark); }
+  .entry.ouvert .entry-cat { display:block; }
+  .entry-cat .cat-meta { font-family:'Cinzel',serif; font-size:0.58rem; letter-spacing:0.09em; text-transform:uppercase;
+               color:var(--SUB); margin-bottom:0.3rem; }
+  body.verrouille .entry-top { cursor:pointer; }
+
   .lecture-note { font-size:0.72rem; font-style:italic; color:var(--SUB); letter-spacing:0.03em; }
   body.deverrouille .lecture-note { display:none; }
   @media print { .lock-btn, .lecture-note { display:none !important; } }
@@ -165,7 +177,7 @@
   @media print {
     * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
     @page { margin:14mm; }
-    nav, .tool-btn, .sync-dot, .add-btn, .entry-del,
+    nav, .tool-btn, .sync-dot, .add-btn, .entry-del, .entry-info, .lock-btn,
     .illus-btns, .illus-hint, .zone-hint, .footnote,
     .alerte, .empty-hint, .illus-empty { display:none !important; }
     body { background:#fff !important; color:#221c10; }
@@ -185,6 +197,9 @@
     .entry { border-color:#d8caa0; border-left-color:#b8922a; background:#fff; break-inside:avoid; }
     .entry-nom { color:#2a2114; border:none; font-weight:600; }
     .entry-desc { color:#332b18; }
+    .entry-cat { display:block !important; background:#f7f3e6 !important; color:#332b18 !important;
+                 border-left:2px solid #b8922a !important; break-inside:avoid; }
+    .entry-cat .cat-meta { color:#6a5a2a !important; }
     .ech-desc { color:#332b18; font-style:italic; }
     .echelon-head { color:#8a6d2a; border-color:#d8caa0; }
     .echelon-label { color:#8a6d2a; }
@@ -300,6 +315,103 @@ const ECHELONS = [1,2,3,4];
 
 // ---------- Export PDF (impression du navigateur -> Enregistrer en PDF) ----------
 document.getElementById('export-pdf').addEventListener('click', () => window.print());
+
+// ---------- Catalogues de talents et de compétences ----------
+// Les effets officiels ne sont jamais recopiés dans la carrière : ils sont lus en direct
+// depuis outils/talents et outils/competences. Corriger le catalogue met à jour toutes les fiches.
+const CATALOGUE = { talents: {}, competences: {} };
+
+function catTableau(x) {
+  if (Array.isArray(x)) return x;
+  if (x && typeof x === 'object') {
+    return Object.keys(x).sort((a, b) => a - b).map(k => x[k]);
+  }
+  return [];
+}
+
+function catNorm(v) {
+  return String(v == null ? '' : v)
+    .replace(/[◆✦]/g, '')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase().replace(/[’']/g, "'").replace(/\s+/g, ' ').trim();
+}
+
+function catRacine(v) {
+  const s = String(v == null ? '' : v);
+  const i = s.indexOf('(');
+  return (i > 0 ? s.slice(0, i) : s).trim();
+}
+
+function catIndexer(donnees, cible, entete) {
+  if (!donnees) return;
+  catTableau(donnees.groups).forEach(g => {
+    catTableau(g && g.sections).forEach(sec => {
+      if (!sec || sec.kind !== 'table') return;
+      const cols = catTableau(sec.cols);
+      if (cols.length !== 4 || catNorm(cols[0]) !== entete) return;
+      catTableau(sec.rows).forEach(r => {
+        const c = catTableau(r && r.c);
+        if (!c[0]) return;
+        const fiche = {
+          nom: String(c[0]).replace(/[◆✦]/g, '').trim(),
+          col1: cols[1] + ' : ' + (c[1] || '–'),
+          col2: cols[2] + ' : ' + (c[2] || '–'),
+          effet: c[3] || ''
+        };
+        const cle = catNorm(c[0]);
+        const racine = catNorm(catRacine(c[0]));
+        if (!cible[cle]) cible[cle] = fiche;
+        if (racine && !cible[racine]) cible[racine] = fiche;
+      });
+    });
+  });
+}
+
+function chercherCatalogue(type, nom) {
+  const t = (type === 'talents') ? CATALOGUE.talents : CATALOGUE.competences;
+  if (!nom) return null;
+  return t[catNorm(nom)] || t[catNorm(catRacine(nom))] || null;
+}
+
+function remplirCatalogue(row) {
+  const type = row.dataset.type;
+  if (type !== 'competences' && type !== 'talents') return;
+  const zone = row.querySelector('.entry-cat');
+  const info = row.querySelector('.entry-info');
+  const nom = row.querySelector('.entry-nom');
+  if (!zone || !info || !nom) return;
+  const f = chercherCatalogue(type, nom.value);
+  if (!f) {
+    zone.textContent = '';
+    info.style.display = 'none';
+    row.classList.remove('ouvert');
+    return;
+  }
+  info.style.display = '';
+  const meta = document.createElement('div');
+  meta.className = 'cat-meta';
+  meta.textContent = f.nom + ' · ' + f.col1 + ' · ' + f.col2;
+  const txt = document.createElement('div');
+  txt.textContent = f.effet;
+  zone.textContent = '';
+  zone.appendChild(meta);
+  zone.appendChild(txt);
+}
+
+function rafraichirCatalogues() {
+  document.querySelectorAll('.entry[data-type]').forEach(remplirCatalogue);
+}
+
+if (db) {
+  onValue(ref(db, 'outils/talents/donnees'), snap => {
+    catIndexer(snap.val(), CATALOGUE.talents, 'talent');
+    rafraichirCatalogues();
+  }, () => {});
+  onValue(ref(db, 'outils/competences/donnees'), snap => {
+    catIndexer(snap.val(), CATALOGUE.competences, 'competence');
+    rafraichirCatalogues();
+  }, () => {});
+}
 
 // ---------- Verrou de lecture ----------
 // Toute fiche s'ouvre verrouillée : sur téléphone, un défilement ne doit jamais
@@ -606,16 +718,34 @@ function rendreListe(ei, type) {
     const ph = (type === 'possessions')
       ? 'Quantité, détail, état…'
       : 'Description, spécialisation, condition d\'acquisition…';
+    const estCat = (type === 'competences' || type === 'talents');
+    row.dataset.type = type;
     row.innerHTML =
       '<div class="entry-top">' +
         '<input class="entry-nom" placeholder="Nom">' +
+        (estCat ? '<button class="entry-info" type="button" title="Effet officiel">&#9432;</button>' : '') +
         '<button class="entry-del" title="Supprimer">×</button>' +
       '</div>' +
-      '<textarea class="entry-desc" placeholder="' + ph + '"></textarea>';
+      '<textarea class="entry-desc" placeholder="' + ph + '"></textarea>' +
+      (estCat ? '<div class="entry-cat"></div>' : '');
     const nom = row.querySelector('.entry-nom');
     const desc = row.querySelector('.entry-desc');
     nom.value = e.nom; desc.value = e.desc;
-    nom.addEventListener('input', () => { state.echelons[ei][type][i].nom = nom.value; programmerSauvegarde(); });
+    if (estCat) {
+      const info = row.querySelector('.entry-info');
+      info.addEventListener('click', ev => { ev.stopPropagation(); row.classList.toggle('ouvert'); });
+      row.querySelector('.entry-top').addEventListener('click', ev => {
+        if (!document.body.classList.contains('verrouille')) return;
+        if (ev.target.closest('.entry-info, .entry-del')) return;
+        row.classList.toggle('ouvert');
+      });
+      remplirCatalogue(row);
+    }
+    nom.addEventListener('input', () => {
+      state.echelons[ei][type][i].nom = nom.value;
+      if (estCat) remplirCatalogue(row);
+      programmerSauvegarde();
+    });
     desc.addEventListener('input', () => { state.echelons[ei][type][i].desc = desc.value; autoGrow(desc); programmerSauvegarde(); });
     row.querySelector('.entry-del').addEventListener('click', () => {
       state.echelons[ei][type].splice(i, 1); rendreListe(ei, type); programmerSauvegarde();
