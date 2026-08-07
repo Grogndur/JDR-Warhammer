@@ -128,6 +128,31 @@
   /* Pliage des échelons */
   .fold-btn { background:transparent; border:none; color:var(--GLD-LT); cursor:pointer; font-size:0.8rem; line-height:1; padding:0.1rem 0.25rem; transition:transform 0.15s ease, color 0.15s; }
   .fold-btn:hover { color:var(--parchment); }
+
+  /* ---------- Mode lecture (verrou) ---------- */
+  .lock-btn { background:rgba(139,26,26,0.16); border:1px solid rgba(139,26,26,0.45); color:#e0a0a0;
+              font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase;
+              padding:0.32rem 0.7rem; border-radius:2px; cursor:pointer; transition:all 0.15s; margin-left:auto; }
+  .lock-btn:hover { background:rgba(139,26,26,0.3); border-color:rgba(200,120,120,0.6); }
+  body.deverrouille .lock-btn { background:rgba(184,146,42,0.14); border-color:rgba(184,146,42,0.5); color:var(--GLD-LT); }
+  body.deverrouille .lock-btn:hover { background:rgba(184,146,42,0.28); }
+  #export-pdf { margin-left:0.5rem; }
+
+  body.verrouille input, body.verrouille textarea, body.verrouille select { cursor:default; }
+  body.verrouille input:focus, body.verrouille textarea:focus, body.verrouille select:focus { outline:none; border-color:inherit; }
+  body.verrouille .carac-chip { cursor:default; pointer-events:none; }
+  body.verrouille .add-btn, body.verrouille .entry-del,
+  body.verrouille .illus-btns { display:none !important; }
+  body.verrouille .illus-hint { display:none !important; }
+  body.verrouille .entry-row .entry-nom, body.verrouille .entry-row .entry-desc { pointer-events:none; }
+  body.verrouille .titre-input, body.verrouille .soustitre-input, body.verrouille .desc-input,
+  body.verrouille .ech-nom, body.verrouille .statut-rang { pointer-events:none; }
+  body.verrouille .statut-tier { pointer-events:none; }
+  body.verrouille .regle-titre { pointer-events:none; }
+  body.verrouille .zone-hint { display:none !important; }
+  .lecture-note { font-size:0.72rem; font-style:italic; color:var(--SUB); letter-spacing:0.03em; }
+  body.deverrouille .lecture-note { display:none; }
+  @media print { .lock-btn, .lecture-note { display:none !important; } }
   .echelon-label { cursor:pointer; }
   .echelon-card.collapsed .fold-btn { transform:rotate(-90deg); }
   .echelon-card.collapsed .echelon-head { margin-bottom:0; border-bottom:none; }
@@ -188,7 +213,8 @@
   <a href="index.html">Accueil</a>
   <span class="nav-sep">·</span>
   <span class="nav-current">Carrière</span>
-  <button class="tool-btn" id="export-pdf" type="button">⭳ Exporter en PDF</button>
+  <button class="lock-btn" id="btn-verrou" type="button" title="Passer en édition">🔒 Lecture seule</button>
+  <button class="tool-btn" id="export-pdf" type="button" style="margin-left:0.5rem">⭳ Exporter en PDF</button>
   <div class="sync-dot" id="sync"><span class="pip"></span><span id="sync-txt">connexion…</span></div>
 </nav>
 
@@ -235,7 +261,7 @@
     </div>
   </div>
 
-  <div class="footnote" id="foot">Enregistrement automatique · synchronisé en temps réel</div>
+  <div class="footnote" id="foot">Enregistrement automatique · synchronisé en temps réel<br><span class="lecture-note">Fiche ouverte en lecture seule. Bouton « Lecture seule » en haut de page pour éditer.</span></div>
 
 </div>
 
@@ -274,6 +300,44 @@ const ECHELONS = [1,2,3,4];
 
 // ---------- Export PDF (impression du navigateur -> Enregistrer en PDF) ----------
 document.getElementById('export-pdf').addEventListener('click', () => window.print());
+
+// ---------- Verrou de lecture ----------
+// Toute fiche s'ouvre verrouillée : sur téléphone, un défilement ne doit jamais
+// modifier une valeur ni activer une caractéristique par mégarde.
+const btnVerrou = document.getElementById('btn-verrou');
+let verrouille = true;
+
+function appliquerVerrou() {
+  document.body.classList.toggle('verrouille', verrouille);
+  document.body.classList.toggle('deverrouille', !verrouille);
+  document.querySelectorAll('input, textarea, select').forEach(el => {
+    if (el.type === 'file') { el.disabled = verrouille; return; }
+    if (el.tagName === 'SELECT') { el.disabled = verrouille; }
+    else { el.readOnly = verrouille; }
+    el.tabIndex = verrouille ? -1 : 0;
+  });
+  btnVerrou.textContent = verrouille ? '🔒 Lecture seule' : '✎ Édition active';
+  btnVerrou.title = verrouille ? 'Passer en édition' : 'Repasser en lecture seule';
+}
+
+btnVerrou.addEventListener('click', () => {
+  verrouille = !verrouille;
+  appliquerVerrou();
+  if (!verrouille) {
+    try { window.scrollTo({ top: window.scrollY }); } catch (e) {}
+  }
+});
+
+// Les échelons et les entrées sont créés dynamiquement : on réapplique le verrou
+// à chaque ajout de contenu dans la page.
+let reappliquer = null;
+new MutationObserver(() => {
+  if (!verrouille) return;
+  clearTimeout(reappliquer);
+  reappliquer = setTimeout(appliquerVerrou, 40);
+}).observe(document.body, { childList: true, subtree: true });
+
+appliquerVerrou();
 
 let state = {
   titre:'', soustitre:'', description:'', image:'',
