@@ -748,7 +748,6 @@
           <span class="statut-label">Statut social</span>
           <div class="statut-fields">
             <select class="statut-tier" id="statut-tier" onchange="updateStatut()">
-              <option>Airain</option>
               <option selected>Bronze</option>
               <option>Argent</option>
               <option>Or</option>
@@ -1515,7 +1514,7 @@ let state = {
      Obstiné pour la Détermination. Zéro pour un personnage qui ne les a pas. */
   chancePlus: 0, determPlus: 0,
   career: { carriere:'', num:'', echelon:'' },
-  statut: { tier:'Airain', rank:0 },
+  statut: { tier:'Bronze', rank:0 },
   money: { or:0, argent:0, cuivre:0 },
   notes: '', cet: { corruption:'', mutations:'', maladies:'', etats:'' },
   libres: { 'traits-raciaux':'', 'amb-courte':'', 'amb-longue':'', 'amb-motivation':'', 'traits-plus':'', 'traits-minus':'', 'histo':'' },
@@ -1892,6 +1891,10 @@ function updateStatut() {
 }
 function renderStatut() {
   if(!state.statut) return;
+  /* Les premières fiches employaient « Airain » pour le premier échelon de Statut.
+     Les carrières officielles disent Bronze, et l'option a été retirée de la liste :
+     sans cette reprise, une fiche ancienne afficherait un menu vide. */
+  if(state.statut.tier === 'Airain') { state.statut.tier = 'Bronze'; save(); }
   var t=document.getElementById('statut-tier'), r=document.getElementById('statut-rank');
   if(t && state.statut.tier!==undefined) t.value=state.statut.tier;
   if(r && state.statut.rank!==undefined) r.value=state.statut.rank;
