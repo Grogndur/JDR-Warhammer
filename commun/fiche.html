@@ -291,6 +291,14 @@
   .fortune-input.fortune-max { color:var(--GLD); }
   .fortune-input.fortune-cur { color:var(--parchment); }
   .fortune-hint { font-size:0.62rem; color:var(--SUB); font-family:"Cinzel",serif; height:1.1em; }
+  /* Rehaussement de plafond accordé par un talent : discret, et invisible tant
+     qu'il vaut zéro, pour ne pas encombrer la fiche de qui n'a pas le talent. */
+  .fortune-plus { display:flex; align-items:center; gap:0.15rem; margin-top:0.2rem;
+                  font-family:"Cinzel",serif; font-size:0.7rem; color:var(--SUB); opacity:0.45;
+                  transition:opacity 0.15s; cursor:help; }
+  .fortune-plus:hover, .fortune-plus:focus-within { opacity:1; color:var(--GLD); }
+  .fortune-input.fortune-plus-in { width:30px; font-size:0.72rem; padding:0.1rem 0;
+                  color:inherit; background:transparent; border-color:rgba(255,255,255,0.08); }
   .fortune-arrow { color:var(--SUB); font-size:1.1rem; align-self:center; margin-top:0.6rem; }
   /* ══ AFFICHAGE PALIERS D'AUGMENTATION (XP) ══ */
   .xp-badge { display:inline-flex; align-items:center; gap:0.3rem; font-family:"Cinzel",serif; font-size:0.56rem; letter-spacing:0.02em; padding:0.12rem 0.4rem; border-radius:2px; cursor:pointer; border:1px solid rgba(184,146,42,0.35); background:rgba(184,146,42,0.07); color:var(--SUB); white-space:nowrap; transition:all 0.15s; user-select:none; }
@@ -709,6 +717,7 @@
           <span class="fortune-lbl">Chance</span>
           <input class="fortune-input fortune-cur" type="number" min="0" id="chance-input" value="4" onchange="updateFortune('chance',this.value)" />
           <span class="fortune-hint" id="chance-hint">/ 4</span>
+          <label class="fortune-plus" title="Talent Chanceux : le maximum de Points de Chance devient le nombre de Points de Destin, plus le niveau de talent.">+<input class="fortune-input fortune-plus-in" type="number" min="0" id="chance-plus" value="0" onchange="updateFortune('chancePlus',this.value)" /></label>
         </div>
       </div>
     </div>
@@ -725,6 +734,7 @@
           <span class="fortune-lbl">Détermination</span>
           <input class="fortune-input fortune-cur" type="number" min="0" id="determ-input" value="2" onchange="updateFortune('determ',this.value)" />
           <span class="fortune-hint" id="determ-hint">/ 2</span>
+          <label class="fortune-plus" title="Talent Obstiné : ajoute son niveau au maximum de la réserve de Détermination.">+<input class="fortune-input fortune-plus-in" type="number" min="0" id="determ-plus" value="0" onchange="updateFortune('determPlus',this.value)" /></label>
         </div>
       </div>
     </div>
@@ -1501,6 +1511,9 @@ let state = {
   marche: 4,
   profOpen: { radar:false, gauge:false },
   destin: 0, chance: 0, resil: 0, determ: 0,
+  /* Rehaussements de plafond accordés par un talent : Chanceux pour la Chance,
+     Obstiné pour la Détermination. Zéro pour un personnage qui ne les a pas. */
+  chancePlus: 0, determPlus: 0,
   career: { carriere:'', num:'', echelon:'' },
   statut: { tier:'Airain', rank:0 },
   money: { or:0, argent:0, cuivre:0 },
@@ -1555,7 +1568,7 @@ function load() {
   const raw = localStorage.getItem('template_v1');
   if (raw) try {
     const saved = JSON.parse(raw);
-    ['portrait','wounds','woundsMax','marche','destin','chance','resil','determ','notes'].forEach(k => { if (saved[k]!==undefined) state[k]=saved[k]; });
+    ['portrait','wounds','woundsMax','marche','destin','chance','resil','determ','chancePlus','determPlus','notes'].forEach(k => { if (saved[k]!==undefined) state[k]=saved[k]; });
     if (saved.profOpen)  Object.assign(state.profOpen, saved.profOpen);
     if (saved.money)     Object.assign(state.money, saved.money);
     if (saved.cet)       Object.assign(state.cet, saved.cet);
@@ -1885,25 +1898,44 @@ function renderStatut() {
 }
 
 // ══════ DESTIN/CHANCE · RÉSILIENCE/DÉTERMINATION ══════
+/* Le plafond de Chance vaut normalement le Destin, et celui de Détermination
+   la Résilience. Deux talents relèvent ces plafonds : Chanceux ajoute son niveau
+   au maximum de Chance, Obstiné au maximum de Détermination. Le petit champ « + »
+   porte ce niveau, et vaut zéro pour qui n'a pas le talent. */
+function plafondChance() {
+  return (parseInt(state.destin)||0) + (parseInt(state.chancePlus)||0);
+}
+function plafondDetermination() {
+  return (parseInt(state.resil)||0) + (parseInt(state.determPlus)||0);
+}
 function renderFortune() {
   if(state.destin===undefined) state.destin=1;
   if(state.resil===undefined) state.resil=1;
-  if((parseInt(state.chance)||0) > (parseInt(state.destin)||0)) state.chance=state.destin;
-  if((parseInt(state.determ)||0) > (parseInt(state.resil)||0)) state.determ=state.resil;
+  if((parseInt(state.chance)||0) > plafondChance()) state.chance=plafondChance();
+  if((parseInt(state.determ)||0) > plafondDetermination()) state.determ=plafondDetermination();
   var set=function(id,v){ var el=document.getElementById(id); if(el) el.value=v; };
   set('destin-input', parseInt(state.destin)||0);
   set('chance-input', parseInt(state.chance)||0);
+  set('chance-plus',  parseInt(state.chancePlus)||0);
   set('resil-input',  parseInt(state.resil)||0);
   set('determ-input', parseInt(state.determ)||0);
-  var ch=document.getElementById('chance-hint'); if(ch) ch.textContent='/ '+(parseInt(state.destin)||0);
-  var dh=document.getElementById('determ-hint'); if(dh) dh.textContent='/ '+(parseInt(state.resil)||0);
+  set('determ-plus',  parseInt(state.determPlus)||0);
+  /* Le rappel affiche le plafond réel, et signale d'où vient le supplément. */
+  var p=parseInt(state.chancePlus)||0;
+  var ch=document.getElementById('chance-hint');
+  if(ch){ ch.textContent='/ '+plafondChance(); ch.title = p ? 'Destin '+(parseInt(state.destin)||0)+' + '+p+' (Chanceux)' : ''; }
+  var q=parseInt(state.determPlus)||0;
+  var dh=document.getElementById('determ-hint');
+  if(dh){ dh.textContent='/ '+plafondDetermination(); dh.title = q ? 'Résilience '+(parseInt(state.resil)||0)+' + '+q+' (Obstiné)' : ''; }
 }
 function updateFortune(field,val) {
   var v=Math.max(0,parseInt(val)||0);
-  if(field==='destin') { state.destin=v; if((parseInt(state.chance)||0)>v) state.chance=v; }
-  else if(field==='chance') { state.chance=Math.min(v, parseInt(state.destin)||0); }
-  else if(field==='resil') { state.resil=v; if((parseInt(state.determ)||0)>v) state.determ=v; }
-  else if(field==='determ') { state.determ=Math.min(v, parseInt(state.resil)||0); }
+  if(field==='destin')          { state.destin=v; if((parseInt(state.chance)||0)>plafondChance()) state.chance=plafondChance(); }
+  else if(field==='chancePlus') { state.chancePlus=v; if((parseInt(state.chance)||0)>plafondChance()) state.chance=plafondChance(); }
+  else if(field==='chance')     { state.chance=Math.min(v, plafondChance()); }
+  else if(field==='resil')      { state.resil=v; if((parseInt(state.determ)||0)>plafondDetermination()) state.determ=plafondDetermination(); }
+  else if(field==='determPlus') { state.determPlus=v; if((parseInt(state.determ)||0)>plafondDetermination()) state.determ=plafondDetermination(); }
+  else if(field==='determ')     { state.determ=Math.min(v, plafondDetermination()); }
   save();
   renderFortune();
 }
@@ -2139,7 +2171,7 @@ function importJSON(input) {
   reader.onload = e => {
     try {
       const saved = JSON.parse(e.target.result);
-      ['portrait','wounds','woundsMax','marche','destin','chance','resil','determ','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
+      ['portrait','wounds','woundsMax','marche','destin','chance','resil','determ','chancePlus','determPlus','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
       if(saved.profOpen) Object.assign(state.profOpen, saved.profOpen);
       if(saved.money) Object.assign(state.money, saved.money);
       if(saved.cet) Object.assign(state.cet, saved.cet);
