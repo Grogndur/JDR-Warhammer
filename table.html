@@ -46,6 +46,21 @@
     // { nom: "Carte de Reikland",        url: "images/reikland.png" },
   ];
 
+  // --- Fichiers à ne PAS faire apparaître dans le menu Image. ---
+  // Utile quand une image est remplacée par une meilleure version sous un autre
+  // nom : l'ancienne reste dans le dossier mais disparaît de la liste.
+  window.IMAGES_MASQUEES = [
+    "Vorrn.png"
+  ];
+
+  // --- Noms d'affichage personnalisés (facultatif). ---
+  // Par défaut la Table nettoie le nom de fichier toute seule. Mets une entrée
+  // ici seulement quand le résultat automatique ne te convient pas.
+  window.NOMS_IMAGES = {
+    "Chef Skritt_tch.png": "Chef Skritt'tch",
+    "Troll d Eau 1.png":   "Troll d'Eau 1"
+  };
+
   // --- Dossier des sons d'ambiance (préfixe ajouté automatiquement). ---
   // Tes .mp3 vont au MÊME endroit que tes images : le dossier "gallerie".
   window.DOSSIER_SONS = "gallerie/";
@@ -806,9 +821,15 @@ function groupeImg(fichier){
 // on détache le numéro de tête. Les traits d'union sont conservés, sans quoi
 // "Klein-Hohenfels" et "hausse-col" seraient abîmés.
 function joliNomImage(f){
-  let base = f.split("/").pop().replace(/\.[^.]+$/, "");
-  base = base.replace(/([A-Za-zÀ-ÿ])_([A-Za-zÀ-ÿ])/g, "$1'$2")   // l_arbre -> l'arbre
-             .replace(/_/g, " ")                                  // les autres soulignés
+  const fichier = f.split("/").pop();
+  const force = (window.NOMS_IMAGES || {})[fichier];
+  if(force) return force;
+  let base = fichier.replace(/\.[^.]+$/, "");
+  // Les apostrophes sont écrites en souligné dans les noms de fichiers, mais
+  // seulement après un mot d'une lettre : "l_arbre" -> "l'arbre", tandis que
+  // "Vorrn_l_Immense" -> "Vorrn l'Immense".
+  base = base.replace(/(^|[\s_])([ldnsjctmLDNSJCTM])_(?=[A-Za-zÀ-ÿ])/g, "$1$2'")
+             .replace(/_/g, " ")
              .replace(/\s+/g, " ").trim();
   const m = base.match(RE_NUM);
   return m ? m[1] + " · " + m[2] : base;
@@ -816,6 +837,8 @@ function joliNomImage(f){
 
 function ajouterImageAuMenu(url, nom){
   if(!url) return;
+  const fichier = url.split("/").pop();
+  if((window.IMAGES_MASQUEES || []).some(x => x === fichier || x === url)) return;
   if(Array.from(selImg.options).some(o => o.value === url)) return;
   const o = document.createElement("option");
   o.value = url;
