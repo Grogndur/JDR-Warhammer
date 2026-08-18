@@ -744,6 +744,9 @@ function lienImageDirect(u){
   if(!/^https?:\/\//i.test(u) && !u.includes("/")){
     u = (window.DOSSIER_IMAGES || "") + u;
   }
+  // Les noms contiennent des espaces, des virgules et des accents : on encode,
+  // sauf si l'adresse est déjà encodée (présence d'un %).
+  if(!u.includes("%")) u = encodeURI(u);
   return u;
 }
 // Le préfixe affiché dans l'interface suit la configuration du haut du fichier.
@@ -761,28 +764,54 @@ $("#vider-img").addEventListener("click", ()=> pousserImage(null));
 const gal    = $("#galerie");
 const selImg = $("#img-choix");
 
-// Rangement par préfixe de nom de fichier : "env-..." et "pnj-..." forment
-// deux groupes, le reste tombe dans "Autres". Les groupes n'apparaissent
-// que s'ils contiennent quelque chose.
+// Rangement automatique, d'après les noms de fichiers réellement présents
+// dans "gallerie/". Aucun renommage nécessaire :
+//   "07-Le cercle de pierres et l_arbre 1.png" -> Environnements, "07 · Le cercle de pierres et l'arbre 1"
+//   "Karkiss Tonnerek.png"                     -> Personnages et créatures
+//   "Old-World-Map-Empire-1.jpg"               -> Cartes et divers
+const RE_NUM   = /^(\d{1,3})\s*[-_.]\s*(.+)$/;
+const RE_DIVERS = /(map|carte|world|plan|town|bani?ere|banni[eè]re|blason|logo|texture|fond|background)/i;
+
 const GROUPES_IMG = [
-  { cle:"env", nom:"Environnements" },
-  { cle:"pnj", nom:"Personnages et créatures" },
-  { cle:"",    nom:"Autres" }
+  { cle:"env",    nom:"Environnements" },
+  { cle:"pnj",    nom:"Personnages et créatures" },
+  { cle:"divers", nom:"Cartes et divers" }
 ];
 const groupesImg = {};
+
+function cleGroupeImg(fichier){
+  const base = fichier.split("/").pop().replace(/\.[^.]+$/, "");
+  if(RE_NUM.test(base))    return "env";
+  if(RE_DIVERS.test(base)) return "divers";
+  return "pnj";
+}
+
 function groupeImg(fichier){
-  const base = fichier.split("/").pop().toLowerCase();
-  const g = GROUPES_IMG.find(x => x.cle && base.startsWith(x.cle + "-")) || GROUPES_IMG[GROUPES_IMG.length-1];
-  if(!groupesImg[g.cle]){
+  const cle = cleGroupeImg(fichier);
+  if(!groupesImg[cle]){
+    const g = GROUPES_IMG.find(x => x.cle === cle);
     const og = document.createElement("optgroup");
     og.label = g.nom;
-    groupesImg[g.cle] = og;
+    groupesImg[cle] = og;
     // insertion à la bonne place, pour que l'ordre des groupes reste stable
     const rang = GROUPES_IMG.indexOf(g);
     const apres = GROUPES_IMG.slice(rang + 1).map(x => groupesImg[x.cle]).find(Boolean);
     selImg.insertBefore(og, apres || null);
   }
-  return groupesImg[g.cle];
+  return groupesImg[cle];
+}
+
+// Les noms de fichiers sont déjà lisibles : on retire seulement l'extension,
+// on remet les apostrophes écrites en underscore ("l_arbre" -> "l'arbre") et
+// on détache le numéro de tête. Les traits d'union sont conservés, sans quoi
+// "Klein-Hohenfels" et "hausse-col" seraient abîmés.
+function joliNomImage(f){
+  let base = f.split("/").pop().replace(/\.[^.]+$/, "");
+  base = base.replace(/([A-Za-zÀ-ÿ])_([A-Za-zÀ-ÿ])/g, "$1'$2")   // l_arbre -> l'arbre
+             .replace(/_/g, " ")                                  // les autres soulignés
+             .replace(/\s+/g, " ").trim();
+  const m = base.match(RE_NUM);
+  return m ? m[1] + " · " + m[2] : base;
 }
 
 function ajouterImageAuMenu(url, nom){
@@ -790,7 +819,7 @@ function ajouterImageAuMenu(url, nom){
   if(Array.from(selImg.options).some(o => o.value === url)) return;
   const o = document.createElement("option");
   o.value = url;
-  o.textContent = nom || url;
+  o.textContent = nom || joliNomImage(url);
   groupeImg(url).appendChild(o);
 }
 
@@ -1634,14 +1663,7 @@ $("#prefixe-son").textContent = window.DOSSIER_SONS || "";
 
   // "foret-de-nuit_02.mp3"  ->  "Foret de nuit 02"
   function joliNom(f){
-    let base = f.replace(/\.[^.]+$/, "");
-    // "env-03-grenzstadt" -> "03 · Grenzstadt" ; le préfixe de rangement disparaît
-    const m = base.match(/^(env|pnj)-(\d+)[-_](.+)$/i);
-    if(m){
-      const t = m[3].replace(/[-_]+/g, " ").trim();
-      return m[2] + " · " + t.charAt(0).toUpperCase() + t.slice(1);
-    }
-    base = base.replace(/[-_]+/g, " ").trim();
+    const base = f.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim();
     return base.charAt(0).toUpperCase() + base.slice(1);
   }
 
@@ -1665,7 +1687,7 @@ $("#prefixe-son").textContent = window.DOSSIER_SONS || "";
       });
 
       // Galerie d'images : on remplit le menu déroulant
-      fichiers.filter(f => EXT_IMAGE.test(f)).forEach(f => ajouterImageAuMenu(f, joliNom(f)));
+      fichiers.filter(f => EXT_IMAGE.test(f)).forEach(f => ajouterImageAuMenu(f));
     })
     .catch(() => { /* silencieux : les listes manuelles prennent le relais */ });
 })();
@@ -1674,7 +1696,8 @@ function urlSon(f){
   f = (f||"").trim();
   if(!f) return "";
   if(/^https?:\/\//i.test(f) || f.includes("/")) return f;     // URL ou chemin complet
-  return (window.DOSSIER_SONS || "") + f;                        // simple nom de fichier
+  const u = (window.DOSSIER_SONS || "") + f;                     // simple nom de fichier
+  return u.includes("%") ? u : encodeURI(u);
 }
 
 function appliquerAmb(a){
