@@ -310,6 +310,7 @@
   .jet.fumble .marque{color:var(--oxblood-clair);font-weight:600;font-style:normal}
 
   .galerie{display:flex;gap:6px;flex-wrap:wrap}
+  #img-choix,#amb-choix{max-width:230px}
   .galerie button{font-size:12px}
 
   .secret-res{font-family:"Cinzel",serif;color:var(--parchemin-doux);font-size:14px}
@@ -539,7 +540,8 @@
 
     <div class="grp gm-only">
       <div class="ligne">
-        <label for="img-url">Image</label>
+        <label for="img-choix">Image</label>
+        <select id="img-choix"></select>
         <span class="prefixe-img" id="prefixe-img">gallerie/</span>
         <input type="text" id="img-url" placeholder="nom-image.jpg" />
         <button class="primaire" id="afficher-img">Afficher</button>
@@ -755,13 +757,58 @@ $("#img-url").addEventListener("keydown", e=>{
 });
 $("#vider-img").addEventListener("click", ()=> pousserImage(null));
 
-// Galerie
-const gal = $("#galerie");
-(window.GALERIE||[]).forEach(item=>{
-  const b = document.createElement("button");
-  b.textContent = item.nom || item.url;
-  b.addEventListener("click", ()=> pousserImage(item.url));
-  gal.appendChild(b);
+// Galerie : menu déroulant, alimenté par la liste manuelle puis par GitHub
+const gal    = $("#galerie");
+const selImg = $("#img-choix");
+
+// Rangement par préfixe de nom de fichier : "env-..." et "pnj-..." forment
+// deux groupes, le reste tombe dans "Autres". Les groupes n'apparaissent
+// que s'ils contiennent quelque chose.
+const GROUPES_IMG = [
+  { cle:"env", nom:"Environnements" },
+  { cle:"pnj", nom:"Personnages et créatures" },
+  { cle:"",    nom:"Autres" }
+];
+const groupesImg = {};
+function groupeImg(fichier){
+  const base = fichier.split("/").pop().toLowerCase();
+  const g = GROUPES_IMG.find(x => x.cle && base.startsWith(x.cle + "-")) || GROUPES_IMG[GROUPES_IMG.length-1];
+  if(!groupesImg[g.cle]){
+    const og = document.createElement("optgroup");
+    og.label = g.nom;
+    groupesImg[g.cle] = og;
+    // insertion à la bonne place, pour que l'ordre des groupes reste stable
+    const rang = GROUPES_IMG.indexOf(g);
+    const apres = GROUPES_IMG.slice(rang + 1).map(x => groupesImg[x.cle]).find(Boolean);
+    selImg.insertBefore(og, apres || null);
+  }
+  return groupesImg[g.cle];
+}
+
+function ajouterImageAuMenu(url, nom){
+  if(!url) return;
+  if(Array.from(selImg.options).some(o => o.value === url)) return;
+  const o = document.createElement("option");
+  o.value = url;
+  o.textContent = nom || url;
+  groupeImg(url).appendChild(o);
+}
+
+// Première entrée neutre, pour pouvoir revenir à la saisie manuelle.
+(function(){
+  const vide = document.createElement("option");
+  vide.value = "";
+  vide.textContent = "— choisir une image —";
+  selImg.appendChild(vide);
+})();
+
+(window.GALERIE||[]).forEach(item => ajouterImageAuMenu(item.url, item.nom));
+
+// Un choix dans la liste affiche l'image immédiatement, comme pour l'ambiance.
+selImg.addEventListener("change", ()=>{
+  if(!selImg.value) return;
+  $("#img-url").value = "";
+  pousserImage(lienImageDirect(selImg.value));
 });
 
 // ============ Zoom + déplacement + dessin sur le plateau ============
@@ -1587,7 +1634,14 @@ $("#prefixe-son").textContent = window.DOSSIER_SONS || "";
 
   // "foret-de-nuit_02.mp3"  ->  "Foret de nuit 02"
   function joliNom(f){
-    const base = f.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim();
+    let base = f.replace(/\.[^.]+$/, "");
+    // "env-03-grenzstadt" -> "03 · Grenzstadt" ; le préfixe de rangement disparaît
+    const m = base.match(/^(env|pnj)-(\d+)[-_](.+)$/i);
+    if(m){
+      const t = m[3].replace(/[-_]+/g, " ").trim();
+      return m[2] + " · " + t.charAt(0).toUpperCase() + t.slice(1);
+    }
+    base = base.replace(/[-_]+/g, " ").trim();
     return base.charAt(0).toUpperCase() + base.slice(1);
   }
 
@@ -1610,15 +1664,8 @@ $("#prefixe-son").textContent = window.DOSSIER_SONS || "";
         selAmb.appendChild(o);
       });
 
-      // Galerie d'images
-      const dejaImg = new Set((window.GALERIE || []).map(i => i.url));
-      fichiers.filter(f => EXT_IMAGE.test(f)).forEach(f => {
-        if(dejaImg.has(f)) return;
-        const b = document.createElement("button");
-        b.textContent = joliNom(f);
-        b.addEventListener("click", () => pousserImage(lienImageDirect(f)));
-        gal.appendChild(b);
-      });
+      // Galerie d'images : on remplit le menu déroulant
+      fichiers.filter(f => EXT_IMAGE.test(f)).forEach(f => ajouterImageAuMenu(f, joliNom(f)));
     })
     .catch(() => { /* silencieux : les listes manuelles prennent le relais */ });
 })();
