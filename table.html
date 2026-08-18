@@ -147,11 +147,18 @@
   header .retour{pointer-events:auto;font-family:"Cinzel",serif;font-size:12px;letter-spacing:.04em;
     color:var(--parchemin-doux);text-decoration:none;transition:color .15s ease}
   header .retour:hover{color:var(--laiton)}
-  .dock-poignee{position:fixed;left:50%;bottom:0;transform:translateX(-50%);z-index:29;
+  .dock-poignee{position:fixed;left:12px;bottom:0;z-index:29;
     height:18px;line-height:16px;padding:0 20px;font-size:11px;cursor:pointer;
     border:1px solid var(--bord);border-bottom:0;border-radius:8px 8px 0 0;
     background:linear-gradient(180deg,var(--surface-2),var(--surface));color:var(--laiton)}
-  .dock-poignee:active{transform:translateX(-50%) translateY(1px)}
+  .dock-poignee:active{transform:translateY(1px)}
+  .entete-poignee{position:fixed;left:12px;top:0;z-index:29;
+    height:18px;line-height:16px;padding:0 20px;font-size:11px;cursor:pointer;
+    border:1px solid var(--bord);border-top:0;border-radius:0 0 8px 8px;
+    background:rgba(8,6,4,.92);color:var(--parchemin-doux);pointer-events:auto}
+  .entete-poignee:active{transform:translateY(-1px)}
+  header.replie{opacity:0;pointer-events:none}
+  header.replie .retour{pointer-events:none}
   .titre{display:flex;align-items:baseline;gap:.5ch;margin:0;
     position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
     white-space:nowrap;pointer-events:none}
@@ -580,6 +587,7 @@
 
   </section>
 
+  <button id="basculer-entete" class="entete-poignee" title="Masquer ou afficher le titre">▴</button>
   <button id="basculer-dock" class="dock-poignee" title="Plier ou afficher la barre">▾</button>
 
 </div>
@@ -1620,6 +1628,21 @@ function majPoignee(){
   p.style.bottom = (replie ? 0 : dock.offsetHeight) + "px";
   p.textContent = replie ? "▴" : "▾";
 }
+
+// ---------- Masquer le bandeau du haut pour dégager l'image ----------
+function majEntete(){
+  const h = document.querySelector("header"), p = $("#basculer-entete");
+  if(!h || !p) return;
+  const replie = h.classList.contains("replie");
+  p.style.top = (replie ? 0 : h.offsetHeight) + "px";
+  p.textContent = replie ? "▾" : "▴";
+}
+$("#basculer-entete").addEventListener("click", ()=>{
+  document.querySelector("header").classList.toggle("replie");
+  majEntete(); zoneDes();
+});
+window.addEventListener("resize", majEntete);
+setTimeout(majEntete, 0);
 $("#basculer-dock").addEventListener("click", ()=>{ $("#dock").classList.toggle("replie"); majPoignee(); zoneDes(); });
 window.addEventListener("resize", majPoignee);
 setTimeout(majPoignee, 0);
