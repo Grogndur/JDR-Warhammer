@@ -108,6 +108,16 @@
   .skill-field .editable-num { width:28px; font-size:0.78rem; text-align:center; }
   .skill-total { font-family:'Cinzel',serif; color:var(--GLD); font-size:0.9rem; font-weight:700; min-width:30px; text-align:right; flex-shrink:0; }
   .skill-list li > .xp-badge { flex-basis:100%; margin-left:0; }
+  /* Compétences de base groupées : la ligne mère et ses spécialisations
+     forment un seul bloc, pour qu'une colonne ne les sépare jamais. */
+  .skill-list li.skill-group { display:block; }
+  .skill-group .skill-row { display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap; }
+  .skill-group .skill-sub { display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap; margin-left:0.55rem; padding:0.22rem 0 0.22rem 0.6rem; border-left:1px solid rgba(184,146,42,0.28); }
+  .skill-group .skill-sub .skill-name { font-size:0.74rem; color:var(--SUB); }
+  .skill-group .skill-sub .skill-total { font-size:0.8rem; }
+  .grp-toggle { cursor:pointer; user-select:none; color:var(--acc2); font-size:0.6rem; width:0.7rem; flex-shrink:0; opacity:0.8; }
+  .grp-toggle:hover { opacity:1; }
+  .grp-hint { font-size:0.6rem; color:var(--SUB); opacity:0.65; font-style:italic; }
   @media(max-width:700px){ .skill-list { column-count:1; } }
   .del-btn { color:rgba(139,26,26,0.4); cursor:pointer; font-size:0.72rem; flex-shrink:0; transition:color 0.15s; }
   .del-btn:hover { color:#e08080; }
@@ -1383,7 +1393,7 @@ const SKILLS_BASE_SECOURS = [
   { name:'Chevaucher',              car:'Ag',  aug:0, bonus:0 },
   { name:'Commandement',            car:'Soc', aug:0, bonus:0 },
   { name:'Conduite d\'attelage',    car:'Ag',  aug:0, bonus:0 },
-  { name:'Corps à corps (Base)',    car:'CC',  aug:0, bonus:0 },
+  { name:'Corps à corps',           car:'CC',  aug:0, bonus:0 },
   { name:'Discrétion',              car:'Ag',  aug:0, bonus:0 },
   { name:'Divertissement',          car:'Soc', aug:0, bonus:0 },
   { name:'Emprise sur les animaux', car:'FM',  aug:0, bonus:0 },
@@ -1409,18 +1419,78 @@ function carAffichage(c) {
   return c === 'E' ? 'End' : (c === 'I' ? 'Ini' : c);
 }
 
-/* Corps à corps est groupée : sur la fiche de base, c'est la spécialisation
-   Base qui figure, comme sur la fiche officielle. */
-const SPEC_BASE_PAR_DEFAUT = { 'Corps à corps': 'Base' };
+/* Cinq compétences de base sont Groupées dans le livre : Art, Chevaucher,
+   Corps à corps, Discrétion et Divertissement. Chaque Spécialisation y est une
+   compétence à part entière, avec ses propres Augmentations ; les
+   Augmentations d'une Spécialisation ne profitent jamais aux autres. La seule
+   chose que la ligne mère apporte, c'est le droit d'être testée sans
+   entraînement : une Spécialisation non travaillée se joue à la
+   Caractéristique brute, là où une compétence Avancée non travaillée ne se
+   joue pas du tout. La fiche affiche donc la mère, puis ses Spécialisations
+   décalées en dessous. */
+const GROUPEES_BASE_SECOURS = {
+  'Art':            ['Cartographie','Gravure','Mosaïque','Peinture','Sculpture','Tatouage','Tissage','Écriture'],
+  'Chevaucher':     ['Cheval','Grand Loup','Griffon','Demigriffon','Pégase'],
+  'Corps à corps':  ['Arme d\'hast','Arme à deux mains','Bagarre','Base','Cavalerie','Escrime','Fléau','Parade'],
+  'Discrétion':     ['Rurale','Souterrains','Urbaine'],
+  'Divertissement': ['Chant','Comédie','Discours','Interprétation','Narration','Raillerie'],
+};
+
+/* Les Spécialisations sont lues dans le catalogue officiel de la page, pour
+   que la fiche et les menus de choix parlent des mêmes listes. */
+const GROUPEES_BASE = (function () {
+  var C = window.CATALOGUE, m = {}, n = 0;
+  if (C && C.competences) C.competences.forEach(function (c) {
+    if (!c.av && Array.isArray(c.sp) && c.sp.length) { m[c.n] = c.sp.slice(); n++; }
+  });
+  return n ? m : GROUPEES_BASE_SECOURS;
+})();
+
+/* Table de rattrapage : retrouver le nom exact d'une compétence groupée à
+   partir d'une orthographe approchée venue d'une vieille sauvegarde. */
+const GROUPEES_CLES = (function () {
+  var m = {};
+  Object.keys(GROUPEES_BASE).forEach(function (k) { m[cleComp(k)] = k; });
+  return m;
+})();
+
+/* Rend le nom canonique si la ligne est une compétence mère groupée. */
+function nomGroupee(nom) {
+  return GROUPEES_CLES[cleComp(nom)] || null;
+}
+
+/* Rend { parent, spec } si la ligne est une Spécialisation d'une groupée de
+   base : « Discrétion (Rurale) » donne Discrétion et Rurale. */
+function specGroupee(nom) {
+  var m = /^([^(]+)\(([^)]*)\)\s*$/.exec(String(nom || ''));
+  if (!m) return null;
+  var p = nomGroupee(m[1]);
+  return p ? { parent: p, spec: m[2].trim() } : null;
+}
+
+/* Développe les 25 compétences de base : chaque groupée donne sa ligne mère,
+   puis une ligne par Spécialisation. */
+function developperGroupees(liste) {
+  var out = [];
+  liste.forEach(function (d) {
+    out.push(d);
+    var sp = GROUPEES_BASE[d.name];
+    if (sp) sp.forEach(function (s) {
+      out.push({ name: d.name + ' (' + s + ')', car: d.car, aug: 0, bonus: 0 });
+    });
+  });
+  return out;
+}
 
 const SKILLS_BASE_DEF = (function () {
-  var C = window.CATALOGUE;
-  if (!C || !C.competences || !C.competences.length) return SKILLS_BASE_SECOURS;
-  var l = C.competences.filter(function (c) { return !c.av; }).map(function (c) {
-    var sp = SPEC_BASE_PAR_DEFAUT[c.n];
-    return { name: c.n + (sp ? ' (' + sp + ')' : ''), car: carAffichage(c.c), aug: 0, bonus: 0 };
-  });
-  return l.length === 25 ? l : SKILLS_BASE_SECOURS;
+  var C = window.CATALOGUE, base = SKILLS_BASE_SECOURS;
+  if (C && C.competences && C.competences.length) {
+    var l = C.competences.filter(function (c) { return !c.av; }).map(function (c) {
+      return { name: c.n, car: carAffichage(c.c), aug: 0, bonus: 0 };
+    });
+    if (l.length === 25) base = l;
+  }
+  return developperGroupees(base);
 })();
 
 /* Reprise des anciens noms. Les premières fiches employaient une traduction
@@ -1454,9 +1524,21 @@ function migrerCompetencesBase() {
   SKILLS_BASE_DEF.forEach(function (d) { refs[cleComp(d.name)] = d; });
   var change = false, vus = {};
 
+  var presents = {};
+  state.skillsBase.forEach(function (sk) { presents[cleComp(sk.name)] = true; });
+
   state.skillsBase.forEach(function (sk) {
     var neuf = ANCIENS_NOMS_BASE[cleComp(sk.name)];
-    if (neuf && neuf !== sk.name) { sk.name = neuf; change = true; }
+    /* Le renommage est abandonné si la fiche porte déjà la ligne d'arrivée.
+       Sans ce garde-fou, la ligne mère « Corps à corps » d'une fiche déjà à
+       jour serait renommée en « Corps à corps (Base) » et viendrait écraser
+       sa propre Spécialisation. */
+    if (neuf && neuf !== sk.name && !presents[cleComp(neuf)]) {
+      delete presents[cleComp(sk.name)];
+      sk.name = neuf;
+      presents[cleComp(neuf)] = true;
+      change = true;
+    }
     var d = refs[cleComp(sk.name)];
     if (d && sk.car !== d.car) { sk.car = d.car; change = true; }
     vus[cleComp(sk.name)] = true;
@@ -1944,23 +2026,103 @@ function updateFortune(field,val) {
 }
 
 // ══════ COMPÉTENCES BASE ══════
+/* Ouverture des compétences groupées. Volontairement hors de la sauvegarde :
+   c'est un confort d'affichage, pas une donnée de personnage. */
+let groupesOuverts = {};
+
+/* Les deux champs chiffrés d'une ligne, mère ou Spécialisation. */
+function champsSkillBase(i, bonus, aug) {
+  return `<div class="skill-field" title="Bonus (Talent, etc.) — ne compte pas dans les augmentations"><span class="skill-field-lbl">Bon.</span><input class="editable-num" type="number" value="${bonus}" style="width:28px;font-size:0.78rem;color:#cda64a;border-bottom-color:rgba(184,146,42,0.2);" onchange="updateSkillBaseField(${i},'bonus',this.value)" /></div>
+      <div class="skill-field" title="Augmentation (payée en XP)"><span class="skill-field-lbl">Aug.</span><input class="editable-num" type="number" value="${aug}" style="width:28px;font-size:0.78rem;color:var(--acc2);border-bottom-color:rgba(184,146,42,0.2);" onchange="updateSkillBaseField(${i},'aug',this.value)" /></div>`;
+}
+
 function renderSkillsBase() {
   const ul=document.getElementById('skills-base-list'); ul.innerHTML='';
+
+  /* Rattachement des Spécialisations à leur compétence mère. Elles ne sont pas
+     affichées à leur rang dans la liste, mais sous la mère. */
+  const enfants={};
+  state.skillsBase.forEach((sk,idx)=>{
+    const s=specGroupee(sk.name);
+    if(s) (enfants[s.parent]=enfants[s.parent]||[]).push({ idx:idx, spec:s.spec });
+  });
+
   state.skillsBase.forEach((sk,i)=>{
-    const carV=carValeurFromLabel(sk.car);
-    const bonus=parseInt(sk.bonus)||0;
-    const aug=parseInt(sk.aug)||0;
-    const total=carV+bonus+aug;
-    const li=document.createElement('li');
-    li.innerHTML=`
-      <span class="skill-name">${sk.name} <span style="color:var(--SUB);font-size:0.7rem;">(${sk.car})</span></span>
-      <div class="skill-field" title="Bonus (Talent, etc.) — ne compte pas dans les augmentations"><span class="skill-field-lbl">Bon.</span><input class="editable-num" type="number" value="${bonus}" style="width:28px;font-size:0.78rem;color:#cda64a;border-bottom-color:rgba(184,146,42,0.2);" onchange="updateSkillBaseField(${i},'bonus',this.value)" /></div>
-      <div class="skill-field" title="Augmentation (payée en XP)"><span class="skill-field-lbl">Aug.</span><input class="editable-num" type="number" value="${aug}" style="width:28px;font-size:0.78rem;color:var(--acc2);border-bottom-color:rgba(184,146,42,0.2);" onchange="updateSkillBaseField(${i},'aug',this.value)" /></div>
-      <span class="skill-total" id="sk-base-total-${i}">${total}</span>
-      <div style="flex-basis:100%;margin-top:0.25rem;">${xpBadgeHtml(aug,'comp','sb-'+i)}</div>`;
-    ul.appendChild(li);
+    if(specGroupee(sk.name)) return;
+    const mere=nomGroupee(sk.name);
+    ul.appendChild(mere ? ligneGroupee(mere, sk, i, enfants[mere]||[]) : ligneSimple(sk, i));
   });
 }
+
+function ligneSimple(sk, i) {
+  const carV=carValeurFromLabel(sk.car);
+  const bonus=parseInt(sk.bonus)||0;
+  const aug=parseInt(sk.aug)||0;
+  const li=document.createElement('li');
+  li.innerHTML=`
+      <span class="skill-name">${sk.name} <span style="color:var(--SUB);font-size:0.7rem;">(${sk.car})</span></span>
+      ${champsSkillBase(i, bonus, aug)}
+      <span class="skill-total" id="sk-base-total-${i}">${carV+bonus+aug}</span>
+      <div style="flex-basis:100%;margin-top:0.25rem;">${xpBadgeHtml(aug,'comp','sb-'+i)}</div>`;
+  return li;
+}
+
+/* Une compétence groupée : la ligne mère, puis ses Spécialisations décalées.
+   La mère n'a pas de champs, parce qu'aucune Augmentation ne se prend à ce
+   niveau : elle affiche la Caractéristique brute, valeur à laquelle se joue
+   toute Spécialisation non travaillée. Seule exception, une vieille
+   sauvegarde qui porte encore des points sur la mère : ils restent affichés
+   et modifiables, signalés, pour être reportés sur la bonne Spécialisation. */
+function ligneGroupee(nom, sk, i, enfantsListe) {
+  const carV=carValeurFromLabel(sk.car);
+  const bonus=parseInt(sk.bonus)||0;
+  const aug=parseInt(sk.aug)||0;
+  const herite=(bonus!==0||aug!==0);
+
+  let ouvert=groupesOuverts[nom];
+  if(ouvert===undefined) {
+    ouvert=herite||enfantsListe.some(e=>(parseInt(state.skillsBase[e.idx].aug)||0)!==0 || (parseInt(state.skillsBase[e.idx].bonus)||0)!==0);
+  }
+  groupesOuverts[nom]=ouvert;
+
+  const li=document.createElement('li');
+  li.className='skill-group';
+  let html=`
+      <div class="skill-row">
+        <span class="grp-toggle" onclick="toggleGroupeBase(${i})" title="${ouvert?'Replier':'Déplier'} les spécialisations">${ouvert?'\u25be':'\u25b8'}</span>
+        <span class="skill-name">${nom} <span style="color:var(--SUB);font-size:0.7rem;">(${sk.car})</span></span>`;
+  if(herite) {
+    html+=`<span class="grp-hint" title="Valeur héritée d'une ancienne fiche : à reporter sur une spécialisation.">à reporter</span>
+        ${champsSkillBase(i, bonus, aug)}`;
+  } else {
+    html+=`<span class="grp-hint">${ouvert?'':'spécialisations'}</span>`;
+  }
+  html+=`<span class="skill-total" id="sk-base-total-${i}">${carV+bonus+aug}</span>
+      </div>`;
+  if(herite) html+=`<div style="margin-top:0.25rem;">${xpBadgeHtml(aug,'comp','sb-'+i)}</div>`;
+
+  if(ouvert) enfantsListe.forEach(e=>{
+    const es=state.skillsBase[e.idx];
+    const eb=parseInt(es.bonus)||0, ea=parseInt(es.aug)||0;
+    html+=`
+      <div class="skill-sub">
+        <span class="skill-name" title="${nom} (${e.spec})">${e.spec}</span>
+        ${champsSkillBase(e.idx, eb, ea)}
+        <span class="skill-total" id="sk-base-total-${e.idx}">${carV+eb+ea}</span>
+        <div style="flex-basis:100%;margin-top:0.2rem;">${xpBadgeHtml(ea,'comp','sb-'+e.idx)}</div>
+      </div>`;
+  });
+  li.innerHTML=html;
+  return li;
+}
+
+function toggleGroupeBase(idx) {
+  const nom=nomGroupee((state.skillsBase[idx]||{}).name);
+  if(!nom) return;
+  groupesOuverts[nom]=!groupesOuverts[nom];
+  renderSkillsBase();
+}
+
 function updateSkillBaseField(idx,field,val) {
   state.skillsBase[idx][field]=parseInt(val)||0;
   save();
