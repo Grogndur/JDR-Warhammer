@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
+<html lang="fr"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Le Domaine des Traditions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&amp;family=Crimson+Text:ital,wght@0,400;0,600;1,400&amp;display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#09090e; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
@@ -103,48 +102,44 @@ body.edition .barre-edit{display:flex}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
-<body>
+<body class="">
 
 <div class="topbar">
   <button class="tb-btn btn-menu" id="btn-menu">☰</button>
   <a class="retour" href="index-mj.html">◂ MJ</a>
   <span class="topbar-title">Le Domaine des Traditions</span>
-  <input class="search" id="recherche" type="search" placeholder="Rechercher…">
-  <button class="tb-btn" id="btn-edit">Éditer</button>
+  <input class="search" id="recherche" type="search" placeholder="Rechercher…" value="">
+  <button class="tb-btn on" id="btn-edit">Lecture</button>
   <button class="tb-btn" id="btn-push" title="Publier la version du fichier vers la base en ligne. Le fichier fait autorité.">Push</button>
 </div>
 
-<nav class="sidebar" id="sidebar"></nav>
+<nav class="sidebar" id="sidebar"><div class="toc-arc">Sommaire</div><a class="toc-lien active" href="#s0">Soins</a><a class="toc-lien" href="#s1">Soutien</a><a class="toc-lien" href="#s2">Contrôle</a><a class="toc-lien" href="#s3">Offensif</a><a class="toc-lien" href="#s4">Notes de meneur</a></nav>
 
-<main id="doc">
+<main id="doc" contenteditable="false">
 <h1 class="doc-titre">Le Domaine des Traditions</h1>
 <p class="doc-soustitre">Warhammer Fantasy Roleplay 4e · domaine maison</p>
 <p>Les Traditions ne s'apprennent pas dans un Collège. Elles se transmettent de bouche à oreille, d'une vieille femme à une plus jeune, et se pratiquent avec ce qu'on trouve : du fil, des épingles, du sel, un os, trois brins liés au bon moment. Ceux qui les pratiquent ne parlent pas de Vents de la Magie. Ils disent qu'on noue et qu'on dénoue, que certaines choses tiennent et que d'autres lâchent, et que tout se paie.</p>
-<p>C'est une magie de proximité. Elle fonctionne sur ce qu'on connaît, sur les gens dont on sait le nom, sur les maisons où l'on a dormi. Emmenez une praticienne des Traditions dans une ville où personne ne la connaît, elle deviendra presque ordinaire.</p>
-<div class="enc regle"><span class="lab">Règles du domaine</span><p><strong>Vous recevez un bonus de +10 pour Incanter ou Focaliser</strong> un Sort des Traditions dont la cible est une créature dont vous connaissez le nom véritable, ou qui se trouve dans un lieu où vous avez vécu au moins une saison entière.</p><p><strong>Les Sorts des Traditions ne peuvent jamais être lancés sans composant.</strong> Le composant fait partie de l'incantation, pas de son coût.</p><p><strong>Vous pouvez infliger un État Exténué</strong> à toute cible d'un Sort offensif des Traditions. La magie des Traditions n'ouvre pas les chairs : elle épuise, elle use, elle prend quelque chose.</p></div>
+<p>C'est une magie de proximité. Elle fonctionne bien mieux sur ce qu'on connaît, sur les gens dont on sait le nom, sur les maisons où l'on a dormi...</p>
+<div class="enc regle"><span class="lab">Règles du domaine</span><p><strong>Vous recevez un bonus de +10 pour Incanter ou Focaliser</strong> un Sort des Traditions dont la cible est une créature dont vous connaissez le nom véritable, ou qui se trouve dans un lieu où vous avez vécu au moins une saison entière.</p><p><strong>Les Sorts des Traditions ne peuvent jamais être lancés sans composant.</strong> Le composant fait partie de l'incantation, pas de son coût.</p><p><strong>Vous pouvez infliger un État Exténué</strong> à toute cible d'un Sort offensif des Traditions.&nbsp;</p></div>
 <p><strong>Composants :</strong> du fil de lin ou de crin, des épingles, du sel gris, de la cire d'abeille, des cheveux, des ongles, des dents de lait, des herbes cueillies à date fixe, des cailloux percés, un peu de pain, un peu de sang. Les composants des Traditions se trouvent partout et ne coûtent presque rien, mais ils doivent être préparés selon des règles précises que la praticienne tient de celle qui l'a formée. Vous récupérez DR+1 composants lorsque vous recherchez de la nourriture en utilisant Savoir (Herbes), ou vous pouvez les acheter pour 5 sous de cuivre chacun.</p>
-<h2>Soins</h2>
+<h2 id="s0">Soins</h2>
 <h3>Le Bon Mot</h3><p class="meta">NI : 2   ·   Portée : Toucher   ·   Cible : 1   ·   Durée : Instantané</p><p>Vous posez la main sur la blessure et vous dites ce qu'il faut dire. La cible guérit un nombre de Blessures égal à votre Bonus de Force Mentale, et perd un État Hémorragique. Une même cible ne peut bénéficier du Bon Mot qu'une fois par heure.</p>
 <h3>Reprendre le fil</h3><p class="meta">NI : 4   ·   Portée : Toucher   ·   Cible : 1   ·   Durée : Instantané</p><p>Vous cousez symboliquement la cible avec une aiguille et un fil, sans percer la peau. Retirez tous les États Hémorragique et Exténué de la cible. Si elle souffre d'une Blessure Critique dont le traitement demande un Test de Guérison, le prochain Test effectué sur elle bénéficie d'un bonus de +20.</p>
-<h3>Le Cataplasme de Sept Herbes</h3><p class="meta">NI : 6   ·   Portée : Toucher   ·   Cible : 1   ·   Durée : Instantané</p><p>Vous appliquez un emplâtre préparé à l'avance et vous le scellez d'un mot. La cible guérit 1d10 + votre Bonus de Force Mentale Blessures et perd une Maladie. Pour chaque +2 DR, vous pouvez retirer une Maladie supplémentaire, ou faire disparaître une cicatrice.</p>
-<h3>La Veillée</h3><p class="meta">NI : 9   ·   Portée : Toucher   ·   Cible : 1   ·   Durée : (Bonus de Force Mentale) heures</p><p>Vous vous asseyez près d'un mourant et vous ne vous levez pas. Une cible à 0 Blessure et souffrant d'une Blessure Critique cesse de mourir : elle ne subit plus aucun effet dégénératif de cette Blessure Critique tant que le Sort est actif, et regagne 1 Blessure par heure. Vous ne pouvez rien faire d'autre pendant ce temps que rester à son contact ; si vous interrompez la veillée, le Sort prend fin immédiatement.</p>
-<h2>Soutien</h2>
-<h3>Le Fil rouge</h3><p class="meta">NI : 3   ·   Portée : Toucher   ·   Cible : 2   ·   Durée : (Force Mentale) minutes</p><p>Vous nouez un fil autour du poignet de deux créatures consentantes. Tant qu'elles restent à portée de vue l'une de l'autre, chacune bénéficie de +10 à tous ses Tests de Calme et de Force Mentale, et sait si l'autre est blessée ou en danger. Si l'une des deux tombe à 0 Blessure, le fil casse et le Sort prend fin.</p>
-<h3>Nouer la chance</h3><p class="meta">NI : 5   ·   Portée : Toucher   ·   Cible : 1   ·   Durée : (Bonus de Force Mentale) heures</p><p>Vous faites un nœud dans un cordon et vous le glissez dans la poche de la cible. Une fois avant la fin de la Durée, la cible peut défaire le nœud pour relancer un Test raté. Le Sort prend alors fin. Pour chaque +4 DR, vous pouvez nouer un nœud supplémentaire, chacun offrant une relance.</p>
-<h3>La Ronde des noms</h3><p class="meta">NI : 7   ·   Portée : Vous   ·   Cible : ZdE (Bonus de Sociabilité) mètres   ·   Durée : (Bonus de Force Mentale) Rounds</p><p>Vous appelez vos alliés par leur nom, l'un après l'autre, à voix haute. Tous les alliés dans la Zone d'Effet dont vous prononcez le nom perdent immédiatement tous leurs États Brisé, et ne peuvent pas gagner de nouvel État Brisé tant que le Sort est actif. Vous ne pouvez nommer qu'un nombre de créatures égal à votre Bonus de Sociabilité, et seulement celles dont vous connaissez réellement le nom.</p>
-<h3>Le Silence sur la maison</h3><p class="meta">NI : 8   ·   Portée : Toucher   ·   Cible : ZdE (un bâtiment ou une clairière)   ·   Durée : (Force Mentale) heures</p><p>Vous tracez du sel gris sur le seuil et vous fermez la porte. Tant que le Sort est actif, aucun bruit produit à l'intérieur de la zone n'est audible à l'extérieur, et toute créature souhaitant franchir le seuil sans y avoir été invitée doit réussir un Test de Force Mentale Difficile (-20). Un échec l'oblige à faire demi-tour et l'empêche de réessayer avant une heure. Les créatures possédant le Trait Démoniaque ou Mort-vivant subissent une pénalité supplémentaire de -20 à ce Test.</p>
-<h2>Contrôle</h2>
+<h3>Le Cataplasme de Sept Herbes</h3><p class="meta">NI : 6   ·   Portée : Toucher   ·   Cible : 1   ·   Durée : Instantané</p><p>Vous appliquez un emplâtre préparé à l'avance et vous le scellez d'un mot. La cible guérit 1d10 + votre Bonus de Force Mentale Blessures et perd une Maladie. Pour chaque +2 DR, vous soignez de 1 Blessure supplémentaire, ou pouvez retirer une Maladie supplémentaire, ou faire disparaître une cicatrice.</p>
+<h3>La Veillée</h3><p class="meta">NI : 9   ·   Portée : Toucher   ·   Cible : 1   ·   Durée : (Bonus de Force Mentale) heures</p><p>Vous vous asseyez près d'un mourant et restez auprès de lui. Une cible à 0 Blessure et souffrant d'une Blessure Critique cesse de mourir : elle ne subit plus aucun effet dégénératif de cette Blessure Critique tant que le Sort est actif, elle est Stabilisée et regagne 1d4 Blessure par heure. Vous ne pouvez rien faire d'autre pendant ce temps que rester à son contact ; si vous interrompez la veillée, le Sort prend fin immédiatement.</p>
+<h2 id="s1">Soutien</h2>
+<h3>Le Fil rouge</h3><p class="meta">NI : 3   ·   Portée : Toucher   ·   Cible : 2   ·   Durée : (Force Mentale) minutes</p><p>Vous nouez un fil autour du poignet de deux créatures consentantes. Tant qu'elles restent à portée de vue l'une de l'autre, chacune bénéficie de +10 à tous ses Tests de Calme et de Force Mentale, en plus de gagner 1 en Mouvement s'ils'agitde se rejoindre. Si l'une des deux tombe à 0 Blessure, le fil casse et le Sort prend fin.</p>
+<h3>Nouer la chance</h3><p class="meta">NI : 5   ·   Portée : Toucher   ·   Cible : 1   ·   Durée : (Bonus de Force Mentale) heures</p><p>Vous faites un nœud dans un cordon et vous le glissez dans la poche de la cible. Une fois avant la fin de la Durée, la cible peut défaire le nœud pour relancer un Test raté. Le Sort prend alors fin. Pour chaque +2 DR, vous pouvez nouer un nœud supplémentaire, chacun offrant une relance.</p>
+<h3>La Ronde des noms</h3><p class="meta">NI : 7   ·   Portée : Vous   ·   Cible : ZdE (Bonus de Sociabilité) mètres   ·   Durée : (Bonus de Force Mentale) Rounds</p><p>Vous appelez vos alliés par leur nom, l'un après l'autre, à voix haute. Tous les alliés dans la Zone d'Effet dont vous prononcez le nom perdent immédiatement tous leurs États Brisé, et ne peuvent pas gagner de nouvel État Brisé tant que le Sort est actif. De plus, ils bénéficient de +5 en Endurance pour la durée du sort. Vous ne pouvez nommer qu'un nombre de créatures égal à votre Bonus de Sociabilité, et seulement celles dont vous connaissez réellement le nom.</p>
+<h3>Le Silence sur la maison</h3><p class="meta">NI : 8   ·   Portée : Toucher   ·   Cible : ZdE (un bâtiment ou une clairière)   ·   Durée : (Force Mentale) heures</p><p>Vous tracez du sel gris sur le seuil d'une maison, cabane, ou campement, vous "fermez la porte". Tant que le Sort est actif, aucun bruit produit à l'intérieur de la zone n'est audible à l'extérieur, et toute créature souhaitant franchir le seuil sans y avoir été invitée doit réussir un Test de Force Mentale Difficile (-20). Un échec l'oblige à faire demi-tour et l'empêche de réessayer avant une heure. Les créatures possédant le Trait Démoniaque ou Mort-vivant subissent une pénalité supplémentaire de -20 à ce Test.</p>
+<h2 id="s2">Contrôle</h2>
 <h3>Nouer la langue</h3><p class="meta">NI : 4   ·   Portée : (Force Mentale) mètres   ·   Cible : 1   ·   Durée : (Bonus de Force Mentale) Rounds</p><p>Vous serrez un nœud entre vos doigts en fixant la cible. Elle doit réussir un Test de Force Mentale opposé à votre Test de Focalisation ou se retrouver incapable de parler distinctement. Tant que le Sort est actif, elle ne peut ni crier pour donner l'alerte, ni utiliser les Compétences Charme, Commandement, Intimidation, Ragot ou Subornation, ni prononcer une incantation : tout Test de Focalisation qu'elle tente subit une pénalité de -30.</p>
-<h3>Les Trois Épingles</h3><p class="meta">NI : 6   ·   Portée : (Force Mentale) mètres   ·   Cible : 1   ·   Durée : (Bonus de Force Mentale) Rounds</p><p>Vous plantez trois épingles dans un morceau de cire en nommant la cible. Elle doit réussir un Test de Force Mentale opposé à votre Test de Focalisation ou choisir, à chaque épingle, laquelle de ses articulations se raidit. Pour chaque épingle plantée, la cible subit une pénalité de -10 en Capacité de Combat, en Agilité et en Dextérité, cumulative. Elle peut tenter un nouveau Test de Force Mentale au début de chacun de ses Tours pour retirer une épingle. Si vous perdez la cire ou qu'on vous l'arrache, le Sort prend fin.</p>
-<h2>Offensif</h2>
+<h3>Les Trois Épingles</h3><p class="meta">NI : 6   ·   Portée : (Force Mentale) mètres   ·   Cible : 1   ·   Durée : (Bonus de Force Mentale) Rounds</p><p>Vous plantez trois épingles dans un morceau de cire en nommant la cible. Elle doit réussir un Test de Force Mentale opposé à votre Test de Focalisation ou choisir, à chaque épingle, laquelle de ses articulations se raidit. Pour chaque épingle plantée, la cible subit une pénalité de -10 en Capacité de Combat, en Agilité et en Dextérité, cumulative, et est interrompue un instant. Elle peut tenter un nouveau Test de Force Mentale au début de chacun de ses Tours pour retirer une épingle. Si vous perdez la cire ou qu'on vous l'arrache, le Sort prend fin.</p>
+<h2 id="s3">Offensif</h2>
 <h3>La Piqûre</h3><p class="meta">NI : 4   ·   Portée : (Force Mentale) mètres   ·   Cible : 1   ·   Durée : Instantané</p><p>Vous enfoncez une épingle dans votre propre pouce et vous soufflez dessus. C'est un Projectile magique avec Dégâts +4 qui ignore les Points d'Armure des armures non métalliques. La cible gagne +1 État Exténué. Vous subissez 1 Blessure qui ne peut être réduite ni par les Points d'Armure ni par votre Bonus d'Endurance.</p>
-<h3>Défaire le nœud</h3><p class="meta">NI : 12   ·   Portée : (Force Mentale) mètres   ·   Cible : 1   ·   Durée : Instantané</p><p>Vous prononcez le nom véritable de la cible et vous dénouez lentement le cordon que vous teniez serré. Ce qui la tenait ensemble lâche. C'est un Projectile magique avec Dégâts +8 qui ignore les Points d'Armure et le Bonus d'Endurance, et inflige +2 États Exténué et +1 État À Terre.</p><p>De plus, la cible perd immédiatement le bénéfice de tous les Sorts, Bénédictions et Miracles actifs sur elle, ainsi que de tout charme, breloque ou talisman qu'elle porte, qui se défait ou se brise.</p><p>Si vous ne connaissez pas le nom véritable de la cible, le Sort peut être lancé mais ses Dégâts tombent à +4 et il n'inflige que +1 État Exténué, sans défaire les effets actifs.</p>
-<h2>Notes de meneur</h2>
-<div class="enc mj"><span class="lab">MJ</span><p><strong>Douze Sorts, comme un Domaine de Collège.</strong> Quatre soins, quatre soutiens, deux contrôles, deux offensifs. Les NI vont de 2 à 12, ce qui place le Domaine dans la moyenne haute en accessibilité et dans la moyenne basse en puissance brute.</p></div>
-<div class="enc mj"><span class="lab">MJ</span><p><strong>Le nom véritable est le levier du Domaine.</strong> Il donne +10 à l'incantation, il conditionne La Ronde des noms, et il double presque la puissance de Défaire le nœud. Une praticienne qui prend le temps d'apprendre les noms des gens joue mieux que celle qui monte sa Force Mentale.</p></div>
+<h3>Défaire le nœud</h3><p class="meta">NI : 12   ·   Portée : (Force Mentale) mètres   ·   Cible : 1   ·   Durée : Instantané</p><p>Vous prononcez le nom véritable de la cible et vous dénouez lentement le cordon que vous teniez serré. Comme si ce qui la tenait debout, articulée, mobile... lâchait. C'est un Projectile magique avec Dégâts +8 qui ignore les Points d'Armure et le Bonus d'Endurance, et inflige +2 États Exténué et +1 État À Terre.</p><p>De plus, sur un 50/50, la cible perd immédiatement le bénéfice de tous les Sorts, Bénédictions et Miracles actifs sur elle, ainsi que de tout charme, breloque ou talisman qu'elle porte, qui se défait ou se brise.</p><p>Si vous ne connaissez pas le nom véritable de la cible, le Sort peut être lancé mais ses Dégâts tombent à +4 et il n'inflige que +1 État Exténué, sans pouvoir défaire les effets actifs.</p>
+<h2 id="s4">Notes de meneur</h2>
 <div class="enc mj"><span class="lab">MJ</span><p><strong>Le Domaine n'a aucun sort de zone offensif.</strong> C'est volontaire. Les Traditions frappent une personne à la fois, parce qu'elles s'adressent à une personne à la fois.</p></div>
-<div class="enc mj"><span class="lab">MJ</span><p><strong>Défaire le nœud est une arme contre les lanceurs de sorts et les combattants protégés.</strong> Retirer d'un coup tous les effets actifs et briser les talismans en fait un sort de contre plutôt qu'un sort de dégâts.</p></div>
-<div class="enc mj"><span class="lab">MJ</span><p><strong>La Piqûre coûte une Blessure à chaque usage.</strong> C'est le prix qui empêche d'en faire une attaque de base.</p></div>
 </main>
 
 <div class="barre-edit">
@@ -363,5 +358,6 @@ body.edition .barre-edit{display:flex}
   });
 })();
 </script>
-</body>
-</html>
+
+
+</body></html>
