@@ -100,15 +100,18 @@ body.edition .barre-edit{display:flex}
   .enc{background:#f7f3e8;border-color:#c9bd9e}
 }
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
 <body>
 
 <div class="topbar">
   <button class="tb-btn btn-menu" id="btn-menu">☰</button>
-  <a class="retour" href="../index.html">← Accueil</a>
+  <a class="retour" href="index-mj.html">◂ MJ</a>
   <span class="topbar-title">Le Domaine des Traditions</span>
   <input class="search" id="recherche" type="search" placeholder="Rechercher…">
   <button class="tb-btn" id="btn-edit">Éditer</button>
+  <button class="tb-btn" id="btn-push" title="Publier la version du fichier vers la base en ligne. Le fichier fait autorité.">Push</button>
 </div>
 
 <nav class="sidebar" id="sidebar"></nav>
@@ -156,9 +159,9 @@ body.edition .barre-edit{display:flex}
   <button class="eb" id="eb-gras">Gras</button>
   <button class="eb" id="eb-ital">Italique</button>
   <span class="sep"></span>
-  <button class="eb" id="eb-brouillon">Enregistrer le brouillon</button>
-  <button class="eb" id="eb-restaurer">Restaurer</button>
-  <button class="eb" id="eb-oublier">Oublier</button>
+  <button class="eb" id="eb-brouillon">Enregistrer en ligne</button>
+  <button class="eb" id="eb-restaurer">Recharger la base</button>
+  <button class="eb" id="eb-oublier">Revenir au fichier</button>
   <span class="sep"></span>
   <button class="eb" id="eb-export">Exporter le fichier</button>
   <span class="etat" id="etat"></span>
@@ -169,7 +172,6 @@ body.edition .barre-edit{display:flex}
   const $  = s => document.querySelector(s);
   const $$ = s => Array.from(document.querySelectorAll(s));
   const doc = $("#doc");
-  const CLE = "mj-doc:" + location.pathname.split("/").pop();
 
   /* ---------- sommaire construit à la volée ---------- */
   function sommaire(){
@@ -265,23 +267,76 @@ body.edition .barre-edit{display:flex}
   $("#eb-gras").addEventListener("click", () => document.execCommand("bold"));
   $("#eb-ital").addEventListener("click", () => document.execCommand("italic"));
 
-  /* ---------- brouillon local, silencieux si indisponible ---------- */
-  function dire(msg){ $("#etat").textContent = msg; setTimeout(() => { $("#etat").textContent = ""; }, 4000); }
+  /* ---------- synchronisation Firebase, comme les autres outils MJ ---------- */
+  function dire(msg){ $("#etat").textContent = msg; setTimeout(() => { $("#etat").textContent = ""; }, 5000); }
+
+  const FB_CONFIG = {
+    apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+    authDomain: "warhammer-table-jdr.firebaseapp.com",
+    databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "warhammer-table-jdr",
+    storageBucket: "warhammer-table-jdr.firebasestorage.app",
+    messagingSenderId: "347804803970",
+    appId: "1:347804803970:web:43e062299c53e59d20e59b"
+  };
+  const RACINE = "outils/domaine-traditions";
+  const CONTENU_FICHIER = doc.innerHTML;
+  let db = null, refData = null, refSave = null;
+  try {
+    if(typeof firebase !== "undefined"){
+      if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+      db = firebase.database();
+      refData = db.ref(RACINE + "/donnees");
+      refSave = db.ref(RACINE + "/sauvegardes");
+    }
+  } catch(e){ console.warn("Firebase indisponible :", e); }
+
+  /* Au chargement, la base fait autorité sur le fichier, comme pour le scénario. */
+  if(refData){
+    refData.once("value").then(snap => {
+      const v = snap.val();
+      if(v && typeof v.html === "string" && v.html.length > 200){
+        doc.innerHTML = v.html;
+        sommaire();
+        dire("Version en ligne chargée.");
+      }
+    }).catch(() => dire("Base injoignable, affichage du fichier."));
+  }
+
   $("#eb-brouillon").addEventListener("click", () => {
-    try { localStorage.setItem(CLE, doc.innerHTML); dire("Brouillon enregistré dans ce navigateur."); }
-    catch(e){ dire("Ce navigateur refuse l'enregistrement local. Utilise l'export."); }
+    if(!refData){ dire("Base injoignable. Utilise l'export."); return; }
+    refData.set({ html: doc.innerHTML, ts: Date.now() })
+      .then(() => dire("Enregistré en ligne."))
+      .catch(() => dire("Échec de l'enregistrement."));
   });
   $("#eb-restaurer").addEventListener("click", () => {
-    try {
-      const v = localStorage.getItem(CLE);
-      if(!v){ dire("Aucun brouillon enregistré."); return; }
-      doc.innerHTML = v; sommaire(); dire("Brouillon restauré.");
-    } catch(e){ dire("Lecture impossible dans ce navigateur."); }
+    if(!refData){ dire("Base injoignable."); return; }
+    refData.once("value").then(snap => {
+      const v = snap.val();
+      if(!v || !v.html){ dire("Rien en ligne."); return; }
+      doc.innerHTML = v.html; sommaire(); dire("Version en ligne rechargée.");
+    });
   });
   $("#eb-oublier").addEventListener("click", () => {
-    try { localStorage.removeItem(CLE); dire("Brouillon effacé."); } catch(e){ dire("Rien à effacer."); }
+    doc.innerHTML = CONTENU_FICHIER; sommaire();
+    dire("Contenu du fichier restauré à l'écran. Clique sur Push pour le publier.");
   });
-  try { if(localStorage.getItem(CLE)) dire("Un brouillon existe pour ce document. Bouton Restaurer."); } catch(e){}
+
+  /* Push : le fichier écrase la base, après sauvegarde de l'état précédent. */
+  $("#btn-push").addEventListener("click", () => {
+    if(!refData){ dire("Base injoignable."); return; }
+    if(!confirm("Publier la version du fichier par-dessus la base en ligne ?")) return;
+    refData.once("value").then(snap => {
+      const ancien = snap.val();
+      const p = (ancien && refSave)
+        ? refSave.push({ html: ancien.html || "", ts: Date.now() })
+        : Promise.resolve();
+      return p.then(() => refData.set({ html: CONTENU_FICHIER, ts: Date.now() }));
+    }).then(() => {
+      doc.innerHTML = CONTENU_FICHIER; sommaire();
+      dire("Fichier publié. L'état précédent est dans sauvegardes.");
+    }).catch(() => dire("Échec du Push."));
+  });
 
   /* ---------- export du fichier complet ---------- */
   $("#eb-export").addEventListener("click", () => {
