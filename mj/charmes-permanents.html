@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Charmes Permanents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#09090e; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
+  --BLU:#1C3A5A; --GLD:#B8922A; --VIO:#674EA7; --GRN:#5E804F; --SUB:#666677;
+  --CUI:#A9713B; --CUI-light:#d19a5e;
+  --blood:#8B1A1A; --blood-light:#c05050;
+  --sidebar-w:280px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--ink);color:var(--parchment);font-family:'Crimson Text',serif;font-size:17px;line-height:1.65}
+
+/* ---------- barre du haut ---------- */
+.topbar{position:fixed;top:0;left:0;right:0;height:44px;z-index:40;display:flex;align-items:center;
+  gap:.8rem;padding:0 .9rem;background:rgba(9,9,14,.96);border-bottom:1px solid rgba(255,255,255,.08)}
+.topbar a.retour{color:var(--SUB);font-size:.8rem;text-decoration:none}
+.topbar a.retour:hover{color:var(--parchment-dark)}
+.topbar-title{font-family:'Cinzel',serif;font-size:.82rem;color:var(--blood-light);
+  letter-spacing:.15em;text-transform:uppercase;flex:1}
+.tb-btn{background:rgba(139,26,26,.18);border:1px solid rgba(139,26,26,.4);color:var(--blood-light);
+  font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:.32rem .7rem;border-radius:2px;cursor:pointer}
+.tb-btn:hover{background:rgba(139,26,26,.32)}
+.tb-btn.on{background:rgba(184,146,42,.22);border-color:rgba(184,146,42,.5);color:#e0c66a}
+.search{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--parchment);
+  font-family:'Crimson Text',serif;font-size:.85rem;padding:.28rem .6rem;border-radius:2px;width:150px}
+.btn-menu{display:none}
+
+/* ---------- sommaire ---------- */
+.sidebar{position:fixed;top:44px;bottom:0;left:0;width:var(--sidebar-w);overflow-y:auto;z-index:30;
+  background:rgba(9,9,14,.98);border-right:1px solid rgba(255,255,255,.07);padding-bottom:2rem}
+.toc-arc{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--SUB);padding:1.1rem 1rem .3rem;border-top:1px solid rgba(255,255,255,.07);margin-top:.4rem}
+.toc-lien{display:block;width:100%;background:none;border:0;border-left:2px solid transparent;text-align:left;
+  font-family:'Crimson Text',serif;font-size:.9rem;color:var(--parchment-dark);
+  padding:.3rem 1rem;cursor:pointer;text-decoration:none}
+.toc-lien:hover{color:var(--parchment);background:rgba(139,26,26,.06)}
+.toc-lien.active{color:var(--parchment);background:rgba(139,26,26,.1);border-left-color:var(--blood-light)}
+
+/* ---------- contenu ---------- */
+main{margin-left:var(--sidebar-w);padding:70px 2.2rem 6rem;max-width:1000px}
+h1.doc-titre{font-family:'Cinzel',serif;font-size:2rem;color:var(--blood-light);letter-spacing:.04em;
+  text-align:center;margin-bottom:.3rem}
+p.doc-soustitre{text-align:center;color:var(--SUB);font-style:italic;margin-bottom:1.6rem}
+h2{font-family:'Cinzel',serif;font-size:1.15rem;color:var(--blood-light);letter-spacing:.06em;
+  margin:2.2rem 0 .5rem;padding-bottom:.3rem;border-bottom:1px solid rgba(139,26,26,.35);scroll-margin-top:60px}
+h3{font-family:'Cinzel',serif;font-size:.95rem;color:var(--parchment);letter-spacing:.03em;margin:1.4rem 0 .1rem}
+p{margin-bottom:.7rem}
+p.meta{font-size:.82rem;color:var(--CUI-light);font-variant:small-caps;letter-spacing:.05em;margin-bottom:.35rem}
+ul{margin:0 0 .8rem 1.4rem}
+li{margin-bottom:.25rem}
+strong{color:#fff2dd}
+em{color:var(--parchment-dark)}
+
+.enc{border:1px solid rgba(255,255,255,.1);border-left:3px solid var(--BLU);border-radius:2px;
+  background:rgba(28,58,90,.14);padding:.8rem 1rem;margin:1rem 0}
+.enc.regle{border-left-color:var(--CUI);background:rgba(169,113,59,.13)}
+.enc.mj{border-left-color:var(--BLU);background:rgba(28,58,90,.14)}
+.enc .lab{display:inline-block;font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--CUI-light);background:rgba(169,113,59,.28);
+  padding:.1rem .4rem;border-radius:2px;margin-bottom:.45rem}
+.enc.mj .lab{color:#8fb8dd;background:rgba(28,58,90,.4)}
+.enc p:last-child{margin-bottom:0}
+
+/* ---------- édition ---------- */
+body.edition [contenteditable="true"]{outline:1px dashed rgba(184,146,42,.35);outline-offset:3px;border-radius:2px}
+body.edition [contenteditable="true"]:focus{outline:1px solid var(--GLD);background:rgba(184,146,42,.06)}
+.barre-edit{position:fixed;left:0;right:0;bottom:0;z-index:45;display:none;flex-wrap:wrap;gap:.4rem;
+  align-items:center;padding:.5rem .9rem;background:rgba(9,9,14,.97);border-top:1px solid rgba(184,146,42,.3)}
+body.edition .barre-edit{display:flex}
+.barre-edit .eb{background:rgba(184,146,42,.14);border:1px solid rgba(184,146,42,.35);color:#e0c66a;
+  font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;
+  padding:.3rem .6rem;border-radius:2px;cursor:pointer}
+.barre-edit .eb:hover{background:rgba(184,146,42,.28)}
+.barre-edit .sep{width:1px;height:18px;background:rgba(255,255,255,.15);margin:0 .3rem}
+.barre-edit .etat{color:var(--SUB);font-size:.78rem;margin-left:auto}
+.surligne{background:rgba(184,146,42,.28);border-radius:2px}
+
+@media (max-width:900px){
+  .sidebar{transform:translateX(-100%);transition:transform .2s}
+  .sidebar.ouvert{transform:none}
+  main{margin-left:0;padding:64px 1rem 7rem}
+  .btn-menu{display:inline-block}
+  .search{width:110px}
+  .topbar-title{font-size:.7rem}
+}
+@media print{
+  .topbar,.sidebar,.barre-edit{display:none!important}
+  main{margin:0;padding:0;max-width:none}
+  body{background:#fff;color:#111}
+  h1.doc-titre,h2{color:#8B1A1A}
+  .enc{background:#f7f3e8;border-color:#c9bd9e}
+}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="tb-btn btn-menu" id="btn-menu">☰</button>
+  <a class="retour" href="index-mj.html">◂ MJ</a>
+  <span class="topbar-title">Les Charmes Permanents</span>
+  <input class="search" id="recherche" type="search" placeholder="Rechercher…">
+  <button class="tb-btn" id="btn-edit">Éditer</button>
+  <button class="tb-btn" id="btn-push" title="Publier la version du fichier vers la base en ligne. Le fichier fait autorité.">Push</button>
+</div>
+
+<nav class="sidebar" id="sidebar"></nav>
+
+<main id="doc">
+<h1 class="doc-titre">Les Charmes Permanents</h1>
+<p class="doc-soustitre">Warhammer Fantasy Roleplay 4e · complément au Domaine des Charmes · quarante charmes</p>
+<p>Il y a les charmes qu'on fabrique pour une occasion et qui se défont, et il y a ceux qu'on fabrique une fois pour toutes. Les seconds ne font jamais grand-chose. Une pierre qui tiédit, une chandelle qui dure, un clou qui compte les visiteurs. Aucun ne sauvera personne d'un coup d'épée.</p>
+<p>C'est pourtant à ceux-là qu'on reconnaît une vraie praticienne. Un charme permanent tient parce qu'il ne demande rien : il n'ajoute pas de puissance, il rend un service, toujours le même, indéfiniment. Les vieilles maisons de village en sont pleines sans que personne y pense, et c'est très bien ainsi.</p>
+<div class="enc regle"><span class="lab">Règles communes</span><p><strong>Aucun jet, jamais.</strong> Une fois le charme fabriqué, son effet est automatique, invariable et permanent. Ni le porteur ni la lanceuse ne lancent quoi que ce soit pour l'utiliser.</p><p><strong>Aucun charme permanent ne donne de bonus à un Test.</strong> C'est la règle qui les garde inoffensifs. Ils donnent une information, ils épargnent une corvée, ils empêchent une petite catastrophe domestique. Rien de plus.</p><p><strong>Fabrication.</strong> NI 4 pour un charme mineur, quel qu'il soit. Une journée entière de travail sans interruption, l'objet en main, et un Test d'Incantation. Un échec gâche la journée et les composants, sans autre conséquence. Composants : une Pistole de matériaux, jamais moins.</p><p><strong>Limite.</strong> Vous ne pouvez avoir en existence qu'un nombre de charmes permanents égal à votre <strong>Bonus d'Intelligence</strong>. Cette réserve est distincte de celle des charmes du Domaine, qui suit le Bonus de Force Mentale. Défaire volontairement un charme permanent demande une heure et libère la place. Détruire l'objet marche aussi.</p></div>
+<div class="enc regle"><span class="lab">Charme majeur</span><p><strong>NI 8.</strong> Une semaine entière de travail, à raison de quelques heures par jour, sans que l'ouvrage quitte l'atelier. Cinq Pistoles de composants. Un seul Test d'Incantation, à la fin. Un échec gâche la semaine.</p><p><strong>Un charme majeur occupe deux places</strong> dans votre réserve, au lieu d'une. Avec un Bonus d'Intelligence de 4, vous pouvez entretenir quatre mineurs, ou deux majeurs, ou deux mineurs et un majeur.</p><p><strong>Un charme majeur peut supprimer le besoin d'un Test</strong>, dans une circonstance étroite et nommée. Il ne donne toujours aucun bonus à un Test qui reste nécessaire. Un charme permanent ne vous rend jamais meilleure, il rend parfois le jet inutile.</p></div>
+<div class="enc mj"><span class="lab">MJ</span><p><strong>Ce sont des pièces à conviction.</strong> Un charme permanent ne s'épuise pas et ne s'efface pas. Il reste dans la maison, dans la poche, dans le tiroir, et il témoigne. Un Répurgateur qui trouve une chandelle qui refuse de s'éteindre n'a besoin de rien d'autre.</p></div>
+<h2>Mineurs · Veille et alerte</h2>
+<h3>La Pie</h3>
+<p class="meta">Une pierre percée, une coquille, un dé à coudre</p>
+<p>Le charme tiédit doucement dès qu'une pièce de monnaie, un bijou ou un objet de métal précieux se trouve abandonné, oublié ou dissimulé à moins de dix pas de lui. Il ne dit ni où, ni combien, ni à qui. Il tiédit, c'est tout, et il s'arrête dès qu'on l'éloigne ou qu'on ramasse.</p>
+<h3>Le Chien du seuil</h3>
+<p class="meta">Un clou de fer planté dans un montant de porte</p>
+<p>Le clou compte. Quand la lanceuse revient et pose la main dessus, elle sait exactement combien de personnes ont franchi ce seuil en son absence, et si l'une d'elles y est encore. Elle ne sait pas qui, ni quand, ni ce qu'elles ont fait.</p>
+<h3>Le Fil tendu</h3>
+<p class="meta">Un fil de lin tendu en travers d'un passage ou d'un tiroir</p>
+<p>Le fil est invisible à moins d'un Test de Perception Difficile (-20) délibéré. S'il est rompu, la lanceuse le sent immédiatement où qu'elle soit, comme une piqûre au poignet. Elle ne sait rien d'autre. Le fil doit être retendu à la main pour resservir.</p>
+<h3>La Chandelle qui veille</h3>
+<p class="meta">Une chandelle de suif</p>
+<p>Tant qu'elle brûle, sa flamme se penche lentement dans la direction de la créature vivante la plus proche qui se trouve hors de vue et à moins de vingt pas. S'il n'y a personne, elle brûle droit. Elle ne distingue ni l'ami de l'ennemi, ni l'homme du chat.</p>
+<h2>Mineurs · Maison et atelier</h2>
+<h3>La Braise</h3>
+<p class="meta">Un galet plat posé dans l'âtre</p>
+<p>Le feu de ce foyer ne s'éteint jamais complètement. Il reste toujours assez de braise sous la cendre pour repartir en quelques souffles, même après trois jours d'absence, même sous la pluie qui tombe par la cheminée. Il ne chauffe pas davantage et ne consomme pas moins de bois.</p>
+<h3>Le Sel sec</h3>
+<p class="meta">Un pot, un coffret, un sac de toile</p>
+<p>Ce qu'on range dedans ne prend jamais l'humidité. Le sel ne s'agglomère pas, la poudre reste utilisable, les herbes séchées ne moisissent pas, le papier ne gondole pas. Le contenant ne protège de rien d'autre : ni du feu, ni des rats, ni des voleurs.</p>
+<h3>Le Cellier</h3>
+<p class="meta">Un disque de bois posé au fond d'un récipient</p>
+<p>Le lait, le bouillon, l'eau, la bière et le vin placés dans ce récipient ne tournent pas pendant une semaine. La viande et le poisson ne s'y conservent pas mieux qu'ailleurs. Une fois le liquide sorti du récipient, il vieillit de nouveau normalement.</p>
+<h3>La Chandelle patiente</h3>
+<p class="meta">Une chandelle, une lampe à huile</p>
+<p>Elle brûle trois fois plus lentement et sa flamme ne se couche jamais, quel que soit le courant d'air. Elle s'éteint parfaitement bien si on souffle dessus volontairement, ce qui la rend moins compromettante que la légende ne le prétend.</p>
+<h2>Mineurs · Route et voyage</h2>
+<h3>Le Caillou du retour</h3>
+<p class="meta">Un caillou ramassé sur le seuil d'un lieu choisi</p>
+<p>Le caillou tiédit imperceptiblement quand celui qui le tient se tourne vers le lieu où il a été ramassé. Il ne donne ni la distance, ni le chemin, ni le temps qu'il reste. Une seule direction, et seulement celle-là. Un lieu par caillou.</p>
+<h3>Le Nœud du sac</h3>
+<p class="meta">Une lanière, une courroie, un lacet</p>
+<p>Ce nœud ne se défait jamais tout seul. Ni sous la pluie, ni en courant, ni en tombant, ni sous les doigts de quelqu'un d'autre que celui qui l'a noué. Rien ne tombe d'un sac fermé par lui. Celui qui l'a noué le défait d'un geste.</p>
+<h3>Le Cuir souple</h3>
+<p class="meta">Une paire de bottes, un baudrier, un harnais</p>
+<p>Le cuir ne durcit pas, ne craquelle pas, ne pourrit pas. Il sèche en une nuit même trempé, il ne grince pas et il ne demande jamais de graisse. Il s'use et se coupe exactement comme n'importe quel cuir.</p>
+<h3>Le Pas sec</h3>
+<p class="meta">Une paire de chausses, de bas, de semelles</p>
+<p>Les pieds de celui qui les porte restent secs et tièdes. Pas d'ampoules, pas d'engelures, pas de macération, même après trois jours de marche dans la boue. Le porteur marche exactement aussi vite qu'avant, il souffre seulement beaucoup moins.</p>
+<h2>Mineurs · Sur soi</h2>
+<h3>Le Bouton fidèle</h3>
+<p class="meta">Un vêtement entier</p>
+<p>Les coutures de ce vêtement ne lâchent pas et ses boutons ne se perdent pas : celui qui tombe se retrouve toujours dans un pli de l'ourlet le lendemain matin. Le tissu se déchire normalement, mais jamais à la couture.</p>
+<h3>La Broche du réveil</h3>
+<p class="meta">Une broche, une épingle, un cordon au poignet</p>
+<p>En s'endormant, le porteur décide de l'heure à laquelle il veut se lever. Il se réveille à cette heure exactement, doucement, sans sursaut, même s'il a peu dormi. Il n'est pas plus reposé pour autant.</p>
+<h3>Le Peigne</h3>
+<p class="meta">Un peigne de corne ou de buis</p>
+<p>Les cheveux et la barbe peignés avec ne s'emmêlent plus, ne prennent ni poux ni puces, et gardent la poussière et la graisse à distance une semaine entière. Dans un monde qui sent mauvais, c'est un luxe qu'on remarque, ce qui n'est pas toujours souhaitable.</p>
+<h3>L'Anneau du chuchotement</h3>
+<p class="meta">Une bague, un anneau de cuir, un dé à coudre</p>
+<p>Quand le porteur chuchote délibérément, sa voix ne porte pas au-delà de la longueur d'un bras, quel que soit le silence alentour. Une personne collée à lui l'entend parfaitement, une personne à deux pas n'entend rien du tout. Cela ne le rend pas discret par ailleurs.</p>
+<h2>Mineurs · Métier et marché</h2>
+<h3>La Pierre à peser</h3>
+<p class="meta">Un poids de balance, une pièce percée</p>
+<p>Posée contre un poids faussé, une pièce rognée, une mesure truquée ou une balance déréglée, la pierre refroidit nettement. Elle ne dit pas de combien on vous vole, ni si la marchandise est bonne. Elle ne détecte que la tricherie sur la mesure elle-même.</p>
+<h3>L'Aiguille</h3>
+<p class="meta">Une aiguille, une alêne, un poinçon</p>
+<p>Elle ne rouille pas, ne se tord pas et ne casse pas. Perdue, elle se retrouve dans le nécessaire de couture de sa propriétaire au bout de trois jours, où qu'elle soit tombée. C'est le charme que les praticiennes fabriquent en premier, et celui qu'elles gardent le plus longtemps.</p>
+<h3>Le Fil du puits</h3>
+<p class="meta">Un fil de laine écrue, trempé dans l'eau à examiner</p>
+<p>Le fil noircit en quelques secondes si l'eau est croupie, souillée, salée ou impropre à la boisson. Il reste écru si elle est saine. Il ne réagit ni aux poisons, ni aux drogues, ni à rien qu'on y aurait ajouté volontairement : il ne connaît que la pourriture.</p>
+<h3>Le Bol qui prévient</h3>
+<p class="meta">Une écuelle, un bol, une planche à découper</p>
+<p>Un aliment gâté, moisi ou avancé posé dessus se met à sentir franchement mauvais, immédiatement et de façon impossible à ignorer. Un aliment sain ne sent rien de particulier. Le charme ignore complètement les poisons et tout ce qui a été ajouté à dessein.</p>
+<h2>Majeurs · Veille et alerte</h2>
+<h3>Le Cordon des absents</h3>
+<p class="meta">Un cordon portant un nœud par compagnon nommé</p>
+<p>Chaque nœud est noué avec un cheveu de la personne qu'il représente, donné librement. Le nœud se relâche de lui-même dès que cette personne tombe Inconsciente, et se défait complètement si elle meurt. La lanceuse le sent sous ses doigts, où qu'elle soit, tant que la personne se trouve à moins d'une journée de marche. Le cordon ne dit ni où, ni comment, ni par qui.</p>
+<h3>Le Chat de pierre</h3>
+<p class="meta">Une petite figurine posée près du dormeur</p>
+<p>Tant que la figurine est posée à moins d'un pas de lui, le dormeur se réveille instantanément et sans un bruit dès qu'une créature vivante approche à dix pas. Aucun Test de Perception n'est nécessaire pour se réveiller, et il n'est jamais Surpris à son réveil. Il ne sait pas combien ils sont ni d'où ils viennent, et la figurine ne réagit ni aux morts-vivants ni aux Éthérés.</p>
+<h3>Le Miroir de suie</h3>
+<p class="meta">Un miroir de poche apparié à une serrure, un coffre ou une porte</p>
+<p>Passez le pouce sur le tain et le miroir montre, pendant trois battements de cœur, le visage de la dernière personne qui a ouvert l'objet apparié. Rien d'autre : ni la date, ni ce qu'elle a pris, ni ce qu'elle a dit. Le miroir ne montre qu'un seul visage, toujours le plus récent.</p>
+<h3>La Corne muette</h3>
+<p class="meta">Une petite corne, appariée à des jetons distribués</p>
+<p>Brisez la corne et tous ceux qui portent un jeton apparié le sentent chauffer brutalement, où qu'ils se trouvent dans un rayon d'une lieue. Ils savent que l'alerte vient de vous et rien de plus. La corne ne sert qu'une fois et il faut en fabriquer une autre.</p>
+<h2>Majeurs · Maison et atelier</h2>
+<h3>La Lampe sans huile</h3>
+<p class="meta">Une lampe, une lanterne, un fanal</p>
+<p>Elle éclaire comme une bonne chandelle, indéfiniment, sans huile, sans mèche et sans entretien. On l'allume et on l'éteint d'un geste de la main. Sa lumière est froide et un peu bleue, ce qui la rend impossible à faire passer pour une flamme ordinaire à qui la regarde de près.</p>
+<h3>Le Foyer</h3>
+<p class="meta">Une pierre scellée dans l'âtre ou posée au centre d'un campement</p>
+<p>Quiconque dort une nuit entière à portée de cette pierre récupère comme s'il avait dormi dans un bon lit, au chaud et le ventre plein, quelles que soient les conditions réelles. Aucun Test de Résistance n'est nécessaire contre le froid ou l'inconfort de la nuit. La pierre ne nourrit personne et ne soigne rien de plus que le repos ordinaire.</p>
+<h3>La Serrure honnête</h3>
+<p class="meta">Une serrure, un cadenas, un loquet</p>
+<p>Elle s'ouvre pour les personnes que vous avez nommées à la fabrication, jusqu'à votre Bonus d'Intelligence, et pour personne d'autre. Elle ne peut pas être crochetée : aucun Test de Mains agiles ne s'applique. Elle peut être arrachée, sciée, ou la porte défoncée, exactement comme n'importe quelle serrure.</p>
+<h3>Le Séchoir</h3>
+<p class="meta">Un râtelier, une corde à linge, un claie d'osier</p>
+<p>Ce qu'on y pose sèche complètement en une heure, quel que soit le temps. Les herbes médicinales y sèchent en une journée au lieu d'une semaine, sans rien perdre de leurs propriétés. C'est le charme qui double réellement la production d'une herboriste, et le premier que ses concurrentes remarquent.</p>
+<h2>Majeurs · Route et voyage</h2>
+<h3>La Gourde</h3>
+<p class="meta">Une gourde, une outre, un seau</p>
+<p>Toute eau versée dedans en ressort claire et potable une heure plus tard, débarrassée de la vase, du sel, de la pourriture et de tout ce qui rend malade. Aucun Test de Résistance n'est nécessaire contre les maladies transmises par l'eau bue à cette gourde. Elle ne neutralise ni les poisons ni les drogues, et ne transforme pas le vin en eau ni l'inverse.</p>
+<h3>Le Bâton du chemin</h3>
+<p class="meta">Un bâton de marche, une canne, un aiguillon</p>
+<p>Tant qu'il le tient, le porteur ne peut pas s'égarer sur une route ou un sentier qu'il a déjà parcouru une fois. Aux embranchements, sa main pousse d'elle-même. Aucun Test d'Orientation n'est nécessaire sur un chemin connu. Hors des chemins, en forêt, en montagne ou dans le brouillard, le bâton n'est qu'un bâton.</p>
+<h3>La Couverture</h3>
+<p class="meta">Une couverture, une cape, une peau</p>
+<p>Celui qui dort dessous n'a jamais froid, jamais, même à même la neige. Aucun Test de Résistance contre l'exposition au froid pendant le sommeil. Elle ne protège pas de la pluie, ne réchauffe pas quand on marche, et ne fait rien du tout pour quelqu'un d'autre que celui qui est dessous.</p>
+<h3>Le Sac léger</h3>
+<p class="meta">Un sac, une besace, une malle</p>
+<p>Tout ce qui se trouve à l'intérieur pèse la moitié de son poids réel pour celui qui porte le sac. L'Encombrement du contenu est divisé par deux, arrondi au supérieur. Le sac ne contient pas plus qu'un sac ordinaire, et rien ne pèse moins une fois sorti.</p>
+<h2>Majeurs · Sur soi</h2>
+<h3>Le Masque de foule</h3>
+<p class="meta">Un vêtement banal, un chapeau, un fichu</p>
+<p>Ceux qui croisent le porteur sans lui parler ne se souviennent pas de son visage une heure plus tard. Ils se rappellent qu'il y avait quelqu'un, ils décrivent le vêtement, jamais les traits. Une personne qui lui adresse la parole, le touche, ou l'observe délibérément plus d'une minute est immunisée et se souviendra parfaitement.</p>
+<h3>Le Fil du nom</h3>
+<p class="meta">Un fil noué autour du poignet ou de la cheville</p>
+<p>Aucun charme, aucune malédiction et aucun sort de divination visant le porteur par son nom véritable ne peut le trouver ni l'affecter. Ceux qui le visent des yeux, par une prise physique ou par contact direct fonctionnent normalement. C'est le charme que les praticiennes se fabriquent pour elles-mêmes, et celui qu'elles ne vendent presque jamais.</p>
+<h3>La Pierre de sang</h3>
+<p class="meta">Une pierre rouge portée à même la peau</p>
+<p>Les plaies du porteur ne s'infectent pas et ne suppurent jamais. Aucun Test de Résistance n'est nécessaire contre l'infection d'une blessure, et une Blessure Critique qui empire par infection cesse d'empirer. La pierre ne referme rien, ne soulage aucune douleur et n'arrête pas une hémorragie.</p>
+<h3>La Ceinture du souffle</h3>
+<p class="meta">Une ceinture, un lacet noué sur la poitrine</p>
+<p>Le porteur retient son souffle quatre fois plus longtemps qu'un homme ordinaire, et respire sans gêne dans la fumée, la poussière et l'air vicié d'une cave fermée. Il se noie exactement comme tout le monde une fois le souffle épuisé.</p>
+<h2>Majeurs · Métier et marché</h2>
+<h3>La Balance juste</h3>
+<p class="meta">Une balance, un trébuchet, une pierre à toucher</p>
+<p>Posez un objet dessus et vous connaissez sa valeur marchande réelle, à un dixième près, dans la région où vous vous trouvez. Aucun Test d'Évaluation n'est nécessaire. Elle ne dit rien de l'histoire de l'objet, de sa provenance, ni de ce qu'un acheteur particulier serait prêt à payer.</p>
+<h3>Le Mortier</h3>
+<p class="meta">Un mortier et son pilon</p>
+<p>Toute préparation d'herboristerie ou d'apothicairerie broyée dedans demande moitié moins de temps et rend deux doses au lieu d'une, à quantité de matière première égale. Le Test de Métier reste nécessaire et inchangé : le mortier ne travaille pas à votre place, il rend simplement chaque journée deux fois plus rentable.</p>
+<h3>Le Coffret du remède</h3>
+<p class="meta">Un coffret, un étui, une sacoche compartimentée</p>
+<p>Les onguents, décoctions, poudres et cataplasmes rangés dedans ne perdent jamais leur efficacité et ne se gâtent pas. Une préparation qui se conserverait trois jours s'y conserve indéfiniment. Le coffret ne contient qu'une dizaine de doses et ne protège que ce qui a été préparé.</p>
+<h3>Le Sceau</h3>
+<p class="meta">Un cachet, une bague à sceller</p>
+<p>Un document scellé avec lui ne peut pas être ouvert puis refermé sans que la cire se fende d'une façon particulière, impossible à reproduire et immédiatement visible. Personne ne peut contrefaire ce sceau, ni en tirer une empreinte. Le charme n'empêche évidemment personne de briser le sceau et de lire.</p>
+<h2>Notes de meneur</h2>
+<div class="enc mj"><span class="lab">MJ</span><p><strong>Quarante charmes, vingt mineurs et vingt majeurs, quatre par usage et par tier.</strong> Aucun ne donne de bonus à un Test, aucun ne modifie un combat. Les majeurs peuvent en revanche supprimer le besoin d'un jet dans une circonstance nommée, ce qui est leur seule vraie différence de puissance.</p></div>
+<div class="enc mj"><span class="lab">MJ</span><p><strong>Supprimer un jet vaut mieux que le faciliter.</strong> Un charme qui donne +10 se cumule, se calcule et se discute. Un charme qui dit qu'on ne lance pas contre l'infection d'une plaie retire simplement une inquiétude de la table. C'est plus fort à l'usage et beaucoup plus simple à arbitrer.</p></div>
+<div class="enc mj"><span class="lab">MJ</span><p><strong>La règle de conception, pour en créer d'autres.</strong> Un charme permanent donne une information binaire, supprime une corvée, ou empêche un petit désagrément matériel. Dès qu'un charme te fait hésiter, c'est qu'il n'est pas permanent : reverse-le dans le Domaine des Charmes avec une durée limitée.</p></div>
+<div class="enc mj"><span class="lab">MJ</span><p><strong>Les quatre majeurs à surveiller.</strong> Le Masque de foule rend une enquête difficile contre elle, et c'est voulu pour un personnage traqué : il tombe dès que quelqu'un lui parle. Le Fil du nom la protège de sa propre école de magie. La Serrure honnête retire purement le crochetage de l'équation, donc ne la donne pas à un adversaire sans y penser. Et Le Séchoir double réellement ses revenus d'herboriste, ce qui est le seul charme de la liste à peser sur l'économie du groupe.</p></div>
+<div class="enc mj"><span class="lab">MJ</span><p><strong>Ce sont des accroches, pas des outils.</strong> La Pie qui tiédit dans une pièce vide, le clou qui annonce trois visiteurs alors qu'elle n'attendait personne, la chandelle qui se penche vers un mur : chacun est une façon de donner une information au groupe sans jet de dés et sans que tu aies à la dire toi-même.</p></div>
+</main>
+
+<div class="barre-edit">
+  <button class="eb" data-ins="h2">+ Section</button>
+  <button class="eb" data-ins="h3">+ Entrée</button>
+  <button class="eb" data-ins="meta">+ Ligne technique</button>
+  <button class="eb" data-ins="p">+ Paragraphe</button>
+  <button class="eb" data-ins="ul">+ Liste</button>
+  <button class="eb" data-ins="regle">+ Encadré règle</button>
+  <button class="eb" data-ins="mj">+ Encadré MJ</button>
+  <span class="sep"></span>
+  <button class="eb" id="eb-gras">Gras</button>
+  <button class="eb" id="eb-ital">Italique</button>
+  <span class="sep"></span>
+  <button class="eb" id="eb-brouillon">Enregistrer en ligne</button>
+  <button class="eb" id="eb-restaurer">Recharger la base</button>
+  <button class="eb" id="eb-oublier">Revenir au fichier</button>
+  <span class="sep"></span>
+  <button class="eb" id="eb-export">Exporter le fichier</button>
+  <span class="etat" id="etat"></span>
+</div>
+
+<script>
+(function(){
+  const $  = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+  const doc = $("#doc");
+
+  /* ---------- sommaire construit à la volée ---------- */
+  function sommaire(){
+    const nav = $("#sidebar");
+    nav.innerHTML = "";
+    const kick = document.createElement("div");
+    kick.className = "toc-arc";
+    kick.textContent = "Sommaire";
+    nav.appendChild(kick);
+    $$("#doc h2").forEach((h, i) => {
+      if(!h.id) h.id = "s" + i;
+      const a = document.createElement("a");
+      a.className = "toc-lien";
+      a.href = "#" + h.id;
+      a.textContent = h.textContent;
+      nav.appendChild(a);
+    });
+  }
+  sommaire();
+
+  /* ---------- surlignage de la section lue ---------- */
+  const majActif = () => {
+    const hs = $$("#doc h2");
+    let cur = hs[0];
+    for(const h of hs){ if(h.getBoundingClientRect().top < 120) cur = h; }
+    $$(".toc-lien").forEach(a => a.classList.toggle("active", cur && a.getAttribute("href") === "#" + cur.id));
+  };
+  window.addEventListener("scroll", majActif, {passive:true});
+  majActif();
+
+  $("#btn-menu").addEventListener("click", () => $("#sidebar").classList.toggle("ouvert"));
+
+  /* ---------- recherche ---------- */
+  let derniere = "";
+  $("#recherche").addEventListener("input", e => {
+    const q = e.target.value.trim().toLowerCase();
+    if(q === derniere) return;
+    derniere = q;
+    $$("#doc .surligne").forEach(s => { const p = s.parentNode; p.replaceChild(document.createTextNode(s.textContent), s); p.normalize(); });
+    if(q.length < 2) return;
+    const it = document.createTreeWalker(doc, NodeFilter.SHOW_TEXT);
+    const cibles = [];
+    while(it.nextNode()){ if(it.currentNode.nodeValue.toLowerCase().includes(q)) cibles.push(it.currentNode); }
+    cibles.forEach(n => {
+      const frag = document.createDocumentFragment();
+      let reste = n.nodeValue, idx;
+      while((idx = reste.toLowerCase().indexOf(q)) !== -1){
+        frag.appendChild(document.createTextNode(reste.slice(0, idx)));
+        const m = document.createElement("mark");
+        m.className = "surligne";
+        m.textContent = reste.substr(idx, q.length);
+        frag.appendChild(m);
+        reste = reste.slice(idx + q.length);
+      }
+      frag.appendChild(document.createTextNode(reste));
+      n.parentNode.replaceChild(frag, n);
+    });
+    const p = $("#doc .surligne");
+    if(p) p.scrollIntoView({block:"center", behavior:"smooth"});
+  });
+
+  /* ---------- édition ---------- */
+  function editable(on){
+    doc.setAttribute("contenteditable", on ? "true" : "false");
+    document.body.classList.toggle("edition", on);
+    $("#btn-edit").classList.toggle("on", on);
+    $("#btn-edit").textContent = on ? "Lecture" : "Éditer";
+    if(!on) sommaire();
+  }
+  $("#btn-edit").addEventListener("click", () => editable(doc.getAttribute("contenteditable") !== "true"));
+
+  const MODELES = {
+    h2:   '<h2>Nouvelle section</h2>',
+    h3:   '<h3>Nouvelle entrée</h3>',
+    meta: '<p class="meta">NI : 0 · Portée : Toucher · Cible : 1 · Durée : Instantané</p>',
+    p:    '<p>Nouveau paragraphe.</p>',
+    ul:   '<ul><li>Premier point</li><li>Deuxième point</li></ul>',
+    regle:'<div class="enc regle"><span class="lab">Règle</span><p>Texte de la règle.</p></div>',
+    mj:   '<div class="enc mj"><span class="lab">MJ</span><p>Note de meneur.</p></div>'
+  };
+  $$(".barre-edit [data-ins]").forEach(b => b.addEventListener("click", () => {
+    const modele = MODELES[b.dataset.ins];
+    const sel = window.getSelection();
+    let hote = sel.anchorNode ? (sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentElement) : null;
+    while(hote && hote.parentElement !== doc) hote = hote.parentElement;
+    const tmp = document.createElement("div");
+    tmp.innerHTML = modele;
+    const noeud = tmp.firstElementChild;
+    if(hote) hote.after(noeud); else doc.appendChild(noeud);
+    noeud.scrollIntoView({block:"center"});
+    sommaire();
+  }));
+  $("#eb-gras").addEventListener("click", () => document.execCommand("bold"));
+  $("#eb-ital").addEventListener("click", () => document.execCommand("italic"));
+
+  /* ---------- synchronisation Firebase, comme les autres outils MJ ---------- */
+  function dire(msg){ $("#etat").textContent = msg; setTimeout(() => { $("#etat").textContent = ""; }, 5000); }
+
+  const FB_CONFIG = {
+    apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+    authDomain: "warhammer-table-jdr.firebaseapp.com",
+    databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "warhammer-table-jdr",
+    storageBucket: "warhammer-table-jdr.firebasestorage.app",
+    messagingSenderId: "347804803970",
+    appId: "1:347804803970:web:43e062299c53e59d20e59b"
+  };
+  const RACINE = "outils/charmes-permanents";
+  const CONTENU_FICHIER = doc.innerHTML;
+  let db = null, refData = null, refSave = null;
+  try {
+    if(typeof firebase !== "undefined"){
+      if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+      db = firebase.database();
+      refData = db.ref(RACINE + "/donnees");
+      refSave = db.ref(RACINE + "/sauvegardes");
+    }
+  } catch(e){ console.warn("Firebase indisponible :", e); }
+
+  /* Au chargement, la base fait autorité sur le fichier, comme pour le scénario. */
+  if(refData){
+    refData.once("value").then(snap => {
+      const v = snap.val();
+      if(v && typeof v.html === "string" && v.html.length > 200){
+        doc.innerHTML = v.html;
+        sommaire();
+        dire("Version en ligne chargée.");
+      }
+    }).catch(() => dire("Base injoignable, affichage du fichier."));
+  }
+
+  $("#eb-brouillon").addEventListener("click", () => {
+    if(!refData){ dire("Base injoignable. Utilise l'export."); return; }
+    refData.set({ html: doc.innerHTML, ts: Date.now() })
+      .then(() => dire("Enregistré en ligne."))
+      .catch(() => dire("Échec de l'enregistrement."));
+  });
+  $("#eb-restaurer").addEventListener("click", () => {
+    if(!refData){ dire("Base injoignable."); return; }
+    refData.once("value").then(snap => {
+      const v = snap.val();
+      if(!v || !v.html){ dire("Rien en ligne."); return; }
+      doc.innerHTML = v.html; sommaire(); dire("Version en ligne rechargée.");
+    });
+  });
+  $("#eb-oublier").addEventListener("click", () => {
+    doc.innerHTML = CONTENU_FICHIER; sommaire();
+    dire("Contenu du fichier restauré à l'écran. Clique sur Push pour le publier.");
+  });
+
+  /* Push : le fichier écrase la base, après sauvegarde de l'état précédent. */
+  $("#btn-push").addEventListener("click", () => {
+    if(!refData){ dire("Base injoignable."); return; }
+    if(!confirm("Publier la version du fichier par-dessus la base en ligne ?")) return;
+    refData.once("value").then(snap => {
+      const ancien = snap.val();
+      const p = (ancien && refSave)
+        ? refSave.push({ html: ancien.html || "", ts: Date.now() })
+        : Promise.resolve();
+      return p.then(() => refData.set({ html: CONTENU_FICHIER, ts: Date.now() }));
+    }).then(() => {
+      doc.innerHTML = CONTENU_FICHIER; sommaire();
+      dire("Fichier publié. L'état précédent est dans sauvegardes.");
+    }).catch(() => dire("Échec du Push."));
+  });
+
+  /* ---------- export du fichier complet ---------- */
+  $("#eb-export").addEventListener("click", () => {
+    const clone = document.documentElement.cloneNode(true);
+    const d = clone.querySelector("#doc");
+    d.setAttribute("contenteditable", "false");
+    clone.querySelector("body").classList.remove("edition");
+    clone.querySelectorAll(".surligne").forEach(m => m.replaceWith(document.createTextNode(m.textContent)));
+    clone.querySelector("#recherche").setAttribute("value", "");
+    const src = "<!DOCTYPE html>\n" + clone.outerHTML;
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([src], {type:"text/html;charset=utf-8"}));
+    a.download = "charmes-permanents.html";
+    a.click();
+    URL.revokeObjectURL(a.href);
+    dire("Fichier exporté. Remplace-le sur le dépôt.");
+  });
+
+  document.addEventListener("keydown", e => {
+    if(e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "e"){ e.preventDefault(); $("#btn-edit").click(); }
+    if(e.ctrlKey && e.key.toLowerCase() === "s" && document.body.classList.contains("edition")){
+      e.preventDefault(); $("#eb-brouillon").click();
+    }
+  });
+})();
+</script>
+</body>
+</html>
