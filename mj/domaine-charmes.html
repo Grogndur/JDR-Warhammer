@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
+<html lang="fr"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Le Domaine des Charmes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&amp;family=Crimson+Text:ital,wght@0,400;0,600;1,400&amp;display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#09090e; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
@@ -103,20 +102,20 @@ body.edition .barre-edit{display:flex}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
-<body>
+<body class="">
 
 <div class="topbar">
   <button class="tb-btn btn-menu" id="btn-menu">☰</button>
   <a class="retour" href="index-mj.html">◂ MJ</a>
   <span class="topbar-title">Le Domaine des Charmes</span>
-  <input class="search" id="recherche" type="search" placeholder="Rechercher…">
-  <button class="tb-btn" id="btn-edit">Éditer</button>
+  <input class="search" id="recherche" type="search" placeholder="Rechercher…" value="">
+  <button class="tb-btn on" id="btn-edit">Lecture</button>
   <button class="tb-btn" id="btn-push" title="Publier la version du fichier vers la base en ligne. Le fichier fait autorité.">Push</button>
 </div>
 
-<nav class="sidebar" id="sidebar"></nav>
+<nav class="sidebar" id="sidebar"><div class="toc-arc">Sommaire</div><a class="toc-lien active" href="#s0">Bénédictions et enchantements</a><a class="toc-lien" href="#s1">Malédictions</a><a class="toc-lien" href="#s2">Notes de meneur</a></nav>
 
-<main id="doc">
+<main id="doc" contenteditable="false">
 <h1 class="doc-titre">Le Domaine des Charmes</h1>
 <p class="doc-soustitre">Warhammer Fantasy Roleplay 4e · domaine maison · enchantement et malédiction d'objets</p>
 <p>Un charme n'est pas un sort qu'on jette : c'est un sort qu'on range dans quelque chose. Une pierre percée, un nœud de crin, un clou, une dent de lait, une ceinture. L'objet garde le sort à la place de celui qui l'a fait, et le rend à qui le porte. C'est pour cette raison qu'on peut vendre un charme, l'offrir, le glisser dans la poche de quelqu'un sans qu'il le sache.</p>
@@ -125,7 +124,7 @@ body.edition .barre-edit{display:flex}
 <p><strong>Reconnaître un charme.</strong> Un Test d'Intuition Difficile (-20) permet de sentir qu'un objet porté est chargé, sans savoir de quoi. Le Talent Perception de la magie ramène ce Test à Intermédiaire (+0). Un Test de Savoir (Magie) ou Savoir (Folklore) Difficile (-20) identifie l'effet exact.</p>
 <p><strong>Défaire un charme.</strong> Détruire l'objet suffit toujours. Sinon, un lanceur possédant le Talent Magie des Arcanes (Charmes) peut tenter de le dénouer par un Test de Focalisation opposé à celui de sa fabrication.</p>
 <p><strong>Composants :</strong> l'objet lui-même, plus la matière qu'on y noue. Fil de crin ou de lin, sel gris, cire, cendre de foyer, clous de fer forgés à froid, cailloux percés par l'eau, dents de lait, pain rassis, un peu de sang. Les composants coûtent 5 sous de cuivre, ou se ramassent avec Savoir (Herbes) comme pour les Traditions.</p>
-<h2>Bénédictions et enchantements</h2>
+<h2 id="s0">Bénédictions et enchantements</h2>
 <h3>Le Caillou percé</h3><p class="meta">NI : 2   ·   Portée : Toucher   ·   Cible : Un petit objet à porter sur soi   ·   Durée : (Bonus de Force Mentale) jours</p><p>Vous enfilez sur un cordon une pierre trouée par l'eau et vous soufflez dessus. Une fois par jour, le porteur peut relancer un Test raté. Il doit annoncer qu'il serre la pierre avant de connaître le résultat de la relance.</p>
 <h3>La Corde à trois nœuds</h3><p class="meta">NI : 3   ·   Portée : Toucher   ·   Cible : Une cordelette   ·   Durée : Jusqu'à épuisement</p><p>Vous nouez trois nœuds dans une cordelette en nommant trois fatigues. Le porteur peut défaire un nœud par une Action pour retirer immédiatement tous ses États Exténué, ou tous ses États Brisé, au choix. Quand le troisième nœud est défait, la cordelette n'est plus qu'une cordelette.</p>
 <h3>La Ceinture de crin</h3><p class="meta">NI : 4   ·   Portée : Toucher   ·   Cible : Une ceinture, un baudrier, une écharpe   ·   Durée : (Force Mentale) jours</p><p>Vous tressez du crin de cheval en une bande que le porteur ceint à même la peau. Il gagne +1 Point d'Armure sur le Corps et les Bras. Ce bonus ne se cumule pas avec celui d'une autre armure magique, mais s'ajoute normalement à l'armure matérielle.</p>
@@ -134,12 +133,12 @@ body.edition .barre-edit{display:flex}
 <h3>Le Clou du seuil</h3><p class="meta">NI : 7   ·   Portée : Toucher   ·   Cible : Un clou de fer, planté dans un seuil   ·   Durée : (Force Mentale) semaines</p><p>Vous forgez à froid un clou et vous l'enfoncez dans le seuil d'une porte, d'une grange ou d'une palissade. Tant que le clou est en place, aucune créature possédant le Trait Démoniaque, Mort-vivant ou Éthéré ne peut franchir ce seuil sans réussir un Test de Force Mentale Difficile (-20), et toute personne dormant à l'intérieur bénéficie de +20 à ses Tests contre les Cauchemars et les rêves envoyés.</p>
 <h3>La Dent de lait</h3><p class="meta">NI : 8   ·   Portée : Toucher   ·   Cible : Une dent d'enfant montée en pendentif   ·   Durée : (Force Mentale) jours</p><p>Vous montez une dent de lait donnée librement, jamais prise, et vous la nommez. Le porteur ignore complètement les effets de Peur 1, réussit automatiquement le premier Test de Calme contre la Terreur de chaque séance, et ne peut pas gagner d'État Brisé sur un échec simple : seul un échec de -4 DR ou pire le Brise.</p>
 <h3>Le Manteau de suie</h3><p class="meta">NI : 9   ·   Portée : Toucher   ·   Cible : Un vêtement extérieur   ·   Durée : (Force Mentale) jours</p><p>Vous enfumez un manteau dans la cendre d'un foyer éteint depuis un an. Le charme ne fait rien en plein jour. Dans l'obscurité, dans la brume ou sous un ciel couvert, le porteur gagne +20 en Discrétion, et quiconque tente de le viser à distance subit une pénalité de -20.</p>
-<h2>Malédictions</h2>
+<h2 id="s1">Malédictions</h2>
 <h3>L'Épingle dans la semelle</h3><p class="meta">NI : 5   ·   Portée : Toucher   ·   Cible : Une chaussure, une botte, une sangle   ·   Durée : (Bonus de Force Mentale) jours</p><p>Vous glissez une épingle sous la semelle d'une chaussure appartenant à la victime, tête vers le talon. Tant qu'elle la porte, elle subit une pénalité de -10 en Agilité et son Attribut de Mouvement est réduit de 1. Elle croira simplement s'être blessée. Un Test de Perception Difficile (-20) en se déchaussant permet de trouver l'épingle.</p>
 <h3>Le Sel dans la bourse</h3><p class="meta">NI : 7   ·   Portée : Toucher   ·   Cible : Une bourse, un coffret, un registre   ·   Durée : (Force Mentale) semaines</p><p>Vous versez une pincée de sel gris dans la bourse de la victime en prononçant ce qu'elle doit. Tant que le charme tient, elle subit -20 à tous ses Tests de Marchandage et d'Évaluation, ses pièces ternissent, et toute personne à qui elle propose une affaire gagne le droit à un Test d'Intuition gratuit pour flairer l'entourloupe, qu'il y en ait une ou non.</p>
 <h3>La Rouille</h3><p class="meta">NI : 9   ·   Portée : Toucher   ·   Cible : Une arme ou une pièce d'armure   ·   Durée : (Force Mentale) jours</p><p>Vous frottez l'objet avec une eau croupie et vous le nommez. Une arme gagne le Défaut Peu fiable et perd tous ses Atouts. Une pièce d'armure perd 1 Point d'Armure et se brise définitivement à la première Maladresse de son porteur. L'objet ne paraît pas rouillé : il le devient exactement au mauvais moment.</p>
 <h3>Le Nom cousu</h3><p class="meta">NI : 13   ·   Portée : Toucher   ·   Cible : Un vêtement porté à même la peau   ·   Durée : (Force Mentale) mois</p><p>Vous cousez le nom véritable de la victime à l'intérieur d'un vêtement, avec du fil noir, à points si fins qu'on les prend pour une reprise. Tant qu'elle le porte, choisissez une Caractéristique : la victime subit -10 à tous les Tests de cette Caractéristique, et toute Maladresse qu'elle obtient est traitée comme si elle avait obtenu un double identique.</p><p>Une victime qui découvre la couture et défait le fil met immédiatement fin à la malédiction.</p><p>Le Nom cousu ne peut pas être noué sans le nom véritable de la victime. Une prise physique ne suffit pas.</p>
-<h2>Notes de meneur</h2>
+<h2 id="s2">Notes de meneur</h2>
 <div class="enc mj"><span class="lab">MJ</span><p><strong>Douze charmes, huit bénédictions et quatre malédictions.</strong> Les NI vont de 2 à 13. Le Domaine ne contient aucun sort de dégâts et aucun sort utilisable en combat : c'est un domaine de préparation, qui se joue avant la scène et pas pendant.</p></div>
 <div class="enc mj"><span class="lab">MJ</span><p><strong>La limite du Bonus de Force Mentale est le vrai régulateur.</strong> Trois ou quatre charmes actifs au maximum pour un personnage débutant. Chaque nouveau charme oblige à choisir lequel on abandonne.</p></div>
 <div class="enc mj"><span class="lab">MJ</span><p><strong>Les charmes conditionnels sont le cœur du Domaine.</strong> La Pierre de pluie et Le Manteau de suie ne servent à rien la moitié du temps et sont excellents l'autre moitié. Reprends ce patron pour créer les tiens.</p></div>
@@ -363,5 +362,6 @@ body.edition .barre-edit{display:flex}
   });
 })();
 </script>
-</body>
-</html>
+
+
+</body></html>

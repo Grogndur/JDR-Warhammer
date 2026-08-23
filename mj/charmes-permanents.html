@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
+<html lang="fr"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Les Charmes Permanents</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&amp;family=Crimson+Text:ital,wght@0,400;0,600;1,400&amp;display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#09090e; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
@@ -103,20 +102,20 @@ body.edition .barre-edit{display:flex}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
-<body>
+<body class="">
 
 <div class="topbar">
   <button class="tb-btn btn-menu" id="btn-menu">☰</button>
   <a class="retour" href="index-mj.html">◂ MJ</a>
   <span class="topbar-title">Les Charmes Permanents</span>
-  <input class="search" id="recherche" type="search" placeholder="Rechercher…">
-  <button class="tb-btn" id="btn-edit">Éditer</button>
+  <input class="search" id="recherche" type="search" placeholder="Rechercher…" value="">
+  <button class="tb-btn on" id="btn-edit">Lecture</button>
   <button class="tb-btn" id="btn-push" title="Publier la version du fichier vers la base en ligne. Le fichier fait autorité.">Push</button>
 </div>
 
-<nav class="sidebar" id="sidebar"></nav>
+<nav class="sidebar" id="sidebar"><div class="toc-arc">Sommaire</div><a class="toc-lien active" href="#s0">Mineurs · Veille et alerte</a><a class="toc-lien" href="#s1">Mineurs · Maison et atelier</a><a class="toc-lien" href="#s2">Mineurs · Route et voyage</a><a class="toc-lien" href="#s3">Mineurs · Sur soi</a><a class="toc-lien" href="#s4">Mineurs · Métier et marché</a><a class="toc-lien" href="#s5">Majeurs · Veille et alerte</a><a class="toc-lien" href="#s6">Majeurs · Maison et atelier</a><a class="toc-lien" href="#s7">Majeurs · Route et voyage</a><a class="toc-lien" href="#s8">Majeurs · Sur soi</a><a class="toc-lien" href="#s9">Majeurs · Métier et marché</a><a class="toc-lien" href="#s10">Notes de meneur</a></nav>
 
-<main id="doc">
+<main id="doc" contenteditable="false">
 <h1 class="doc-titre">Les Charmes Permanents</h1>
 <p class="doc-soustitre">Warhammer Fantasy Roleplay 4e · complément au Domaine des Charmes · quarante charmes</p>
 <p>Il y a les charmes qu'on fabrique pour une occasion et qui se défont, et il y a ceux qu'on fabrique une fois pour toutes. Les seconds ne font jamais grand-chose. Une pierre qui tiédit, une chandelle qui dure, un clou qui compte les visiteurs. Aucun ne sauvera personne d'un coup d'épée.</p>
@@ -124,7 +123,7 @@ body.edition .barre-edit{display:flex}
 <div class="enc regle"><span class="lab">Règles communes</span><p><strong>Aucun jet, jamais.</strong> Une fois le charme fabriqué, son effet est automatique, invariable et permanent. Ni le porteur ni la lanceuse ne lancent quoi que ce soit pour l'utiliser.</p><p><strong>Aucun charme permanent ne donne de bonus à un Test.</strong> C'est la règle qui les garde inoffensifs. Ils donnent une information, ils épargnent une corvée, ils empêchent une petite catastrophe domestique. Rien de plus.</p><p><strong>Fabrication.</strong> NI 4 pour un charme mineur, quel qu'il soit. Une journée entière de travail sans interruption, l'objet en main, et un Test d'Incantation. Un échec gâche la journée et les composants, sans autre conséquence. Composants : une Pistole de matériaux, jamais moins.</p><p><strong>Limite.</strong> Vous ne pouvez avoir en existence qu'un nombre de charmes permanents égal à votre <strong>Bonus d'Intelligence</strong>. Cette réserve est distincte de celle des charmes du Domaine, qui suit le Bonus de Force Mentale. Défaire volontairement un charme permanent demande une heure et libère la place. Détruire l'objet marche aussi.</p></div>
 <div class="enc regle"><span class="lab">Charme majeur</span><p><strong>NI 8.</strong> Une semaine entière de travail, à raison de quelques heures par jour, sans que l'ouvrage quitte l'atelier. Cinq Pistoles de composants. Un seul Test d'Incantation, à la fin. Un échec gâche la semaine.</p><p><strong>Un charme majeur occupe deux places</strong> dans votre réserve, au lieu d'une. Avec un Bonus d'Intelligence de 4, vous pouvez entretenir quatre mineurs, ou deux majeurs, ou deux mineurs et un majeur.</p><p><strong>Un charme majeur peut supprimer le besoin d'un Test</strong>, dans une circonstance étroite et nommée. Il ne donne toujours aucun bonus à un Test qui reste nécessaire. Un charme permanent ne vous rend jamais meilleure, il rend parfois le jet inutile.</p></div>
 <div class="enc mj"><span class="lab">MJ</span><p><strong>Ce sont des pièces à conviction.</strong> Un charme permanent ne s'épuise pas et ne s'efface pas. Il reste dans la maison, dans la poche, dans le tiroir, et il témoigne. Un Répurgateur qui trouve une chandelle qui refuse de s'éteindre n'a besoin de rien d'autre.</p></div>
-<h2>Mineurs · Veille et alerte</h2>
+<h2 id="s0">Mineurs · Veille et alerte</h2>
 <h3>La Pie</h3>
 <p class="meta">Une pierre percée, une coquille, un dé à coudre</p>
 <p>Le charme tiédit doucement dès qu'une pièce de monnaie, un bijou ou un objet de métal précieux se trouve abandonné, oublié ou dissimulé à moins de dix pas de lui. Il ne dit ni où, ni combien, ni à qui. Il tiédit, c'est tout, et il s'arrête dès qu'on l'éloigne ou qu'on ramasse.</p>
@@ -137,7 +136,7 @@ body.edition .barre-edit{display:flex}
 <h3>La Chandelle qui veille</h3>
 <p class="meta">Une chandelle de suif</p>
 <p>Tant qu'elle brûle, sa flamme se penche lentement dans la direction de la créature vivante la plus proche qui se trouve hors de vue et à moins de vingt pas. S'il n'y a personne, elle brûle droit. Elle ne distingue ni l'ami de l'ennemi, ni l'homme du chat.</p>
-<h2>Mineurs · Maison et atelier</h2>
+<h2 id="s1">Mineurs · Maison et atelier</h2>
 <h3>La Braise</h3>
 <p class="meta">Un galet plat posé dans l'âtre</p>
 <p>Le feu de ce foyer ne s'éteint jamais complètement. Il reste toujours assez de braise sous la cendre pour repartir en quelques souffles, même après trois jours d'absence, même sous la pluie qui tombe par la cheminée. Il ne chauffe pas davantage et ne consomme pas moins de bois.</p>
@@ -150,7 +149,7 @@ body.edition .barre-edit{display:flex}
 <h3>La Chandelle patiente</h3>
 <p class="meta">Une chandelle, une lampe à huile</p>
 <p>Elle brûle trois fois plus lentement et sa flamme ne se couche jamais, quel que soit le courant d'air. Elle s'éteint parfaitement bien si on souffle dessus volontairement, ce qui la rend moins compromettante que la légende ne le prétend.</p>
-<h2>Mineurs · Route et voyage</h2>
+<h2 id="s2">Mineurs · Route et voyage</h2>
 <h3>Le Caillou du retour</h3>
 <p class="meta">Un caillou ramassé sur le seuil d'un lieu choisi</p>
 <p>Le caillou tiédit imperceptiblement quand celui qui le tient se tourne vers le lieu où il a été ramassé. Il ne donne ni la distance, ni le chemin, ni le temps qu'il reste. Une seule direction, et seulement celle-là. Un lieu par caillou.</p>
@@ -163,7 +162,7 @@ body.edition .barre-edit{display:flex}
 <h3>Le Pas sec</h3>
 <p class="meta">Une paire de chausses, de bas, de semelles</p>
 <p>Les pieds de celui qui les porte restent secs et tièdes. Pas d'ampoules, pas d'engelures, pas de macération, même après trois jours de marche dans la boue. Le porteur marche exactement aussi vite qu'avant, il souffre seulement beaucoup moins.</p>
-<h2>Mineurs · Sur soi</h2>
+<h2 id="s3">Mineurs · Sur soi</h2>
 <h3>Le Bouton fidèle</h3>
 <p class="meta">Un vêtement entier</p>
 <p>Les coutures de ce vêtement ne lâchent pas et ses boutons ne se perdent pas : celui qui tombe se retrouve toujours dans un pli de l'ourlet le lendemain matin. Le tissu se déchire normalement, mais jamais à la couture.</p>
@@ -176,7 +175,7 @@ body.edition .barre-edit{display:flex}
 <h3>L'Anneau du chuchotement</h3>
 <p class="meta">Une bague, un anneau de cuir, un dé à coudre</p>
 <p>Quand le porteur chuchote délibérément, sa voix ne porte pas au-delà de la longueur d'un bras, quel que soit le silence alentour. Une personne collée à lui l'entend parfaitement, une personne à deux pas n'entend rien du tout. Cela ne le rend pas discret par ailleurs.</p>
-<h2>Mineurs · Métier et marché</h2>
+<h2 id="s4">Mineurs · Métier et marché</h2>
 <h3>La Pierre à peser</h3>
 <p class="meta">Un poids de balance, une pièce percée</p>
 <p>Posée contre un poids faussé, une pièce rognée, une mesure truquée ou une balance déréglée, la pierre refroidit nettement. Elle ne dit pas de combien on vous vole, ni si la marchandise est bonne. Elle ne détecte que la tricherie sur la mesure elle-même.</p>
@@ -189,7 +188,7 @@ body.edition .barre-edit{display:flex}
 <h3>Le Bol qui prévient</h3>
 <p class="meta">Une écuelle, un bol, une planche à découper</p>
 <p>Un aliment gâté, moisi ou avancé posé dessus se met à sentir franchement mauvais, immédiatement et de façon impossible à ignorer. Un aliment sain ne sent rien de particulier. Le charme ignore complètement les poisons et tout ce qui a été ajouté à dessein.</p>
-<h2>Majeurs · Veille et alerte</h2>
+<h2 id="s5">Majeurs · Veille et alerte</h2>
 <h3>Le Cordon des absents</h3>
 <p class="meta">Un cordon portant un nœud par compagnon nommé</p>
 <p>Chaque nœud est noué avec un cheveu de la personne qu'il représente, donné librement. Le nœud se relâche de lui-même dès que cette personne tombe Inconsciente, et se défait complètement si elle meurt. La lanceuse le sent sous ses doigts, où qu'elle soit, tant que la personne se trouve à moins d'une journée de marche. Le cordon ne dit ni où, ni comment, ni par qui.</p>
@@ -202,7 +201,7 @@ body.edition .barre-edit{display:flex}
 <h3>La Corne muette</h3>
 <p class="meta">Une petite corne, appariée à des jetons distribués</p>
 <p>Brisez la corne et tous ceux qui portent un jeton apparié le sentent chauffer brutalement, où qu'ils se trouvent dans un rayon d'une lieue. Ils savent que l'alerte vient de vous et rien de plus. La corne ne sert qu'une fois et il faut en fabriquer une autre.</p>
-<h2>Majeurs · Maison et atelier</h2>
+<h2 id="s6">Majeurs · Maison et atelier</h2>
 <h3>La Lampe sans huile</h3>
 <p class="meta">Une lampe, une lanterne, un fanal</p>
 <p>Elle éclaire comme une bonne chandelle, indéfiniment, sans huile, sans mèche et sans entretien. On l'allume et on l'éteint d'un geste de la main. Sa lumière est froide et un peu bleue, ce qui la rend impossible à faire passer pour une flamme ordinaire à qui la regarde de près.</p>
@@ -215,7 +214,7 @@ body.edition .barre-edit{display:flex}
 <h3>Le Séchoir</h3>
 <p class="meta">Un râtelier, une corde à linge, un claie d'osier</p>
 <p>Ce qu'on y pose sèche complètement en une heure, quel que soit le temps. Les herbes médicinales y sèchent en une journée au lieu d'une semaine, sans rien perdre de leurs propriétés. C'est le charme qui double réellement la production d'une herboriste, et le premier que ses concurrentes remarquent.</p>
-<h2>Majeurs · Route et voyage</h2>
+<h2 id="s7">Majeurs · Route et voyage</h2>
 <h3>La Gourde</h3>
 <p class="meta">Une gourde, une outre, un seau</p>
 <p>Toute eau versée dedans en ressort claire et potable une heure plus tard, débarrassée de la vase, du sel, de la pourriture et de tout ce qui rend malade. Aucun Test de Résistance n'est nécessaire contre les maladies transmises par l'eau bue à cette gourde. Elle ne neutralise ni les poisons ni les drogues, et ne transforme pas le vin en eau ni l'inverse.</p>
@@ -228,7 +227,7 @@ body.edition .barre-edit{display:flex}
 <h3>Le Sac léger</h3>
 <p class="meta">Un sac, une besace, une malle</p>
 <p>Tout ce qui se trouve à l'intérieur pèse la moitié de son poids réel pour celui qui porte le sac. L'Encombrement du contenu est divisé par deux, arrondi au supérieur. Le sac ne contient pas plus qu'un sac ordinaire, et rien ne pèse moins une fois sorti.</p>
-<h2>Majeurs · Sur soi</h2>
+<h2 id="s8">Majeurs · Sur soi</h2>
 <h3>Le Masque de foule</h3>
 <p class="meta">Un vêtement banal, un chapeau, un fichu</p>
 <p>Ceux qui croisent le porteur sans lui parler ne se souviennent pas de son visage une heure plus tard. Ils se rappellent qu'il y avait quelqu'un, ils décrivent le vêtement, jamais les traits. Une personne qui lui adresse la parole, le touche, ou l'observe délibérément plus d'une minute est immunisée et se souviendra parfaitement.</p>
@@ -241,7 +240,7 @@ body.edition .barre-edit{display:flex}
 <h3>La Ceinture du souffle</h3>
 <p class="meta">Une ceinture, un lacet noué sur la poitrine</p>
 <p>Le porteur retient son souffle quatre fois plus longtemps qu'un homme ordinaire, et respire sans gêne dans la fumée, la poussière et l'air vicié d'une cave fermée. Il se noie exactement comme tout le monde une fois le souffle épuisé.</p>
-<h2>Majeurs · Métier et marché</h2>
+<h2 id="s9">Majeurs · Métier et marché</h2>
 <h3>La Balance juste</h3>
 <p class="meta">Une balance, un trébuchet, une pierre à toucher</p>
 <p>Posez un objet dessus et vous connaissez sa valeur marchande réelle, à un dixième près, dans la région où vous vous trouvez. Aucun Test d'Évaluation n'est nécessaire. Elle ne dit rien de l'histoire de l'objet, de sa provenance, ni de ce qu'un acheteur particulier serait prêt à payer.</p>
@@ -254,7 +253,7 @@ body.edition .barre-edit{display:flex}
 <h3>Le Sceau</h3>
 <p class="meta">Un cachet, une bague à sceller</p>
 <p>Un document scellé avec lui ne peut pas être ouvert puis refermé sans que la cire se fende d'une façon particulière, impossible à reproduire et immédiatement visible. Personne ne peut contrefaire ce sceau, ni en tirer une empreinte. Le charme n'empêche évidemment personne de briser le sceau et de lire.</p>
-<h2>Notes de meneur</h2>
+<h2 id="s10">Notes de meneur</h2>
 <div class="enc mj"><span class="lab">MJ</span><p><strong>Quarante charmes, vingt mineurs et vingt majeurs, quatre par usage et par tier.</strong> Aucun ne donne de bonus à un Test, aucun ne modifie un combat. Les majeurs peuvent en revanche supprimer le besoin d'un jet dans une circonstance nommée, ce qui est leur seule vraie différence de puissance.</p></div>
 <div class="enc mj"><span class="lab">MJ</span><p><strong>Supprimer un jet vaut mieux que le faciliter.</strong> Un charme qui donne +10 se cumule, se calcule et se discute. Un charme qui dit qu'on ne lance pas contre l'infection d'une plaie retire simplement une inquiétude de la table. C'est plus fort à l'usage et beaucoup plus simple à arbitrer.</p></div>
 <div class="enc mj"><span class="lab">MJ</span><p><strong>La règle de conception, pour en créer d'autres.</strong> Un charme permanent donne une information binaire, supprime une corvée, ou empêche un petit désagrément matériel. Dès qu'un charme te fait hésiter, c'est qu'il n'est pas permanent : reverse-le dans le Domaine des Charmes avec une durée limitée.</p></div>
@@ -478,5 +477,6 @@ body.edition .barre-edit{display:flex}
   });
 })();
 </script>
-</body>
-</html>
+
+
+</body></html>
