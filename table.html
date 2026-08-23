@@ -331,6 +331,12 @@
   .jet .marque{font-style:italic;color:var(--parchemin-doux)}
   .jet.crit .marque{color:var(--vert-succes);font-weight:600;font-style:normal}
   .jet.fumble .marque{color:var(--oxblood-clair);font-weight:600;font-style:normal}
+  /* Jets secrets : le bouton, le panneau, et la marque sur la ligne de journal */
+  .secret-btn{border-color:rgba(103,78,167,.55);color:#b9a6e6}
+  .secret-btn:hover{background:rgba(103,78,167,.22)}
+  .jet.secret{border-left-color:#8b76c9}
+  .jet .cachet{color:#d6c7ff;background:rgba(103,78,167,.32);border-radius:3px;
+    padding:0 5px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-family:"Cinzel",serif}
 
   .galerie{display:flex;gap:6px;flex-wrap:wrap}
   #img-choix,#amb-choix{max-width:230px}
@@ -514,6 +520,7 @@
     <div class="journal" id="journal"></div>
   </aside>
 
+
   <audio id="amb-audio" loop preload="none"></audio>
 
   <section class="dock" id="dock">
@@ -538,11 +545,13 @@
         <button data-de="6">d6</button>
         <button data-de="4">d4</button>
         <button class="primaire" id="lancer-test">Lancer</button>
+        <button id="secret-test" class="secret-btn" title="Lancer en secret : seuls toi et le MJ voyez le résultat">Secret</button>
       </div>
       <div class="ligne">
         <label for="custom">Dés</label>
         <input type="text" id="custom" placeholder="2d6+3" />
         <button class="primaire" id="lancer-custom">Lancer</button>
+        <button id="secret-custom" class="secret-btn" title="Lancer en secret : seuls toi et le MJ voyez le résultat">Secret</button>
         <button id="vider-des" title="Retirer les dés de la table">🧹 Table</button>
       </div>
       <div class="ligne gm-only">
@@ -627,6 +636,7 @@ if(!cfg.databaseURL){
 
 const refImage = db ? ref(db, `salles/${salle}/image`) : null;
 const refJets  = db ? ref(db, `salles/${salle}/jets`)  : null;
+const refSecrets = db ? ref(db, `salles/${salle}/jets-secrets`) : null;
 const refInit  = db ? ref(db, `salles/${salle}/initiative`) : null;
 const refDesClear = db ? ref(db, `salles/${salle}/desClear`) : null;
 const refDessin = db ? ref(db, `salles/${salle}/dessin`) : null;
@@ -1096,7 +1106,18 @@ function envoyerJet(jet){
   else { afficherJet(jet); } // hors-ligne : visible seulement chez soi
 }
 
-function lancerTest(cible){
+function estMJ(){ return document.body.classList.contains("est-mj"); }
+
+// Jet secret : il part sur une branche à part, que seul l'écran du MJ affiche.
+// Celui qui lance en voit l'écho dans son propre journal, personne d'autre.
+// Pas de dés 3D : le plateau est partagé, ils trahiraient le jet.
+function envoyerJetSecret(jet){
+  const j = { ...jet, secret:true, des:null, ts: Date.now() };
+  if(refSecrets) push(refSecrets, j);        // branche à part : les autres joueurs ne l'affichent pas
+  else afficherJet(j);                       // hors-ligne
+}
+
+function lancerTest(cible, secret){
   const r = Math.floor(Math.random()*100)+1;       // 1..100
   const dizR = (r===100) ? 0 : Math.floor(r/10);
   const uniR = (r===100) ? 0 : r%10;
@@ -1110,7 +1131,7 @@ function lancerTest(cible){
   if(dbl && succes){ classe += " crit";   marque = "Critique ! " + marque; }
   if(dbl && !succes){ classe += " fumble"; marque = "Maladresse ! " + marque; }
   const affR = (r===100) ? "00" : String(r).padStart(2,"0");
-  envoyerJet({
+  (secret ? envoyerJetSecret : envoyerJet)({
     nom: nom(),
     res: `${affR}  (cible ${cible})`,
     detail: (succes ? "Réussite" : "Échec") + " · " + loc,
@@ -1119,12 +1140,13 @@ function lancerTest(cible){
   });
 }
 
-function lancerExpr(expr){
+function lancerExpr(expr, secret){
+  const envoyer = secret ? envoyerJetSecret : envoyerJet;
   // accepte "NdX+M" / "dX" / "X"
   const m = expr.replace(/\s+/g,"").match(/^(\d*)d(\d+)([+-]\d+)?$/i);
   if(!m){
     const n = parseInt(expr,10);
-    if(!isNaN(n)){ const r=Math.floor(Math.random()*n)+1; envoyerJet({nom:nom(),res:`${r}`,detail:`d${n}`,classe:"",marque:""}); }
+    if(!isNaN(n)){ const r=Math.floor(Math.random()*n)+1; envoyer({nom:nom(),res:`${r}`,detail:`d${n}`,classe:"",marque:""}); }
     return;
   }
   const nb = m[1] ? parseInt(m[1],10) : 1;
@@ -1142,7 +1164,7 @@ function lancerExpr(expr){
     const un = (r===100)?0:r%10;
     des = { faces:10, vals:[dz, un], pct:true };
   }
-  envoyerJet({ nom:nom(), res:`${total}`, detail:detailDés, classe:"", marque:"", des });
+  envoyer({ nom:nom(), res:`${total}`, detail:detailDés, classe:"", marque:"", des });
 }
 
 // --- Sélecteur de dé à gauche : un clic sélectionne (surbrillance), ne lance pas ---
@@ -1170,15 +1192,17 @@ function valeurTest(){
   }
   return Math.max(1, Math.min(100, parseInt(brut,10) || 1));
 }
-$("#lancer-test").addEventListener("click", ()=>{
+function lancerLigneTest(secret){
   if(deSelection === "100"){
     const c = valeurTest();
     if(c === null) return;
-    lancerTest(c);                              // test WFRP : DR, localisation, critique/maladresse
+    lancerTest(c, secret);                      // test WFRP : DR, localisation, critique/maladresse
   } else {
-    lancerExpr("d" + deSelection);              // d10 / d6 / d4 : jet simple
+    lancerExpr("d" + deSelection, secret);      // d10 / d6 / d4 : jet simple
   }
-});
+}
+$("#lancer-test").addEventListener("click", ()=> lancerLigneTest(false));
+$("#secret-test").addEventListener("click", ()=> lancerLigneTest(true));
 // Entrée dans le champ Test lance directement le d100.
 $("#cible").addEventListener("keydown", e=>{
   if(e.key !== "Enter" || deSelection !== "100") return;
@@ -1190,9 +1214,10 @@ $("#cible").addEventListener("keydown", e=>{
 const RE_DES = /^(\d*)d(\d+)([+-]\d+)?$/i;       // NdX, dX, NdX+M ...
 function exprValide(){ return RE_DES.test(($("#custom").value||"").replace(/\s+/g,"")); }
 function majBoutonCustom(){ $("#lancer-custom").disabled = !exprValide(); }
-function lancerCustom(){ if(exprValide()) lancerExpr($("#custom").value); }
+function lancerCustom(secret){ if(exprValide()) lancerExpr($("#custom").value, secret === true); }
 $("#custom").addEventListener("input", majBoutonCustom);
-$("#lancer-custom").addEventListener("click", lancerCustom);
+$("#lancer-custom").addEventListener("click", ()=> lancerCustom(false));
+$("#secret-custom").addEventListener("click", ()=> lancerCustom(true));
 $("#custom").addEventListener("keydown", e=>{ if(e.key==="Enter") lancerCustom(); });
 majBoutonCustom();                              // grisé tant que le champ est vide ou invalide
 
@@ -1222,18 +1247,29 @@ $("#jet-secret").addEventListener("click", ()=>{
 // ---------- Journal ----------
 const journal = $("#journal");
 function afficherJet(j){
+  const boite = journal;
   const el = document.createElement("div");
-  el.className = "jet " + (j.classe||"");
+  el.className = "jet " + (j.classe||"") + (j.secret ? " secret" : "");
   el.innerHTML =
+    (j.secret ? `<span class="cachet">secret</span> ` : "")+
     `<span class="qui">${escape(j.nom)}</span> — `+
     `<span class="res">${escape(j.res)}</span> `+
     `<span class="detail">· ${escape(j.detail||"")}</span>`+
     (j.marque ? ` <span class="marque">· ${escape(j.marque)}</span>` : "");
-  journal.prepend(el);
-  while(journal.children.length > 60) journal.lastChild.remove();
-  if(j.des && (Date.now() - (j.ts||0) < 8000)) lancerDes3D(j.des, j.nom);
+  boite.prepend(el);
+  while(boite.children.length > 60) boite.lastChild.remove();
+  // Les dés 3D tombent sur le plateau partagé : jamais pour un jet secret.
+  if(!j.secret && j.des && (Date.now() - (j.ts||0) < 8000)) lancerDes3D(j.des, j.nom);
 }
 function escape(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+if(refSecrets){
+  // Un jet secret n'apparaît que sur deux écrans : celui du MJ, et celui qui l'a lancé.
+  onChildAdded(query(refSecrets, limitToLast(30)), (snap)=>{
+    const j = snap.val();
+    if(estMJ() || j.nom === nom()) afficherJet(j);
+  });
+}
 
 if(refJets){
   onChildAdded(query(refJets, limitToLast(30)), (snap)=>{
