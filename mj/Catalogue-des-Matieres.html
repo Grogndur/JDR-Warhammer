@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catalogue des Matières</title>
+<style>
+  :root{
+    --bg:#12100e; --panel:#1b1815; --panel2:#221e1a; --line:#37302a;
+    --txt:#e8e0d2; --dim:#a2968a; --acc:#c2452a; --acc2:#c9a227; --off:#8d8375;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+       font-family:"Iowan Old Style",Georgia,serif;font-size:15px;line-height:1.45}
+
+  .bar{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,#1b1815,#161311);
+       border-bottom:1px solid var(--line);padding:.6rem .9rem;display:flex;gap:.6rem;
+       align-items:center;flex-wrap:wrap}
+  .bar h1{font-size:1.02rem;letter-spacing:.13em;text-transform:uppercase;margin:0 .5rem 0 0;
+          font-weight:600;white-space:nowrap}
+  .bar h1 span{color:var(--acc)}
+  input[type=search]{flex:1;min-width:160px;background:#0e0c0b;border:1px solid var(--line);
+       color:var(--txt);padding:.42rem .6rem;border-radius:4px;font-family:inherit;font-size:.9rem}
+  input[type=search]:focus{outline:none;border-color:var(--acc2)}
+  button{background:#2a2521;border:1px solid var(--line);color:var(--txt);padding:.4rem .7rem;
+       border-radius:4px;cursor:pointer;font-family:inherit;font-size:.82rem;white-space:nowrap}
+  button:hover{border-color:var(--acc2);color:#fff}
+  button.pri{background:#3a1512;border-color:#5d201a}
+  .status{font-size:.78rem;color:var(--dim);min-width:78px}
+
+  .wrap{max-width:1280px;margin:0 auto;padding:1rem .9rem 4rem}
+  .grp{margin:0 0 1.4rem}
+  .grp>h2{font-size:1rem;letter-spacing:.16em;text-transform:uppercase;color:var(--acc);
+       border-bottom:1px solid var(--acc);padding-bottom:.3rem;margin:1.6rem 0 .5rem}
+  .grp>h2:focus{outline:none;background:#0e0c0b}
+  .gnote{font-size:.82rem;color:var(--dim);margin:.1rem 0 .8rem;padding:.5rem .7rem;
+       background:var(--panel);border-left:2px solid var(--line);border-radius:0 3px 3px 0}
+  .gnote:focus{outline:none;background:#0e0c0b}
+  .gnote:empty,.grp>h2:empty{display:none}
+  .intro{font-size:.85rem;color:var(--dim);background:var(--panel);border-left:2px solid var(--acc);
+       padding:.6rem .8rem;border-radius:0 4px 4px 0;margin:0 0 1.2rem}
+  .intro:focus{outline:none;background:#0e0c0b}
+
+  .sec{background:var(--panel);border:1px solid var(--line);border-radius:5px;margin:0 0 .8rem;overflow:hidden}
+  .sechead{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;background:var(--panel2);
+       border-bottom:1px solid var(--line)}
+  .sechead .t{font-size:.87rem;letter-spacing:.09em;text-transform:uppercase;color:var(--acc2);flex:1}
+  .sechead .n{font-size:.74rem;color:var(--dim)}
+  .sechead button{padding:.22rem .5rem;font-size:.75rem}
+  .snote,.sfoot{font-size:.8rem;color:var(--dim);padding:.5rem .7rem 0}
+  .sfoot{margin:.5rem .7rem .2rem;padding:.45rem .7rem;font-style:italic;
+         border-left:2px solid var(--acc2);background:rgba(184,146,42,.05);border-radius:0 3px 3px 0}
+  .sfoot:empty{display:none}
+  .sfoot::before{content:'À retenir';display:block;font-family:'Cinzel',serif;font-style:normal;
+         font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--acc2);margin-bottom:.2rem}
+  .secbody{padding:.2rem .5rem .6rem}
+  .sec.closed .secbody,.sec.closed .snote,.sec.closed .sfoot{display:none}
+
+  table{width:100%;border-collapse:collapse;font-size:.83rem}
+  th{position:sticky;top:44px;background:#0f0d0c;color:var(--dim);font-weight:400;text-align:left;
+     font-size:.67rem;letter-spacing:.08em;text-transform:uppercase;padding:.4rem .45rem;
+     border-bottom:1px solid var(--line);z-index:5}
+  td{border-bottom:1px solid #262019;padding:.32rem .45rem;vertical-align:top}
+  tr:hover td{background:#1f1b17}
+  tr.off td{color:var(--off);font-style:italic}
+  td.c{text-align:center;white-space:nowrap}
+  td[contenteditable]:focus,th[contenteditable]:focus{outline:none;background:#0e0c0b;box-shadow:inset 0 0 0 1px var(--acc2);border-radius:3px}
+  .acts{width:1%;white-space:nowrap;opacity:0;transition:opacity .12s}
+  tr:hover .acts{opacity:1}
+  .acts button{padding:.1rem .34rem;font-size:.72rem;background:transparent;border-color:transparent;color:var(--dim)}
+  .acts button:hover{color:#fff;border-color:var(--line)}
+  .addrow{margin:.35rem 0 0;font-size:.78rem}
+
+  .items{margin:0;padding:.2rem .3rem}
+  .item{display:flex;gap:.5rem;align-items:flex-start;padding:.3rem .3rem;border-bottom:1px solid #262019}
+  .item:hover{background:#1f1b17}
+  .item .puce{color:var(--acc);flex:0 0 auto;line-height:1.5}
+  .item .txt{flex:1;font-size:.87rem}
+  .item .txt:focus{outline:none;background:#0e0c0b;box-shadow:inset 0 0 0 1px var(--acc2);border-radius:3px}
+  .item .acts{opacity:0}
+  .item:hover .acts{opacity:1}
+
+  .legwrap{columns:2;column-gap:1.4rem}
+  .leg{break-inside:avoid;margin:0 0 .45rem;padding:.35rem .5rem;background:var(--panel);
+       border-left:2px solid var(--line);border-radius:0 3px 3px 0;font-size:.83rem}
+  .leg.mai{border-left-color:var(--acc)}
+  .leg .term{font-weight:700;color:var(--acc2)}
+  .leg.of .term{color:#bdb2a2}
+  .leg .term:focus,.leg .df:focus{outline:none;background:#0e0c0b}
+  .leg .acts2{float:right;opacity:0}
+  .leg:hover .acts2{opacity:1}
+  .leg .acts2 button{padding:.05rem .3rem;font-size:.7rem;background:transparent;border-color:transparent;color:var(--dim)}
+  h2.bloc{font-size:.98rem;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);
+       border-bottom:1px solid var(--acc);padding-bottom:.3rem;margin:1.8rem 0 .6rem}
+
+  #tip{position:fixed;z-index:60;max-width:340px;background:#0d0b0a;border:1px solid var(--acc2);
+       border-radius:4px;padding:.5rem .6rem;font-size:.8rem;display:none;box-shadow:0 6px 24px #000a}
+  #tip b{color:var(--acc2)}
+  #tip p{margin:0 0 .35rem} #tip p:last-child{margin:0}
+
+
+  .sync-flag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .5rem;
+       border-radius:2px;white-space:nowrap;border:1px solid transparent;color:var(--dim)}
+  .sync-flag.ok{color:#8fae7e;border-color:rgba(94,128,79,.4);background:rgba(94,128,79,.12)}
+  .sync-flag.pending{color:#e8cf72;border-color:rgba(184,146,42,.4);background:rgba(184,146,42,.12)}
+  .sync-flag.err{color:#e08a80;border-color:rgba(139,26,26,.5);background:rgba(139,26,26,.16)}
+
+  /* ---------- téléphone : plus de défilement horizontal ---------- */
+  @media(max-width:760px){
+    body{font-size:14px}
+    .bar{padding:.5rem .6rem;gap:.4rem}
+    .bar h1{font-size:.9rem;width:100%;margin:0}
+    button{padding:.34rem .55rem;font-size:.78rem}
+    .wrap{padding:.7rem .5rem 3rem}
+    .secbody{padding:.2rem .3rem .5rem}
+    thead{display:none}
+    table,tbody,tr,td{display:block;width:100%}
+    tr{border:1px solid var(--line);border-radius:4px;background:#1d1915;
+       margin:0 0 .5rem;padding:.35rem .5rem}
+    tr:hover td{background:transparent}
+    td{border-bottom:none;padding:.22rem 0;text-align:left !important;white-space:normal}
+    td:empty{padding:0}
+    td::before{content:attr(data-lab);display:inline-block;min-width:5.4rem;
+       font-size:.62rem;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);
+       vertical-align:top;padding-right:.4rem}
+    td.acts{opacity:1;width:auto;text-align:right !important;padding-top:.3rem;
+       border-top:1px solid #2a241e;margin-top:.25rem}
+    td.acts::before{content:none}
+    .acts button{font-size:.85rem;padding:.18rem .5rem}
+    .legwrap{columns:1}
+    .item .acts{opacity:1}
+  }
+  .retour{color:var(--dim);text-decoration:none;font-size:.8rem;white-space:nowrap;padding:.2rem .3rem}
+  .retour:hover{color:var(--acc2)}
+  .hid{display:none !important}
+  .hint{font-size:.78rem;color:var(--dim);margin:.8rem 0 0}
+
+  @media print{
+    body{background:#fff;color:#14110f;font-size:9pt}
+    .bar,.acts,.acts2,.addrow,.sechead button,.hint,#tip,.retour{display:none !important}
+    .wrap{max-width:none;padding:0}
+    .sec{border:none;background:none;margin:0 0 3mm}
+    .sechead{background:none;border-bottom:1px solid var(--acc);padding:0 0 1mm}
+    .sechead .t{color:#8B1A1A}
+    h2.bloc{color:#8B1A1A;border-color:#8B1A1A}
+    .grp>h2{color:#8B1A1A;border-color:#8B1A1A}
+    .gnote{background:#faf7f1;color:#5a524a}
+    .intro,.snote,.leg{background:#faf7f1;color:#5a524a}
+    .sfoot{background:#faf7f1;color:#5a524a;border-left:2px solid #8B1A1A}
+    .sfoot::before{color:#8B1A1A}
+    th{position:static;background:#2a1414;color:#f0e8d8;border:none}
+    td{border-bottom:1px solid #ddd6ca}
+    tr.off td{color:#5a524a}
+    .item{border-bottom:none;padding:.5mm 0}
+    .sec.closed .secbody,.sec.closed .snote,.sec.closed .sfoot{display:block}
+  }
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<div class="bar">
+  <a class="retour" href="index-mj.html" title="Retour à l'espace MJ">◂ MJ</a>
+  <h1><span>Catalogue des Matières</span> : tout ce dont un artisan a besoin</h1>
+  <input type="search" id="q" placeholder="Filtrer…">
+  <button id="b-push" title="Publier la version du fichier vers la base en ligne. Le fichier fait autorité.">Push</button>
+  <button id="b-print" class="pri">PDF</button>
+  <span class="sync-flag" id="flag"></span>
+</div>
+
+<div class="wrap" id="app"></div>
+<div id="tip"></div>
+
+<script>
+var DEFAUT = {"intro": "Document entièrement maison, bâti sur le moteur commun déjà utilisé par La Forge, l'Apothicaire, la Cuisine et l'Artisanat : complexité 1 à 5, disponibilité Commune, Limitée, Rare, Exotique, échelons 1 à 4, et la même monnaie. CO couronne d'or, Pa pistole d'argent, Sc sou de cuivre. 1 CO = 20 Pa, 1 Pa = 12 Sc. Ce catalogue ne remplace aucun de ces documents : il leur donne leur amont. Là où ils disent ce qu'on fabrique, celui-ci dit ce avec quoi, où on le trouve, qui sait le reconnaître et ce que ça coûte de se le procurer autrement qu'en payant. Les matières déjà chiffrées dans les documents de métier y gardent leur prix : elles sont reprises ici à l'identique, jamais modifiées. Tout le reste est nouveau.", "groups": [{"title": "", "note": "", "sections": [{"kind": "texte", "title": "Comment lire ce catalogue", "note": "", "items": ["Coût. Le prix d'achat courant chez qui en vend, dans un bourg de taille moyenne. Une capitale baisse d'un quart, un village isolé double, une région en guerre triple ou n'en a plus du tout.", "Disponibilité. Commune se trouve partout. Limitée demande un fournisseur précis et parfois l'attente d'une livraison. Rare exige un contact, un déplacement ou une faveur. Exotique ne s'achète pas de façon fiable : on la reçoit, on la prélève soi-même, ou on la vole.", "Échelon. L'échelon de métier minimum pour reconnaître la matière en la voyant et pour l'employer sans la gâcher. Un artisan d'échelon inférieur peut la posséder et la revendre, mais s'il tente de la travailler, il perd la matière sur un échec et n'obtient jamais mieux qu'une pièce de complexité 2.", "Récolte. Le test, le lieu et la saison. Une matière sans ligne de récolte ne se ramasse pas : elle s'achète ou se prélève sur quelque chose de mort.", "Sert à. Ce que la matière permet, en renvoyant aux documents de métier existants quand c'est le cas."]}, {"kind": "texte", "title": "Récolter soi-même : le moteur", "note": "", "items": ["Un test, une demi-journée, une zone. Un Test de la compétence indiquée, en extérieur et au bon endroit, occupe une demi-journée de marche lente. Une même zone ne rend rien de plus avant une saison entière.", "Ce que rapporte le jet. Un échec ne donne rien et coûte quand même la demi-journée. Une réussite donne une dose. Chaque +2 DR donne une dose supplémentaire, sans jamais dépasser le maximum indiqué par la disponibilité : Commune 6, Limitée 4, Rare 2, Exotique 1.", "Le talent Savant. Savant (Herbes), Savant (Sciences) ou l'équivalent utile double le nombre de doses obtenues, sans changer le plafond.", "Sans le bon échelon. On peut ramasser sans savoir. Une matière récoltée par quelqu'un qui n'a pas l'échelon requis est identifiée au jugé : une fois sur trois, ce n'est pas la bonne plante, et personne ne s'en aperçoit avant de l'employer.", "Hors saison. Une matière ramassée hors de sa saison subit −20 au test de récolte et se conserve deux fois moins longtemps.", "Conservation. Une matière fraîche se gâte en 1d10 jours. Séchée, salée ou mise dans l'alcool, elle tient une saison. Le charme permanent Le Sel sec, la sacoche d'apothicaire et le Coffret du remède règlent la question pour qui les possède."]}, {"kind": "texte", "title": "Identifier une matière", "note": "", "items": ["Test d'Intelligence ou de la compétence de métier, difficulté selon la disponibilité : Commune Facile +40, Limitée Intermédiaire +0, Rare Difficile −20, Exotique Très difficile −30.", "Savoir (Herbes) s'applique aux végétaux et aux champignons, Savoir (Sciences) aux minéraux et aux métaux, Savoir (Bestiaire) aux matières animales, Savoir (Magie) aux matières paranaturelles. Le Métier concerné remplace toujours le Savoir si le personnage l'a plus haut.", "Un échec de −3 DR ou pire donne une identification fausse et convaincante. C'est le meilleur levier d'empoisonnement accidentel du jeu, et il vaut mieux que n'importe quel piège.", "Le marchand. Un fournisseur honnête identifie gratuitement ce qu'il vend. Un receleur affirme n'importe quoi avec aplomb."]}, {"kind": "table", "title": "Disponibilité : ce que chaque cran implique", "note": "", "cols": ["Disponibilité", "Où on l'achète", "Délai", "Doses par récolte", "Ce que le MJ doit demander"], "rows": [{"c": ["Commune", "N'importe quel bourg, marché hebdomadaire", "Immédiat", "6", "Rien, on paie"], "off": false}, {"c": ["Limitée", "Fournisseur spécialisé d'une ville, guilde", "1d10 jours si absent du stock", "4", "Savoir où, ou un jet de Ragot"], "off": false}, {"c": ["Rare", "Contact personnel, comptoir lointain, receleur", "Une à quatre semaines", "2", "Une relation, une somme, ou un service rendu"], "off": false}, {"c": ["Exotique", "Ne s'achète pas de façon fiable", "Aléatoire", "1", "Une aventure, un don, ou un vol"], "off": false}], "foot": ""}, {"kind": "table", "title": "Ce que l'échelon autorise, toutes matières confondues", "note": "Reprend les échelons de l'Artisanat et de La Forge, sans les modifier.", "cols": ["Échelon", "Reconnaît", "Emploie sans risque", "Peut acheter légalement"], "rows": [{"c": ["1 · Apprenti", "Communes", "Communes", "Communes"], "off": false}, {"c": ["2 · Artisan", "Communes et Limitées", "Communes et Limitées", "Communes et Limitées"], "off": false}, {"c": ["3 · Maître", "Jusqu'aux Rares", "Jusqu'aux Rares", "Rares, avec registre et déclaration"], "off": false}, {"c": ["4 · Maître de guilde", "Toutes, y compris Exotiques", "Toutes", "Tout ce qui n'est pas prohibé"], "off": false}], "foot": ""}]}, {"title": "Le végétal", "note": "", "sections": [{"kind": "table", "title": "Herbes communes des bords de chemin", "note": "Ce que n'importe qui ramasse en marchant, et que seul un œil formé distingue de son sosie inutile.", "cols": ["Matière", "Coût", "Dispo", "Éch.", "Récolte", "Sert à"], "rows": [{"c": ["Achillée", "6 Sc", "Commune", "1", "Savoir (Herbes), talus et prés, du printemps à l'automne", "Arrête un saignement. Un cataplasme retire un État Hémorragique sans test de Guérison"], "off": false}, {"c": ["Consoude", "8 Sc", "Commune", "1", "Savoir (Herbes), fossés humides, printemps", "Emplâtre d'os brisé. Réduit d'un jour la convalescence d'une fracture"], "off": false}, {"c": ["Plantain", "4 Sc", "Commune", "1", "Savoir (Herbes), partout où l'on marche, toute l'année", "Piqûres, brûlures légères, ampoules. La plante du soldat en marche"], "off": false}, {"c": ["Ortie", "3 Sc", "Commune", "1", "Aucun test, friches et décombres, printemps et été", "Fibre textile grossière, soupe, teinture verte, tisane fortifiante"], "off": false}, {"c": ["Camomille sauvage", "8 Sc", "Commune", "1", "Savoir (Herbes), champs moissonnés, été", "Calmant léger. Une tasse le soir donne +10 au premier Test de Calme du lendemain"], "off": false}, {"c": ["Ail des ours", "5 Sc", "Commune", "1", "Savoir (Herbes), sous-bois humide, printemps seulement", "Cuisine, antiseptique, et tout le folklore que le village y attache"], "off": false}, {"c": ["Écorce de saule", "10 Sc", "Commune", "1", "Aucun test, berges, toute l'année", "Décoction contre la douleur. Retire un État Exténué dû à la douleur, une fois par jour"], "off": false}, {"c": ["Bardane", "6 Sc", "Commune", "1", "Savoir (Herbes), terrains vagues, été et automne", "Purgatif doux, teinture, cataplasme d'abcès"], "off": false}, {"c": ["Mousse de chêne", "4 Sc", "Commune", "1", "Aucun test, troncs au nord, toute l'année", "Bourre de plaie propre, fixateur de parfum, isolation de bottes"], "off": false}, {"c": ["Prêle", "7 Sc", "Commune", "1", "Savoir (Herbes), fossés, printemps", "Abrasif végétal. Polit le bois et le métal fin sans les rayer"], "off": false}, {"c": ["Millepertuis", "1 Pa", "Commune", "2", "Savoir (Herbes), lisières ensoleillées, plein été", "Baume de brûlure et remontant. Trois jours de cure retirent un point de Corruption temporaire"], "off": false}, {"c": ["Bourrache", "8 Sc", "Commune", "1", "Savoir (Herbes), jardins et friches, été", "Fièvre et refroidissements. Base de la plupart des tisanes de convalescence"], "off": false}], "foot": ""}, {"kind": "table", "title": "Simples de valeur", "note": "Le fonds de commerce d'un herboriste. Les prix rejoignent ceux du document Apothicaire, qui regroupe la fleur de lune et le faxtoryll sous une seule ligne, Simples rares, au même prix de 3 CO.", "cols": ["Matière", "Coût", "Dispo", "Éch.", "Récolte", "Sert à"], "rows": [{"c": ["Racines et écorces séchées", "10 Pa", "Commune", "1", "Achat, ou cueillette en automne", "Infusions, décoctions, drogues mâchées. Repris du document Apothicaire"], "off": false}, {"c": ["Valériane", "2 Pa", "Limitée", "2", "Savoir (Herbes) −10, sous-bois frais, automne", "Somnifère. Une dose fait dormir un homme non consentant sur un échec en Résistance"], "off": false}, {"c": ["Belladone", "3 Pa", "Limitée", "2", "Savoir (Herbes) −10, clairières calcaires, fin d'été", "Poison lent, dilatation des pupilles, antispasmodique. Détention justifiable, usage non"], "off": false}, {"c": ["Digitale", "3 Pa", "Limitée", "3", "Savoir (Herbes) −20, talus forestiers, été", "Ralentit le cœur. Remède du vieillard, poison de l'héritier"], "off": false}, {"c": ["Aconit", "5 Pa", "Limitée", "3", "Savoir (Herbes) −20, pâturages de montagne, été", "Le poison de flèche classique des chasseurs de loups. Interdit en ville"], "off": false}, {"c": ["Mandragore", "3 CO", "Rare", "3", "Savoir (Herbes) −30, terres de gibet, nuit", "Anesthésique puissant. Permet une amputation sans perte de Force Mentale"], "off": false}, {"c": ["Fleur de lune", "3 CO", "Rare", "3", "Savoir (Herbes) −30, clairières, nuits de pleine lune", "Remèdes de complexité 4. Repris du document Apothicaire"], "off": false}, {"c": ["Faxtoryll", "3 CO", "Rare", "3", "Ne se récolte pas dans l'Empire, importation", "Remèdes de complexité 4. Repris du document Apothicaire"], "off": false}, {"c": ["Sanguinaire des tourbières", "2 CO", "Rare", "3", "Savoir (Herbes) −20, tourbières du Nordland, automne", "Coagulant violent. Referme une plaie ouverte, laisse une cicatrice noire indélébile"], "off": false}, {"c": ["Herbe-à-jurons", "1 CO", "Limitée", "2", "Savoir (Herbes) −10, ruines et vieux murs, été", "Stimulant amer. +10 à un seul Test de Résistance, puis un État Exténué"], "off": false}, {"c": ["Langue-de-corbeau", "2 CO", "Rare", "3", "Savoir (Herbes) −20, charniers et champs de bataille", "Révèle le poison dans un liquide en noircissant. Une dose par flacon testé"], "off": false}, {"c": ["Racine de nuit-blanche", "4 CO", "Rare", "3", "Savoir (Herbes) −30, grottes et caves profondes", "Empêche de dormir trois jours sans pénalité, puis 1d10 heures d'effondrement total"], "off": false}, {"c": ["Baume d'Ulric", "5 CO", "Rare", "4", "Ne se récolte pas, monastères du Middenland", "Onguent de gel. Retire tous les États dus au froid et immunise une journée"], "off": false}], "foot": ""}, {"kind": "table", "title": "Champignons et moisissures", "note": "La famille où l'erreur d'identification tue le plus vite. Tous ont un sosie.", "cols": ["Matière", "Coût", "Dispo", "Éch.", "Récolte", "Sert à"], "rows": [{"c": ["Cèpe et girolle", "1 Pa", "Commune", "1", "Savoir (Herbes), forêt de feuillus, automne", "Cuisine. Un plat de complexité 2 sans matière achetée"], "off": false}, {"c": ["Amanite tue-mouches", "1 Pa", "Commune", "2", "Savoir (Herbes), sous les bouleaux, automne", "Hallucinogène des cultes ruraux. Une dose donne des visions et 1d10 heures inutilisables"], "off": false}, {"c": ["Amanite blanche", "2 Pa", "Limitée", "3", "Savoir (Herbes) −20, sous-bois, automne", "Poison lent et sans goût, mortel en trois jours. Se confond avec le champignon de couche"], "off": false}, {"c": ["Vesse-de-loup géante", "8 Sc", "Commune", "1", "Aucun test, prés, fin d'été", "Sa poudre coagule une plaie. Sèche, elle sert d'amadou"], "off": false}, {"c": ["Ergot de seigle", "2 Pa", "Limitée", "3", "Savoir (Herbes) −10, champs humides, moisson", "Contracte les vaisseaux. Sauve une accouchée, rend un village fou si le pain en contient"], "off": false}, {"c": ["Moisissure de cave", "10 Pa", "Limitée", "2", "Caves humides et cryptes, toute l'année", "Cataplasmes contre l'infection. Repris du document Apothicaire"], "off": false}, {"c": ["Polypore de bouleau", "1 Pa", "Commune", "2", "Savoir (Herbes), troncs morts, toute l'année", "Cuir à rasoir, antiseptique de terrain, amadou de qualité"], "off": false}, {"c": ["Truffe", "5 CO", "Exotique", "3", "Emprise sur les animaux avec un porc, chênaies, hiver", "Rend un plat mémorable, une seule fois. Repris du document Cuisine"], "off": false}, {"c": ["Chapeau-de-fossoyeur", "3 CO", "Rare", "3", "Savoir (Herbes) −30, terre de cimetière, nuit", "Pousse là où un corps s'est décomposé. Ingrédient des sels de Morr et des embaumements"], "off": false}, {"c": ["Mycélium blafard", "4 CO", "Rare", "4", "Savoir (Herbes) −30, galeries naines abandonnées", "Luit faiblement pendant six heures une fois écrasé. Éclaire sans flamme et sans fumée"], "off": false}, {"c": ["Moisissure vermeille", "6 CO", "Exotique", "4", "Savoir (Herbes) −30, murs proches d'un lieu corrompu", "Distillats interdits. Toute manipulation impose un Test de Résistance ou 1 point de Corruption"], "off": false}, {"c": ["Rouille des blés", "6 Sc", "Commune", "2", "Aucun test, champs malades, fin d'été", "Pigment ocre, et preuve qu'une récolte est perdue. Un ingénieur agricole en fait un révélateur"], "off": false}], "foot": ""}, {"kind": "table", "title": "Sèves, gommes et résines", "note": "", "cols": ["Matière", "Coût", "Dispo", "Éch.", "Récolte", "Sert à"], "rows": [{"c": ["Résine de pin", "6 Sc", "Commune", "1", "Aucun test, pinèdes, printemps et été", "Poix, torches, étanchéité, colle grossière, encens du pauvre"], "off": false}, {"c": ["Poix de bois", "1 Pa", "Commune", "1", "Achat, ou fabrication au charbonnier", "Calfatage, flèches incendiaires, protection du bois enterré"], "off": false}, {"c": ["Colle de peau", "8 Sc", "Commune", "1", "Fabrication : chutes de cuir bouillies un jour", "Menuiserie, arc composite, reliure. Indispensable à l'échelon 2"], "off": false}, {"c": ["Colle de poisson", "2 Pa", "Limitée", "2", "Achat au port, ou vessies natatoires bouillies", "Colle transparente et souple. Lutherie, incrustations, vitrail"], "off": false}, {"c": ["Gomme arabique", "2 CO", "Rare", "2", "Marchand au long cours", "Liant d'encre et d'enluminure. Obligatoire pour la calligraphie de complexité 3"], "off": false}, {"c": ["Térébenthine", "2 Pa", "Limitée", "2", "Distillerie, apothicaire", "Solvant, vernis, dissolution des résines. Inflammable"], "off": false}, {"c": ["Baume du Nord", "3 CO", "Rare", "3", "Résine d'un conifère du Kislev, hiver", "Vernis clair qui ne jaunit pas. Signature des luthiers et des enlumineurs de prix"], "off": false}, {"c": ["Ambre brut", "8 CO", "Rare", "3", "Perception, plages de la mer des Griffes, après tempête", "Bijou, isolant, et matière que les mages d'Ambre reconnaissent au toucher"], "off": false}, {"c": ["Sève de saigne-bois", "10 CO", "Exotique", "4", "Savoir (Herbes) −30, un seul arbre par forêt profonde", "Coule rouge et tiède. Un vernis qui rend une hampe Incassable. Personne n'aime en parler"], "off": false}, {"c": ["Écorce à tan", "3 Pa", "Commune", "1", "Aucun test, chênes et châtaigniers, se ramasse librement", "Indispensable au tannage. Repris du document Artisanat"], "off": false}], "foot": ""}]}, {"title": "L'animal et la table", "note": "", "sections": [{"kind": "table", "title": "Matières animales courantes", "note": "Ce que rend une bête morte. Les prix des peaux rejoignent le document Artisanat.", "cols": ["Matière", "Coût", "Dispo", "Éch.", "Récolte", "Sert à"], "rows": [{"c": ["Peau brute de bétail", "4 Pa", "Commune", "1", "Boucher, ferme, abattoir", "Cuir courant. Deux semaines de tannage. Repris du document Artisanat"], "off": false}, {"c": ["Peau de bête peu commune", "2 CO", "Rare", "3", "Chasse, trophée, receleur", "Cuir de qualité. Certaines peaux posent des questions. Repris du document Artisanat"], "off": false}, {"c": ["Corne, os et ivoire", "8 Pa", "Limitée", "2", "Boucher, chasseur, ossuaire", "Manches, incrustations, arcs composites. Repris du document Artisanat"], "off": false}, {"c": ["Tendon et nerf", "1 Pa", "Commune", "2", "Prélèvement sur la carcasse dans la journée", "Corde d'arc, ligature, couture de cuir épais. Meilleur que le lin, se détend à l'humidité"], "off": false}, {"c": ["Crin de cheval", "1 Pa", "Commune", "1", "Maréchal, écurie", "Rembourrage, cordes, tamis, pinceaux, et tous les nœuds des Traditions"], "off": false}, {"c": ["Plumes de vol", "8 Sc", "Commune", "1", "Perception, basse-cour ou nid, printemps", "Empennage de flèche, calames d'écriture, literie"], "off": false}, {"c": ["Suif et graisse animale", "3 Pa", "Commune", "1", "Boucher, tanneur", "Chandelles, baumes, graissage du cuir. Repris du document Apothicaire"], "off": false}, {"c": ["Vessie et boyau", "6 Sc", "Commune", "1", "Boucher", "Outres, saucisses, membranes, préservation, cordes de luth"], "off": false}, {"c": ["Sabots et rognures de corne", "4 Sc", "Commune", "1", "Maréchal", "Colle forte, boutons, peignes, engrais"], "off": false}, {"c": ["Cire et miel", "4 Pa", "Commune", "1", "Rucher, marché", "Onguents, cachets, chandelles fines, enrobage. Repris du document Apothicaire"], "off": false}, {"c": ["Fiel et bile", "12 Pa", "Limitée", "2", "Boucher, chasseur", "Poisons faibles, purgatifs, mordant de teinture. Repris du document Apothicaire"], "off": false}, {"c": ["Coquilles et nacre", "1 Pa", "Commune", "2", "Perception, rivières et côtes", "Incrustations, boutons de prix, chaux à mortier"], "off": false}, {"c": ["Sangsues", "1 Pa", "Commune", "1", "Survie en extérieur, mares stagnantes, été", "Saignées. Un barbier-chirurgien sans sangsues n'est qu'un barbier"], "off": false}, {"c": ["Peau de gibier, cerf ou sanglier", "10 Pa", "Limitée", "1", "Survie en extérieur après une chasse", "Cuir souple et léger. Repris du document Artisanat"], "off": false}, {"c": ["Cuir de garniture et rivets", "10 Pa", "Commune", "1", "Tanneur", "Doublures, courroies, jointures. Aucune armure ne se monte sans. Repris de La Forge"], "off": false}, {"c": ["Graisse animale clarifiée", "3 Pa", "Commune", "1", "Boucher, tanneur", "Baumes et supports d'onction. Repris de l'Apothicaire"], "off": false}, {"c": ["Cendre d'os calcinée", "6 Pa", "Limitée", "2", "Ossuaire, fossoyeur", "Absorbants, poudres, préparations liées à Morr. Repris de l'Apothicaire"], "off": false}], "foot": ""}, {"kind": "table", "title": "Matières animales rares et monstrueuses", "note": "Le prélèvement se fait sur la bête abattue, avec le bon outil et dans le bon délai. Manquer le délai perd la matière.", "cols": ["Matière", "Coût", "Dispo", "Éch.", "Récolte", "Sert à"], "rows": [{"c": ["Venin frais", "1 CO", "Rare", "3", "Prélevé sur la bête vivante ou morte dans l'heure", "Poisons de lame et de munition. Repris du document Apothicaire"], "off": false}, {"c": ["Graisse de troll", "6 CO", "Exotique", "4", "Métier (Apothicaire) −20 dans les six heures", "Onguent de régénération. Referme une Blessure Critique légère en une nuit"], "off": false}, {"c": ["Dent de troll", "3 CO", "Rare", "3", "Prélèvement à la masse, aucun délai", "Manches, amulettes, et un abrasif que rien n'égale"], "off": false}, {"c": ["Cuir de bête des bois", "5 CO", "Rare", "3", "Dépeçage sous une heure, Survie en extérieur", "Armure de cuir clouté sans surcoût de temps. Sa provenance se remarque"], "off": false}, {"c": ["Corne d'homme-bête", "2 CO", "Rare", "3", "Prélèvement immédiat", "Détenir cette matière est un délit dans la plupart des comtés. Un répurgateur ne demandera pas pourquoi"], "off": false}, {"c": ["Fourrure d'ours ou de loup d'hiver", "4 CO", "Limitée", "2", "Chasse, hiver", "Manteaux du Nordland et du Kislev. Immunise au froid ordinaire, sans test"], "off": false}, {"c": ["Écaille de lézard des rochers", "2 CO", "Rare", "3", "Chasse en montagne sèche", "Renfort d'armure légère. +1 PA sur une localisation, sans gain d'Encombrement"], "off": false}, {"c": ["Soie d'araignée de galerie", "8 CO", "Exotique", "4", "Prélèvement dans un nid, avec ce que ça implique", "Fil de couture qui ne rompt pas, corde d'arc de maître, lignes de piège"], "off": false}, {"c": ["Glande de sangsue des tourbières", "3 CO", "Rare", "3", "Métier (Apothicaire), marais du nord", "Anticoagulant. Une lame enduite inflige Hémorragique sur toute blessure"], "off": false}, {"c": ["Œil de corbeau", "1 CO", "Limitée", "3", "Prélèvement dans l'heure", "Composant de divination. Les Traditions et les Charmes en consomment beaucoup"], "off": false}, {"c": ["Musc de belette et de fouine", "2 CO", "Limitée", "3", "Piégeage, hiver", "Fixateur de parfum, appât, et masque d'odeur pour tromper les chiens"], "off": false}, {"c": ["Poudre d'os de héros", "10 CO", "Exotique", "4", "Ossuaire, avec une autorisation ou sans", "Onctions liées à Morr. Le vol d'ossements est puni comme un sacrilège"], "off": false}], "foot": ""}, {"kind": "table", "title": "Vivres et provisions", "note": "Toutes les lignes viennent du document Cuisine et Auberge, aux mêmes prix. Le catalogue ajoute la récolte et l'échelon.", "cols": ["Matière", "Coût", "Dispo", "Éch.", "Récolte", "Sert à"], "rows": [{"c": ["Pain noir et gruau", "2 Pa", "Commune", "1", "Boulanger, moulin", "La base de tout. Nourrit sans rien apporter"], "off": false}, {"c": ["Choux, navets, oignons", "2 Pa", "Commune", "1", "Potager, marché, ou Survie en extérieur à l'automne", "Soupes et ragoûts. Se gardent tout l'hiver en cave"], "off": false}, {"c": ["Lard et saindoux", "6 Pa", "Commune", "1", "Ferme, boucher", "Cuisson, conservation, calories de route"], "off": false}, {"c": ["Fromage de brebis d'Averland", "8 Pa", "Commune", "1", "Bergers du sud", "Se garde des mois. Fierté locale, et sujet de conversation utile"], "off": false}, {"c": ["Mouton ou chèvre", "12 Pa", "Commune", "1", "Éleveur", "La viande ordinaire du comté"], "off": false}, {"c": ["Gibier frais", "15 Pa", "Limitée", "1", "Survie en extérieur, chasse ou braconnage", "Braconner sur terre noble est un délit sérieux"], "off": false}, {"c": ["Poisson de rivière", "6 Pa", "Commune", "1", "Survie en extérieur, rivières et étangs", "Périssable en un jour, excellent fumé"], "off": false}, {"c": ["Volaille et œufs", "8 Pa", "Commune", "1", "Basse-cour", "Le luxe accessible du paysan aisé"], "off": false}, {"c": ["Bière brune de bourg", "4 Pa", "Commune", "1", "Brasseur local", "Boisson par défaut. Plus sûre que l'eau des villes"], "off": false}, {"c": ["Vin de la vallée", "1 CO", "Limitée", "2", "Coteaux du sud", "Marque le rang d'une table"], "off": false}, {"c": ["Beurre, crème, miel", "12 Pa", "Limitée", "1", "Laiterie, rucher", "Nécessaires à toute cuisine au-delà du rustique"], "off": false}, {"c": ["Épices d'Arabie", "3 CO", "Rare", "3", "Marchand au long cours", "Obligatoires à la complexité 4 et au-delà. Prouvent la richesse d'une maison"], "off": false}, {"c": ["Sucre et fruits confits", "2 CO", "Rare", "3", "Apothicaire, grand marché", "Desserts de notables, cadeaux diplomatiques"], "off": false}, {"c": ["Baies, noisettes, châtaignes", "6 Sc", "Commune", "1", "Survie en extérieur ou Savoir (Herbes), lisières, fin d'été et automne", "Complète une ration sans rien payer. Trois jours de conservation à l'air"], "off": false}, {"c": ["Truffe, safran, produit rare local", "5 CO", "Exotique", "3", "Emprise sur les animaux avec un porc pour la truffe, chênaies, hiver. Le safran se cultive et ne se ramasse pas", "De quoi rendre un plat mémorable, une seule fois. Repris du document Cuisine"], "off": false}, {"c": ["Miel sauvage", "1 Pa", "Commune", "2", "Survie en extérieur −10, arbres creux, été. Un échec coûte 1d10 Blessures de piqûres", "Sucre du pauvre, conservation, hydromel, et la cire qui va avec"], "off": false}], "foot": ""}]}, {"title": "Le minéral et le métal", "note": "", "sections": [{"kind": "table", "title": "Minéraux, terres et sels", "note": "", "cols": ["Matière", "Coût", "Dispo", "Éch.", "Récolte", "Sert à"], "rows": [{"c": ["Alun et sel gemme", "5 Pa", "Commune", "1", "Mine, épicier", "Coagulants, tannage, conservation. Repris du document Apothicaire"], "off": false}, {"c": ["Sel", "10 Pa", "Commune", "1", "Marchand, mine", "Salaison. Taxé, donc contrebandé. Repris du document Cuisine"], "off": false}, {"c": ["Craie et chaux", "6 Sc", "Commune", "1", "Carrière, falaise", "Mortier, blanchiment, écriture, dégraissage de la laine"], "off": false}, {"c": ["Argile de potier", "8 Sc", "Commune", "1", "Aucun test, berges d'argile", "Poterie, moules de fonderie, creusets"], "off": false}, {"c": ["Ocre et terre de Sienne", "1 Pa", "Commune", "2", "Perception, talus ferrugineux", "Pigments, apprêt, marquage. La couleur de toute l'Averland"], "off": false}, {"c": ["Soufre et salpêtre", "15 Pa", "Limitée", "3", "Droguiste, guilde des ingénieurs", "Poudre noire, fumigations, corrosifs. Repris du document Apothicaire"], "off": false}, {"c": ["Vitriol", "2 CO", "Limitée", "3", "Alchimiste, guilde", "Acide de gravure et de décapage. Achat consigné dans un registre nominatif"], "off": false}, {"c": ["Vif-argent", "2 CO", "Rare", "3", "Alchimiste, orfèvre", "Distillats, révélateurs, poisons lents, dorure au feu. Repris du document Apothicaire"], "off": false}, {"c": ["Sable siliceux et potasse", "6 Pa", "Limitée", "2", "Carrière, rivière, cendre de bois", "Verre courant. Repris du document Artisanat"], "off": false}, {"c": ["Sable blanc de rivière", "15 Pa", "Rare", "3", "Gisement précis, secret de métier", "Verre optique et lentilles. Repris du document Artisanat"], "off": false}, {"c": ["Émeri", "1 CO", "Limitée", "2", "Marchand, carrière", "Abrasif d'affûtage et de polissage. Un forgeron d'échelon 3 en consomme sans arrêt"], "off": false}, {"c": ["Graphite", "2 CO", "Limitée", "3", "Mine du Middenland", "Moules de fonderie, mines à écrire, lubrifiant sec des mécanismes"], "off": false}, {"c": ["Éclat de pierre à sorcière", "6 CO", "Exotique", "4", "Cercle ancien, receleur", "Distillats. Détention illégale, Corruption à la manipulation prolongée. Repris de l'Apothicaire"], "off": false}, {"c": ["Sel de Morr", "1 CO", "Limitée", "3", "Temple de Morr, contre service rendu", "Embaumement, protection d'un seuil, préparations funéraires"], "off": false}, {"c": ["Eau consacrée", "1 CO", "Limitée", "2", "Temple, contre service rendu", "Onctions, aspersions. Repris du document Apothicaire"], "off": false}, {"c": ["Terre de sépulture", "–", "Rare", "3", "Prise sur une tombe, avec ce que ça coûte", "Composant des charmes de seuil et de tout ce qui touche aux morts"], "off": false}], "foot": ""}, {"kind": "table", "title": "Métaux", "note": "Les prix et les effets viennent du document La Forge et n'ont pas été modifiés.", "cols": ["Matière", "Coût", "Dispo", "Éch.", "Récolte", "Sert à"], "rows": [{"c": ["Fer de tourbière", "8 Pa", "Commune", "1", "Marais, réduction locale", "Le fer des villages. −1 DR à toute pièce. Repris de La Forge"], "off": false}, {"c": ["Fer marchand", "15 Pa", "Commune", "1", "Forge de bourg, colporteur", "Le standard, aucun modificateur. Repris de La Forge"], "off": false}, {"c": ["Acier de Nuln", "1 CO 10 Pa", "Limitée", "2", "Fonderies impériales", "+1 DR. Obligatoire à la complexité 4. Repris de La Forge"], "off": false}, {"c": ["Acier nain", "4 CO", "Rare", "3", "Comptoir nain, karak", "+1 DR et Incassable. Repris de La Forge"], "off": false}, {"c": ["Gromril", "40 CO", "Exotique", "4", "Ne s'achète pas, se reçoit", "Complexité 5 obligatoire. Repris de La Forge"], "off": false}, {"c": ["Ithilmar", "–", "Exotique", "4", "Forges elfiques uniquement", "Ne se travaille pas dans une forge humaine. Repris de La Forge"], "off": false}, {"c": ["Cuivre et laiton", "12 Pa", "Commune", "1", "Mine, fondeur, marché", "Ferrures, gravure, instruments. Repris du document Artisanat"], "off": false}, {"c": ["Étain", "1 CO", "Commune", "2", "Marchand, mine", "Vaisselle, soudure, bronze avec le cuivre. Le métal du pauvre qui veut paraître"], "off": false}, {"c": ["Plomb", "8 Pa", "Commune", "1", "Couvreur, mine", "Balles, sceaux, lest, vitrail. On sait déjà qu'il rend fou, on continue"], "off": false}, {"c": ["Argent en lingot", "4 CO", "Rare", "3", "Mine, orfèvre, changeur", "Placages, pointes d'argent, bijoux. Achat surveillé. Prix de l'Artisanat. La Forge le compte à 5 CO pour l'argenture d'une pièce, majoration du travail comprise"], "off": false}, {"c": ["Or en feuille", "10 CO", "Rare", "3", "Orfèvre, banque", "Dorure, enluminure, objets de statut. Repris de l'Artisanat"], "off": false}, {"c": ["Ferraille récupérée", "–", "Commune", "1", "Champ de bataille, épave", "Gratuite, −1 DR, une chance sur dix de contenir un vice. Repris de La Forge"], "off": false}, {"c": ["Fer météorique", "25 CO", "Exotique", "4", "Chute observée, une fois par génération", "Une pièce unique. Traiter comme de l'acier nain, et rend le porteur mémorable"], "off": false}, {"c": ["Poudre d'argent", "4 CO", "Rare", "3", "Orfèvre, fondeur", "Baume d'argent, onctions paranaturelles. Repris de l'Apothicaire"], "off": false}], "foot": ""}, {"kind": "table", "title": "Combustibles, fondants et solvants", "note": "", "cols": ["Matière", "Coût", "Dispo", "Éch.", "Récolte", "Sert à"], "rows": [{"c": ["Charbon de bois", "6 Pa", "Commune", "1", "Charbonnier de forêt", "Une journée de forge par sac. Repris de La Forge"], "off": false}, {"c": ["Coke de Nuln", "12 Pa", "Limitée", "2", "Bassin industriel", "+10 aux tests de fabrication. Repris de La Forge"], "off": false}, {"c": ["Tourbe", "3 Pa", "Commune", "1", "Découpe en tourbière, été, aucun test", "Chauffage lent et fumeux du Nordland. Impropre à la forge"], "off": false}, {"c": ["Huile de lampe", "1 Pa", "Commune", "1", "Marché, chandelier", "Éclairage, incendiaire improvisé, trempe"], "off": false}, {"c": ["Esprit-de-vin", "8 Pa", "Commune", "2", "Distillerie, taverne complaisante", "Base de toute teinture, antiseptique. Repris de l'Apothicaire"], "off": false}, {"c": ["Borax", "3 CO", "Rare", "3", "Marchand au long cours", "Fondant de soudure. Sans lui, pas de brasure fine ni d'orfèvrerie"], "off": false}, {"c": ["Trempe à l'huile ou à l'urine", "2 Pa", "Commune", "1", "Atelier", "Nécessaire à toute trempe. Repris de La Forge"], "off": false}, {"c": ["Lessive de cendre", "4 Sc", "Commune", "1", "Fabrication maison en une journée", "Dégraissage, savon, préparation du lin. Toute maison en produit"], "off": false}, {"c": ["Naphte", "5 CO", "Exotique", "4", "Suintements d'Arabie, importation", "Feu qui ne s'éteint pas à l'eau. Sa vente est un motif d'arrestation à Nuln"], "off": false}, {"c": ["Poudre noire", "2 CO la livre", "Limitée", "3", "Ne se récolte pas. Salpêtre, soufre et charbon, une journée de préparation, Métier (Ingénieur)", "Produit d'État. La détenir en quantité exige une patente ou un mandat. Sans papiers, le prix double et le vendeur retient le visage. Repris de l'Ingénieur"], "off": false}], "foot": ""}]}, {"title": "Fibres, bois et ouvrages", "note": "", "sections": [{"kind": "table", "title": "Fibres, tissus et teintures", "note": "", "cols": ["Matière", "Coût", "Dispo", "Éch.", "Récolte", "Sert à"], "rows": [{"c": ["Lin et chanvre", "5 Pa", "Commune", "1", "Ferme, marché", "Toile, cordage, gambison. Repris de l'Artisanat"], "off": false}, {"c": ["Laine brute", "8 Pa", "Commune", "1", "Berger, foire", "Drap, doublure, feutre. Repris de l'Artisanat"], "off": false}, {"c": ["Soie", "3 CO", "Rare", "3", "Marchand de la Route, port", "Doublure fine, vêtement de statut, fil de suture. Repris de l'Artisanat"], "off": false}, {"c": ["Coton d'Arabie", "2 CO", "Rare", "3", "Port de Marienburg", "Étoffe légère, bandages de qualité, mèches de lampe"], "off": false}, {"c": ["Feutre foulé", "1 CO", "Commune", "2", "Fabrication : laine, eau chaude, une journée de foulage", "Doublure d'armure, chapeaux, isolation. Absorbe le choc mieux que le cuir mince"], "off": false}, {"c": ["Guède", "1 Pa", "Commune", "2", "Culture, ou Savoir (Herbes) sur friches, été", "Le bleu de l'Empire. Toute teinture bleue en vient"], "off": false}, {"c": ["Garance", "1 Pa", "Commune", "2", "Culture, achat", "Rouge solide. La couleur des livrées et des tabards"], "off": false}, {"c": ["Gaude et safran des prés", "2 Pa", "Limitée", "2", "Savoir (Herbes), prés secs, été", "Jaunes. Mélangée à la guède, elle donne le vert"], "off": false}, {"c": ["Kermès", "4 CO", "Rare", "3", "Marchand au long cours", "Écarlate profond. La couleur qu'un roturier n'a pas le droit de porter en ville"], "off": false}, {"c": ["Noix de galle", "1 Pa", "Commune", "2", "Perception, chênes, automne", "Encre noire et mordant de teinture. Base de tout registre officiel"], "off": false}, {"c": ["Mordant d'alun", "1 Pa", "Commune", "2", "Épicier", "Fixe la teinture. Sans lui, toute couleur part au premier lavage"], "off": false}], "foot": ""}, {"kind": "table", "title": "Bois", "note": "", "cols": ["Matière", "Coût", "Dispo", "Éch.", "Récolte", "Sert à"], "rows": [{"c": ["Bois de chauffe et planches", "2 Pa", "Commune", "1", "Scierie, forêt communale", "Menuiserie ordinaire, manches, hampes. Repris de l'Artisanat"], "off": false}, {"c": ["If, frêne ou orme de fente", "15 Pa", "Limitée", "2", "Forêt ancienne, marchand de bois", "Arcs et hampes. Doit sécher deux ans. Repris de l'Artisanat"], "off": false}, {"c": ["Chêne de cœur", "1 CO", "Limitée", "2", "Forêt seigneuriale, avec droit de coupe", "Boucliers, charpente, coffres. La coupe sauvage est un délit. Repris de l'Artisanat"], "off": false}, {"c": ["Noyer", "1 CO 10 Pa", "Limitée", "3", "Verger, marchand", "Crosses d'armes à feu, meubles de prix. Se travaille sans éclater"], "off": false}, {"c": ["Buis", "2 CO", "Limitée", "3", "Marchand, taillis calcaires", "Gravure, peignes, engrenages de bois, instruments de mesure"], "off": false}, {"c": ["Bois flotté salé", "–", "Commune", "2", "Perception, plages du Nordland, après tempête", "Gratuit, dur, imprévisible. Brûle avec des flammes colorées, ce qui inquiète toujours quelqu'un"], "off": false}, {"c": ["Cœur de charme", "1 CO", "Limitée", "2", "Forêt, droit de coupe", "Manches d'outils, dents d'engrenage, maillets. Le bois qui ne se fend pas"], "off": false}, {"c": ["Ébène", "6 CO", "Rare", "3", "Port, marchand au long cours", "Incrustation, manches d'apparat, baguettes. Coule dans l'eau"], "off": false}, {"c": ["Bois de cœur-mort", "12 CO", "Exotique", "4", "Un arbre foudroyé resté debout, forêt profonde", "Ne brûle pas et ne pourrit pas. Les charmes de seuil taillés dedans durent le double"], "off": false}, {"c": ["Bois de hampe et poignée", "5 Pa", "Commune", "1", "Menuisier, forêt", "Manches, hampes, crosses. Le frêne pour les hastes, le noyer pour les crosses. Repris de La Forge"], "off": false}], "foot": ""}, {"kind": "table", "title": "Verre, écriture et petits ouvrages", "note": "", "cols": ["Matière", "Coût", "Dispo", "Éch.", "Récolte", "Sert à"], "rows": [{"c": ["Verre courant en gobbes", "1 Pa", "Commune", "2", "Verrier, marché", "Flacons, vitres épaisses, perles. Se refond indéfiniment"], "off": false}, {"c": ["Verre blanc de qualité", "1 CO", "Limitée", "3", "Verrier de ville", "Fioles d'apothicaire, alambics, verrerie de laboratoire"], "off": false}, {"c": ["Verre optique", "4 CO", "Rare", "3", "Un seul atelier par grande ville", "Lentilles, lunettes, longue-vue. Repris de l'Artisanat et de l'Ingénieur"], "off": false}, {"c": ["Oxydes colorants", "2 CO", "Limitée", "3", "Verrier, alchimiste", "Vitrail. Le cobalt bleu coûte à lui seul le double des autres"], "off": false}, {"c": ["Parchemin", "2 Pa", "Commune", "1", "Parcheminier, monastère", "Écriture durable, cartes, actes. Se gratte et se réemploie"], "off": false}, {"c": ["Vélin", "1 CO", "Limitée", "3", "Monastère, atelier de luxe", "Enluminure, actes solennels, grimoires. Peau d'animal mort-né"], "off": false}, {"c": ["Papier de chiffe", "1 Pa", "Limitée", "2", "Moulin à papier, Altdorf et Nuln", "Registres, brouillons, cartouches de poudre. Nouveau et suspect aux yeux des anciens"], "off": false}, {"c": ["Encre de galle", "8 Sc", "Commune", "1", "Fabrication maison, ou papetier", "Écriture ordinaire. Ne s'efface pas sans gratter le support"], "off": false}, {"c": ["Encre de sécurité", "3 CO", "Rare", "4", "Guilde des scribes, sur commande", "Change de teinte si le document est gratté. Les sceaux et actes de guilde en usent"], "off": false}], "foot": ""}]}, {"title": "Au-delà du naturel", "note": "", "sections": [{"kind": "table", "title": "Matières paranaturelles et interdites", "note": "Aucune ne s'achète en boutique. Toutes exposent à la Corruption, à la loi, ou aux deux.", "cols": ["Matière", "Coût", "Dispo", "Éch.", "Récolte", "Sert à"], "rows": [{"c": ["Éclat de pierre à sorcière brut", "6 CO", "Exotique", "4", "Cercle ancien, receleur", "1 point de Corruption par jour de contact prolongé. Détention illégale"], "off": false}, {"c": ["Poussière de warpstone", "–", "Exotique", "4", "Ne se cherche pas, se trouve", "Aucun usage légitime. Le seul fait d'en posséder vaut le bûcher"], "off": false}, {"c": ["Cendre de bûcher", "–", "Rare", "3", "Place d'exécution, après le passage du répurgateur", "Composant de charmes de protection et de malédiction. Les deux, selon l'intention"], "off": false}, {"c": ["Larme de statue", "8 CO", "Exotique", "4", "Un sanctuaire, un jour précis, une fois", "Eau consacrée de premier ordre. Les temples nient que cela existe"], "off": false}, {"c": ["Fer d'un gond de temple", "4 CO", "Rare", "4", "Vol dans un lieu saint, ou don d'un prêtre", "Le clou du seuil des Charmes Permanents en tire son efficacité contre les Éthérés"], "off": false}, {"c": ["Bois de gibet", "2 CO", "Rare", "3", "Potence démontée, avec la permission du bailli", "Malédictions, charmes de justice, amulettes de voleur"], "off": false}, {"c": ["Sang volontaire", "–", "Rare", "3", "Donné librement, jamais pris", "Nombre de charmes et de sorts des Traditions l'exigent. Pris de force, il ne fonctionne pas"], "off": false}, {"c": ["Nom véritable écrit", "–", "Exotique", "4", "Le sort Nom Véritable, ou un aveu", "Le composant le plus cher du jeu, et le seul qui ne se vole pas dans une besace"], "off": false}], "foot": ""}]}, {"title": "Trouver, croiser, se faire prendre", "note": "", "sections": [{"kind": "table", "title": "Où chercher : le biome décide", "note": "Une demi-journée de récolte ne rend que ce que le lieu contient. Le tableau donne ce qu'on peut espérer y trouver.", "cols": ["Lieu", "Communes", "Limitées", "Rares et au-delà"], "rows": [{"c": ["Bord de chemin, friche, décombres", "Achillée, plantain, ortie, bardane, prêle", "Herbe-à-jurons", "—"], "off": false}, {"c": ["Prés et champs moissonnés", "Camomille, gaude, vesse-de-loup", "Ergot de seigle, digitale", "—"], "off": false}, {"c": ["Sous-bois de feuillus", "Ail des ours, mousse de chêne, cèpes, noix de galle", "Valériane, amanites", "Fleur de lune"], "off": false}, {"c": ["Forêt ancienne et profonde", "Résine, polypore, bois de fente", "Chêne de cœur, gibier", "Sève de saigne-bois, bois de cœur-mort"], "off": false}, {"c": ["Berges, fossés, étangs", "Consoude, écorce de saule, argile, sangsues", "Colle de poisson, sable blanc", "—"], "off": false}, {"c": ["Tourbières et marais", "Tourbe, fer de tourbière", "Sanguinaire des tourbières", "Glande de sangsue des tourbières"], "off": false}, {"c": ["Pâturages et alpages de montagne", "Laine, corne", "Aconit, émeri", "Écaille de lézard des rochers"], "off": false}, {"c": ["Carrières, falaises, éboulis", "Craie, ocre, sable siliceux", "Graphite, alun", "Ambre en pied de falaise"], "off": false}, {"c": ["Galeries et caves profondes", "Moisissure de cave, salpêtre", "Racine de nuit-blanche", "Mycélium blafard, soie d'araignée"], "off": false}, {"c": ["Côte du Nordland", "Bois flotté, coquilles, sel", "Fourrure d'hiver, poisson", "Ambre après tempête"], "off": false}, {"c": ["Cimetières, ossuaires, gibets", "Terre de sépulture", "Cendre d'os, bois de gibet", "Chapeau-de-fossoyeur, mandragore"], "off": false}, {"c": ["Champ de bataille et ruines", "Ferraille, plumes", "Langue-de-corbeau", "Cendre de bûcher, moisissure vermeille"], "off": false}], "foot": ""}, {"kind": "table", "title": "Quand chercher : la saison décide", "note": "Hors saison : −20 au test et conservation réduite de moitié.", "cols": ["Saison", "Ce qui se récolte", "Ce qui ne se trouve pas"], "rows": [{"c": ["Printemps", "Ail des ours, consoude, prêle, résine, plumes, sangsues au retour du chaud", "Champignons d'automne, racines de réserve"], "off": false}, {"c": ["Été", "Millepertuis, camomille, bourrache, digitale, aconit, guède, gaude, tourbe, vesse-de-loup", "Écorces de sève montante"], "off": false}, {"c": ["Automne", "Cèpes, amanites, ergot, valériane, noix de galle, racines et écorces, sanguinaire", "Fleurs, jeunes pousses"], "off": false}, {"c": ["Hiver", "Truffe, fourrures d'hiver, mousses, écorce de saule, bois de coupe", "Presque tout le végétal aérien"], "off": false}, {"c": ["Toute l'année", "Minéraux, métaux, matières animales, moisissures de cave, mycélium souterrain", "—"], "off": false}, {"c": ["Nuit et lune", "Fleur de lune, mandragore, chapeau-de-fossoyeur", "Ces trois-là ne se récoltent qu'après le coucher du soleil"], "off": false}], "foot": ""}, {"kind": "table", "title": "Quelle matière pour quel métier", "note": "Renvoi rapide vers les documents de métier existants.", "cols": ["Métier", "Matières indispensables", "Ce qui débloque la complexité 4", "Document de référence"], "rows": [{"c": ["Forgeron, Armurier, Forgeron d'armes", "Fer marchand, charbon, cuir de garniture, trempe", "Acier de Nuln et coke de Nuln, obligatoires", "La Forge"], "off": false}, {"c": ["Tanneur, Cordonnier, Sellier", "Peaux, écorce à tan, colle de peau, suif", "Peau de bête peu commune", "Artisanat"], "off": false}, {"c": ["Charpentier, Arcier, Menuisier", "Planches, colle, tendon, poix", "If ou frêne de fente séché deux ans", "Artisanat"], "off": false}, {"c": ["Tailleur, Tisserand", "Lin, laine, mordant d'alun, guède", "Soie ou kermès", "Artisanat"], "off": false}, {"c": ["Verrier, Lunetier", "Sable siliceux, potasse, oxydes", "Sable blanc de rivière et verre optique", "Artisanat"], "off": false}, {"c": ["Apothicaire, Herboriste", "Esprit-de-vin, cire, graisse, racines séchées", "Fleur de lune, faxtoryll, simples rares", "Métier Apothicaire, Drogues et Potions"], "off": false}, {"c": ["Cuisinier, Aubergiste", "Pain, lard, sel, bière", "Épices d'Arabie, obligatoires", "Cuisine et Auberge"], "off": false}, {"c": ["Ingénieur", "Fer, laiton, bois de crosse, salpêtre et soufre", "Verre optique, graphite, borax", "Métier Ingénieur"], "off": false}, {"c": ["Calligraphe, Enlumineur", "Parchemin, encre de galle, plumes", "Vélin, or en feuille, gomme arabique", "Artisanat"], "off": false}, {"c": ["Cirier, Embaumeur", "Cire, suif, alun, sel", "Sel de Morr, cendre d'os, eau consacrée", "Métier Apothicaire"], "off": false}, {"c": ["Noueuse et praticiennes des Charmes", "Crin, fil de lin, sel gris, cire, épingles, cailloux percés", "Sang volontaire, nom véritable écrit, fer d'un gond de temple", "Domaine des Charmes, Charmes Permanents"], "off": false}], "foot": ""}, {"kind": "table", "title": "Ce qui attire l'attention", "note": "Posséder n'est pas fabriquer, et fabriquer n'est pas vendre. La loi impériale distingue les trois.", "cols": ["Matière", "Statut", "Ce qu'on risque"], "rows": [{"c": ["Salpêtre, soufre, poudre", "Réglementé", "Registre nominatif obligatoire. Sans licence, amende et saisie"], "off": false}, {"c": ["Vitriol, vif-argent, naphte", "Réglementé", "Achat consigné. Une quantité anormale déclenche une visite"], "off": false}, {"c": ["Argent, or, gromril", "Surveillé", "Le changeur note les noms. Un artisan sans commande justifiée est suspect"], "off": false}, {"c": ["Aconit, belladone, digitale, amanite blanche", "Toléré chez un professionnel", "Chez un particulier, présomption d'intention criminelle"], "off": false}, {"c": ["Corne d'homme-bête, poussière de warpstone, pierre à sorcière", "Prohibé", "Détention seule : arrestation et interrogatoire par un répurgateur"], "off": false}, {"c": ["Ossements humains, terre de sépulture, bois de gibet", "Sacrilège", "Justice du temple de Morr, qui ne relève pas du bailli"], "off": false}, {"c": ["Bois de forêt seigneuriale, gibier noble", "Délit de droit commun", "Amende, marque, ou pendaison selon l'humeur du seigneur"], "off": false}], "foot": ""}]}, {"title": "Prix, échelons et raccords", "note": "", "sections": [{"kind": "texte", "title": "Acheter, revendre, fabriquer : les quatre prix", "note": "", "items": ["Une même matière a quatre valeurs différentes selon ce qu'on en fait. Le catalogue ne donne que la première ; les trois autres s'en déduisent, et ces règles sont celles déjà en vigueur dans les documents de métier.", "Prix d'achat. C'est la colonne Coût. Il vaut chez un fournisseur ordinaire d'un bourg de taille moyenne. Grande ville, moins un quart. Village isolé ou région en guerre, le double, voire rien du tout. Le Marchandage s'applique normalement, dans la limite de deux crans.", "Prix de revente d'une matière. La moitié du prix d'achat chez un artisan du métier concerné, le quart chez un receleur ou pour une matière dont la provenance ne se raconte pas. Une matière Exotique ne se revend pas à prix affiché : elle se négocie, et la scène vaut mieux que le tableau.", "Coût en matières d'un objet fabriqué. La moitié du prix de vente de l'objet fini, conformément au moteur commun. Une réparation coûte le quart. C'est le sens de lecture le plus utile à la table : on part du prix de l'objet dans les documents de métier, et on divise.", "Prix de vente d'un objet fini. Le prix des documents de métier, sans changement. Une pièce vendue d'occasion part à la moitié, une pièce non homologuée ou sans marque de guilde au quart. Cette règle vient de l'Ingénieur et vaut pour tous les métiers.", "Ce qu'on gagne réellement à fabriquer. La moitié du prix de vente, moins le temps passé. Un artisan d'échelon 2 qui travaille huit heures par jour dégage environ 1 CO par semaine, une fois l'atelier et la cotisation payés. C'est un revenu, pas une fortune, et c'est voulu."]}, {"kind": "table", "title": "Repères de prix, en un coup d'œil", "note": "Toutes ces règles existent déjà dans les documents de métier. Elles sont réunies ici pour éviter d'avoir à les chercher.", "cols": ["Opération", "Prix", "Source"], "rows": [{"c": ["Acheter une matière", "Colonne Coût du catalogue", "Ce document"], "off": false}, {"c": ["Revendre une matière à un artisan", "La moitié du coût", "Usage commun"], "off": false}, {"c": ["Revendre une matière à un receleur", "Le quart du coût", "Usage commun"], "off": false}, {"c": ["Matières pour fabriquer un objet", "La moitié du prix de vente de l'objet", "Moteur commun, Artisanat"], "off": false}, {"c": ["Matières pour réparer un objet", "Le quart du prix de l'objet", "Moteur commun, Ingénieur"], "off": false}, {"c": ["Vendre un objet neuf marqué", "Prix plein des documents de métier", "Documents de métier"], "off": false}, {"c": ["Vendre un objet d'occasion", "La moitié", "Ingénieur"], "off": false}, {"c": ["Vendre un objet non homologué ou sans marque", "Le quart, et risque de saisie", "Ingénieur"], "off": false}, {"c": ["Cotisation de guilde", "2 CO par an, +10 aux achats de matières", "Ingénieur, Artisanat"], "off": false}, {"c": ["Commande d'une matière absente du stock", "Prix plein, délai de 1d10 jours à 4 semaines", "Ce document"], "off": false}], "foot": ""}, {"kind": "texte", "title": "Le point qui pose toujours question", "note": "", "items": ["Deux échelons différents existent, et on les confond souvent. L'échelon de la colonne Éch. du catalogue dit qui peut reconnaître et employer une matière sans la gâcher. L'échelon des documents de métier dit quelle complexité d'objet on sait fabriquer. Les deux se cumulent : il faut avoir l'échelon de la matière et l'échelon de l'objet.", "Un exemple. Un Artisan d'échelon 2 sait fabriquer une pièce de complexité 3. S'il veut une lame en acier nain, matière d'échelon 3, il ne peut pas : il gâchera l'acier. Il lui faut soit monter d'échelon, soit se rabattre sur l'acier de Nuln, qui est d'échelon 2.", "L'inverse est vrai aussi. Un Maître d'échelon 3 peut employer de l'acier nain sans le gâcher, mais s'il tente une pièce de complexité 5, il échoue sur la complexité, pas sur la matière.", "Règle de table, en une phrase. On regarde d'abord la matière dans ce catalogue, puis l'objet dans le document du métier, et c'est la plus exigeante des deux contraintes qui décide."]}, {"kind": "table", "title": "Ce qu'un échelon permet de fabriquer, par métier", "note": "Rappel condensé des tables « Ce qui est réalisable, échelon par échelon » de chaque document. En cas de doute, le document de métier fait foi.", "cols": ["Échelon", "Complexité accessible", "Forge", "Apothicaire", "Cuisine", "Ingénieur", "Artisanat"], "rows": [{"c": ["1 · Apprenti", "1 et 2", "Clous, ferrures, réparations", "Infusions, cataplasmes, séchage", "Ordinaire de troupe, conserves", "Entretien, pièces détachées", "Courroies, sacs, cordages"], "off": false}, {"c": ["2 · Artisan", "3", "Armes simples, cuir clouté, maille légère", "Onguents, teintures, remèdes courants", "Table d'auberge, rations de route", "Modifications d'armes, pièges", "Bottes, coffres, vêtements, verrerie simple"], "off": false}, {"c": ["3 · Maître", "4", "Maille complète, plates, armes de qualité", "Distillats, poisons, remèdes de complexité 4", "Banquet, plats à effet", "Machines de guerre, lentilles", "Selles, chariots, vitraux, gravure"], "off": false}, {"c": ["4 · Maître de guilde", "5", "Pièces d'apparat, gromril", "Préparations paranaturelles", "Table nobiliaire", "Prototypes, engins uniques", "Carrosses, parures, pièces signées"], "off": false}], "foot": ""}, {"kind": "table", "title": "Qui gouverne quoi", "note": "En cas de divergence entre deux documents, celui de la colonne de droite fait autorité.", "cols": ["Question", "Où chercher", "Autorité"], "rows": [{"c": ["Prix et provenance d'une matière première", "Ce catalogue", "Le document de métier concerné, s'il la cite déjà"], "off": false}, {"c": ["Où ramasser une matière, à quelle saison", "Ce catalogue", "Ce catalogue"], "off": false}, {"c": ["Échelon requis pour reconnaître et employer une matière", "Ce catalogue", "Ce catalogue"], "off": false}, {"c": ["Échelon requis pour fabriquer un objet donné", "Table « Ce qui est réalisable, échelon par échelon » de chaque métier", "Le document de métier"], "off": false}, {"c": ["Complexité, DR requis, temps par tentative", "Table de complexité, identique partout", "Artisanat, qui fait référence"], "off": false}, {"c": ["Prix d'un objet fini", "Le document de métier", "Up in Arms puis le livre de base"], "off": false}, {"c": ["Armes, armures et leurs qualités", "Armes et Munitions, Les Armures", "Ces deux documents"], "off": false}, {"c": ["Effets d'une drogue, d'un poison, d'un remède", "Drogues et Potions", "Ce document"], "off": false}, {"c": ["Procédés, formes galéniques, doses", "Métier Apothicaire", "Ce document"], "off": false}, {"c": ["Poudre noire, patente, machines", "Métier Ingénieur", "Ce document"], "off": false}, {"c": ["Composants d'un sort ou d'un charme", "Domaine des Traditions, Domaine des Charmes", "Ces documents"], "off": false}, {"c": ["Légalité de la détention", "Ce catalogue, table « Ce qui attire l'attention »", "Justice de l'Empire"], "off": false}], "foot": ""}]}, {"title": "", "note": "", "sections": [{"kind": "texte", "title": "Notes de MJ", "note": "", "items": ["Ce catalogue est un moteur d'aventure, pas une liste de courses. La ligne Récolte de chaque matière rare est une raison d'aller quelque part. La mandragore pousse sous les gibets, la soie d'araignée est dans un nid, la graisse de troll suppose un troll mort depuis moins de six heures.", "Le délai de prélèvement est ton meilleur outil de tension. Six heures pour la graisse de troll, une heure pour le venin et le cuir de bête des bois, l'heure pour l'œil de corbeau. Un groupe qui veut la matière doit rester sur place, ce qui n'est jamais confortable.", "L'identification ratée vaut mieux qu'un piège. Un échec de −3 DR donne une réponse fausse et assurée. Le personnage prépare son remède, le donne à quelqu'un, et personne ne comprend avant la nuit suivante.", "Ne fais jamais payer deux fois. Si une matière est déjà chiffrée dans La Forge, l'Apothicaire, la Cuisine ou l'Artisanat, c'est ce prix qui vaut. Ce catalogue les reprend à l'identique, il ne les corrige pas.", "La légalité est un levier de campagne. Un personnage qui monte en échelon achète des matières de plus en plus surveillées. Au troisième échelon, il est inscrit dans trois registres différents et il ne s'en rend pas compte.", "Ce que ce catalogue rend obsolète : rien. Les documents de métier gardent leurs tables de matières, qui sont leur résumé pratique. Celui-ci les complète par l'amont, la récolte, la saisonnalité et la légalité, et il ajoute environ cent matières qui n'existaient nulle part."]}, {"kind": "texte", "title": "Résumé pour le joueur, en cinq lignes", "note": "", "items": ["Une matière a un prix, une disponibilité, un échelon minimum et parfois un lieu où la ramasser. Récolter demande un test, une demi-journée, la bonne saison et le bon biome, et rend une dose plus une par +2 DR. Identifier demande un test dont la difficulté dépend de la disponibilité, et un échec franc donne une réponse fausse. En dessous de l'échelon requis, on peut posséder la matière mais on la gâche en la travaillant. Et plus une matière est rare, plus quelqu'un note votre nom quand vous l'achetez."]}]}]};
+var RACINE = 'outils/catalogue-matieres';
+var CLIENT = Math.random().toString(36).slice(2, 10);
+var data = null;
+
+var FB_CONFIG = {
+  apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+  authDomain: "warhammer-table-jdr.firebaseapp.com",
+  databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "warhammer-table-jdr",
+  storageBucket: "warhammer-table-jdr.firebasestorage.app",
+  messagingSenderId: "347804803970",
+  appId: "1:347804803970:web:43e062299c53e59d20e59b"
+};
+
+var db = null, refData = null, refSave = null;
+try{
+  if(typeof firebase !== 'undefined'){
+    if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+    db = firebase.database();
+    refData = db.ref(RACINE + '/donnees');
+    refSave = db.ref(RACINE + '/sauvegardes');
+  }
+}catch(e){ console.warn('Firebase indisponible :', e); }
+
+/* ---------- indicateur d'état ---------- */
+var flag = document.getElementById('flag');
+var flagTimer = null;
+function etat(txt, cls){
+  if(!flag) return;
+  clearTimeout(flagTimer);
+  flag.textContent = txt;
+  flag.className = 'sync-flag ' + (cls || '');
+  if(cls === 'ok') flagTimer = setTimeout(function(){ flag.textContent = ''; flag.className = 'sync-flag'; }, 2600);
+}
+
+/* ---------- Firebase efface les tableaux vides : on remet tout d'aplomb ---------- */
+function tab(x){
+  if(Array.isArray(x)) return x;
+  if(x && typeof x === 'object'){
+    var k = Object.keys(x).sort(function(a,b){ return a - b; }), o = [];
+    for(var i = 0; i < k.length; i++) o.push(x[k[i]]);
+    return o;
+  }
+  return [];
+}
+
+/* ---------- amorçage : le fichier, puis la base prend la main dès sa réponse ---------- */
+function charger(){
+  data = normaliser(JSON.parse(JSON.stringify(DEFAUT)));
+}
+
+/* ---------- écriture groupée ---------- */
+var tmr = null, sale = false;
+function sauver(){
+  sale = true;
+  etat('modifié', 'pending');
+  clearTimeout(tmr);
+  tmr = setTimeout(ecrire, 900);
+}
+function ecrire(){
+  if(!refData){ etat('hors ligne', 'err'); return; }
+  etat('envoi…', 'pending');
+  refData.set({ payload: data, at: Date.now(), par: CLIENT }).then(function(){
+    sale = false;
+    etat('enregistré', 'ok');
+  }).catch(function(e){
+    console.warn('Écriture échouée :', e);
+    etat('échec réseau', 'err');
+    clearTimeout(tmr);
+    tmr = setTimeout(ecrire, 4000);
+  });
+}
+
+/* ---------- écoute en direct ---------- */
+var enAttente = null;
+function enEdition(){
+  var a = document.activeElement;
+  return !!(a && a.isContentEditable);
+}
+function appliquer(p){
+  data = normaliser(p);
+  rendre();
+  etat('à jour', 'ok');
+}
+if(refData){
+  refData.on('value', function(sn){
+    var v = sn.val();
+    if(!v || !v.payload) return;
+    if(v.par === CLIENT) return;
+    if(sale || enEdition()){ enAttente = v.payload; return; }
+    appliquer(v.payload);
+  }, function(e){ console.warn('Lecture impossible :', e); etat('hors ligne', 'err'); });
+}
+document.addEventListener('focusout', function(){
+  setTimeout(function(){
+    if(enAttente && !sale && !enEdition()){ var p = enAttente; enAttente = null; appliquer(p); }
+  }, 300);
+});
+
+/* ---------- publication du fichier vers la base ---------- */
+function pousserFichier(){
+  if(!refData){ alert('Hors ligne : publication impossible.'); return; }
+  if(!confirm(
+    'Publier la version du fichier vers la base ?\n\n' +
+    'Tout ce qui a été modifié en ligne sans être réintégré au fichier sera remplacé.\n' +
+    "L'état actuel de la base est sauvegardé avant écriture."
+  )) return;
+  var b = document.getElementById('b-push');
+  if(b) b.setAttribute('disabled', 'disabled');
+  etat('sauvegarde…', 'pending');
+  refData.once('value').then(function(sn){
+    var avant = sn.val();
+    if(!avant || !refSave) return null;
+    return refSave.child(String(Date.now())).set(avant);
+  }).catch(function(e){ console.warn('Sauvegarde impossible :', e); })
+  .then(function(){
+    etat('publication…', 'pending');
+    data = normaliser(JSON.parse(JSON.stringify(DEFAUT)));
+    return refData.set({ payload: data, at: Date.now(), par: CLIENT });
+  }).then(function(){
+    sale = false;
+    rendre();
+    if(b) b.removeAttribute('disabled');
+    etat('publié', 'ok');
+  }).catch(function(e){
+    console.warn('Publication échouée :', e);
+    if(b) b.removeAttribute('disabled');
+    etat('publication refusée', 'err');
+  });
+}
+
+
+/* ---------- remise en forme après lecture ---------- */
+function normaliser(d){
+  if(!d || typeof d !== 'object') d = JSON.parse(JSON.stringify(DEFAUT));
+  d.intro = d.intro || '';
+  /* ancien format à sections plates : on l'enveloppe dans un groupe unique */
+  if(!d.groups && d.sections) d.groups = [{title:'', note:'', sections: d.sections}];
+  delete d.sections;
+  d.groups = tab(d.groups);
+  for(var g = 0; g < d.groups.length; g++){
+    var G = d.groups[g];
+    G.title = G.title || '';
+    G.note  = G.note  || '';
+    G.sections = tab(G.sections);
+    for(var i = 0; i < G.sections.length; i++){
+      var s = G.sections[i];
+      s.kind  = s.kind || (s.cols ? 'table' : 'texte');
+      s.title = s.title || '';
+      s.note  = s.note  || '';
+      s.foot  = s.foot  || '';
+      if(s.kind === 'table'){
+        s.cols = tab(s.cols);
+        s.rows = tab(s.rows);
+        for(var r = 0; r < s.rows.length; r++){
+          s.rows[r] = s.rows[r] || {};
+          s.rows[r].c = tab(s.rows[r].c);
+          s.rows[r].off = !!s.rows[r].off;
+        }
+      } else {
+        s.items = tab(s.items);
+      }
+    }
+  }
+  d.legend = tab(d.legend);
+  for(var l = 0; l < d.legend.length; l++){
+    d.legend[l] = d.legend[l] || {};
+    d.legend[l].term = d.legend[l].term || '';
+    d.legend[l].def  = d.legend[l].def  || '';
+    d.legend[l].off  = !!d.legend[l].off;
+  }
+  return d;
+}
+
+function esc(s){
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function classeCol(nom){
+  var n = (nom || '').toLowerCase();
+  if(n.indexOf('enc') === 0 || n.indexOf('dr') === 0 || n.indexOf('éch') === 0 ||
+     n.indexOf('compl') === 0 || n.indexOf('pa') === 0 || n.indexOf('dégâts') === 0) return 'c';
+  return '';
+}
+
+function rendre(){
+  var h = '';
+  h += '<div class="intro" contenteditable data-t="intro">' + esc(data.intro || '') + '</div>';
+
+  for(var gi = 0; gi < data.groups.length; gi++){
+    var G = data.groups[gi];
+    h += '<div class="grp" data-g="' + gi + '">';
+    h += '<h2 contenteditable data-t="gt" data-g="' + gi + '">' + esc(G.title) + '</h2>';
+    h += '<div class="gnote" contenteditable data-t="gn" data-g="' + gi + '">' + esc(G.note) + '</div>';
+
+    for(var si = 0; si < G.sections.length; si++){
+      var s = G.sections[si];
+      var n = (s.kind === 'table') ? s.rows.length : s.items.length;
+      h += '<div class="sec" data-g="' + gi + '" data-s="' + si + '">';
+      h += '<div class="sechead">';
+      h +=   '<button data-a="fold">▾</button>';
+      h +=   '<span class="t" contenteditable data-t="st" data-g="' + gi + '" data-s="' + si + '">' + esc(s.title) + '</span>';
+      h +=   '<span class="n">' + n + '</span>';
+      h +=   '<button data-a="up">↑</button><button data-a="down">↓</button>';
+      h += '</div>';
+      h += '<div class="snote" contenteditable data-t="sn" data-g="' + gi + '" data-s="' + si + '">' + esc(s.note) + '</div>';
+      h += '<div class="secbody">';
+
+      var PIED = '<div class="sfoot" contenteditable data-t="sf" data-g="' + gi + '" data-s="' + si + '">' + esc(s.foot) + '</div>';
+
+      if(s.kind === 'table'){
+        h += '<table><thead><tr>';
+        for(var ci = 0; ci < s.cols.length; ci++)
+          h += '<th contenteditable data-t="col" data-g="' + gi + '" data-s="' + si + '" data-c="' + ci + '">' + esc(s.cols[ci]) + '</th>';
+        h += '<th></th></tr></thead><tbody>';
+        for(var ri = 0; ri < s.rows.length; ri++){
+          var r = s.rows[ri];
+          h += '<tr' + (r.off ? ' class="off"' : '') + ' data-r="' + ri + '">';
+          for(var k = 0; k < s.cols.length; k++){
+            h += '<td class="' + classeCol(s.cols[k]) + '" contenteditable data-t="cell" data-lab="' + esc(s.cols[k]) +
+                 '" data-g="' + gi + '" data-s="' + si + '" data-r="' + ri + '" data-c="' + k + '">' +
+                 esc(r.c[k] === undefined ? '' : r.c[k]) + '</td>';
+          }
+          h += '<td class="acts"><button data-a="off" title="Ligne officielle">★</button>' +
+               '<button data-a="dup" title="Dupliquer">⧉</button>' +
+               '<button data-a="del" title="Supprimer">✕</button></td></tr>';
+        }
+        h += '</tbody></table>' + PIED + '<button class="addrow" data-a="addrow">+ Ligne</button>';
+      } else {
+        h += '<div class="items">';
+        for(var ii = 0; ii < s.items.length; ii++){
+          h += '<div class="item" data-i="' + ii + '"><span class="puce">◆</span>' +
+               '<div class="txt" contenteditable data-t="item" data-g="' + gi + '" data-s="' + si + '" data-i="' + ii + '">' + esc(s.items[ii]) + '</div>' +
+               '<span class="acts"><button data-a="upitem">↑</button><button data-a="delitem">✕</button></span></div>';
+        }
+        h += '</div>' + PIED + '<button class="addrow" data-a="additem">+ Paragraphe</button>';
+      }
+      h += '</div></div>';
+    }
+    h += '</div>';
+  }
+
+  h += '<h2 class="bloc">Légende</h2>';
+  {
+    h += '<div class="legwrap">';
+    for(var li = 0; li < data.legend.length; li++){
+      var L = data.legend[li];
+      h += '<div class="leg ' + (L.off ? 'of' : 'mai') + '" data-l="' + li + '">';
+      h += '<span class="acts2"><button data-a="legoff">★</button><button data-a="legdel">✕</button></span>';
+      h += '<span class="term" contenteditable data-t="lt" data-l="' + li + '">' + esc(L.term) + '</span>. ';
+      h += '<span class="df" contenteditable data-t="ld" data-l="' + li + '">' + esc(L.def) + '</span></div>';
+    }
+    h += '</div><button class="addrow" data-a="addleg">+ Entrée de légende</button>';
+  }
+  h += '<p class="hint">Tout est modifiable : cliquer et écrire. Chaque frappe part vers la base en ligne, ' +
+       'rien à valider. L\'étoile marque une ligne officielle, en italique. Survoler une cellule affiche ' +
+       'les définitions reconnues. Le bouton PDF imprime la page, le bouton Push republie le contenu du ' +
+       'fichier par-dessus la base.</p>';
+
+  document.getElementById('app').innerHTML = h;
+  indexerLegende();
+}
+
+document.addEventListener('input', function(e){
+  var el = e.target, t = el.getAttribute('data-t');
+  if(!t) return;
+  var g = +el.getAttribute('data-g'), s = +el.getAttribute('data-s'),
+      r = +el.getAttribute('data-r'), c = +el.getAttribute('data-c'),
+      i = +el.getAttribute('data-i'), l = +el.getAttribute('data-l');
+  var v = el.textContent, S = (data.groups[g] && data.groups[g].sections) ? data.groups[g].sections[s] : null;
+  if(t === 'intro') data.intro = v;
+  else if(t === 'gt') data.groups[g].title = v;
+  else if(t === 'gn') data.groups[g].note = v;
+  else if(t === 'st') S.title = v;
+  else if(t === 'sn') S.note = v;
+  else if(t === 'sf') S.foot = v;
+  else if(t === 'col') S.cols[c] = v;
+  else if(t === 'cell') S.rows[r].c[c] = v;
+  else if(t === 'item') S.items[i] = v;
+  else if(t === 'lt'){ data.legend[l].term = v; indexerLegende(); }
+  else if(t === 'ld'){ data.legend[l].def = v; indexerLegende(); }
+  sauver();
+});
+
+document.addEventListener('keydown', function(e){
+  var el = e.target;
+  if(e.key === 'Enter' && el.hasAttribute && el.hasAttribute('contenteditable')){
+    if(el.classList && el.classList.contains('txt')) return; /* paragraphes : saut de ligne permis */
+    e.preventDefault(); el.blur();
+  }
+});
+
+document.addEventListener('click', function(e){
+  var b = e.target.closest ? e.target.closest('button[data-a]') : null;
+  if(!b) return;
+  var a = b.getAttribute('data-a');
+  var sec = b.closest('.sec'), tr = b.closest('tr'), it = b.closest('.item'), leg = b.closest('.leg');
+
+  if(a === 'fold'){ sec.classList.toggle('closed'); return; }
+  if(a === 'addleg'){
+    if(!data.legend) data.legend = [];
+    data.legend.push({off:false, term:'Nouveau mot-clé', def:'Définition.'});
+    sauver(); rendre();
+    var els = document.querySelectorAll('.leg .term');
+    if(els.length) els[els.length - 1].focus();
+    return;
+  }
+  if(leg){
+    var l = +leg.getAttribute('data-l');
+    if(a === 'legdel'){ data.legend.splice(l,1); sauver(); rendre(); return; }
+    if(a === 'legoff'){ data.legend[l].off = !data.legend[l].off; sauver(); rendre(); return; }
+  }
+  if(!sec) return;
+  var gi = +sec.getAttribute('data-g'), si = +sec.getAttribute('data-s');
+  var LST = data.groups[gi].sections, S = LST[si];
+
+  if(a === 'addrow'){
+    var vide = []; for(var i = 0; i < S.cols.length; i++) vide.push('');
+    S.rows.push({c:vide, off:false}); sauver(); rendre(); return;
+  }
+  if(a === 'additem'){ S.items.push('Nouveau paragraphe.'); sauver(); rendre(); return; }
+  if(a === 'up' || a === 'down'){
+    var d = (a === 'up') ? -1 : 1, n = si + d;
+    if(n >= 0 && n < LST.length){
+      var tmp = LST[si]; LST[si] = LST[n]; LST[n] = tmp;
+      sauver(); rendre();
+    }
+    return;
+  }
+  if(tr){
+    var r = +tr.getAttribute('data-r');
+    if(a === 'del'){ S.rows.splice(r,1); sauver(); rendre(); return; }
+    if(a === 'dup'){ S.rows.splice(r+1,0, JSON.parse(JSON.stringify(S.rows[r]))); sauver(); rendre(); return; }
+    if(a === 'off'){ S.rows[r].off = !S.rows[r].off; sauver(); rendre(); return; }
+  }
+  if(it){
+    var ii = +it.getAttribute('data-i');
+    if(a === 'delitem'){ S.items.splice(ii,1); sauver(); rendre(); return; }
+    if(a === 'upitem' && ii > 0){
+      var t2 = S.items[ii]; S.items[ii] = S.items[ii-1]; S.items[ii-1] = t2; sauver(); rendre(); return;
+    }
+  }
+});
+
+document.getElementById('b-print').onclick = function(){ window.print(); };
+document.getElementById('b-push').onclick = pousserFichier;
+
+document.getElementById('q').oninput = function(){
+  var q = this.value.trim().toLowerCase();
+  var secs = document.querySelectorAll('.sec');
+  for(var i = 0; i < secs.length; i++){
+    var lignes = secs[i].querySelectorAll('tbody tr, .item'), vis = 0;
+    for(var j = 0; j < lignes.length; j++){
+      var ok = !q || lignes[j].textContent.toLowerCase().indexOf(q) >= 0;
+      lignes[j].classList.toggle('hid', !ok);
+      if(ok) vis++;
+    }
+    var titreOk = secs[i].querySelector('.sechead .t').textContent.toLowerCase().indexOf(q) >= 0;
+    secs[i].classList.toggle('hid', !!q && vis === 0 && !titreOk);
+  }
+  var grps = document.querySelectorAll('.grp');
+  for(var g = 0; g < grps.length; g++){
+    var restant = grps[g].querySelectorAll('.sec:not(.hid)').length;
+    grps[g].classList.toggle('hid', !!q && restant === 0);
+  }
+  var legs = document.querySelectorAll('.leg');
+  for(var k = 0; k < legs.length; k++)
+    legs[k].classList.toggle('hid', !!q && legs[k].textContent.toLowerCase().indexOf(q) < 0);
+};
+
+/* ======================= INFOBULLES DE LÉGENDE ======================= */
+var IDX = [];               /* [{cle, terme, entree}] trié du plus long au plus court */
+function normal(t){
+  return String(t).toLowerCase()
+    .replace(/\s*\(.*?\)\s*/g, ' ')      /* Bénie (X) -> benie */
+    .replace(/\s+[\dx×]+\s*$/, '')       /* Recharge 3 et Addictive X -> recharge, addictive */
+    .replace(/[.,;:!?]+$/, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+function indexerLegende(){
+  IDX = [];
+  if(!data.legend) return;
+  for(var i = 0; i < data.legend.length; i++){
+    var cle = normal(data.legend[i].term);
+    if(cle.length > 2) IDX.push({cle: cle, entree: data.legend[i]});
+  }
+  IDX.sort(function(a, b){ return b.cle.length - a.cle.length; });
+}
+
+/* Reconnaît les mots-clés d'une cellule, par segment puis par occurrence dans la phrase. */
+function definitions(texte){
+  var trouve = [], vus = {};
+  function pousser(E){
+    if(!vus[E.term]){ vus[E.term] = 1; trouve.push(E); }
+  }
+  var segments = String(texte).split(/[,;.•·]/);
+  for(var s = 0; s < segments.length; s++){
+    for(var i = 0; i < IDX.length; i++){
+      if(normal(segments[s]) === IDX[i].cle){ pousser(IDX[i].entree); break; }
+    }
+  }
+  var plat = ' ' + normal(texte) + ' ';
+  for(var j = 0; j < IDX.length; j++){
+    if(IDX[j].cle.length < 5) continue;                 /* trop court : trop de faux positifs */
+    if(plat.indexOf(' ' + IDX[j].cle) >= 0) pousser(IDX[j].entree);
+  }
+  return trouve;
+}
+
+var tip = document.getElementById('tip');
+function cacherTip(){ tip.style.display = 'none'; }
+function montrerTip(cible){
+  if(!cible || document.activeElement === cible){ cacherTip(); return; }
+  var liste = definitions(cible.textContent);
+  if(!liste.length){ cacherTip(); return; }
+  var out = '';
+  for(var i = 0; i < liste.length && i < 6; i++)
+    out += '<p><b>' + esc(liste[i].term) + '.</b> ' + esc(liste[i].def) + '</p>';
+  tip.innerHTML = out;
+  tip.style.display = 'block';
+  var r = cible.getBoundingClientRect();
+  var top = r.bottom + 6;
+  if(top + tip.offsetHeight > window.innerHeight) top = Math.max(6, r.top - tip.offsetHeight - 6);
+  tip.style.top = top + 'px';
+  tip.style.left = Math.min(Math.max(6, r.left), window.innerWidth - tip.offsetWidth - 12) + 'px';
+}
+function cibleTip(e){
+  if(!e.target.closest) return null;
+  return e.target.closest('td[data-t="cell"], .item .txt, .sfoot, .snote');
+}
+document.addEventListener('mouseover', function(e){ montrerTip(cibleTip(e)); });
+document.addEventListener('mouseout', function(e){ if(cibleTip(e)) cacherTip(); });
+document.addEventListener('scroll', cacherTip, true);
+document.addEventListener('focusin', cacherTip);
+
+charger();
+rendre();
+</script>
+</body>
+</html>
