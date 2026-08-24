@@ -6,6 +6,22 @@
 <title>Fiche de personnage</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
+    .qua-tag{ display:inline-block; font-size:0.6rem; letter-spacing:0.04em;
+              border:1px solid; border-radius:3px; padding:0 0.25rem;
+              margin-left:0.3rem; vertical-align:1px; white-space:nowrap; }
+    .dur-box{ display:inline-flex; align-items:center; gap:0.2rem; margin-left:0.3rem; }
+    .dur-b{ cursor:pointer; user-select:none; font-size:0.75rem; line-height:1;
+            padding:0 0.22rem; border:1px solid var(--SUB); border-radius:3px;
+            opacity:0.75; }
+    .dur-b:active{ opacity:1; }
+    .dur-v{ font-size:0.65rem; white-space:nowrap; }
+    .dur-bar{ display:inline-block; width:2.6rem; height:0.32rem; border-radius:2px;
+              background:rgba(255,255,255,0.12); overflow:hidden; vertical-align:middle; }
+    .dur-fill{ display:block; height:100%; border-radius:2px; transition:width .15s; }
+    .prop-rule{ font-size:0.7rem; font-style:italic; color:var(--GLD);
+                margin-top:0.15rem; line-height:1.3; opacity:0.9; }
+    .sp-rule{ font-size:0.7rem; font-style:italic; color:var(--SUB);
+              margin-top:0.15rem; line-height:1.3; }
   :root {
     --ink:#0a0a0f; --parchment:#f0e8d8; --parchment-dark:#d4c8a8;
     --GLD:#B8922A; --VIO:#674EA7; --GRN:#5E804F; --SUB:#555566;
@@ -908,6 +924,10 @@
           <input class="form-input" id="ap-enc"  placeholder="ENC — ex: 0" type="number" />
           <input class="form-input" id="ap-pen"  placeholder="Pénalité (−1 Ag…)" />
           <input class="form-input" id="ap-attr" placeholder="Attributs (Résistante, Lourde…)" />
+          <select class="form-input" id="ap-qua"></select>
+          <select class="form-input" id="ap-sol"></select>
+          <input class="form-input" id="ap-sp" placeholder="Règle spéciale (poids, équilibre…)" style="grid-column:1/-1;" />
+          <input class="form-input" id="ap-prop" placeholder="Propriété (enchantement, malédiction…)" style="grid-column:1/-1;" />
         </div>
         <div style="display:flex;gap:0.4rem;margin-top:0.3rem;">
           <button class="btn-add btn-gld" onclick="addArmorPiece()">Ajouter</button>
@@ -931,6 +951,10 @@
           <input class="form-input" id="wep-deg" placeholder="Dégâts (BF+4…)" />
           <input class="form-input" id="wep-enc" placeholder="ENC — ex: 0" />
           <input class="form-input" id="wep-attr" placeholder="Attributs" style="grid-column:1/-1;" />
+          <select class="form-input" id="wep-qua"></select>
+          <select class="form-input" id="wep-sol"></select>
+          <input class="form-input" id="wep-sp" placeholder="Règle spéciale (poids, équilibre…)" style="grid-column:1/-1;" />
+          <input class="form-input" id="wep-prop" placeholder="Propriété (enchantement, malédiction…)" style="grid-column:1/-1;" />
         </div>
         <div style="display:flex;gap:0.4rem;margin-top:0.3rem;">
           <button class="btn-add btn-gld" onclick="addWeapon()">Ajouter</button>
@@ -950,6 +974,12 @@
       <div class="form-panel" id="inv-form">
         <input class="form-input" id="inv-name-new" placeholder="Nom de l'objet" />
         <input class="form-input" id="inv-detail-new" placeholder="Emplacement / Note" />
+        <div class="form-grid2">
+          <select class="form-input" id="inv-qua"></select>
+          <select class="form-input" id="inv-sol"></select>
+        </div>
+        <input class="form-input" id="inv-sp" placeholder="Règle spéciale (poids, équilibre…)" />
+        <input class="form-input" id="inv-prop" placeholder="Propriété (enchantement, malédiction…)" />
         <div style="display:flex;gap:0.4rem;">
           <button class="btn-add btn-acc" onclick="addInvItem()">Ajouter</button>
           <button class="btn-cancel" onclick="toggleForm('inv-form')">Annuler</button>
@@ -1291,7 +1321,7 @@ window.MAGIE = {"sorts":[{"d":"Sorts mineurs","n":"Alerte","ni":0,"p":"1 mètre"
       (C.matieres || []).forEach(function (o) {
         l.push({ n: o.n, cat: 'Matière', px: vrai(o.px) || 'Ne s\'achète pas',
                  dis: o.dis,
-                 sup: ligneMeta([vrai(o.ech) ? 'Échelon ' + o.ech : '', o.g]),
+                 sup: ligneMeta([vrai(o.ech) ? 'Maîtrise ' + o.ech : '', o.g]),
                  de: fin(o.de) + (vrai(o.rec) ? ' Récolte : ' + fin(o.rec) : ''),
                  sc: 'matiere composant ' + o.g + ' ' + o.src, off: o.off });
       });
@@ -1370,6 +1400,10 @@ window.MAGIE = {"sorts":[{"d":"Sorts mineurs","n":"Alerte","ni":0,"p":"1 mètre"
     bouton('wep-name', '\u2630 Catalogue', function () { CAT.armes(); });
     bouton('ap-name', '\u2630 Catalogue', function () { CAT.armures(); });
     bouton('inv-name-new', '\u2630 Catalogue', function () { CAT.inventaire(); });
+    /* Les menus de qualité et de solidité sont peuplés depuis le même endroit. */
+    if (typeof monterChampsQualite === 'function') {
+      ['wep', 'ap', 'inv'].forEach(monterChampsQualite);
+    }
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', installer);
@@ -2551,6 +2585,108 @@ function renderArmor() {
 }
 function updateArmorPA(idx,val) { state.armor[idx].pa=parseInt(val)||0; save(); }
 
+
+// ══════ QUALITÉ, SOLIDITÉ, RÈGLE SPÉCIALE ══════
+// Trois champs optionnels posés sur les armes, les pièces d'armure et les objets.
+// Un objet sans ces champs se comporte exactement comme avant.
+const QUALITES = [
+  { k:'cata',  n:'Catastrophique', m:-10, px:'×0,25' },
+  { k:'medi',  n:'Médiocre',       m:-5,  px:'×0,5'  },
+  { k:'',      n:'Normale',        m:0,   px:'×1'    },
+  { k:'bonne', n:'Bonne',          m:5,   px:'×3'    },
+  { k:'chef',  n:'Chef d\u2019\u0153uvre', m:10, px:'×10' }
+];
+const SOLIDITES = [
+  { k:'tfra', n:'Très fragile', d:2  },
+  { k:'frag', n:'Fragile',      d:4  },
+  { k:'norm', n:'Normale',      d:8  },
+  { k:'soli', n:'Solide',       d:15 },
+  { k:'tsol', n:'Très solide',  d:25 }
+];
+function qualiteDe(k){ for(var i=0;i<QUALITES.length;i++){ if(QUALITES[i].k===(k||'')) return QUALITES[i]; } return QUALITES[2]; }
+function soliditeDe(k){ for(var i=0;i<SOLIDITES.length;i++){ if(SOLIDITES[i].k===k) return SOLIDITES[i]; } return SOLIDITES[2]; }
+function signe(n){ return n>0 ? '+'+n : ''+n; }
+
+function optionsQualite(){
+  return QUALITES.map(function(q){
+    return '<option value="'+q.k+'"'+(q.k===''?' selected':'')+'>Qualité : '+q.n+(q.m?' ('+signe(q.m)+')':'')+'</option>';
+  }).join('');
+}
+function optionsSolidite(){
+  return '<option value="">Solidité : non suivie</option>' + SOLIDITES.map(function(t){
+    return '<option value="'+t.k+'">Solidité : '+t.n+' ('+t.d+')</option>';
+  }).join('');
+}
+/* Remplit les deux menus d'un formulaire au chargement. */
+function monterChampsQualite(prefixe){
+  var q = document.getElementById(prefixe+'-qua');
+  var t = document.getElementById(prefixe+'-sol');
+  if(q) q.innerHTML = optionsQualite();
+  if(t) t.innerHTML = optionsSolidite();
+}
+/* Lit les trois champs et rend l'objet à fusionner dans l'entrée enregistrée. */
+function lireChampsQualite(prefixe){
+  var o = {};
+  var q = document.getElementById(prefixe+'-qua');
+  var t = document.getElementById(prefixe+'-sol');
+  var r = document.getElementById(prefixe+'-sp');
+  if(q && q.value) o.qua = q.value;
+  if(t && t.value){
+    o.sol = t.value;
+    o.durMax = soliditeDe(t.value).d;
+    o.dur = o.durMax;
+  }
+  var p = document.getElementById(prefixe+'-prop');
+  if(r && r.value.trim()) o.sp = r.value.trim();
+  if(p && p.value.trim()) o.prop = p.value.trim();
+  return o;
+}
+function viderChampsQualite(prefixe){
+  var q = document.getElementById(prefixe+'-qua');
+  var t = document.getElementById(prefixe+'-sol');
+  var r = document.getElementById(prefixe+'-sp');
+  var p = document.getElementById(prefixe+'-prop');
+  if(q) q.value = '';
+  if(t) t.value = '';
+  if(r) r.value = '';
+  if(p) p.value = '';
+}
+
+/* Pastille de qualité, affichée seulement si la qualité s'écarte de Normale. */
+function pastilleQualite(o){
+  var q = qualiteDe(o.qua);
+  if(!q.m) return '';
+  var c = q.m > 0 ? 'var(--GLD)' : '#a8422f';
+  return '<span class="qua-tag" style="border-color:'+c+';color:'+c+';">'+q.n+' '+signe(q.m)+'</span>';
+}
+/* Jauge de solidité, affichée seulement si l'objet en a une. */
+function jaugeSolidite(o, liste, i){
+  if(!o.durMax) return '';
+  var reste = (o.dur === undefined) ? o.durMax : o.dur;
+  var part  = Math.max(0, Math.min(1, reste / o.durMax));
+  var c = reste <= 0 ? '#a8422f' : (part <= 0.5 ? '#c08a2e' : '#6d8a4a');
+  var etat = reste <= 0 ? ' hors d\u2019usage' : (part <= 0.5 ? ' abîmé' : '');
+  return '<span class="dur-box">'
+       + '<span class="dur-b" onclick="userDur(\''+liste+'\','+i+',-1)">−</span>'
+       + '<span class="dur-bar"><span class="dur-fill" style="width:'+(part*100)+'%;background:'+c+';"></span></span>'
+       + '<span class="dur-v" style="color:'+c+';">' + reste + '/' + o.durMax + etat + '</span>'
+       + '<span class="dur-b" onclick="userDur(\''+liste+'\','+i+',1)">+</span></span>';
+}
+function userDur(liste, i, d){
+  var t = state[liste]; if(!t || !t[i] || !t[i].durMax) return;
+  var v = (t[i].dur === undefined ? t[i].durMax : t[i].dur) + d;
+  t[i].dur = Math.max(0, Math.min(t[i].durMax, v));
+  if(liste === 'weapons') renderWeapons();
+  else if(liste === 'armorPieces') renderArmorPieces();
+  else renderInventory();
+  save();
+}
+/* Ligne de règle spéciale, sous les statistiques. */
+function ligneSpeciale(o){
+  return (o.sp   ? '<div class="sp-rule">' + o.sp + '</div>' : '')
+       + (o.prop ? '<div class="prop-rule">\u2726 ' + o.prop + '</div>' : '');
+}
+
 // ══════ ARMES ══════
 function renderWeapons() {
   const c=document.getElementById('weapons-list'); c.innerHTML='';
@@ -2558,13 +2694,15 @@ function renderWeapons() {
     const div=document.createElement('div'); div.className='weapon-item';
     div.innerHTML=`
       <div class="weapon-content">
-        <div class="weapon-name">${w.name}</div>
+        <div class="weapon-name">${w.name}${pastilleQualite(w)}</div>
         <div class="weapon-stats">
           <span class="wstat"><span class="wstat-l">All. </span><span class="wstat-v">${w.all}</span></span>
           <span class="wstat"><span class="wstat-l">Dég. </span><span class="wstat-v">${w.deg}</span></span>
           ${w.enc!==undefined?`<span class="wstat"><span class="wstat-l">ENC </span><span class="wstat-v">${w.enc}</span></span>`:''}
           ${w.attr?`<span class="wstat"><span class="wstat-l">Attr. </span><span class="wstat-v">${w.attr}</span></span>`:''}
+          ${jaugeSolidite(w,'weapons',i)}
         </div>
+        ${ligneSpeciale(w)}
       </div>
       <span class="del-btn" onclick="deleteWeapon(${i})">✕</span>
     `;
@@ -2575,7 +2713,9 @@ function deleteWeapon(idx) { if(confirm('Supprimer ?')){ state.weapons.splice(id
 function addWeapon() {
   const name=document.getElementById('wep-name').value.trim(); if(!name) return;
   state.weapons.push({ name, all:document.getElementById('wep-all').value.trim()||'—', deg:document.getElementById('wep-deg').value.trim()||'—', enc:parseInt(document.getElementById('wep-enc').value)||0, attr:document.getElementById('wep-attr').value.trim() });
+  Object.assign(state.weapons[state.weapons.length-1], lireChampsQualite('wep'));
   ['wep-name','wep-all','wep-deg','wep-enc','wep-attr'].forEach(id=>document.getElementById(id).value='');
+  viderChampsQualite('wep');
   renderWeapons(); save(); toggleForm('weapon-form');
 }
 
@@ -2585,8 +2725,8 @@ function renderInventory() {
   state.inventory.forEach((item,i)=>{
     const div=document.createElement('div'); div.className='inv-item';
     div.innerHTML=`
-      <span class="inv-name">${item.name}</span>
-      <span class="inv-detail">${item.detail||''}</span>
+      <span class="inv-name">${item.name}${pastilleQualite(item)}</span>
+      <span class="inv-detail">${item.detail||''}${jaugeSolidite(item,'inventory',i)}${ligneSpeciale(item)}</span>
       <span class="del-btn" onclick="deleteInvItem(${i})">✕</span>
     `;
     c.appendChild(div);
@@ -2596,7 +2736,9 @@ function deleteInvItem(idx) { state.inventory.splice(idx,1); renderInventory(); 
 function addInvItem() {
   const name=document.getElementById('inv-name-new').value.trim(); if(!name) return;
   state.inventory.push({ name, detail:document.getElementById('inv-detail-new').value.trim(), enc:0 });
+  Object.assign(state.inventory[state.inventory.length-1], lireChampsQualite('inv'));
   ['inv-name-new','inv-detail-new'].forEach(id=>document.getElementById(id).value='');
+  viderChampsQualite('inv');
   renderInventory(); save(); toggleForm('inv-form');
 }
 
@@ -2615,13 +2757,15 @@ function renderArmorPieces() {
     div.className = 'armor-piece';
     div.innerHTML = `
       <div class="armor-piece-content">
-        <div class="armor-piece-name">${ap.name}</div>
+        <div class="armor-piece-name">${ap.name}${pastilleQualite(ap)}</div>
         <div class="armor-piece-stats">
           <span class="astat"><span class="astat-l">PA </span><span class="astat-v">${ap.pa||0}</span></span>
           ${ap.enc?`<span class="astat"><span class="astat-l">ENC </span><span class="astat-v">${ap.enc}</span></span>`:''}
           ${ap.pen?`<span class="astat"><span class="astat-l">Pén. </span><span class="astat-v">${ap.pen}</span></span>`:''}
           ${ap.attr?`<span class="astat"><span class="astat-l">Attr. </span><span class="astat-v">${ap.attr}</span></span>`:''}
+          ${jaugeSolidite(ap,'armorPieces',i)}
         </div>
+        ${ligneSpeciale(ap)}
       </div>
       <span class="del-btn" onclick="deleteArmorPiece(${i})">✕</span>
     `;
@@ -2641,7 +2785,9 @@ function addArmorPiece() {
     pen:  document.getElementById('ap-pen').value.trim(),
     attr: document.getElementById('ap-attr').value.trim(),
   });
+  Object.assign(state.armorPieces[state.armorPieces.length-1], lireChampsQualite('ap'));
   ['ap-name','ap-pen','ap-attr'].forEach(id=>document.getElementById(id).value='');
+  viderChampsQualite('ap');
   document.getElementById('ap-pa').value=''; document.getElementById('ap-enc').value='';
   renderArmorPieces(); save(); toggleForm('armor-piece-form');
 }
