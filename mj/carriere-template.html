@@ -526,29 +526,24 @@ const PK = (function () {
     const l = [];
     (C.competences || []).forEach(c => {
       const groupee = c.sp && c.sp.length;
-      /* L'entrée nue ne porte pas la liste des spécialisations dans sa clé de
-         filtre : sans quoi elle sortirait en tête de toutes les recherches. */
       l.push({
         n: c.n, marque: '',
-        m: meta([c.c, c.av ? 'Avancée' : 'De base', groupee ? 'Groupée, à spécialiser' : '']),
-        d: (c.d || '') + (groupee ? ' Spécialisations : ' + c.sp.join(', ') + '.' : ''),
-        k: c.n
-      });
-      if (!groupee) return;
-      c.sp.forEach(sp => l.push({
-        n: c.n + ' (' + sp + ')', marque: '',
-        m: meta([c.c, c.av ? 'Avancée' : 'De base', 'Spécialisation de ' + c.n]),
+        m: meta([c.c, c.av ? 'Avancée' : 'De base',
+                 groupee ? 'Groupée, à spécialiser' : '']),
         d: c.d || '',
-        k: c.n + ' ' + sp
-      }));
+        k: c.n + ' ' + (c.sp || []).join(' '),
+        sp: groupee ? c.sp : null
+      });
     });
     return l;
   }
   function lignesTalents() {
     return (C.talents || []).map(t => ({
       n: t.n, marque: t.off ? '' : 'maison',
-      m: meta([t.max ? 'Maxi ' + t.max : '', t.t]),
-      d: t.d || '', k: t.n + ' ' + (t.t || '') + ' ' + (t.d || '')
+      m: meta([t.max ? 'Maxi ' + t.max : '',
+               (t.sp && t.sp.length) ? 'À préciser' : '', t.t]),
+      d: t.d || '', k: t.n + ' ' + (t.t || '') + ' ' + (t.d || ''),
+      sp: (t.sp && t.sp.length) ? t.sp : null
     }));
   }
   function lignesPossessions() {
@@ -635,30 +630,57 @@ const PK = (function () {
       }
       el.querySelector('.pk-m').textContent = o.m;
       el.querySelector('.pk-d').textContent = o.d;
-      el.addEventListener('click', () => { if (choisi) choisi(o); fermer(); });
+      el.addEventListener('click', () => {
+        const enAttente = choisi && choisi(o);
+        if (!enAttente) fermer();
+      });
       lEl.appendChild(el);
     });
   }
   qEl.addEventListener('input', rendre);
 
-  return {
-    ouvrir: function (type, retour) {
-      const src = SOURCES[type];
-      if (!src) return;
-      if (!window.CATALOGUE) {
-        montrerAlerte('Le catalogue commun est introuvable : vérifiez commun/catalogue.js.');
-        return;
-      }
-      liste = src.calc();
-      choisi = retour;
-      fond.querySelector('#pk-titre').textContent = src.titre;
-      fond.querySelector('#pk-sous').textContent = src.sous;
-      qEl.value = '';
-      fond.classList.add('on');
-      rendre();
-      setTimeout(() => qEl.focus(), 30);
+  /* Deuxième écran : une entrée groupée demande sa spécialisation avant de
+     remplir la ligne. La saisie libre reste possible en fermant la fenêtre. */
+  function demanderSpecialisation(o, retour) {
+    const racine = o.n.replace(/\s*\([^)]*\)\s*$/, '');
+    liste = o.sp.map(sp => ({
+      n: sp, marque: '',
+      m: 'Spécialisation de ' + racine,
+      d: '', k: sp
+    }));
+    choisi = function (choix) {
+      retour({ n: racine + ' (' + choix.n + ')', m: o.m, d: o.d });
+    };
+    fond.querySelector('#pk-titre').textContent = racine;
+    fond.querySelector('#pk-sous').textContent =
+      'Choisissez une spécialisation. Fermez cette fenêtre pour écrire la vôtre.';
+    qEl.value = '';
+    rendre();
+    setTimeout(() => qEl.focus(), 30);
+  }
+
+  function ouvrir(type, retour) {
+    const src = SOURCES[type];
+    if (!src) return;
+    if (!window.CATALOGUE) {
+      montrerAlerte('Le catalogue commun est introuvable : vérifiez commun/catalogue.js.');
+      return;
     }
-  };
+    liste = src.calc();
+    choisi = function (o) {
+      if (o.sp && o.sp.length) { demanderSpecialisation(o, retour); return true; }
+      retour(o);
+      return false;
+    };
+    fond.querySelector('#pk-titre').textContent = src.titre;
+    fond.querySelector('#pk-sous').textContent = src.sous;
+    qEl.value = '';
+    fond.classList.add('on');
+    rendre();
+    setTimeout(() => qEl.focus(), 30);
+  }
+
+  return { ouvrir: ouvrir };
 })();
 
 // ---------- Verrou de lecture ----------
