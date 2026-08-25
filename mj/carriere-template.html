@@ -548,11 +548,22 @@ const PK = (function () {
   }
   function lignesPossessions() {
     const l = [];
+    /* Les Outils de la profession se choisissent par métier, comme une
+       compétence groupée. Le livre les donne sous un nom unique. */
+    const metiers = (C.competences || []).find(c => c.n === 'Métier');
+    l.push({
+      n: 'Outils de la profession', marque: '',
+      m: 'Équipement · 3 CO · Enc 1 · Rare · À spécialiser',
+      d: "Le nécessaire d'un métier. Leur absence pénalise tout test de Métier "
+         + "ou d'Art, d'au moins -20 selon les guides de métier.",
+      k: 'outils profession metier atelier',
+      sp: metiers ? metiers.sp : null
+    });
     (C.armes || []).forEach(a => l.push({
       n: a.n, marque: a.off ? '' : 'maison',
       m: meta(['Arme', a.s, a.px, vrai(a.enc) ? 'Enc ' + a.enc : '', a.dis]),
       d: vrai(a.de) ? a.de : meta(['Allonge ' + a.all, 'Dégâts ' + a.deg, a.at]),
-      k: a.n + ' arme ' + a.s
+      k: a.n + ' arme ' + a.s + ' ' + (a.al || '')
     }));
     (C.armures || []).forEach(a => l.push({
       n: a.n, marque: a.off ? '' : 'maison',
@@ -567,7 +578,8 @@ const PK = (function () {
       k: m.n + ' munition ' + m.s
     }));
     (C.equipement || []).forEach(e => l.push({
-      n: e.n, marque: e.off ? '' : 'maison',
+      n: e.n === 'Outils professionnels' ? 'Outils de la profession (générique)' : e.n,
+      marque: e.off ? '' : 'maison',
       m: meta(['Équipement', e.px, e.dis]), d: e.de || '',
       k: e.n + ' equipement ' + (e.src || '')
     }));
