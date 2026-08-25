@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Traits de Créature</title>
+<style>
+  :root{
+    --bg:#12100e; --panel:#1b1815; --panel2:#221e1a; --line:#37302a;
+    --txt:#e8e0d2; --dim:#a2968a; --acc:#4f8f7a; --acc2:#c9a227; --off:#8d8375;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+       font-family:"Iowan Old Style",Georgia,serif;font-size:15px;line-height:1.45}
+
+  .bar{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,#1b1815,#161311);
+       border-bottom:1px solid var(--line);padding:.6rem .9rem;display:flex;gap:.6rem;
+       align-items:center;flex-wrap:wrap}
+  .bar h1{font-size:1.02rem;letter-spacing:.13em;text-transform:uppercase;margin:0 .5rem 0 0;
+          font-weight:600;white-space:nowrap}
+  .bar h1 span{color:var(--acc)}
+  input[type=search]{flex:1;min-width:160px;background:#0e0c0b;border:1px solid var(--line);
+       color:var(--txt);padding:.42rem .6rem;border-radius:4px;font-family:inherit;font-size:.9rem}
+  input[type=search]:focus{outline:none;border-color:var(--acc2)}
+  button{background:#2a2521;border:1px solid var(--line);color:var(--txt);padding:.4rem .7rem;
+       border-radius:4px;cursor:pointer;font-family:inherit;font-size:.82rem;white-space:nowrap}
+  button:hover{border-color:var(--acc2);color:#fff}
+  button.pri{background:#3a1512;border-color:#5d201a}
+  .status{font-size:.78rem;color:var(--dim);min-width:78px}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:1rem .9rem 4rem}
+  .intro{font-size:.85rem;color:var(--dim);background:var(--panel);border-left:2px solid var(--acc);
+       padding:.6rem .8rem;border-radius:0 4px 4px 0;margin:0 0 1.2rem}
+  .intro:focus{outline:none;background:#0e0c0b}
+
+  .sec{background:var(--panel);border:1px solid var(--line);border-radius:5px;margin:0 0 .8rem;overflow:hidden}
+  .sechead{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;background:var(--panel2);
+       border-bottom:1px solid var(--line)}
+  .sechead .t{font-size:.87rem;letter-spacing:.09em;text-transform:uppercase;color:var(--acc2);flex:1}
+  .sechead .n{font-size:.74rem;color:var(--dim)}
+  .sechead button{padding:.22rem .5rem;font-size:.75rem}
+  .snote,.sfoot{font-size:.8rem;color:var(--dim);padding:.5rem .7rem 0}
+  .sfoot{margin:.5rem .7rem .2rem;padding:.45rem .7rem;font-style:italic;
+         border-left:2px solid var(--acc2);background:rgba(184,146,42,.05);border-radius:0 3px 3px 0}
+  .sfoot:empty{display:none}
+  .sfoot::before{content:'À retenir';display:block;font-family:'Cinzel',serif;font-style:normal;
+         font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--acc2);margin-bottom:.2rem}
+  .secbody{padding:.2rem .5rem .6rem}
+  .sec.closed .secbody,.sec.closed .snote,.sec.closed .sfoot{display:none}
+
+  table{width:100%;border-collapse:collapse;font-size:.83rem}
+  th{position:sticky;top:44px;background:#0f0d0c;color:var(--dim);font-weight:400;text-align:left;
+     font-size:.67rem;letter-spacing:.08em;text-transform:uppercase;padding:.4rem .45rem;
+     border-bottom:1px solid var(--line);z-index:5}
+  td{border-bottom:1px solid #262019;padding:.32rem .45rem;vertical-align:top}
+  tr:hover td{background:#1f1b17}
+  tr.off td{color:var(--off);font-style:italic}
+  td[contenteditable]:focus,th[contenteditable]:focus{outline:none;background:#0e0c0b;box-shadow:inset 0 0 0 1px var(--acc2);border-radius:3px}
+  .acts{width:1%;white-space:nowrap;opacity:0;transition:opacity .12s}
+  tr:hover .acts{opacity:1}
+  .acts button{padding:.1rem .34rem;font-size:.72rem;background:transparent;border-color:transparent;color:var(--dim)}
+  .acts button:hover{color:#fff;border-color:var(--line)}
+  .addrow{margin:.35rem 0 0;font-size:.78rem}
+
+  .items{margin:0;padding:.2rem .3rem}
+  .item{display:flex;gap:.5rem;align-items:flex-start;padding:.3rem .3rem;border-bottom:1px solid #262019}
+  .item:hover{background:#1f1b17}
+  .item .puce{color:var(--acc);flex:0 0 auto;line-height:1.5}
+  .item .txt{flex:1;font-size:.87rem}
+  .item .txt:focus{outline:none;background:#0e0c0b;box-shadow:inset 0 0 0 1px var(--acc2);border-radius:3px}
+  .item .acts{opacity:0}
+  .item:hover .acts{opacity:1}
+
+  .legwrap{columns:2;column-gap:1.4rem}
+  .leg{break-inside:avoid;margin:0 0 .45rem;padding:.35rem .5rem;background:var(--panel);
+       border-left:2px solid var(--line);border-radius:0 3px 3px 0;font-size:.83rem}
+  .leg.mai{border-left-color:var(--acc)}
+  .leg .term{font-weight:700;color:var(--acc2)}
+  .leg.of .term{color:#bdb2a2}
+  .leg .term:focus,.leg .df:focus{outline:none;background:#0e0c0b}
+  .leg .acts2{float:right;opacity:0}
+  .leg:hover .acts2{opacity:1}
+  .leg .acts2 button{padding:.05rem .3rem;font-size:.7rem;background:transparent;border-color:transparent;color:var(--dim)}
+  h2.bloc{font-size:.98rem;letter-spacing:.15em;text-transform:uppercase;color:var(--acc);
+       border-bottom:1px solid var(--acc);padding-bottom:.3rem;margin:1.8rem 0 .6rem}
+
+  #tip{position:fixed;z-index:60;max-width:340px;background:#0d0b0a;border:1px solid var(--acc2);
+       border-radius:4px;padding:.5rem .6rem;font-size:.8rem;display:none;box-shadow:0 6px 24px #000a}
+  #tip b{color:var(--acc2)}
+  #tip p{margin:0 0 .35rem} #tip p:last-child{margin:0}
+
+
+  .sync-flag{font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;padding:.2rem .5rem;
+       border-radius:2px;white-space:nowrap;border:1px solid transparent;color:var(--dim)}
+  .sync-flag.ok{color:#8fae7e;border-color:rgba(94,128,79,.4);background:rgba(94,128,79,.12)}
+  .sync-flag.pending{color:#e8cf72;border-color:rgba(184,146,42,.4);background:rgba(184,146,42,.12)}
+  .sync-flag.err{color:#e08a80;border-color:rgba(139,26,26,.5);background:rgba(139,26,26,.16)}
+
+  /* ---------- téléphone : plus de défilement horizontal ---------- */
+  @media(max-width:760px){
+    body{font-size:14px}
+    .bar{padding:.5rem .6rem;gap:.4rem}
+    .bar h1{font-size:.9rem;width:100%;margin:0}
+    button{padding:.34rem .55rem;font-size:.78rem}
+    .wrap{padding:.7rem .5rem 3rem}
+    .secbody{padding:.2rem .3rem .5rem}
+    thead{display:none}
+    table,tbody,tr,td{display:block;width:100%}
+    tr{border:1px solid var(--line);border-radius:4px;background:#1d1915;
+       margin:0 0 .5rem;padding:.35rem .5rem}
+    tr:hover td{background:transparent}
+    td{border-bottom:none;padding:.22rem 0;text-align:left !important;white-space:normal}
+    td:empty{padding:0}
+    td::before{content:attr(data-lab);display:inline-block;min-width:5.4rem;
+       font-size:.62rem;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);
+       vertical-align:top;padding-right:.4rem}
+    td.acts{opacity:1;width:auto;text-align:right !important;padding-top:.3rem;
+       border-top:1px solid #2a241e;margin-top:.25rem}
+    td.acts::before{content:none}
+    .acts button{font-size:.85rem;padding:.18rem .5rem}
+    .legwrap{columns:1}
+    .item .acts{opacity:1}
+  }
+  .retour{color:var(--dim);text-decoration:none;font-size:.8rem;white-space:nowrap;padding:.2rem .3rem}
+  .retour:hover{color:var(--acc2)}
+  .hid{display:none !important}
+  .hint{font-size:.78rem;color:var(--dim);margin:.8rem 0 0}
+
+  @media print{
+    body{background:#fff;color:#14110f;font-size:9pt}
+    .bar,.acts,.acts2,.addrow,.sechead button,.hint,#tip,.retour{display:none !important}
+    .wrap{max-width:none;padding:0}
+    .sec{border:none;background:none;margin:0 0 3mm}
+    .sechead{background:none;border-bottom:1px solid var(--acc);padding:0 0 1mm}
+    .sechead .t{color:#8B1A1A}
+    h2.bloc{color:#8B1A1A;border-color:#8B1A1A}
+    .intro,.snote,.leg{background:#faf7f1;color:#5a524a}
+    .sfoot{background:#faf7f1;color:#5a524a;border-left:2px solid #8B1A1A}
+    .sfoot::before{color:#8B1A1A}
+    th{position:static;background:#2a1414;color:#f0e8d8;border:none}
+    td{border-bottom:1px solid #ddd6ca}
+    tr.off td{color:#5a524a}
+    .item{border-bottom:none;padding:.5mm 0}
+    .sec.closed .secbody,.sec.closed .snote,.sec.closed .sfoot{display:block}
+  }
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<div class="bar">
+  <a class="retour" href="index-mj.html" title="Retour à l'espace MJ">◂ MJ</a>
+  <h1>Traits de <span>Créature</span></h1>
+  <input type="search" id="q" placeholder="Filtrer…">
+  <button id="b-fold">Replier tout</button>
+  <button id="b-tab">+ Tableau</button>
+  <button id="b-txt">+ Texte</button>
+  <button id="b-leg">+ Légende</button>
+  <button id="b-push" title="Publier la version du fichier vers la base en ligne. Le fichier fait autorité.">Push</button>
+  <button id="b-print" class="pri">PDF</button>
+  <span class="sync-flag" id="flag"></span>
+</div>
+
+<div class="wrap" id="app"></div>
+<div id="tip"></div>
+
+<script>
+var DEFAUT = {"sections": [{"kind": "texte", "title": "Comment lire ces traits", "note": "Ce document est le premier volet du bestiaire. Il donne les capacités. Les profils de créatures suivront.", "items": ["Un trait est une capacité innée d'une créature. Il remplace souvent une compétence ou un talent, et il se lit directement sur son profil.", "Le mot entre parenthèses est un paramètre à remplacer. Arme (Indice) devient Arme (+4), Maladie (Type) devient Maladie (Peste noire), Animosité (Cible) devient Animosité (elfes).", "Indice veut dire un chiffre, à lire sur le profil de la créature. Type et Cible désignent une catégorie que le MJ choisit.", "Certains traits renvoient à un talent du même nom. Dans ce cas, la créature possède ce talent tel quel.", "Un trait entre crochets sur un profil est optionnel : le MJ décide de le donner ou non à cet individu."], "foot": ""}, {"kind": "table", "title": "Traits, A à C", "note": "Table du livre de base, chapitre Bestiaire.", "cols": ["Trait", "Effet"], "rows": [{"c": ["À sang-froid", "La créature est à sang-froid et lente à réagir. Elle peut inverser tous ses Tests de Force Mentale échoués."], "off": true}, {"c": ["Affamé", "La créature est toujours avide de chair fraîche. Si elle tue ou neutralise un adversaire (ou qu’elle tombe sur un cadavre récent), elle doit réussir un Test de Force Mentale Accessible (+20) ou festoyer, perdant sa prochaine Action et son prochain Mouvement."], "off": true}, {"c": ["Amphibie", "La créature est à l’aise dans l’eau. Elle peut ajouter son bonus d’Agilité au DR de tous les Tests de Natation et se déplace à sa vitesse maximale de Mouvement dans l’eau."], "off": true}, {"c": ["Animosité (Cible)", "La créature n’aime pas la Cible. Voir page 190 pour les règles concernant l’Animosité."], "off": true}, {"c": ["Arboricole", "La créature est à l’aise dans les forêts. Dans les régions boisées, ajoutez son bonus d’Agilité au DR pour tous ses Tests d’Escalade et de Discrétion."], "off": true}, {"c": ["Arme (Indice)", "La créature porte une arme de Corps à corps, ou utilise ses dents, griffes ou similaires en combat. L’arme inflige Indice Dégâts qui incluent déjà son bonus de Force. En général, le nombre de Dégâts est égal à 4 + son bonus de Force (représentant une arme simple)."], "off": true}, {"c": ["Armure (Indice)", "La créature est protégée par une armure ou une peau épaisse. Elle a Indice PA à toutes ses Localisations."], "off": true}, {"c": ["ATTAQUES GRATUITES", "Une Attaque gratuite est un Test d’attaque de Capacité de Tir ou de Capacité de Combat supplémentaire qui n’utilise pas votre Action de tour – voir Actions gratuites à la page 158."], "off": true}, {"c": ["Attaque caudale (Indice)", "La queue de la créature est capable de balayer les ennemis. À son tour, elle peut effectuer une Attaque gratuite en dépensant 1 Avantage. La queue inflige Indice Dégâts, qui incluent déjà son bonus de Force. Les adversaires avec une plus petite Taille que la créature, qui perdent des Points de Blessure par cette attaque, subissent également l’État À Terre."], "off": true}, {"c": ["Belliqueux", "La créature adore combattre. Tant qu’elle a plus d’Avantages que son adversaire, elle gagne Immunité Psychologique."], "off": true}, {"c": ["Béni (Divers)", "La créature est Béni et peut accorder des Bénédictions. La divinité concernée est indiquée entre parenthèses."], "off": true}, {"c": ["Bestial", "La créature ne possède ni pensée, ni langage rationnel. Elle a peur du feu et gagne l’État Brisé si elle est touchée par ce dernier. En défense, elle peut seulement utiliser la Compétence Esquive. Si elle perd plus de la moitié de ses Blessures, elle tente de fuir à moins qu’elle ne protège son petit ou qu’elle soit acculée ou encore qu’elle possède le trait Territorial. Dans ce cas, elle entre en Frénésie (voir Psychologie dans le Chapitre 5 : Règles à la page 190). Pas de caractéristique de Social."], "off": true}, {"c": ["Bond", "La créature a la capacité de bondir haut, grâce à des jambes puissantes, à la magie ou à des ailes courtes. Quand elle Charge ou Court, elle double sa Caractéristique de Mouvement, et elle peut ignorer tous les terrains et les personnages qui s’interposent quand elle les dépasse."], "off": true}, {"c": ["Brutal", "La créature est lourde et brutale. Elle reçoit -1 en M, -10 en Ag et +10 en F et en E."], "off": true}, {"c": ["Champion", "La créature est un guerrier exceptionnel. Si elle gagne un Test opposé en se défendant dans un Combat au Corps à corps, elle cause autant de Dégâts que si elle était l’attaquant."], "off": true}, {"c": ["Constricteur", "La créature comprime et écrase sa proie. Tout lancer réussi pour toucher donne à son adversaire l’État Empêtré. Elle peut ensuite entamer une Empoignade (voir page 163)."], "off": true}, {"c": ["Coriace", "La créature est plus résistante aux Dégâts que la normale, et elle est peu susceptible de reculer. Elle reçoit + 10 en E et FM. Cornes (Aspect), (Indice) La créature possède des cornes ou d’autres appendices acérés. Si ses Cornes représentent un Aspect différent, il sera noté entre parenthèses. Quand la créature gagne un Avantage pour Charger, elle peut aussi gagner une Attaque gratuite de Cornes, calculée normalement, en utilisant Indice pour les Dégâts (son bonus de Force est déjà inclus)."], "off": true}, {"c": ["Corruption (Degré)", "La créature est corrompue par le Chaos, ou peut-être imprégnée de Magie noire. Le Degré de Corruption est indiqué entre parenthèses. Voir page 182."], "off": true}, {"c": ["Corruption mentale", "Le Chaos s’est insinué dans l’esprit de la créature… Faites un lancer sur le Tableau de la Corruption Mentale qui se trouve à la p. 185."], "off": true}, {"c": ["Blessures", "Les créatures plus grandes encaissent plus de Blessures."], "off": true}, {"c": ["Bonus de Force Mentale", "Grande (Bonus de Force + (2 x Bonus d’Endurance) + Bonus de Force Mentale) x Énorme (Bonus de Force + (2 x Bonus d’Endurance) + Bonus de Force Mentale) x Monstrueuse (Bonus de Force + (2 x Bonus d’Endurance) + Bonus de Force Mentale) x # Tentacules (Indice) La créature possède un nombre # de tentacules. Gagnez une Action d’Attaque gratuite par tentacule. Les tentacules infligent Indice Dégâts, qui incluent déjà son bonus de Force. Si elle cause des Dégâts, elle peut aussi infliger à son adversaire l’État Empêtré, bien que cela entame une Empoignade avec ce tentacule. Si un tentacule est en Empoignade, vous pouvez utiliser une Action d’Attaque gratuite pour résoudre l’Empoignade au lieu de l’Action de la créature. Voir page 163."], "off": true}], "foot": ""}, {"kind": "table", "title": "Traits, D à I", "note": "Table du livre de base, chapitre Bestiaire.", "cols": ["Trait", "Effet"], "rows": [{"c": ["Démoniaque (Indice)", "L’essence de la créature est constituée de magie brute et de l’ichor impie coule dans ses veines. Ces créatures n’ont besoin ni d’eau, ni de nourriture, ni d’air… Toutes ses attaques sont Magiques. Lancez 1d10 après chaque coup reçu, si la créature obtient le nombre de l’Indice ou plus, le coup est ignoré, même s’il s’agit d’un critique. Si la créature tombe à 0 Point de Blessure, son âme retourne immédiatement dans les Royaumes du Chaos, ce qui la retire du jeu."], "off": true}, {"c": ["Dressé (Compétences spécifiques)", "Ce Trait concerne les animaux entraînés par l’intermédiaire de la Compétence Dressage. Les Compétences que l’animal connaît sont indiquées entre parenthèses. Vous êtes libre de créer vos propres Compétences spécifiques. Divertir : l’animal est entraîné à divertir les autres. Vous ajoutez un bonus de +10 aux Tests appropriés de Divertissement, Musicien et Représentation. Dompté : l’animal est entraîné à ignorer son Trait Bestial. Il reçoit 2d10 en Sociabilité. Garder : l’animal est entraîné à rester à la même place ou à patrouiller autour comme un garde. Elle gagne le Trait Territorial. Guerre : l’animal est entraîné pour la guerre, il gagne +10 en CC. Il ignore également son trait Nerveux pour les bruits forts. Magie : l’animal est entraîné à ignorer son trait Nerveux en présence de magie, ce qui est nécessaire à la plupart des chevaux utilisés par les Sorciers. Monture : l’animal est entraîné à accepter un cavalier. Certaines créatures sont particulièrement belliqueuses, et n’accepteront jamais de cavalier sans la Compétence adaptée. Ainsi, pour chevaucher un griffon, vous avez besoin de la Compétence Chevaucher (Griffon). Rapporter : l’animal est entraîné à rapporter. Cette discipline est normalement réservée aux chiens et autres animaux similaires. Revenir à la maison : l’animal est entraîné à revenir chez lui s’il est relâché ou perdu. Trait : L’animal est entraîné à tirer un carrosse, un chariot, une charrue, une carriole ou similaire."], "off": true}, {"c": ["Effrayé (Cible)", "La créature a Peur 0 de la Cible. Voir Psychologie dans le Chapitre 5 : Règles à la page 190 pour les règles concernant la Peur."], "off": true}, {"c": ["Élite", "La créature est un féroce vétéran. Elle reçoit +20 en CC, CT et FM."], "off": true}, {"c": ["Endurant", "La créature peut encaisser plus de Dégâts que la plupart des autres. Augmentez ses Points de Blessure d’un nombre égal à son Bonus d’Endurance (appliqué avant tout modificateur de Taille)."], "off": true}, {"c": ["Éthéré", "La créature est immatérielle, ce qui lui permet de passer à travers les objets solides. Elle ne peut être blessée que par les Attaques magiques."], "off": true}, {"c": ["Étreinte glaciale", "Le toucher de la créature glace l’âme de son ennemi. Au prix de 2 Avantages et de son Action, elle peut tenter un Test opposé de CC/Corps à corps ou Esquive. Sur un succès, son adversaire perd automatiquement 1d10 + DR Blessures qui ignorent le Bonus d’Endurance et les PA. Il s’agit d’une Attaque magique."], "off": true}, {"c": ["Fabriqué", "Cette créature, fruit de la magie, est complètement stupide, et son intégrité est maintenue par des liens magiques. Elle ne possède pas de Caractéristiques d’Int, de FM ou de Soc. Si un Test pour ces Caractéristiques est requis, ils sont considérés comme automatiquement réussis. Si aucun sorcier ne la contrôle, ou sans le Trait Territorial, la créature erre sans raison, suivant les flux de magie alentour. Pour le calcul des Blessures de la créature, au lieu d’utiliser son bonus de Force Mentale, utilisez son bonus de Force. Toutes ses Attaques sont Magiques."], "off": true}, {"c": ["Foulée", "La créature effectue de grandes foulées, soit parce que c’est un quadrupède, soit parce qu’elle bénéficie de jambes particulièrement longues. Multipliez son Mouvement de charge de 1,5 quand elle Court."], "off": true}, {"c": ["Frénésie", "La créature peut entrer en Frénésie. Voir page 190."], "off": true}, {"c": ["Furtif", "La créature est particulièrement discrète. Ajoutez son bonus d’Agilité au DR de tous ses Tests de Discrétion."], "off": true}, {"c": ["Grand", "La créature est un grand spécimen de son espèce. Elle reçoit +10 en F et en E et -5 en Ag."], "off": true}, {"c": ["Grimpant", "La créature peut facilement escalader les surfaces verticales et même parcourir les plafonds, prête à fondre sur les proies imprudentes. Elle avance à sa vitesse maximale de Mouvement sur toutes les surfaces appropriées et réussit automatiquement tous ses Tests d’Escalade."], "off": true}, {"c": ["Haine (Cible)", "La créature hait profondément la Cible. Voir Haine à la page 190."], "off": true}, {"c": ["Hurlement fantomatique", "Le hurlement de la créature est glaçant, et même capable de tuer ceux qui l’entendent. Pendant son tour, elle peut dépenser tous ses Avantages (minimum 2), pour pouvoir pousser un cri abominable (cela n’utilise pas son Action). Toutes les créatures vivantes (ne possédant pas le trait Mort-vivant) se trouvant à un nombre de mètres égal à l’Initiative de la créature subissent immédiatement 1d10 Blessures qui ignorent le Bonus d’Endurance et les PA. Ils doivent réussir un Test de Résistance Accessible (+20) ou gagner l’État Brisé. Toutes les Cibles affectées gagnent 3 États Assourdi."], "off": true}, {"c": ["Immunité (Type)", "La créature est totalement immunisée à un certain Type de Dégâts, comme ceux du poison, magiques ou électriques. Tous les Dégâts de ce Type, y compris les Dégâts Critiques, sont ignorés."], "off": true}, {"c": ["Immunité Psychologique", "Peu importe que la créature soit téméraire, extrêmement stupide ou juste dans le feu de l’action, elle n’a peur de rien. Elle ignore les règles de la Psychologie. Voir page 190."], "off": true}, {"c": ["Increvable", "Peu importe à quel point la créature est touchée, elle se relève. Toutes les Blessures Critiques n’entraînant pas la mort peuvent être soignées : attachez juste les parties du corps nécessaires aux endroits appropriés, avec des agrafes ou de grandes pointes pour les maintenir en place, et elle est prête à repartir. Même la « mort » peut être « soignée » si les parties nécessaires, comme une tête décapitée, sont rattachées à son corps. Si la mort survient et que toutes les parties sont en place, un Test de Résistance Intermédiaire (+0) nécessitant un DR de 6 peut être retenté au début de chaque Round pendant un nombre de Rounds égal à son bonus d’Endurance après la mort. Sur un succès, elle revient à la vie avec 1 Point de Blessure."], "off": true}, {"c": ["Infecté", "La créature, ou ses armes, est porteuse d’une dangereuse infection. Si elle force un adversaire non Mort-vivant à perdre des Points de Blessure, il doit effectuer un Test de Résistance Facile (+40) pour éviter la Contamination d’une Blessure Purulente (page 186)."], "off": true}, {"c": ["Infravision", "La créature peut voir dans l’obscurité comme en plein jour."], "off": true}, {"c": ["Insensible à la douleur", "La créature ne ressent pas la douleur ou est capable de l’ignorer. Les pénalités de Blessures Critiques qui ne découlent pas d’amputations sont ignorées, bien que les États soient subis normalement."], "off": true}, {"c": ["Instable", "Le corps de la créature est maintenu par d’ignobles magies, fondamentalement instables dans le plan matériel. Chaque fois qu’elle met fin à un Round Engagé avec un adversaire ayant un Avantage supérieur, la créature est repoussée et les magies la maintenant entière s’affaiblissent. Elle perd un nombre de Points de Blessure égal à la différence entre son Avantage et celui supérieur de son adversaire. Ainsi, si elle a 0 Avantage et son adversaire 2, elle perd 2 Points de Blessure. Si elle a déjà atteint 0 Point de Blessure elle « meurt »."], "off": true}, {"c": ["Intelligent", "La créature possède un esprit particulièrement aiguisé. Elle reçoit + 20 en Int et +10 en I."], "off": true}, {"c": ["Force opposée", "Pendant les Tests opposés de Force (et similaires), si l’une des créatures est supérieure d’au moins deux Tailles, elle gagne automatiquement. Si l’une des créatures est d’une Taille supérieure, la plus petite doit obtenir un Critique sur son jet pour pouvoir s’opposer. Si c’est le cas, le DR est comparé comme d’habitude. Tout autre résultat indique que la plus grande créature l’a emporté."], "off": true}], "foot": ""}, {"kind": "table", "title": "Traits, J à P", "note": "Table du livre de base, chapitre Bestiaire.", "cols": ["Trait", "Effet"], "rows": [{"c": ["Lanceur de Sorts (Divers)", "La créature peut lancer des Sorts : le type de magie spécifique est indiqué entre parenthèses. Langue préhensile (Indice) (Portée) La langue préhensile de la créature peut s’enrouler autour d’une proie, l’entraînant vers une fin horrible. Pendant son tour, elle peut effectuer une Attaque gratuite en dépensant 1 Avantage. C’est une Attaque à distance qui inflige Indice Dégâts (la Portée est indiquée entre parenthèses, en mètres). Si l’Attaque touche, son adversaire reçoit 1 État Empêtré et, s’il a une Taille inférieure, il est entraîné vers la créature. Elle peut laisser ensuite partir la cible, effectuer une Attaque gratuite en utilisant son Trait Arme, ou conserver la cible enroulée dans sa langue, avec le démarrage d’une Empoignade (voir page 163)."], "off": true}, {"c": ["Limicole", "La créature est à l’aise dans un marais. Elle ne subit pas de pénalité de Mouvement pour se mouvoir sur un terrain marécageux."], "off": true}, {"c": ["Magique", "La créature est imprégnée de Magie. Toutes ses Attaques sont des Attaques magiques et peuvent blesser les créatures qui sont uniquement vulnérables aux Attaques magiques."], "off": true}, {"c": ["Maladie (Type)", "La créature est porteuse de la maladie Type. Les autres doivent faire un Test approprié pour éviter la Contraction de la maladie. Voir page 186."], "off": true}, {"c": ["Meneur", "La créature est un meneur méthodique. Recevez +10 en Soc et en FM. Remarque : ce Trait ne peut pas être pris si elle possède déjà le Trait Bestial."], "off": true}, {"c": ["Miracles (Divers)", "La créature peut accomplir des Miracles. La divinité concernée est indiquée entre parenthèses."], "off": true}, {"c": ["Morsure (Indice)", "Pendant son tour, la créature peut effectuer une Attaque gratuite en dépensant 1 Avantage. Les Dégâts de l’Attaque égalent Indice et incluent déjà son bonus de Force."], "off": true}, {"c": ["Mort-vivant", "Les morts-vivants ne sont ni vivants ni morts, ce qui signifie qu’ils ne sont pas dépendants des conditions indispensables à la vie : l’air, la nourriture, l’eau…Ce Trait est généralement utilisé lorsque des Sorts, des Miracles ou autres capacités affectent seulement les morts-vivants."], "off": true}, {"c": ["Mutation", "La créature a la « chance » de posséder une Mutation. Faites un lancer sur le Tableau des Corruptions physiques (page 184)."], "off": true}, {"c": ["Nerveux", "La créature est facilement effrayée par la magie ou les bruits forts. Si cela se produit, elle gagne +3 États Brisé."], "off": true}, {"c": ["Nuée", "Les nuées sont constituées d’un grand nombre de créatures identiques agissant comme une seule. Elles ignorent les règles de Psychologie (voir page 190), toutes les règles du Trait de créature Taille, et celles d’Engagement en utilisant son Mouvement. Si une nuée attaque avec succès un opposant, elle active la règle de Frappe mortelle (même si l’opposant n’est pas tué, voir page 160). Tous les opposants Engagés avec une nuée perdent automatiquement 1 Point de Blessure à la fin de chaque Round, car la nuée submerge tout ce qui se trouve à proximité. La nuée possède cinq fois plus de Points de Blessure que l’une des créatures types qui la composent et gagne +10 en Capacité de Combat. Toutes les tentatives de tirer sur la nuée obtiennent un Bonus de +40 au toucher. La nuée ignore toutes les règles du Trait de créature Taille."], "off": true}, {"c": ["Parasité", "La peau de la créature est couverte de puces ou autre vermine similaire. Tous les adversaires subissent une pénalité de -10 pour la toucher en combat au Corps à corps puisque les parasites les perturbent et les submergent."], "off": true}, {"c": ["Perturbant", "La créature perturbe ou désoriente ses ennemis : peut-être qu’elle dégage un musc soporifique ou une odeur nauséabonde, ou peut-être que son apparence est horrifiante ou étrange. Toute personne se trouvant à un nombre de mètres égal à son Bonus d’Endurance obtient une pénalité de -20 à tous ses Tests. Les créatures touchées ne peuvent subir cette pénalité qu’une seule fois, peu importe le nombre d’ennemis Perturbants."], "off": true}, {"c": ["Peur (Indice)", "La nature de la créature engendre de la Peur surnaturelle chez les autres créatures, égale à Indice. Voir page 190."], "off": true}, {"c": ["Pisteur", "Les pisteurs sont experts dans l’art de poursuivre leur proie, généralement grâce à l’odorat ou à l’ouïe. Ajoutez un DR égal au bonus d’Initiative de la créature, à tous les Tests de Pistage."], "off": true}, {"c": ["Préjugé (Cible)", "La créature n’apprécie pas la Cible. Voir page 190 pour les règles concernant les Préjugés."], "off": true}, {"c": ["Protection (Indice)", "Parce qu’elles sont magiques, bénéficient d’un talisman particulier ou sont simplement chanceuses, certaines créatures semblent éviter les coups. Lancer 1d10 après chaque coup reçu. En cas de résultat supérieur ou égal à Indice, le coup est ignoré même s’il s’agit d’un Critique."], "off": true}, {"c": ["Mouvement en Combat", "Une créature plus grande ignore la nécessité d’un Désengagement pour quitter le combat au Corps à corps. À la place, vous dégagez les combattants de taille inférieure du chemin, vous déplaçant où vous voulez."], "off": true}, {"c": ["Peur et Terreur", "Si la créature est considérée comme agressive, elle provoquera la Peur chez toute créature plus petite qu’elle, et de la Terreur à toute créature plus petite qu’elle d’au moins deux catégories. Le niveau de Peur ou de Terreur égale la différence de catégories de Taille. Ainsi, si elle est de catégorie Grande et son adversaire de catégorie Petite, elle lui cause Terreur 2. Voir page 191."], "off": true}, {"c": ["Piétinement", "Les créatures plus grandes que leurs adversaires peuvent effectuer une Attaque de Piétinement comme Action gratuite au prix de 1 Avantage lorsqu’elles frappent vers le bas ou un adversaire plus petit. Cette Attaque inflige un nombre de Dégâts égal à votre Bonus de Force +0, et utilise la Compétence Corps à corps (Bagarre)."], "off": true}, {"c": ["Mentale", "Moyenne Bonus de Force + (2 x Bonus d’Endurance) +"], "off": true}], "foot": ""}, {"kind": "table", "title": "Traits, Q à Z", "note": "Table du livre de base, chapitre Bestiaire.", "cols": ["Trait", "Effet"], "rows": [{"c": ["Rage", "La créature peut entrer dans une rage dévorante. Elle peut dépenser tous ses Avantages (minimum 1) pour que celui devienne Haine envers ses adversaires en combat rapproché. Elle peut aussi dépenser tous ses Avantages (minimum 3) pour entrer en Frénésie. Voir page 190."], "off": true}, {"c": ["Rapide", "La créature se déplace de façon incroyablement rapide. Elle reçoit +1 M et +10 en Ag."], "off": true}, {"c": ["Regard pétrifiant", "Le regard de la créature peut changer la chair en pierre. Pour son Action, elle peut dépenser autant d’Avantages qu’elle désire (minimum 1) pour lancer son regard. Elle effectue un Test opposé de CT/Initiative, et ajoutez 1 DR par Avantage dépensé. Son adversaire gagne 1 État Sonné pour chaque tranche de 2 DR avec lesquels elle gagne. Si c’est de 6 DR ou plus, son adversaire est définitivement changé en pierre. Si son adversaire est un Lanceur de Sorts, le Test peut être opposé à la Langue (Magick) au lieu de l’Initiative si des contre-sorts sont lancés."], "off": true}, {"c": ["Régénération", "La créature est capable de guérir à une vitesse extraordinaire, et même de faire repousser ses membres amputés. Au début de chaque Round, s’il reste plus de 0 Point de Blessure à la créature, elle régénère 1d10 Points de Blessure. Si elle est à 0 Point de Blessure, lancez 1d10. Sur un résultat de 8+, elle régénère 1 seul Point de Blessure. Sur un résultat de 10 à l’un ou l’autre de ces jets, elle régénère également une Blessure Critique, et ne souffre plus des pénalités et États associés. Les Blessures et Blessures Critiques infligées par le Feu ne peuvent pas être régénérées, et doivent être notées séparément."], "off": true}, {"c": ["Résistance à la Magie (Indice)", "La Magie n’affecte pas la créature autant que les autres. Le DR de tous les Sorts l’affectant est réduit du nombre indiqué. Ainsi, Résistance à la Magie 2 réduit le DR de 2."], "off": true}, {"c": ["Rusé", "La créature est rusée. Elle reçoit +10 en Soc, Int et I."], "off": true}, {"c": ["Sang corrosif", "Le sang de la créature est corrosif. Chaque fois qu’elle subit des Blessures dont le sang éclabousse, tous ceux qui sont Engagés avec elle reçoivent 1d10 Points de Blessure modifiés par le Bonus d’Endurance et les PA, avec un minimum de 1."], "off": true}, {"c": ["Se cabrer", "Pour une Action de Mouvement, la créature peut effectuer une Attaque de Piétinement si elle est plus grande que son adversaire. Voir Taille pour plus d’informations. Souffle (Indice) (Type) Le souffle de la créature est une arme puissante. Pendant son tour, au prix de 2 Avantages, elle peut activer son Souffle en tant qu’Attaque gratuite. Choisissez 1 cible qu’elle peut voir, située à une distance en mètres égale à son bonus d’Endurance +20. Tous les personnages situés à une distance en mètres égale au Bonus de Force de cette cible sont touchés, ainsi que tous les personnages entre la créature et la cible. Effectuez un Test opposé de CT/Esquive contre toutes les cibles affectées (un lancer pour chaque cible). Toutes les cibles qui échouent subissent un montant de Dégâts d’Arme égal à son Indice. De plus, si le trait indique l’un des Types suivants entre parenthèses, appliquez également les règles correspondantes : • Froid : les cibles gagnent l’État Sonné pour chaque tranche de 5 Blessures subies (minimum 1). • Corrosif : toutes les Armures et Armes portées par les cibles subissent 1 Dégât. • Feu : toutes les Blessures infligées ignorent les PA. Les cibles gagnent l’État Enflammé. • Électricité : toutes les Blessures infligées ignorent les PA. Les cibles gagnent l’État Sonné. • Poison : toutes les Blessures infligées ignorent les PA. Les cibles gagnent l’État Empoisonné. • Fumée : la zone se remplit de fumée, bloquant les Lignes de vue pendant un nombre de Rounds égal au Bonus d’Endurance de la créature. La créature est immunisée à son propre Souffle. Il s’agit d’une Attaque magique."], "off": true}, {"c": ["Stupide", "Bien que n’étant pas entièrement dénuée de lucidité (et ne disposant ainsi pas du Trait Bestial), la créature est Stupide. Si elle se trouve aux côtés d’un allié n’étant, lui, pas Stupide, ce dernier la guide et rien ne se passe. Sinon, elle effectue un Test d’Intelligence Facile (+40) au début de chaque Round. Sur un échec, elle devient confuse, bave ou s’assied, se cure le nez ou toute autre action sans grande utilité, perdant à la fois son Mouvement et son Action pour ce tour."], "off": true}, {"c": ["UTILISER LES TAILLES", "Si vous souhaitez utiliser le Trait Taille pour agrandir une créature – pour transformer, par exemple, une Araignée Géante en Araignée Gigantesque –, augmentez alors F et E de +10, et réduisez Ag de -5 par catégorie de taille supérieure. Inversez le procédé si vous voulez rendre une créature plus petite."], "off": true}, {"c": ["Taille (Divers)", "Ce Trait représente les créatures dont la taille diffère du standard du jeu (c’est-à-dire environ la taille humaine). Il y a sept catégories de Taille, allant de Minuscule à Monstrueuse."], "off": true}, {"c": ["Taille Exemples", "Minuscule Papillon, souris, pigeon Très petite Chat, faucon, bébé humain Petite Rat géant, halfling, enfant humain Moyenne Nain, elfe, humain Grande Cheval, ogre, troll Énorme Griffon, vouivre, manticore Monstrueuse Dragon, géant, Prince démon Modificateurs de Taille en Combat Si la créature est plus grande : • Ses armes gagnent l’Atout Dévastatrice si la créature est d’une catégorie de Taille supérieure, et Percutante si elle est plus grande d’au moins deux catégories de Taille. • Vous multipliez les Dégâts infligés par le nombre de catégories de Taille supérieures (ainsi, 2 catégories = x2, 3 catégories = x3, et ainsi de suite) : cette multiplication est calculée après l’application des modificateurs. • Toutes les frappes réussies activent la règle optionnelle Frappe Mortelle (voir page 160), même si la cible survit. Si la créature est plus petite : • Elle gagne un bonus de +10 pour toucher. Défense contre les grosses créatures Vous subissez une pénalité de DR -2 pour chaque catégorie de Taille supérieure de votre adversaire, quand vous utilisez la CC pour vous défendre lors d’un Test opposé. Il est conseillé d’esquiver un Géant balançant un arbre plutôt que de le parer."], "off": true}, {"c": ["Très petite Bonus d’Endurance", "Petite (2 x Bonus d’Endurance) + Bonus de Force"], "off": true}, {"c": ["Terreur (Indice)", "La créature suscite une Terreur surnaturelle à glacer le sang des autres créatures, avec un niveau égal à Indice. Voir page 191."], "off": true}, {"c": ["Territorial", "Cette créature protège une zone ou région particulière. Elle combat jusqu’à la mort pour la protéger et, normalement, ne poursuit pas les ennemis s’ils fuient la zone."], "off": true}, {"c": ["Toile (Indice)", "La créature peut créer une toile pour attraper les ennemis imprudents. Chaque fois qu’elle réussit à toucher, son adversaire gagne 1 État Empêtré, avec une Force de Indice. Voir page 168."], "off": true}, {"c": ["Vampirique", "La créature se nourrit de sang et y puise une grande force physique. Chaque fois qu’elle réussit une Attaque de Morsure contre un adversaire approprié, elle récupère autant de Points de Blessure que son adversaire en perd. Boire du sang de cette façon est la seule manière pour elle de se soigner."], "off": true}, {"c": ["Venin (Difficulté)", "Les attaques de la créature impliquent du poison ou du venin. Quand elle inflige des Points de Blessure avec ses Attaques venimeuses, son adversaire subit un État Empoisonné. Si aucune Difficulté n’est indiquée pour résister au Venin, le Test est considéré comme Intermédiaire. Voir page 168."], "off": true}, {"c": ["Vision nocturne", "La créature possède le Talent Vision nocturne. Voir page 147."], "off": true}, {"c": ["Vol (Indice)", "Quand la créature se Déplace, elle peut voler jusqu’à Indice mètres. Elle ignore alors tous les terrains, obstacles et personnages qui s’interposent. À la fin de son Mouvement, elle décide si elle atterrit ou si elle continue de voler. Elle peut utiliser ce Mouvement pour Charger. Si elle commence son tour en volant, elle doit choisir le Vol pour son Mouvement. Si elle ne peut pas voler, le MJ décide à quelle distance elle tombe (voir 168). Lorsqu’elle est une cible en vol, il faut mesurer la distance horizontale normalement, puis augmenter la distance de 1. Ainsi, une Longue Distance devient une Distance Extrême, et une créature volante à une Distance Extrême ne peut pas être touchée. Quand elle vole, elle subit une pénalité de -20 à toutes les tentatives de combat à distance, alors qu’elle virevolte dans le ciel."], "off": true}, {"c": ["Vomissement", "La créature peut vomir un flot de corruption corrosive, aspergeant son adversaire d’immondices à moitié digérées. Pendant son tour, au prix de 3 Avantages, elle peut activer son Vomissement comme une Attaque gratuite. Elle choisit 1 cible qu’elle peut voir, située à une distance en mètres égale à son Bonus d’Endurance, et lui vomit dessus. Toutes les cibles à moins de deux mètres sont également touchées. La créature effectue un Test opposé de CT/Esquive contre toutes les cibles affectées (un jet opposé pour chaque cible). Le Test est généralement Facile (+40) pour elle à cause de la distance rapprochée, et Intermédiaire (+0) pour ses adversaires. Toutes les cibles qui échouent subissent une somme de Dégâts d’Arme égale à son Bonus d’Endurance +4 et reçoivent l’État Sonné. Toutes les Armures et les Armes portées par les cibles affectées subissent 1 Dégât à cause de l’acidité corrosive du vomissement."], "off": true}], "foot": ""}, {"kind": "texte", "title": "Notes de MJ", "note": "", "items": ["Les traits font l'essentiel de la difficulté d'une rencontre. Deux gobelins identiques dont l'un porte Meneur et l'autre Nerveux ne se jouent pas du tout pareil.", "Lis les traits avant le combat, pas pendant. Trois d'entre eux, Peur, Terreur et Frénésie, changent le premier round entier et ne se rattrapent pas en cours de route.", "Un trait bien choisi remplace dix points de caractéristique. Pour durcir une rencontre sans la rendre illisible, ajoute un trait plutôt que des Blessures.", "Les traits qui infligent des États sont ceux qui font vraiment mal aux joueurs. Croise-les avec le document États et Réserves."], "foot": ""}], "legend": [{"off": true, "term": "Indice", "def": "Un chiffre à lire sur le profil de la créature, qui remplace le mot entre parenthèses."}, {"off": true, "term": "Cible", "def": "Un groupe de personnes ou de créatures, choisi par le MJ : les elfes, les hommes-bêtes, les nordlanders."}, {"off": true, "term": "Type", "def": "Une catégorie précisée par le MJ, comme le nom d'une maladie pour le trait Maladie."}], "intro": "Table des traits de créature du livre de base, chapitre Bestiaire. Premier volet du bestiaire : les profils de créatures suivront."};
+var RACINE = 'outils/traits';
+var CACHE  = 'traits_cache_v1';
+var CLIENT = Math.random().toString(36).slice(2, 10);
+var data = null;
+
+var FB_CONFIG = {
+  apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+  authDomain: "warhammer-table-jdr.firebaseapp.com",
+  databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "warhammer-table-jdr",
+  storageBucket: "warhammer-table-jdr.firebasestorage.app",
+  messagingSenderId: "347804803970",
+  appId: "1:347804803970:web:43e062299c53e59d20e59b"
+};
+
+var db = null, refData = null, refSave = null;
+try{
+  if(typeof firebase !== 'undefined'){
+    if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+    db = firebase.database();
+    refData = db.ref(RACINE + '/donnees');
+    refSave = db.ref(RACINE + '/sauvegardes');
+  }
+}catch(e){ console.warn('Firebase indisponible :', e); }
+
+/* ---------- indicateur d'état ---------- */
+var flag = document.getElementById('flag');
+var flagTimer = null;
+function etat(txt, cls){
+  if(!flag) return;
+  clearTimeout(flagTimer);
+  flag.textContent = txt;
+  flag.className = 'sync-flag ' + (cls || '');
+  if(cls === 'ok') flagTimer = setTimeout(function(){ flag.textContent = ''; flag.className = 'sync-flag'; }, 2600);
+}
+
+/* ---------- Firebase efface les tableaux vides : on remet tout d'aplomb ---------- */
+function tab(x){
+  if(Array.isArray(x)) return x;
+  if(x && typeof x === 'object'){
+    var k = Object.keys(x).sort(function(a,b){ return a - b; }), o = [];
+    for(var i = 0; i < k.length; i++) o.push(x[k[i]]);
+    return o;
+  }
+  return [];
+}
+
+/* ---------- lecture initiale : cache local, puis la base fait autorité ---------- */
+function charger(){
+  try{
+    var brut = localStorage.getItem(CACHE);
+    if(brut){ data = normaliser(JSON.parse(brut)); }
+  }catch(e){}
+  if(!data) data = normaliser(JSON.parse(JSON.stringify(DEFAUT)));
+}
+function cacher(){
+  try{ localStorage.setItem(CACHE, JSON.stringify(data)); }catch(e){}
+}
+
+/* ---------- écriture groupée ---------- */
+var tmr = null, sale = false;
+function sauver(){
+  sale = true;
+  etat('modifié', 'pending');
+  cacher();
+  clearTimeout(tmr);
+  tmr = setTimeout(ecrire, 900);
+}
+function ecrire(){
+  if(!refData){ etat('hors ligne', 'err'); return; }
+  etat('envoi…', 'pending');
+  refData.set({ payload: data, at: Date.now(), par: CLIENT }).then(function(){
+    sale = false;
+    etat('enregistré', 'ok');
+  }).catch(function(e){
+    console.warn('Écriture échouée :', e);
+    etat('échec réseau', 'err');
+    clearTimeout(tmr);
+    tmr = setTimeout(ecrire, 4000);
+  });
+}
+
+/* ---------- écoute en direct ---------- */
+var enAttente = null;
+function enEdition(){
+  var a = document.activeElement;
+  return !!(a && a.isContentEditable);
+}
+function appliquer(p){
+  data = normaliser(p);
+  cacher();
+  rendre();
+  etat('à jour', 'ok');
+}
+if(refData){
+  refData.on('value', function(sn){
+    var v = sn.val();
+    if(!v || !v.payload) return;
+    if(v.par === CLIENT) return;
+    if(sale || enEdition()){ enAttente = v.payload; return; }
+    appliquer(v.payload);
+  }, function(e){ console.warn('Lecture impossible :', e); etat('hors ligne', 'err'); });
+}
+document.addEventListener('focusout', function(){
+  setTimeout(function(){
+    if(enAttente && !sale && !enEdition()){ var p = enAttente; enAttente = null; appliquer(p); }
+  }, 300);
+});
+
+/* ---------- publication du fichier vers la base ---------- */
+function pousserFichier(){
+  if(!refData){ alert('Hors ligne : publication impossible.'); return; }
+  if(!confirm(
+    'Publier la version du fichier vers la base ?\n\n' +
+    'Tout ce qui a été modifié en ligne sans être réintégré au fichier sera remplacé.\n' +
+    "L'état actuel de la base est sauvegardé avant écriture."
+  )) return;
+  var b = document.getElementById('b-push');
+  if(b) b.setAttribute('disabled', 'disabled');
+  etat('sauvegarde…', 'pending');
+  refData.once('value').then(function(sn){
+    var avant = sn.val();
+    if(!avant || !refSave) return null;
+    return refSave.child(String(Date.now())).set(avant);
+  }).catch(function(e){ console.warn('Sauvegarde impossible :', e); })
+  .then(function(){
+    etat('publication…', 'pending');
+    data = normaliser(JSON.parse(JSON.stringify(DEFAUT)));
+    return refData.set({ payload: data, at: Date.now(), par: CLIENT });
+  }).then(function(){
+    sale = false;
+    cacher();
+    rendre();
+    if(b) b.removeAttribute('disabled');
+    etat('publié', 'ok');
+  }).catch(function(e){
+    console.warn('Publication échouée :', e);
+    if(b) b.removeAttribute('disabled');
+    etat('publication refusée', 'err');
+  });
+}
+
+
+/* ---------- remise en forme après lecture ---------- */
+function normaliser(d){
+  if(!d || typeof d !== 'object') return JSON.parse(JSON.stringify(DEFAUT));
+  d.intro = d.intro || '';
+  d.sections = tab(d.sections);
+  for(var i = 0; i < d.sections.length; i++){
+    var s = d.sections[i];
+    s.kind = s.kind || 'texte';
+    s.title = s.title || '';
+    s.note = s.note || '';
+    s.foot = s.foot || '';
+    if(s.kind === 'table'){
+      s.cols = tab(s.cols);
+      s.rows = tab(s.rows);
+      for(var r = 0; r < s.rows.length; r++){
+        s.rows[r] = s.rows[r] || {};
+        s.rows[r].c = tab(s.rows[r].c);
+        s.rows[r].off = !!s.rows[r].off;
+      }
+    } else {
+      s.items = tab(s.items);
+    }
+  }
+  d.legend = tab(d.legend);
+  for(var l = 0; l < d.legend.length; l++){
+    d.legend[l] = d.legend[l] || {};
+    d.legend[l].term = d.legend[l].term || '';
+    d.legend[l].def = d.legend[l].def || '';
+    d.legend[l].off = !!d.legend[l].off;
+  }
+  return d;
+}
+
+function esc(s){
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function classeCol(nom){
+  var n = (nom || '').toLowerCase();
+  if(n.indexOf('enc') === 0 || n.indexOf('dr') === 0 || n.indexOf('éch') === 0 || n.indexOf('serv') === 0) return 'c';
+  return '';
+}
+
+function rendre(){
+  var h = '';
+  h += '<div class="intro" contenteditable data-t="intro">' + esc(data.intro || '') + '</div>';
+
+  for(var si = 0; si < data.sections.length; si++){
+    var s = data.sections[si];
+    var n = (s.kind === 'table') ? s.rows.length : s.items.length;
+    h += '<div class="sec" data-s="' + si + '">';
+    h += '<div class="sechead">';
+    h +=   '<button data-a="fold">▾</button>';
+    h +=   '<span class="t" contenteditable data-t="st" data-s="' + si + '">' + esc(s.title) + '</span>';
+    h +=   '<span class="n">' + n + '</span>';
+    h +=   '<button data-a="up">↑</button><button data-a="down">↓</button>';
+    h +=   '<button data-a="delsec">Supprimer</button>';
+    h += '</div>';
+    h += '<div class="snote" contenteditable data-t="sn" data-s="' + si + '">' + esc(s.note || '') + '</div>';
+    h += '<div class="secbody">';
+
+    var PIED = s.foot || s.foot === '' ? '<div class="sfoot" contenteditable data-t="sf" data-s="' + si + '">' + esc(s.foot || '') + '</div>' : '';
+    if(s.kind === 'table'){
+      h += '<table><thead><tr>';
+      for(var ci = 0; ci < s.cols.length; ci++)
+        h += '<th contenteditable data-t="col" data-s="' + si + '" data-c="' + ci + '">' + esc(s.cols[ci]) + '</th>';
+      h += '<th></th></tr></thead><tbody>';
+      for(var ri = 0; ri < s.rows.length; ri++){
+        var r = s.rows[ri];
+        h += '<tr' + (r.off ? ' class="off"' : '') + ' data-r="' + ri + '">';
+        for(var k = 0; k < s.cols.length; k++){
+          var mot = (s.cols[k] || '').toLowerCase();
+          var cle = (mot.indexOf('atout') === 0 || mot.indexOf('mots') >= 0 || mot.indexOf('effet') === 0) ? ' data-atout="1"' : '';
+          h += '<td class="' + classeCol(s.cols[k]) + '" contenteditable data-t="cell" data-lab="' + esc(s.cols[k]) +
+               '" data-s="' + si +
+               '" data-r="' + ri + '" data-c="' + k + '"' + cle + '>' + esc(r.c[k] === undefined ? '' : r.c[k]) + '</td>';
+        }
+        h += '<td class="acts"><button data-a="off" title="Ligne du livre">★</button>' +
+             '<button data-a="dup" title="Dupliquer">⧉</button>' +
+             '<button data-a="del" title="Supprimer">✕</button></td></tr>';
+      }
+      h += '</tbody></table>' + PIED + '<button class="addrow" data-a="addrow">+ Ligne</button>';
+    } else {
+      h += '<div class="items">';
+      for(var ii = 0; ii < s.items.length; ii++){
+        h += '<div class="item" data-i="' + ii + '"><span class="puce">◆</span>' +
+             '<div class="txt" contenteditable data-t="item" data-s="' + si + '" data-i="' + ii + '">' + esc(s.items[ii]) + '</div>' +
+             '<span class="acts"><button data-a="upitem">↑</button><button data-a="delitem">✕</button></span></div>';
+      }
+      h += '</div>' + PIED + '<button class="addrow" data-a="additem">+ Paragraphe</button>';
+    }
+    h += '</div>';
+    h += '</div>';
+  }
+
+  if(data.legend && data.legend.length){
+    h += '<h2 class="bloc">Légende</h2><div class="legwrap">';
+    for(var li = 0; li < data.legend.length; li++){
+      var L = data.legend[li];
+      h += '<div class="leg ' + (L.off ? 'of' : 'mai') + '" data-l="' + li + '">';
+      h += '<span class="acts2"><button data-a="legoff">★</button><button data-a="legdel">✕</button></span>';
+      h += '<span class="term" contenteditable data-t="lt" data-l="' + li + '">' + esc(L.term) + '</span>. ';
+      h += '<span class="df" contenteditable data-t="ld" data-l="' + li + '">' + esc(L.def) + '</span></div>';
+    }
+    h += '</div>';
+  }
+  h += '<p class="hint">Tout est modifiable : cliquer et écrire. Synchronisation automatique avec la base en ligne, sans rien à valider. Survoler une cellule d\'effet affiche les définitions reconnues.</p>';
+
+  document.getElementById('app').innerHTML = h;
+  indexerLegende();
+}
+
+document.addEventListener('input', function(e){
+  var el = e.target, t = el.getAttribute('data-t');
+  if(!t) return;
+  var s = +el.getAttribute('data-s'), r = +el.getAttribute('data-r'),
+      c = +el.getAttribute('data-c'), i = +el.getAttribute('data-i'), l = +el.getAttribute('data-l');
+  var v = el.textContent;
+  if(t === 'intro') data.intro = v;
+  else if(t === 'st') data.sections[s].title = v;
+  else if(t === 'sn') data.sections[s].note = v;
+  else if(t === 'sf') data.sections[s].foot = v;
+  else if(t === 'col') data.sections[s].cols[c] = v;
+  else if(t === 'cell') data.sections[s].rows[r].c[c] = v;
+  else if(t === 'item') data.sections[s].items[i] = v;
+  else if(t === 'lt'){ data.legend[l].term = v; indexerLegende(); }
+  else if(t === 'ld'){ data.legend[l].def = v; indexerLegende(); }
+  sauver();
+});
+
+document.addEventListener('keydown', function(e){
+  var el = e.target;
+  if(e.key === 'Enter' && el.hasAttribute && el.hasAttribute('contenteditable')){
+    if(el.classList && el.classList.contains('txt')) return; /* paragraphes : saut de ligne permis */
+    e.preventDefault(); el.blur();
+  }
+});
+
+document.addEventListener('click', function(e){
+  var b = e.target.closest ? e.target.closest('button[data-a]') : null;
+  if(!b) return;
+  var a = b.getAttribute('data-a');
+  var sec = b.closest('.sec'), tr = b.closest('tr'), it = b.closest('.item'), leg = b.closest('.leg');
+
+  if(a === 'fold'){ sec.classList.toggle('closed'); return; }
+  if(leg){
+    var l = +leg.getAttribute('data-l');
+    if(a === 'legdel'){ data.legend.splice(l,1); sauver(); rendre(); return; }
+    if(a === 'legoff'){ data.legend[l].off = !data.legend[l].off; sauver(); rendre(); return; }
+  }
+  if(!sec) return;
+  var si = +sec.getAttribute('data-s'), S = data.sections[si];
+
+  if(a === 'addrow'){
+    var vide = []; for(var i = 0; i < S.cols.length; i++) vide.push('');
+    S.rows.push({c:vide, off:false}); sauver(); rendre(); return;
+  }
+  if(a === 'additem'){ S.items.push('Nouveau paragraphe.'); sauver(); rendre(); return; }
+  if(a === 'delsec'){
+    if(confirm('Supprimer la section « ' + S.title + ' » ?')){ data.sections.splice(si,1); sauver(); rendre(); }
+    return;
+  }
+  if(a === 'up' || a === 'down'){
+    var d = (a === 'up') ? -1 : 1, n = si + d;
+    if(n >= 0 && n < data.sections.length){
+      var tmp = data.sections[si]; data.sections[si] = data.sections[n]; data.sections[n] = tmp;
+      sauver(); rendre();
+    }
+    return;
+  }
+  if(tr){
+    var r = +tr.getAttribute('data-r');
+    if(a === 'del'){ S.rows.splice(r,1); sauver(); rendre(); return; }
+    if(a === 'dup'){ S.rows.splice(r+1,0, JSON.parse(JSON.stringify(S.rows[r]))); sauver(); rendre(); return; }
+    if(a === 'off'){ S.rows[r].off = !S.rows[r].off; sauver(); rendre(); return; }
+  }
+  if(it){
+    var ii = +it.getAttribute('data-i');
+    if(a === 'delitem'){ S.items.splice(ii,1); sauver(); rendre(); return; }
+    if(a === 'upitem' && ii > 0){
+      var t2 = S.items[ii]; S.items[ii] = S.items[ii-1]; S.items[ii-1] = t2; sauver(); rendre(); return;
+    }
+  }
+});
+
+document.getElementById('b-tab').onclick = function(){
+  var modele = null;
+  for(var i = 0; i < data.sections.length; i++) if(data.sections[i].kind === 'table'){ modele = data.sections[i]; break; }
+  data.sections.push({kind:'table', title:'Nouveau tableau', note:'', foot:'',
+    cols: modele ? modele.cols.slice() : ['Objet','Coût','Disponibilité','Effet'], rows:[]});
+  sauver(); rendre();
+};
+document.getElementById('b-txt').onclick = function(){
+  data.sections.push({kind:'texte', title:'Nouvelle section', note:'', foot:'', items:['À rédiger.']});
+  sauver(); rendre();
+};
+document.getElementById('b-leg').onclick = function(){
+  if(!data.legend) data.legend = [];
+  data.legend.push({off:false, term:'Nouveau mot-clé', def:'Définition.'});
+  sauver(); rendre();
+  var els = document.querySelectorAll('.leg .term');
+  if(els.length) els[els.length-1].focus();
+};
+document.getElementById('b-fold').onclick = function(){
+  var secs = document.querySelectorAll('.sec');
+  var fermer = !document.querySelector('.sec.closed');
+  for(var i = 0; i < secs.length; i++) secs[i].classList.toggle('closed', fermer);
+  this.textContent = fermer ? 'Déplier tout' : 'Replier tout';
+};
+document.getElementById('b-print').onclick = function(){ window.print(); };
+document.getElementById('b-push').onclick = pousserFichier;
+
+document.getElementById('q').oninput = function(){
+  var q = this.value.trim().toLowerCase();
+  var secs = document.querySelectorAll('.sec');
+  for(var i = 0; i < secs.length; i++){
+    var lignes = secs[i].querySelectorAll('tbody tr, .item'), vis = 0;
+    for(var j = 0; j < lignes.length; j++){
+      var ok = !q || lignes[j].textContent.toLowerCase().indexOf(q) >= 0;
+      lignes[j].classList.toggle('hid', !ok);
+      if(ok) vis++;
+    }
+    var titreOk = secs[i].querySelector('.sechead .t').textContent.toLowerCase().indexOf(q) >= 0;
+    secs[i].classList.toggle('hid', !!q && vis === 0 && !titreOk);
+  }
+  var legs = document.querySelectorAll('.leg');
+  for(var k = 0; k < legs.length; k++)
+    legs[k].classList.toggle('hid', !!q && legs[k].textContent.toLowerCase().indexOf(q) < 0);
+};
+
+/* ======================= INFOBULLES DE LÉGENDE ======================= */
+var IDX = [];               /* [{cle, terme, entree}] trié du plus long au plus court */
+function normal(t){
+  return String(t).toLowerCase()
+    .replace(/\s*\(.*?\)\s*/g, ' ')      /* Bénie (X) -> benie */
+    .replace(/\s+[\dx×]+\s*$/, '')       /* Recharge 3 et Addictive X -> recharge, addictive */
+    .replace(/[.,;:!?]+$/, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+function indexerLegende(){
+  IDX = [];
+  if(!data.legend) return;
+  for(var i = 0; i < data.legend.length; i++){
+    var cle = normal(data.legend[i].term);
+    if(cle.length > 2) IDX.push({cle: cle, entree: data.legend[i]});
+  }
+  IDX.sort(function(a, b){ return b.cle.length - a.cle.length; });
+}
+
+/* Reconnaît les mots-clés d'une cellule, par segment puis par occurrence dans la phrase. */
+function definitions(texte){
+  var trouve = [], vus = {};
+  function pousser(E){
+    if(!vus[E.term]){ vus[E.term] = 1; trouve.push(E); }
+  }
+  var segments = String(texte).split(/[,;.•·]/);
+  for(var s = 0; s < segments.length; s++){
+    for(var i = 0; i < IDX.length; i++){
+      if(normal(segments[s]) === IDX[i].cle){ pousser(IDX[i].entree); break; }
+    }
+  }
+  var plat = ' ' + normal(texte) + ' ';
+  for(var j = 0; j < IDX.length; j++){
+    if(IDX[j].cle.length < 5) continue;                 /* trop court : trop de faux positifs */
+    if(plat.indexOf(' ' + IDX[j].cle) >= 0) pousser(IDX[j].entree);
+  }
+  return trouve;
+}
+
+var tip = document.getElementById('tip');
+function cacherTip(){ tip.style.display = 'none'; }
+function montrerTip(cible){
+  if(!cible || document.activeElement === cible){ cacherTip(); return; }
+  var liste = definitions(cible.textContent);
+  if(!liste.length){ cacherTip(); return; }
+  var out = '';
+  for(var i = 0; i < liste.length && i < 6; i++)
+    out += '<p><b>' + esc(liste[i].term) + '.</b> ' + esc(liste[i].def) + '</p>';
+  tip.innerHTML = out;
+  tip.style.display = 'block';
+  var r = cible.getBoundingClientRect();
+  var top = r.bottom + 6;
+  if(top + tip.offsetHeight > window.innerHeight) top = Math.max(6, r.top - tip.offsetHeight - 6);
+  tip.style.top = top + 'px';
+  tip.style.left = Math.min(Math.max(6, r.left), window.innerWidth - tip.offsetWidth - 12) + 'px';
+}
+function cibleTip(e){
+  if(!e.target.closest) return null;
+  return e.target.closest('td[data-t="cell"], .item .txt, .sfoot, .snote');
+}
+document.addEventListener('mouseover', function(e){ montrerTip(cibleTip(e)); });
+document.addEventListener('mouseout', function(e){ if(cibleTip(e)) cacherTip(); });
+document.addEventListener('scroll', cacherTip, true);
+document.addEventListener('focusin', cacherTip);
+
+charger();
+rendre();
+</script>
+</body>
+</html>
