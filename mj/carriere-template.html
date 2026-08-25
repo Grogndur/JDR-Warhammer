@@ -520,13 +520,29 @@ const PK = (function () {
   function meta(parts) { return parts.map(vrai).filter(Boolean).join(' \u00b7 '); }
 
   // Une entrée du sélecteur : nom, ligne de métadonnées, description, clé de filtre.
+  // Une compétence groupée entre dans la liste une fois par spécialisation, plus
+  // une fois sous son nom nu pour ceux qui veulent écrire la leur.
   function lignesCompetences() {
-    return (C.competences || []).map(c => ({
-      n: c.n, marque: '',
-      m: meta([c.c, c.av ? 'Avancée' : 'De base', c.sp && c.sp.length ? 'Groupée' : '']),
-      d: (c.d || '') + (c.sp && c.sp.length ? ' Spécialisations : ' + c.sp.join(', ') + '.' : ''),
-      k: c.n + ' ' + (c.sp || []).join(' ')
-    }));
+    const l = [];
+    (C.competences || []).forEach(c => {
+      const groupee = c.sp && c.sp.length;
+      /* L'entrée nue ne porte pas la liste des spécialisations dans sa clé de
+         filtre : sans quoi elle sortirait en tête de toutes les recherches. */
+      l.push({
+        n: c.n, marque: '',
+        m: meta([c.c, c.av ? 'Avancée' : 'De base', groupee ? 'Groupée, à spécialiser' : '']),
+        d: (c.d || '') + (groupee ? ' Spécialisations : ' + c.sp.join(', ') + '.' : ''),
+        k: c.n
+      });
+      if (!groupee) return;
+      c.sp.forEach(sp => l.push({
+        n: c.n + ' (' + sp + ')', marque: '',
+        m: meta([c.c, c.av ? 'Avancée' : 'De base', 'Spécialisation de ' + c.n]),
+        d: c.d || '',
+        k: c.n + ' ' + sp
+      }));
+    });
+    return l;
   }
   function lignesTalents() {
     return (C.talents || []).map(t => ({
@@ -596,7 +612,10 @@ const PK = (function () {
 
   function rendre() {
     const q = norm(qEl.value).split(/\s+/).filter(Boolean);
-    const vus = liste.filter(o => q.every(m => norm(o.n + ' ' + o.m + ' ' + o.d + ' ' + o.k).includes(m)));
+    /* Le nom et la clé priment : la description sert de repêchage. */
+    const vus = liste.filter(o => q.every(m => norm(o.n + ' ' + o.k).includes(m)))
+      .concat(liste.filter(o => !q.every(m => norm(o.n + ' ' + o.k).includes(m))
+        && q.length && q.every(m => norm(o.m + ' ' + o.d).includes(m))));
     nbEl.textContent = vus.length + ' sur ' + liste.length;
     lEl.innerHTML = '';
     if (!vus.length) {
