@@ -1271,7 +1271,7 @@ window.MAGIE = {"sorts":[{"d":"Sorts mineurs","n":"Alerte","ni":0,"p":"1 mètre"
                    : 'Allonge ' + a.all + ' · Dégâts ' + a.deg
                      + (vrai(a.at) ? ' · ' + a.at : '');
           return { nom: a.n, marque: OFF(a), meta: meta, desc: desc,
-                   cle: a.n + ' ' + a.s + ' ' + a.at + ' ' + (a.de || '') };
+                   cle: a.n + ' ' + a.s + ' ' + a.at + ' ' + (a.de || '') + ' ' + (a.al || '') };
         },
         function (a) {
           poser('wep-name', a.n); poser('wep-all', a.all); poser('wep-deg', a.deg);
