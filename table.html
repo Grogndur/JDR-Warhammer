@@ -239,6 +239,9 @@
   .ini-chip.actif{border-color:var(--laiton);background:rgba(176,144,42,.20);
     color:var(--parchemin);box-shadow:0 0 0 1px var(--laiton) inset}
   .ini-chip .ini-val{min-width:24px;text-align:center;color:var(--laiton);font-weight:700;font-variant-numeric:tabular-nums}
+  body.est-mj .ini-chip .ini-val{cursor:text;border-radius:4px;padding:0 2px}
+  body.est-mj .ini-chip .ini-val:hover{box-shadow:0 0 0 1px rgba(176,144,42,.4)}
+  .ini-chip .ini-val:focus{outline:none;background:var(--noir-2);box-shadow:0 0 0 1px var(--laiton)}
   .ini-chip .ini-nom{flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .ini-av{display:inline-flex;align-items:center;gap:3px}
   .ini-av::before{content:"Av";font-size:9px;letter-spacing:.04em;opacity:.55;margin-right:1px}
@@ -249,6 +252,91 @@
   .ini-x{padding:0 6px;color:#c0613f}
   .ini-av button:hover,.ini-x:hover{border-color:var(--laiton)}
   body:not(.est-mj) .ini-av button,body:not(.est-mj) .ini-x{display:none}
+
+  /* ---- Panneau de combat : la chip s'enrichit côté MJ ---- */
+  body.est-mj .initiative{width:306px;min-height:170px}
+  .ini-chip{flex-wrap:wrap}
+  .ini-pf{width:30px;height:30px;flex:0 0 auto;border-radius:5px;border:1px solid var(--bord);
+    background:var(--noir-2);object-fit:cover;display:none}
+  .ini-chip.a-pf .ini-pf{display:block}
+  .ini-haut{display:flex;align-items:center;gap:6px;width:100%;min-width:0}
+  .ini-ident{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+  .ini-pub{font-size:11px;color:var(--laiton);opacity:.85;white-space:nowrap;overflow:hidden;
+    text-overflow:ellipsis;outline:none;min-height:13px}
+  .ini-pub:empty::before{content:"nom public";opacity:.4}
+  .ini-pub:focus{background:var(--noir-2);border-radius:3px;box-shadow:0 0 0 1px var(--laiton)}
+  body:not(.est-mj) .ini-pub{font-size:13px;color:var(--parchemin-doux);opacity:1}
+  .ini-bas{display:none;align-items:center;gap:5px;width:100%;flex-wrap:wrap;
+    padding-top:4px;margin-top:2px;border-top:1px solid rgba(176,144,42,.16)}
+  body.est-mj .ini-chip.a-b .ini-bas{display:flex}
+  .ini-b{display:inline-flex;align-items:center;gap:3px}
+  .ini-b::before{content:"B";font-size:9px;letter-spacing:.04em;opacity:.55}
+  .ini-b input{width:34px;padding:1px 3px;font-size:12px;text-align:center;
+    font-variant-numeric:tabular-nums;background:var(--noir-2);border:1px solid var(--bord);
+    color:var(--parchemin);border-radius:5px;font-family:inherit}
+  .ini-b input:focus{border-color:var(--laiton);outline:none}
+  .ini-b .bmax{font-size:10px;opacity:.5;font-variant-numeric:tabular-nums}
+  .ini-b button{padding:0 5px;font-size:13px;line-height:18px;border-radius:5px;
+    border:1px solid var(--bord);background:rgba(40,32,24,.7);color:var(--parchemin-doux);cursor:pointer}
+  .ini-b button:hover{border-color:var(--laiton)}
+  .ini-chip.abattu{border-color:var(--oxblood);background:rgba(120,26,26,.22)}
+  .ini-chip.abattu .ini-b input{color:#e58e78;border-color:var(--oxblood)}
+  .ini-crit{width:100%;font-size:10px;letter-spacing:.03em;color:#e58e78;display:none;padding-top:2px}
+  .ini-chip.abattu .ini-crit{display:block}
+  .ini-crit a{color:#e58e78;text-decoration:underline dotted}
+  .ini-outils{display:inline-flex;gap:3px;margin-left:auto}
+  .ini-outils button{padding:0 5px;font-size:12px;line-height:18px;border-radius:5px;
+    border:1px solid var(--bord);background:rgba(40,32,24,.7);color:var(--parchemin-doux);cursor:pointer}
+  .ini-outils button:hover{border-color:var(--laiton)}
+  .ini-etats{display:flex;flex-wrap:wrap;gap:3px;width:100%;margin-top:3px}
+  .ini-et{display:inline-flex;align-items:center;gap:3px;padding:0 4px;border-radius:4px;
+    font-size:10px;letter-spacing:.02em;border:1px solid rgba(176,144,42,.35);
+    background:rgba(176,144,42,.14);color:var(--parchemin-doux);cursor:pointer;line-height:16px}
+  .ini-et b{color:var(--laiton);font-variant-numeric:tabular-nums}
+  .ini-et:hover{border-color:var(--laiton)}
+  .ini-et.saigne{border-color:rgba(160,48,40,.55);background:rgba(160,48,40,.2);color:#e5a08e}
+  .ini-et.saigne b{color:#e58e78}
+
+  /* ---- Menu des douze États ---- */
+  .etats-menu{position:fixed;z-index:40;width:186px;padding:5px;border-radius:9px;
+    background:rgba(18,14,10,.98);border:1px solid var(--bord);box-shadow:var(--ombre);display:none}
+  .etats-menu.on{display:block}
+  .etats-menu .em-t{font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--laiton);padding:2px 5px 5px}
+  .etats-menu button{display:flex;width:100%;align-items:center;gap:6px;padding:3px 6px;
+    font-size:12px;text-align:left;background:transparent;border:1px solid transparent;
+    border-radius:5px;color:var(--parchemin-doux);cursor:pointer;font-family:inherit}
+  .etats-menu button:hover{border-color:var(--laiton);background:rgba(176,144,42,.12)}
+  .etats-menu button .n{flex:1}
+  .etats-menu button .v{color:var(--laiton);font-variant-numeric:tabular-nums}
+  .etats-menu button.cumul .n::after{content:" ×";opacity:.4}
+
+  /* ---- Fenêtres de profil, plusieurs à la fois ---- */
+  .fen{position:fixed;z-index:34;width:340px;max-height:70vh;display:flex;flex-direction:column;
+    background:rgba(18,14,10,.97);border:1px solid var(--bord);border-radius:10px;
+    box-shadow:var(--ombre);overflow:hidden}
+  .fen-tete{display:flex;align-items:center;gap:7px;padding:5px 9px;cursor:move;
+    border-bottom:1px solid var(--bord);user-select:none;touch-action:none}
+  .fen-tete .pt{color:var(--laiton);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fen-tete .spacer{flex:1}
+  .fen-corps{flex:1;overflow:auto;padding:8px 9px 10px;font-size:12px;color:var(--parchemin-doux)}
+  .fen-role{font-size:11px;font-style:italic;opacity:.75;margin:0 0 6px}
+  .fen table{border-collapse:collapse;width:100%;margin:0 0 7px;font-size:11px}
+  .fen th{background:var(--noir-2);color:var(--laiton);font-weight:400;text-align:center;
+    font-size:9px;letter-spacing:.06em;padding:2px 3px;border:1px solid var(--bord)}
+  .fen td{border:1px solid var(--bord);padding:2px 3px;text-align:center;
+    font-variant-numeric:tabular-nums}
+  .fen .lb{display:block;font-size:9px;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--laiton);margin:7px 0 2px}
+  .fen .tr{display:inline-block;padding:0 4px;margin:0 3px 3px 0;border-radius:3px;font-size:11px;
+    border:1px solid rgba(176,144,42,.3);background:rgba(176,144,42,.12);color:var(--parchemin)}
+  .fen .trp{font-size:11px;opacity:.75;margin:0 0 4px}
+
+  /* ---- Sélecteur de créature du bestiaire ---- */
+  .dock #init-crea{max-width:190px;padding:4px 6px;font-size:13px}
+  .dock #init-nb{width:42px}
+  .dock #init-msg{min-width:0}
 
   /* ---- Calque des dés 3D (sur le plateau, sous les panneaux) ---- */
   #dice3d{position:absolute;top:44px;left:0;right:0;bottom:0;z-index:10;pointer-events:none}
@@ -521,6 +609,11 @@
   </aside>
 
 
+  <div class="etats-menu" id="etats-menu">
+    <div class="em-t">États</div>
+    <div id="etats-liste"></div>
+  </div>
+
   <audio id="amb-audio" loop preload="none"></audio>
 
   <section class="dock" id="dock">
@@ -563,10 +656,19 @@
 
     <div class="grp gm-only">
       <div class="ligne">
+        <select id="init-crea" title="Créature ou PNJ du bestiaire"><option value="">Bestiaire…</option></select>
+        <input type="number" id="init-nb" min="1" max="20" value="1" title="Combien d'exemplaires" />
+        <button id="init-crea-ajout" class="primaire" title="Ajouter au combat">+</button>
+        <button id="init-recharger" title="Relire le bestiaire">⟳</button>
+      </div>
+      <div class="ligne">
         <input type="text" id="init-add" placeholder="Gobelin 42" />
         <button id="init-ajout">+ Combattant</button>
         <button id="init-suivant" class="primaire">Tour ▶</button>
+        <button id="init-round-fin" title="Appliquer les pertes de fin de round">Fin de round</button>
+        <button id="init-annuler" title="Annuler le dernier décompte" disabled>Annuler</button>
         <button id="init-vider" title="Vider l'initiative">✕</button>
+        <span class="secret-loc" id="init-msg"></span>
       </div>
     </div>
 
@@ -604,7 +706,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, push, set, query, limitToLast, onChildAdded }
+import { getDatabase, ref, onValue, push, set, get, query, limitToLast, onChildAdded }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 // ---------- Salle (commune à Firebase ET aux caméras) ----------
@@ -1362,32 +1464,129 @@ if(refDesClear){ onValue(refDesClear, ()=> viderTableLocal()); }
 window.addEventListener("resize", zoneDes);
 initDes3D();
 
-// ---------- Initiative (bandeau synchronisé) ----------
+// ---------- Panneau de combat (initiative, Blessures, États) ----------
 let initEtat = { ordre:[], actif:null, round:0 };
 let initPremier = true;
 
+// Les douze États du livre. cumul : plusieurs exemplaires possibles.
+const ETATS = [
+  { c:"assourdi",     n:"Assourdi",     cumul:true  },
+  { c:"aterre",       n:"À Terre",      cumul:false },
+  { c:"aveugle",      n:"Aveuglé",      cumul:true  },
+  { c:"brise",        n:"Brisé",        cumul:true  },
+  { c:"empetre",      n:"Empêtré",      cumul:true  },
+  { c:"empoisonne",   n:"Empoisonné",   cumul:true,  saigne:true },
+  { c:"enflammes",    n:"En flammes",   cumul:true  },
+  { c:"extenue",      n:"Exténué",      cumul:true  },
+  { c:"hemorragique", n:"Hémorragique", cumul:true,  saigne:true },
+  { c:"inconscient",  n:"Inconscient",  cumul:false },
+  { c:"sonne",        n:"Sonné",        cumul:true  },
+  { c:"surpris",      n:"Surpris",      cumul:false }
+];
+const ETAT_PAR_CLE = {};
+ETATS.forEach(e => { ETAT_PAR_CLE[e.c] = e; });
+
 function pousserInit(){ if(refInit) set(refInit, initEtat); else rendreInit(); }
 
-function rendreInit(){
-  const liste = $("#init-liste"); if(!liste) return;
-  const roundEl = $("#init-round");
-  const list = [...(initEtat.ordre||[])].sort((a,b)=> b.init - a.init);
-  if(roundEl) roundEl.textContent = "Round " + (initEtat.round||1);
-  if(!list.length){
-    liste.innerHTML = `<div class="ini-vide">Aucun combat en cours</div>`;
-    return;
+function initCombattant(c){
+  c.av = c.av || 0;
+  c.pub = c.pub || "";
+  c.etats = (c.etats && typeof c.etats === "object") ? c.etats : {};
+  return c;
+}
+
+// ---------- Bestiaire : chargé à la demande, une seule fois ----------
+const refBestiaire = db ? ref(db, "outils/bestiaire/donnees") : null;
+let bestiaire = null, bestiaireEnCours = null;
+const portraitsVus = {};
+
+function chargerBestiaire(force){
+  if(bestiaire && !force) return Promise.resolve(bestiaire);
+  if(bestiaireEnCours && !force) return bestiaireEnCours;
+  if(!refBestiaire) return Promise.resolve([]);
+  bestiaireEnCours = get(refBestiaire).then(snap => {
+    const v = snap.val();
+    let liste = (v && v.payload && v.payload.entrees) || [];
+    if(liste && !Array.isArray(liste)) liste = Object.values(liste);
+    bestiaire = liste || [];
+    bestiaireEnCours = null;
+    return bestiaire;
+  }).catch(e => {
+    console.warn("Bestiaire indisponible :", e);
+    bestiaireEnCours = null;
+    return [];
+  });
+  return bestiaireEnCours;
+}
+
+function remplirSelecteur(){
+  const sel = $("#init-crea"); if(!sel) return;
+  const garde = sel.value;
+  const parCamp = { bds:[], eclipse:[], "":[] };
+  (bestiaire || []).forEach(e => { (parCamp[e.campagne || ""] || parCamp[""]).push(e); });
+  let h = '<option value="">Bestiaire…</option>';
+  const groupes = [["bds","De Boue et de Sang"],["eclipse","L\u2019Éclipse"],["","Sans campagne"]];
+  groupes.forEach(([cle, titre]) => {
+    const lot = parCamp[cle];
+    if(!lot || !lot.length) return;
+    lot.sort((a,b) => (a.nom||"").localeCompare(b.nom||"", "fr"));
+    h += `<optgroup label="${escape(titre)}">`;
+    lot.forEach(e => {
+      const b = (e.profil && e.profil.B) ? ` · B ${e.profil.B}` : "";
+      h += `<option value="${escape(e.id)}">${escape(e.nom)}${escape(b)}</option>`;
+    });
+    h += "</optgroup>";
+  });
+  sel.innerHTML = h;
+  if(garde) sel.value = garde;
+}
+
+function initMsg(txt){
+  const el = $("#init-msg"); if(!el) return;
+  el.textContent = txt || "";
+  if(txt) setTimeout(() => { if(el.textContent === txt) el.textContent = ""; }, 3200);
+}
+
+// ---------- Ajout ----------
+function nouvelId(){
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+}
+
+function nomLibre(base){
+  const pris = new Set((initEtat.ordre||[]).map(c => c.nom));
+  if(!pris.has(base)) return base;
+  const socle = base.replace(/\s+\d+$/, "");
+  let n = 2;
+  while(pris.has(socle + " " + n)) n++;
+  return socle + " " + n;
+}
+
+function iniAddCrea(){
+  const sel = $("#init-crea"); if(!sel || !sel.value) return;
+  const e = (bestiaire || []).find(x => x.id === sel.value);
+  if(!e){ initMsg("Créature introuvable."); return; }
+  let nb = parseInt($("#init-nb").value, 10);
+  if(!(nb > 0)) nb = 1;
+  nb = Math.min(20, nb);
+  const bmax = parseInt(e.profil && e.profil.B, 10);
+  const ordre = [...(initEtat.ordre||[])];
+  for(let i = 0; i < nb; i++){
+    ordre.push(initCombattant({
+      id: nouvelId(),
+      nom: nomLibre(e.nom || "Créature"),
+      init: 0, av: 0, pub: "",
+      bid: e.id,
+      camp: e.campagne || "",
+      pf: e.portrait || "",
+      b: isFinite(bmax) ? bmax : 0,
+      bmax: isFinite(bmax) ? bmax : 0
+    }));
+    initEtat.ordre = ordre;
   }
-  liste.innerHTML = list.map(c=>{
-    const a = (c.id===initEtat.actif) ? " actif" : "";
-    return `<div class="ini-chip${a}" data-id="${c.id}">`+
-      `<span class="ini-val">${c.init}</span>`+
-      `<span class="ini-nom">${escape(c.nom)}</span>`+
-      `<span class="ini-av"><button data-act="moins" title="Avantage -1">−</button>`+
-      `<b>${c.av||0}</b>`+
-      `<button data-act="plus" title="Avantage +1">+</button></span>`+
-      `<button class="ini-x" data-act="x" title="Retirer">×</button>`+
-    `</div>`;
-  }).join("");
+  initEtat.ordre = ordre;
+  $("#initiative").classList.remove("replie");
+  pousserInit();
+  initMsg(nb > 1 ? nb + " ajoutés." : "Ajouté.");
 }
 
 function iniAdd(){
@@ -1396,12 +1595,25 @@ function iniAdd(){
   const m = v.match(/^(.*?)[\s,]+(-?\d+)\s*$/);          // "Nom 42"
   const nom = (m ? (m[1].trim()||"Combattant") : v).slice(0,24);
   const init = m ? parseInt(m[2],10) : 0;
-  const id = Date.now().toString(36) + Math.random().toString(36).slice(2,6);
-  initEtat.ordre = [...(initEtat.ordre||[]), { id, nom, init, av:0 }];
+  initEtat.ordre = [...(initEtat.ordre||[]), initCombattant({ id: nouvelId(), nom, init, av:0 })];
   champ.value = "";
   $("#initiative").classList.remove("replie");
   pousserInit();
 }
+
+function iniDup(id){
+  const src = (initEtat.ordre||[]).find(x => x.id === id); if(!src) return;
+  const copie = initCombattant(JSON.parse(JSON.stringify(src)));
+  copie.id = nouvelId();
+  copie.nom = nomLibre(src.nom);
+  copie.etats = {};
+  if(isFinite(copie.bmax)) copie.b = copie.bmax;
+  const i = (initEtat.ordre||[]).findIndex(x => x.id === id);
+  initEtat.ordre.splice(i + 1, 0, copie);
+  pousserInit();
+}
+
+// ---------- Tour, round, décompte ----------
 function iniSuivant(){
   const list = [...(initEtat.ordre||[])].sort((a,b)=> b.init - a.init);
   if(!list.length) return;
@@ -1409,15 +1621,54 @@ function iniSuivant(){
   else {
     const i = list.findIndex(c=>c.id===initEtat.actif);
     const n = i + 1;
-    if(n >= list.length){ initEtat.round = (initEtat.round||1) + 1; initEtat.actif = list[0].id; }
+    if(n >= list.length){
+      finDeRound(true);
+      initEtat.round = (initEtat.round||1) + 1;
+      initEtat.actif = list[0].id;
+    }
     else initEtat.actif = list[n].id;
   }
   $("#initiative").classList.remove("replie");
   pousserInit();
 }
+
+// Hémorragique et Empoisonné retirent chacun 1 Blessure par état, en fin de round.
+function finDeRound(silencieux){
+  const avant = JSON.parse(JSON.stringify(initEtat.ordre||[]));
+  let total = 0, touches = 0;
+  (initEtat.ordre||[]).forEach(c => {
+    const et = c.etats || {};
+    let perte = 0;
+    ETATS.forEach(E => { if(E.saigne) perte += (et[E.c] || 0); });
+    if(!perte) return;
+    if(!isFinite(c.b)) c.b = 0;
+    c.b = Math.max(0, c.b - perte);
+    total += perte; touches++;
+  });
+  if(!total){
+    if(!silencieux) initMsg("Aucun saignement en cours.");
+    return;
+  }
+  initEtat.avant = avant;
+  const b = $("#init-annuler"); if(b) b.removeAttribute("disabled");
+  initMsg(total + " Blessure" + (total>1?"s":"") + " sur " + touches + " combattant" + (touches>1?"s":"") + ".");
+  if(!silencieux) pousserInit();
+}
+
+function annulerDecompte(){
+  if(!initEtat.avant){ initMsg("Rien à annuler."); return; }
+  initEtat.ordre = initEtat.avant;
+  delete initEtat.avant;
+  const b = $("#init-annuler"); if(b) b.setAttribute("disabled","disabled");
+  pousserInit();
+  initMsg("Décompte annulé.");
+}
+
 function iniVider(){
   initEtat = { ordre:[], actif:null, round:0 };
+  fermerToutesFenetres();
   $("#initiative").classList.add("replie");
+  const b = $("#init-annuler"); if(b) b.setAttribute("disabled","disabled");
   pousserInit();
 }
 function iniAv(id, d){
@@ -1428,25 +1679,249 @@ function iniAv(id, d){
 function iniRemove(id){
   initEtat.ordre = (initEtat.ordre||[]).filter(x=>x.id!==id);
   if(initEtat.actif===id) initEtat.actif = null;
+  fermerFenetre(id);
+  pousserInit();
+}
+function iniB(id, d){
+  const c = (initEtat.ordre||[]).find(x=>x.id===id); if(!c) return;
+  if(!isFinite(c.b)) c.b = 0;
+  c.b = Math.max(0, c.b + d);
+  pousserInit();
+}
+function iniBset(id, v){
+  const c = (initEtat.ordre||[]).find(x=>x.id===id); if(!c) return;
+  const n = parseInt(v, 10);
+  c.b = isFinite(n) ? Math.max(0, n) : 0;
+  pousserInit();
+}
+function iniEtat(id, cle, d){
+  const c = (initEtat.ordre||[]).find(x=>x.id===id); if(!c) return;
+  const E = ETAT_PAR_CLE[cle]; if(!E) return;
+  c.etats = c.etats || {};
+  const actuel = c.etats[cle] || 0;
+  let suite = actuel + d;
+  if(!E.cumul) suite = (actuel > 0 && d > 0) ? 1 : (d > 0 ? 1 : 0);
+  suite = Math.max(0, suite);
+  if(suite) c.etats[cle] = suite; else delete c.etats[cle];
   pousserInit();
 }
 
-$("#ouvrir-init").addEventListener("click", ()=>{ $("#initiative").classList.toggle("replie"); zoneDes(); });
-$("#init-ajout").addEventListener("click", iniAdd);
-$("#init-add").addEventListener("keydown", e=>{ if(e.key==="Enter") iniAdd(); });
-$("#init-suivant").addEventListener("click", iniSuivant);
-$("#init-vider").addEventListener("click", iniVider);
-$("#initiative").addEventListener("click", e=>{
-  const btn = e.target.closest("[data-act]"); if(!btn) return;
-  const chip = e.target.closest(".ini-chip"); if(!chip) return;
-  const id = chip.dataset.id, act = btn.dataset.act;
-  if(act==="plus") iniAv(id, +1);
-  else if(act==="moins") iniAv(id, -1);
-  else if(act==="x") iniRemove(id);
+// ---------- Rendu ----------
+function pastilleEtats(c){
+  const et = c.etats || {};
+  const cles = Object.keys(et).filter(k => et[k] > 0 && ETAT_PAR_CLE[k]);
+  if(!cles.length) return "";
+  cles.sort((a,b) => ETAT_PAR_CLE[a].n.localeCompare(ETAT_PAR_CLE[b].n, "fr"));
+  return `<div class="ini-etats">` + cles.map(k => {
+    const E = ETAT_PAR_CLE[k];
+    const n = et[k];
+    const cls = E.saigne ? " saigne" : "";
+    const val = E.cumul ? ` <b>${n}</b>` : "";
+    return `<span class="ini-et${cls}" data-act="etat-" data-cle="${k}" title="Retirer un ${escape(E.n)}">${escape(E.n)}${val}</span>`;
+  }).join("") + `</div>`;
+}
+
+// Le panneau ne doit jamais passer sous le dock : on mesure au lieu de deviner.
+function bornerInitiative(){
+  const panel = $("#initiative"); if(!panel) return;
+  const dock = $("#dock");
+  const haut = panel.getBoundingClientRect().top;
+  let plancher = window.innerHeight - 12;
+  if(dock && !dock.classList.contains("replie")){
+    plancher = Math.min(plancher, dock.getBoundingClientRect().top - 10);
+  }
+  panel.style.maxHeight = Math.max(170, plancher - haut) + "px";
+}
+window.addEventListener("resize", bornerInitiative);
+
+function rendreInit(){
+  const liste = $("#init-liste"); if(!liste) return;
+  const roundEl = $("#init-round");
+  const mj = estMJ();
+  const list = [...(initEtat.ordre||[])].sort((a,b)=> b.init - a.init);
+  if(roundEl) roundEl.textContent = "Round " + (initEtat.round||1);
+  const bAnn = $("#init-annuler");
+  if(bAnn){ if(initEtat.avant) bAnn.removeAttribute("disabled"); else bAnn.setAttribute("disabled","disabled"); }
+  if(!list.length){
+    liste.innerHTML = `<div class="ini-vide">Aucun combat en cours</div>`;
+    return;
+  }
+  liste.innerHTML = list.map(c=>{
+    const a = (c.id===initEtat.actif) ? " actif" : "";
+    const aPf = c.pf ? " a-pf" : "";
+    const aB = isFinite(c.bmax) && c.bmax > 0 ? " a-b" : "";
+    const abattu = (mj && aB && (c.b||0) <= 0) ? " abattu" : "";
+    const affiche = mj ? escape(c.nom) : (escape(c.pub || "") || "—");
+    let h = `<div class="ini-chip${a}${aPf}${aB}${abattu}" data-id="${c.id}">`;
+    h += `<div class="ini-haut">`;
+    h +=   `<img class="ini-pf" data-pf="${escape(c.pf||"")}" data-camp="${escape(c.camp||"")}" alt="">`;
+    h +=   mj
+      ? `<span class="ini-val" contenteditable data-act="init" title="Initiative">${c.init}</span>`
+      : `<span class="ini-val">${c.init}</span>`;
+    h +=   `<span class="ini-ident">`;
+    if(mj){
+      h +=   `<span class="ini-nom">${escape(c.nom)}</span>`;
+      h +=   `<span class="ini-pub" contenteditable data-act="pub">${escape(c.pub||"")}</span>`;
+    } else {
+      h +=   `<span class="ini-nom">${affiche}</span>`;
+    }
+    h +=   `</span>`;
+    h +=   `<span class="ini-av"><button data-act="moins" title="Avantage -1">−</button>`;
+    h +=   `<b>${c.av||0}</b>`;
+    h +=   `<button data-act="plus" title="Avantage +1">+</button></span>`;
+    h +=   `<button class="ini-x" data-act="x" title="Retirer">×</button>`;
+    h += `</div>`;
+    if(mj){
+      h += `<div class="ini-bas">`;
+      h +=   `<span class="ini-b"><button data-act="b-">−</button>`;
+      h +=   `<input type="text" inputmode="numeric" data-act="bset" value="${isFinite(c.b)?c.b:0}">`;
+      h +=   `<span class="bmax">/${isFinite(c.bmax)?c.bmax:"?"}</span>`;
+      h +=   `<button data-act="b+">+</button></span>`;
+      h +=   `<span class="ini-outils">`;
+      h +=     `<button data-act="etats" title="Poser un État">✚ État</button>`;
+      h +=     `<button data-act="profil" title="Ouvrir le profil">▤</button>`;
+      h +=     `<button data-act="dup" title="Dupliquer">⧉</button>`;
+      h +=   `</span>`;
+      h +=   `<span class="ini-crit">Prochaine touche : Blessure Critique. <a href="mj/Blessures-Maladies-et-Soins.html" target="_blank" rel="noopener">Tables</a></span>`;
+      h += `</div>`;
+      h += pastilleEtats(c);
+    }
+    h += `</div>`;
+    return h;
+  }).join("");
+  chargerPortraitsInit();
+  bornerInitiative();
+}
+
+// ---------- Portraits des combattants ----------
+function chargerPortraitsInit(){
+  document.querySelectorAll(".ini-pf[data-pf]").forEach(img => {
+    const pf = img.getAttribute("data-pf");
+    if(!pf){ img.removeAttribute("data-pf"); return; }
+    const camp = img.getAttribute("data-camp") || "bds";
+    const cle = camp + "/" + pf;
+    if(portraitsVus[cle]){ img.src = portraitsVus[cle]; return; }
+    if(!db) return;
+    get(ref(db, `scenarios/${camp}/portraits/${pf}`)).then(snap => {
+      const v = snap.val(); if(!v) return;
+      const url = (typeof v === "string") ? v : (v.data || v.url || "");
+      if(!url) return;
+      portraitsVus[cle] = url;
+      document.querySelectorAll(`.ini-pf[data-pf="${pf}"]`).forEach(el => { el.src = url; });
+    }).catch(e => console.warn("Portrait indisponible :", e));
+  });
+}
+
+// ---------- Menu des États ----------
+let etatsCible = null;
+function ouvrirMenuEtats(id, ancre){
+  const c = (initEtat.ordre||[]).find(x=>x.id===id); if(!c) return;
+  etatsCible = id;
+  const menu = $("#etats-menu"), corps = $("#etats-liste");
+  corps.innerHTML = ETATS.map(E => {
+    const n = (c.etats && c.etats[E.c]) || 0;
+    return `<button data-cle="${E.c}"${E.cumul ? ' class="cumul"' : ""}>` +
+           `<span class="n">${escape(E.n)}</span>` +
+           `<span class="v">${n ? n : ""}</span></button>`;
+  }).join("");
+  menu.classList.add("on");
+  const r = ancre.getBoundingClientRect();
+  const h = menu.offsetHeight, w = menu.offsetWidth;
+  let x = r.left, y = r.bottom + 4;
+  if(y + h > window.innerHeight - 8) y = Math.max(8, r.top - h - 4);
+  if(x + w > window.innerWidth - 8) x = Math.max(8, window.innerWidth - w - 8);
+  menu.style.left = x + "px";
+  menu.style.top = y + "px";
+}
+function fermerMenuEtats(){
+  const menu = $("#etats-menu"); if(menu) menu.classList.remove("on");
+  etatsCible = null;
+}
+$("#etats-menu").addEventListener("click", e => {
+  const b = e.target.closest("button[data-cle]"); if(!b || !etatsCible) return;
+  iniEtat(etatsCible, b.getAttribute("data-cle"), +1);
+  const id = etatsCible;
+  const c = (initEtat.ordre||[]).find(x=>x.id===id);
+  if(c){
+    const cle = b.getAttribute("data-cle");
+    const v = (c.etats && c.etats[cle]) || 0;
+    const cible = b.querySelector(".v");
+    if(cible) cible.textContent = v ? v : "";
+  }
 });
-$("#fermer-init").addEventListener("click", ()=> $("#initiative").classList.add("replie"));
-(function(){
-  const panel = $("#initiative"), poignee = $("#init-drag");
+document.addEventListener("pointerdown", e => {
+  const menu = $("#etats-menu");
+  if(!menu || !menu.classList.contains("on")) return;
+  if(e.target.closest("#etats-menu")) return;
+  if(e.target.closest('[data-act="etats"]')) return;
+  fermerMenuEtats();
+});
+
+// ---------- Fenêtres de profil ----------
+const fenetres = {};
+function fermerFenetre(id){
+  const f = fenetres[id];
+  if(f){ f.remove(); delete fenetres[id]; }
+}
+function fermerToutesFenetres(){
+  Object.keys(fenetres).forEach(fermerFenetre);
+}
+function rendreProfil(c, e){
+  const CAR = ["M","CC","CT","F","E","I","Ag","Dex","Int","FM","Soc","B"];
+  let h = "";
+  if(!e){
+    h += `<p class="fen-role">Aucune fiche de bestiaire liée à ce combattant.</p>`;
+    return h;
+  }
+  if(e.role) h += `<p class="fen-role">${escape(e.role)}</p>`;
+  h += `<table><thead><tr>` + CAR.map(k => `<th>${k}</th>`).join("") + `<th>PA</th></tr></thead>`;
+  h += `<tbody><tr>` + CAR.map(k => `<td>${escape((e.profil && e.profil[k]) || "—")}</td>`).join("");
+  h += `<td>${escape(e.pa || "—")}</td></tr></tbody></table>`;
+  if(e.armes){ h += `<span class="lb">Armes et armure</span><div>${escape(e.armes)}</div>`; }
+  if(e.competences){ h += `<span class="lb">Compétences</span><div>${escape(e.competences)}</div>`; }
+  const traits = Array.isArray(e.traits) ? e.traits : (e.traits ? Object.values(e.traits) : []);
+  if(traits.length){
+    h += `<span class="lb">Traits</span><div>`;
+    traits.forEach(t => {
+      const nom = (t && t.nom) || String(t || "");
+      h += `<span class="tr">${escape(nom)}</span>`;
+    });
+    h += `</div>`;
+    traits.forEach(t => {
+      if(t && t.precision) h += `<div class="trp"><b>${escape(t.nom)}.</b> ${escape(t.precision)}</div>`;
+    });
+  }
+  if(e.notes){ h += `<span class="lb">Notes de MJ</span><div class="trp">${escape(e.notes)}</div>`; }
+  h += `<span class="lb">Renvois</span><div class="trp">` +
+       `<a href="mj/Traits-de-Creature.html" target="_blank" rel="noopener">Traits de Créature</a> · ` +
+       `<a href="mj/Etats-et-Reserves.html" target="_blank" rel="noopener">États</a> · ` +
+       `<a href="mj/Blessures-Maladies-et-Soins.html" target="_blank" rel="noopener">Blessures et critiques</a></div>`;
+  return h;
+}
+function ouvrirProfil(id){
+  const c = (initEtat.ordre||[]).find(x=>x.id===id); if(!c) return;
+  if(fenetres[id]){ fenetres[id].remove(); delete fenetres[id]; return; }
+  const f = document.createElement("aside");
+  f.className = "fen";
+  const n = Object.keys(fenetres).length;
+  f.style.left = Math.min(window.innerWidth - 356, 340 + n * 26) + "px";
+  f.style.top  = Math.min(window.innerHeight - 200, 96 + n * 26) + "px";
+  f.innerHTML = `<div class="fen-tete"><span class="pt">${escape(c.nom)}</span>` +
+                `<span class="spacer"></span>` +
+                `<button class="mini" data-fermer="1" title="Fermer">×</button></div>` +
+                `<div class="fen-corps">Lecture du bestiaire…</div>`;
+  document.body.appendChild(f);
+  fenetres[id] = f;
+  f.querySelector("[data-fermer]").addEventListener("click", () => fermerFenetre(id));
+  rendreDeplacable(f, f.querySelector(".fen-tete"));
+  chargerBestiaire().then(liste => {
+    const e = (liste||[]).find(x => x.id === c.bid);
+    const corps = f.querySelector(".fen-corps");
+    if(corps) corps.innerHTML = rendreProfil(c, e);
+  });
+}
+
+function rendreDeplacable(panel, poignee){
   if(!panel || !poignee) return;
   let actif=false, dx=0, dy=0;
   poignee.addEventListener("pointerdown", e=>{
@@ -1464,13 +1939,89 @@ $("#fermer-init").addEventListener("click", ()=> $("#initiative").classList.add(
   const fin=()=>{ actif=false; };
   poignee.addEventListener("pointerup", fin);
   poignee.addEventListener("pointercancel", fin);
-})();
+}
+
+// ---------- Branchements ----------
+$("#ouvrir-init").addEventListener("click", ()=>{
+  $("#initiative").classList.toggle("replie"); zoneDes(); bornerInitiative();
+});
+$("#init-ajout").addEventListener("click", iniAdd);
+$("#init-add").addEventListener("keydown", e=>{ if(e.key==="Enter") iniAdd(); });
+$("#init-suivant").addEventListener("click", iniSuivant);
+$("#init-vider").addEventListener("click", iniVider);
+$("#init-crea-ajout").addEventListener("click", iniAddCrea);
+$("#init-crea").addEventListener("keydown", e=>{ if(e.key==="Enter") iniAddCrea(); });
+$("#init-round-fin").addEventListener("click", ()=> finDeRound(false));
+$("#init-annuler").addEventListener("click", annulerDecompte);
+$("#init-recharger").addEventListener("click", ()=>{
+  initMsg("Lecture du bestiaire…");
+  chargerBestiaire(true).then(l => {
+    remplirSelecteur();
+    initMsg((l||[]).length + " entrées.");
+  });
+});
+$("#init-crea").addEventListener("pointerdown", function(){
+  if(bestiaire) return;
+  chargerBestiaire().then(remplirSelecteur);
+}, { once:false });
+
+$("#initiative").addEventListener("click", e=>{
+  const btn = e.target.closest("[data-act]"); if(!btn) return;
+  const chip = e.target.closest(".ini-chip"); if(!chip) return;
+  const id = chip.dataset.id, act = btn.dataset.act;
+  if(act==="init" || act==="pub" || act==="bset") return;
+  if(act==="plus") iniAv(id, +1);
+  else if(act==="moins") iniAv(id, -1);
+  else if(act==="x") iniRemove(id);
+  else if(act==="b+") iniB(id, +1);
+  else if(act==="b-") iniB(id, -1);
+  else if(act==="dup") iniDup(id);
+  else if(act==="profil") ouvrirProfil(id);
+  else if(act==="etats") ouvrirMenuEtats(id, btn);
+  else if(act==="etat-") iniEtat(id, btn.getAttribute("data-cle"), -1);
+});
+$("#initiative").addEventListener("change", e=>{
+  const champ = e.target.closest('[data-act="bset"]'); if(!champ) return;
+  const chip = e.target.closest(".ini-chip"); if(!chip) return;
+  iniBset(chip.dataset.id, champ.value);
+});
+$("#initiative").addEventListener("keydown", e=>{
+  if(e.key !== "Enter") return;
+  const el = e.target;
+  if(el.matches && el.matches('[data-act="bset"]')){ e.preventDefault(); el.blur(); }
+  if(el.matches && el.matches('[data-act="pub"]')){ e.preventDefault(); el.blur(); }
+  if(el.matches && el.matches('[data-act="init"]')){ e.preventDefault(); el.blur(); }
+});
+$("#initiative").addEventListener("focusout", e=>{
+  const el = e.target;
+  if(!el.matches) return;
+  const chip = el.closest(".ini-chip"); if(!chip) return;
+  const c = (initEtat.ordre||[]).find(x=>x.id===chip.dataset.id); if(!c) return;
+  if(el.matches('[data-act="pub"]')){
+    const v = (el.textContent||"").trim().slice(0,32);
+    if(v === (c.pub||"")) return;
+    c.pub = v;
+    pousserInit();
+    return;
+  }
+  if(el.matches('[data-act="init"]')){
+    const n = parseInt((el.textContent||"").replace(/[^\d-]/g, ""), 10);
+    const v = isFinite(n) ? n : 0;
+    if(v === (c.init||0)){ el.textContent = c.init||0; return; }
+    c.init = v;
+    pousserInit();
+  }
+});
+$("#fermer-init").addEventListener("click", ()=> $("#initiative").classList.add("replie"));
+rendreDeplacable($("#initiative"), $("#init-drag"));
 
 if(refInit){
   onValue(refInit, snap=>{
     initEtat = snap.val() || { ordre:[], actif:null, round:0 };
     if(initEtat.ordre && !Array.isArray(initEtat.ordre)) initEtat.ordre = Object.values(initEtat.ordre);
     if(!initEtat.ordre) initEtat.ordre = [];
+    initEtat.ordre.forEach(initCombattant);
+    if(initEtat.avant && !Array.isArray(initEtat.avant)) initEtat.avant = Object.values(initEtat.avant);
     rendreInit();
     if(initPremier){
       initPremier = false;
@@ -1494,7 +2045,9 @@ $("#mj").addEventListener("change", e=>{
   }
   document.body.classList.toggle("est-mj", e.target.checked);
   lsSet("wh_mj", e.target.checked ? "1" : "0");
-  majPoignee(); zoneDes();
+  if(!e.target.checked) fermerToutesFenetres();
+  rendreInit();
+  majPoignee(); zoneDes(); bornerInitiative();
 });
 
 // ---------- Caméras (Daily, encastrées dans la page) ----------
@@ -1700,7 +2253,7 @@ $("#basculer-entete").addEventListener("click", ()=>{
 });
 window.addEventListener("resize", majEntete);
 setTimeout(majEntete, 0);
-$("#basculer-dock").addEventListener("click", ()=>{ $("#dock").classList.toggle("replie"); majPoignee(); zoneDes(); });
+$("#basculer-dock").addEventListener("click", ()=>{ $("#dock").classList.toggle("replie"); majPoignee(); zoneDes(); bornerInitiative(); });
 window.addEventListener("resize", majPoignee);
 setTimeout(majPoignee, 0);
 
