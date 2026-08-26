@@ -755,8 +755,9 @@
         <button id="init-recharger" title="Relire le bestiaire">⟳</button>
       </div>
       <div class="ligne">
-        <input type="text" id="init-add" placeholder="Gobelin 42" />
+        <input type="text" id="init-add" placeholder="Nom de PJ 42" title="Ajouter un personnage joueur : son nom puis son initiative" />
         <button id="init-ajout">+ Combattant</button>
+        <button id="init-jets" title="Lancer l'initiative des créatures : 1d10 + Initiative, un jet par groupe">⚄ Init.</button>
         <button id="init-suivant" class="primaire">Tour ▶</button>
         <button id="init-round-fin" title="Appliquer les pertes de fin de round">Fin de round</button>
         <button id="init-annuler" title="Annuler le dernier décompte" disabled>Annuler</button>
@@ -1844,6 +1845,20 @@ const ETATS = [
 const ETAT_PAR_CLE = {};
 ETATS.forEach(e => { ETAT_PAR_CLE[e.c] = e; });
 
+// L'ordre de jeu : total décroissant. À égalité, l'Agilité la plus haute
+// départage, comme convenu à la table ; à défaut, l'ordre d'arrivée.
+function ordreDeJeu(){
+  const brut = [...(initEtat.ordre||[])];
+  return brut.map((c, i) => ({ c, i })).sort((x, y) => {
+    const d = (y.c.init||0) - (x.c.init||0);
+    if(d) return d;
+    const ax = parseInt(x.c.carAg, 10) || 0;
+    const ay = parseInt(y.c.carAg, 10) || 0;
+    if(ay !== ax) return ay - ax;
+    return x.i - y.i;
+  }).map(o => o.c);
+}
+
 function pousserInit(){ if(refInit) set(refInit, initEtat); else rendreInit(); }
 
 function initCombattant(c){
@@ -2029,6 +2044,8 @@ function iniAddCrea(){
       bid: e.id,
       camp: e.campagne || "",
       pf: e.portrait || "",
+      carI: parseInt(e.profil && e.profil.I, 10) || 0,
+      carAg: parseInt(e.profil && e.profil.Ag, 10) || 0,
       b: isFinite(bmax) ? bmax : 0,
       bmax: isFinite(bmax) ? bmax : 0
     }));
@@ -2038,6 +2055,33 @@ function iniAddCrea(){
   $("#initiative").classList.remove("replie");
   pousserInit();
   initMsg(nb > 1 ? nb + " ajoutés." : "Ajouté.");
+}
+
+// Initiative de la table : 1d10 + valeur d'Initiative complète, ordre fixé
+// pour tout le combat. Les créatures identiques partagent un même jet, ce qui
+// évite sept dés pour sept gobelins et leur donne un rendu de meute.
+// Les personnages joueurs annoncent le leur : on ne touche pas à leur ligne.
+function iniJets(){
+  const ordre = initEtat.ordre || [];
+  const cibles = ordre.filter(c => c.bid);
+  if(!cibles.length){
+    initMsg("Aucune créature du bestiaire à lancer.");
+    return;
+  }
+  const des = {};
+  let groupes = 0;
+  cibles.forEach(c => {
+    if(des[c.bid] === undefined){
+      des[c.bid] = Math.floor(Math.random() * 10) + 1;
+      groupes++;
+    }
+    c.init = (parseInt(c.carI, 10) || 0) + des[c.bid];
+  });
+  pousserInit();
+  const pjs = ordre.length - cibles.length;
+  initMsg(groupes + (groupes > 1 ? " jets" : " jet") + " pour " + cibles.length +
+          " créature" + (cibles.length > 1 ? "s" : "") +
+          (pjs ? ", " + pjs + " PJ à saisir." : "."));
 }
 
 function iniAdd(){
@@ -2066,7 +2110,7 @@ function iniDup(id){
 
 // ---------- Tour, round, décompte ----------
 function iniSuivant(){
-  const list = [...(initEtat.ordre||[])].sort((a,b)=> b.init - a.init);
+  const list = ordreDeJeu();
   if(!list.length) return;
   if(!initEtat.actif){ initEtat.actif = list[0].id; initEtat.round = 1; }
   else {
@@ -2189,7 +2233,7 @@ function rendreInit(){
   const liste = $("#init-liste"); if(!liste) return;
   const roundEl = $("#init-round");
   const mj = estMJ();
-  const list = [...(initEtat.ordre||[])].sort((a,b)=> b.init - a.init);
+  const list = ordreDeJeu();
   if(roundEl) roundEl.textContent = "Round " + (initEtat.round||1);
   const bAnn = $("#init-annuler");
   if(bAnn){ if(initEtat.avant) bAnn.removeAttribute("disabled"); else bAnn.setAttribute("disabled","disabled"); }
@@ -2398,6 +2442,7 @@ $("#ouvrir-init").addEventListener("click", ()=>{
 });
 $("#init-ajout").addEventListener("click", iniAdd);
 $("#init-add").addEventListener("keydown", e=>{ if(e.key==="Enter") iniAdd(); });
+$("#init-jets").addEventListener("click", iniJets);
 $("#init-suivant").addEventListener("click", iniSuivant);
 $("#init-vider").addEventListener("click", iniVider);
 $("#init-crea-ajout").addEventListener("click", iniAddCrea);
