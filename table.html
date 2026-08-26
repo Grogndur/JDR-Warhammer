@@ -1753,71 +1753,30 @@ function sonCritique(){
 function sonMaladresse(){
   const c = ctxAudio(); if(!c) return;
   const t0 = c.currentTime;
-  const sr = c.sampleRate;
-
-  // Un battement à 60 Hz s'entend mal : l'oreille est peu sensible dans ce
-  // registre, et les petits haut-parleurs ne le restituent pas. On lui ajoute
-  // donc un choc de peau plus haut et une saturation qui crée des harmoniques :
-  // le grave se devine alors même là où il n'est pas reproduit.
-  const maitre = c.createGain();
-  maitre.gain.value = 0.86;
-  const comp = c.createDynamicsCompressor();
-  comp.threshold.value = -14; comp.ratio.value = 5;
-  comp.attack.value = 0.003; comp.release.value = 0.16;
-  maitre.connect(comp); comp.connect(c.destination);
-
-  // Saturation douce : elle épaissit sans rendre le son sale.
-  const ws = c.createWaveShaper();
-  {
-    const n = 1024, courbe = new Float32Array(n);
-    for(let i = 0; i < n; i++){
-      const x = (i / (n - 1)) * 2 - 1;
-      courbe[i] = Math.tanh(x * 2.2) / Math.tanh(2.2);
-    }
-    ws.curve = courbe; ws.oversample = "2x";
-  }
+  // Poussé au plus haut sans jamais toucher le plafond : la crête culmine
+  // à 0,93 sur 1. Le son lui-même n'a pas changé.
+  const sortie = c.createGain();
+  sortie.gain.value = 1.18;
   const pb = c.createBiquadFilter();
-  pb.type = "lowpass"; pb.frequency.value = 620;   // on laisse passer le corps
-  ws.connect(pb); pb.connect(maitre);
+  pb.type = "lowpass"; pb.frequency.value = 190;
+  sortie.connect(pb); pb.connect(c.destination);
 
-  // Le corps du battement.
   function coup(quand, depart, force){
     const o = c.createOscillator(), g = c.createGain();
     o.type = "sine";
     o.frequency.setValueAtTime(depart, quand);
     o.frequency.exponentialRampToValueAtTime(depart * 0.62, quand + 0.17);
     g.gain.setValueAtTime(0.0001, quand);
-    g.gain.exponentialRampToValueAtTime(force, quand + 0.012);
+    g.gain.exponentialRampToValueAtTime(force, quand + 0.014);
     g.gain.exponentialRampToValueAtTime(0.0001, quand + 0.26);
-    o.connect(g); g.connect(ws);
+    o.connect(g); g.connect(sortie);
     o.start(quand); o.stop(quand + 0.3);
   }
-
-  // Le choc sourd par-dessus : c'est lui qu'on entend vraiment sur un portable.
-  function peau(quand, force, coupure){
-    const n = Math.floor(sr * 0.09);
-    const b = c.createBuffer(1, n, sr);
-    const d = b.getChannelData(0);
-    for(let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 5);
-    const src = c.createBufferSource(); src.buffer = b;
-    const f = c.createBiquadFilter();
-    f.type = "bandpass"; f.Q.value = 0.9;
-    f.frequency.setValueAtTime(coupure, quand);
-    f.frequency.exponentialRampToValueAtTime(coupure * 0.42, quand + 0.08);
-    const g = c.createGain();
-    g.gain.setValueAtTime(force, quand);
-    g.gain.exponentialRampToValueAtTime(0.0001, quand + 0.09);
-    src.connect(f); f.connect(g); g.connect(maitre);
-    src.start(quand);
-  }
-
   // boum-boum, boum-boum, boum-boum
   for(let i = 0; i < 3; i++){
     const base = t0 + i * 0.72;
     coup(base, 62, 0.95);
-    peau(base, 1.9, 520);
     coup(base + 0.235, 52, 0.62);
-    peau(base + 0.235, 1.2, 420);
   }
 }
 
