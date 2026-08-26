@@ -278,7 +278,7 @@
     '@media print{.w{overflow:visible}}'
   ].join('\n');
 
-  function corpsShadow(e){
+  function corpsShadow(e, sansNotes){
     var p = e.profil || {};
     var h = '<style>' + CSS_SHADOW + '</style><div class="b">';
     h += '<div class="w"><table><tbody><tr><th>Profil</th>';
@@ -299,7 +299,7 @@
       }
       h += '</p>';
     }
-    if(e.notes) h += '<span class="l">En jeu</span><p class="n">' + ech(e.notes) + '</p>';
+    if(e.notes && !sansNotes) h += '<span class="l">En jeu</span><p class="n">' + ech(e.notes) + '</p>';
     h += '</div>';
     return h;
   }
@@ -317,7 +317,7 @@
 
     var e = (cacheBestiaire || []).filter(function(x){ return x.id === bid; })[0];
     if(e){
-      racine.innerHTML = corpsShadow(e);
+      racine.innerHTML = corpsShadow(e, notesDejaVues(bloc, e));
       hote.__bid = bid;
       // Le nom et le rôle en clair suivent l'entrée du bestiaire.
       var n = bloc.querySelector('.stat-name'), r = bloc.querySelector('.stat-kind');
@@ -333,6 +333,22 @@
       racine.innerHTML = '<style>' + CSS_SHADOW + '</style>' +
         '<div class="err">Lecture du bestiaire…</div>';
     }
+  }
+
+  // Vrai si un appel précédent du même groupe porte déjà ces notes.
+  function notesDejaVues(bloc, e){
+    if(!e.notes) return false;
+    var lot = bloc.closest ? bloc.closest('.stat-lot') : null;
+    if(!lot) return false;
+    var freres = lot.querySelectorAll('.stat-ref');
+    for(var i = 0; i < freres.length; i++){
+      if(freres[i] === bloc) return false;
+      var autre = (cacheBestiaire || []).filter(function(x){
+        return x.id === freres[i].getAttribute('data-bid');
+      })[0];
+      if(autre && autre.notes === e.notes) return true;
+    }
+    return false;
   }
 
   function peindreRefs(){
@@ -419,6 +435,11 @@
       '  border:1px solid rgba(169,113,59,0.55);color:#d19f6a;padding:0.12rem 0.45rem;border-radius:2px;',
       '  cursor:pointer;font-family:"Cinzel",serif;font-size:0.62rem;letter-spacing:0.08em;',
       '  text-transform:uppercase;display:none;box-shadow:0 2px 10px rgba(0,0,0,0.6)}',
+      '.stat-lot{border-left:2px solid rgba(169,113,59,0.35);padding-left:0.6rem;margin:1rem 0}',
+      '.stat-lot .stat-ref{margin:0 0 0.5rem}',
+      '.stat-lot .stat-ref:last-child{margin-bottom:0}',
+      '.sl-titre{font-family:"Cinzel",serif;font-size:0.8rem;letter-spacing:0.05em;',
+      '  color:var(--CUI-light,#d19a5e);margin:0 0 0.4rem;opacity:0.85}',
       '.stat-ref{border:1px solid rgba(169,113,59,0.42);border-left:3px solid var(--CUI,#A9713B);',
       '  border-radius:2px;background:rgba(169,113,59,0.05);margin:1rem 0;overflow:hidden}',
       '.stat-ref > .stat-head{background:rgba(169,113,59,0.2);padding:0.45rem 0.9rem;display:flex;',
@@ -582,8 +603,8 @@
       var h = '<h3>Envoyer au bestiaire</h3>';
       if(multi){
         h += '<p>Ce bloc porte ' + lu.profils.length + ' lignes de profil. Chacune devient une ' +
-             'entrée distincte, avec les armes, compétences et traits du bloc. Le bloc du ' +
-             'scénario reste tel quel : une référence ne pointe que vers une entrée.</p>';
+             'entrée distincte, avec les armes, compétences et traits du bloc. Converti, le bloc ' +
+             'se découpe en ' + lu.profils.length + ' appels groupés sous son titre actuel.</p>';
       } else {
         h += '<p>Le profil part au bestiaire. Le bloc du scénario peut ensuite devenir un simple ' +
              'appel : tu corriges la créature au bestiaire, la scène suit.</p>';
@@ -626,11 +647,9 @@
 
       h += '<div class="bp-act"><span class="sp"></span>' +
            '<button class="bp-btn" data-bp="fermer">Annuler</button>' +
-           '<button class="bp-btn" data-bp="verser-ok">Enregistrer seulement</button>';
-      if(!multi){
-        h += '<button class="bp-btn pri" data-bp="verser-ref">Enregistrer et convertir</button>';
-      }
-      h += '</div>';
+           '<button class="bp-btn" data-bp="verser-ok">Enregistrer seulement</button>' +
+           '<button class="bp-btn pri" data-bp="verser-ref">Enregistrer et convertir</button>' +
+           '</div>';
 
       var boite = ouvrir(h);
       boite.setAttribute('data-multi', multi ? '1' : '0');
@@ -706,6 +725,8 @@
     var res;
     try{ res = entreesDepuisCible(); }
     catch(err){ signal('Lecture du bloc impossible.', true); return; }
+    var decoupe = cible.lu.profils.length > 1;
+    var titreOrigine = cible.lu.nom;
 
     var boutons = document.querySelectorAll('[data-bp="verser-ok"],[data-bp="verser-ref"]');
     for(var b = 0; b < boutons.length; b++) boutons[b].setAttribute('disabled', 'disabled');
@@ -716,7 +737,10 @@
     ecrireLot(res.lot).then(function(remplaces){
       fermer();
       var n = res.lot.length;
-      if(convertir && carte && vise){
+      if(convertir && carte && decoupe && n > 1){
+        convertirEnRefs(carte, res.lot, titreOrigine);
+        signal('Bloc découpé en ' + n + ' appels vers le bestiaire.');
+      } else if(convertir && carte && vise){
         convertirEnRef(carte, vise);
         signal('« ' + vise.nom + ' » : le bloc appelle désormais le bestiaire.');
       } else if(!n){
@@ -735,13 +759,29 @@
 
   /* ---------- conversion d'un bloc figé en référence ---------- */
   function convertirEnRef(carte, e){
-    if(!carte || !carte.parentNode) return;
+    convertirEnRefs(carte, [e], '');
+  }
+
+  // Un bloc peut décrire plusieurs créatures dans une seule table : il devient
+  // alors autant d'appels, groupés sous le titre du bloc d'origine pour que la
+  // scène garde son intitulé et que la recherche du scénario le retrouve.
+  function convertirEnRefs(carte, entrees, nomOrigine){
+    if(!carte || !carte.parentNode || !entrees || !entrees.length) return;
     var section = carte.closest('.section-panel');
+    var html = '';
+    if(entrees.length > 1){
+      html += '<div class="stat-lot">';
+      if(nomOrigine) html += '<div class="sl-titre">' + ech(nomOrigine) + '</div>';
+    }
+    for(var i = 0; i < entrees.length; i++) html += refDepuisEntree(entrees[i]);
+    if(entrees.length > 1) html += '</div>';
+
     var boite = document.createElement('div');
-    boite.innerHTML = refDepuisEntree(e);
+    boite.innerHTML = html;
     var neuf = boite.firstChild;
     carte.parentNode.replaceChild(neuf, carte);
-    peindreRef(neuf);
+    var refs = neuf.classList.contains('stat-ref') ? [neuf] : neuf.querySelectorAll('.stat-ref');
+    for(var j = 0; j < refs.length; j++) peindreRef(refs[j]);
     if(section) marquer(section);
     else marquer(neuf);
     carteSurvolee = null;
@@ -810,6 +850,9 @@
       var idem = lotBlocs.filter(function(x){ return x.etat === 'identique'; }).length;
       var ecart = lotBlocs.filter(function(x){ return x.etat === 'ecart' && !x.multi; }).length;
       var multi = lotBlocs.filter(function(x){ return x.multi; }).length;
+      var profilsMulti = lotBlocs.reduce(function(n, x){
+        return n + (x.multi ? x.lu.profils.length : 0);
+      }, 0);
 
       var h = '<h3>Convertir en appels</h3>';
       h += '<p>' + lotBlocs.length + ' blocs figés dans « ' + ech(titrePartie(sec)) + ' ». ' +
@@ -820,7 +863,8 @@
       if(idem) h += '<span class="bp-d"><i>' + idem + '</i> déjà identiques</span>';
       if(neufs) h += '<span class="bp-d"><i>' + neufs + '</i> absents du bestiaire</span>';
       if(ecart) h += '<span class="bp-d"><i>' + ecart + '</i> divergents</span>';
-      if(multi) h += '<span class="bp-d"><i>' + multi + '</i> à profils multiples</span>';
+      if(multi) h += '<span class="bp-d"><i>' + multi + '</i> à découper en ' +
+                     profilsMulti + ' appels</span>';
       h += '</div>';
       if(ecart){
         h += '<label class="bp-choix"><input type="radio" name="bp-lot-mode" value="garder" checked>' +
@@ -849,9 +893,9 @@
     var h = '';
     for(var i = 0; i < lotBlocs.length; i++){
       var x = lotBlocs[i];
-      var coche = (x.etat !== 'ecart') && !x.multi;
+      var coche = (x.etat !== 'ecart');
       var mot, cls;
-      if(x.multi){ mot = 'profils multiples'; cls = ' bp-gris'; }
+      if(x.multi){ mot = x.lu.profils.length + ' profils'; cls = ''; }
       else if(x.etat === 'identique'){ mot = 'identique'; cls = ''; }
       else if(x.etat === 'neuf'){ mot = 'à créer'; cls = ''; }
       else {
@@ -859,8 +903,7 @@
         cls = ' bp-alerte';
       }
       h += '<label class="impl' + cls + '">' +
-           '<input type="checkbox" data-i="' + i + '"' + (coche ? ' checked' : '') +
-           (x.multi ? ' disabled' : '') + '>' +
+           '<input type="checkbox" data-i="' + i + '"' + (coche ? ' checked' : '') + '>' +
            '<span class="n">' + ech(x.lu.nom) + '</span>' +
            '<span class="r">' + ech(x.lu.role || '') + '</span>' +
            '<span class="e">' + mot + '</span></label>';
@@ -887,6 +930,21 @@
 
     choisis.forEach(function(x){
       chaine = chaine.then(function(){
+        // Un bloc à plusieurs profils devient une entrée par ligne, puis autant
+        // d'appels groupés sous son titre.
+        if(x.multi){
+          var lot = entreesMultiples(x.lu);
+          var sous = Promise.resolve();
+          lot.forEach(function(e){
+            sous = sous.then(function(){
+              return ecrireBestiaire(e).then(function(r){ if(r) ecrases++; else crees++; });
+            });
+          });
+          return sous.then(function(){
+            convertirEnRefs(x.carte, lot, x.lu.nom);
+            faits++;
+          });
+        }
         // Rien à écrire : l'entrée existe et on la garde telle quelle.
         if(x.jumeau && (x.etat === 'identique' || mode === 'garder')){
           convertirEnRef(x.carte, x.jumeau);
@@ -913,6 +971,35 @@
       if(bouton){ bouton.removeAttribute('disabled'); bouton.textContent = 'Convertir'; }
       signal('Conversion interrompue : ' + err.message, true);
     });
+  }
+
+  // Les entrées d'un bloc qui porte plusieurs lignes de profil. Chacune reprend
+  // les armes, compétences et traits du bloc, et garde la trace de son origine.
+  function entreesMultiples(lu){
+    var pris = (cacheBestiaire || []).map(function(x){ return x.id; });
+    var lot = [];
+    for(var i = 0; i < lu.profils.length; i++){
+      var nom = (lu.profils[i].nom || '').trim() || (lu.nom + ' ' + (i + 1));
+      var e = {
+        id: identifiant(nom, pris),
+        nom: nom,
+        role: lu.role,
+        campagne: lu.campagne,
+        portrait: (lu.nom.toLowerCase().indexOf(nom.toLowerCase()) >= 0) ? lu.portrait : '',
+        pa: lu.pa, armes: lu.armes, competences: lu.competences,
+        traits: lu.traits,
+        notes: ("Bloc d'origine : " + lu.nom + '.' + (lu.notes ? '\n\n' + lu.notes : '')),
+        source: 'scenario',
+        profil: {}
+      };
+      pris.push(e.id);
+      for(var c = 0; c < CARACS.length; c++){
+        var v = lu.profils[i].carac[CARACS[c]] || '';
+        e.profil[CARACS[c]] = (v === '—') ? '' : v;
+      }
+      lot.push(e);
+    }
+    return lot;
   }
 
   // Une entrée de bestiaire depuis un bloc à profil unique.
