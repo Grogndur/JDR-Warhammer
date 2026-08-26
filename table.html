@@ -372,9 +372,9 @@
          Il reste de la place pour un quatrième groupe le jour venu. ---- */
   .dock{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
     align-items:stretch;gap:10px;padding:7px 20px}
-  .dock > .grp:nth-of-type(1){justify-self:start}
-  .dock > .grp:nth-of-type(2){justify-self:center}
-  .dock > .grp:nth-of-type(3){justify-self:end}
+  .dock > .grp-scene {order:1; justify-self:start}
+  .dock > .grp-des   {order:2; justify-self:center}
+  .dock > .grp-combat{order:3; justify-self:end}
   /* Vue joueur : les groupes du MJ disparaissent, le seul qui reste se centre. */
   body:not(.est-mj) .dock{display:flex;justify-content:center;gap:10px}
   /* Trop étroit pour trois colonnes : on revient à un simple enchaînement. */
@@ -399,6 +399,8 @@
   @media(max-width:1500px){ header .titre{display:none} }
   @media(max-width:1700px){
     .dock .prefixe-img{display:none}
+    .dock #init-msg{max-width:104px}
+    .dock #init-crea{max-width:168px}
     .dock #amb-vol{width:52px}
     .dock #img-choix,.dock #amb-choix{max-width:112px}
   }
@@ -815,7 +817,7 @@
 
   <section class="dock" id="dock">
 
-    <div class="grp">
+    <div class="grp grp-des">
       <div class="ligne">
         <label for="cible">Test</label>
         <input type="number" id="cible" min="1" max="100" placeholder="—" />
@@ -840,7 +842,7 @@
       </div>
     </div>
 
-    <div class="grp gm-only">
+    <div class="grp gm-only grp-combat">
       <div class="ligne">
         <button type="button" id="init-crea" title="Choisir une créature ou un PNJ du bestiaire"><span id="init-crea-nom">Bestiaire…</span> <span class="ch">▾</span></button>
         <span class="nb-pas"><button type="button" id="init-nb-moins" title="Un de moins">−</button><input type="text" inputmode="numeric" id="init-nb" value="1" title="Combien d'exemplaires"><button type="button" id="init-nb-plus" title="Un de plus">+</button></span>
@@ -859,7 +861,7 @@
       </div>
     </div>
 
-    <div class="grp gm-only">
+    <div class="grp gm-only grp-scene">
       <div class="ligne">
         <label for="img-choix">Image</label>
         <select id="img-choix"></select>
