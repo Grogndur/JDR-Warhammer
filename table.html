@@ -176,24 +176,6 @@
     display:flex;align-items:center;min-height:1px}
   header.replie .entete-gauche,header.replie .entete-droite{pointer-events:none}
   /* Sous cette largeur, le titre chevaucherait les commandes : il s'efface. */
-  @media(max-width:1500px){ header .titre{display:none} }
-  @media(max-width:1700px){ .dock .prefixe-img{display:none} }
-  @media(max-width:1440px){
-    .dock label[for="img-choix"],.dock label[for="amb-choix"]{display:none}
-    .dock label[for="cible"],.dock label[for="custom"]{display:none}
-    .dock #init-msg{max-width:0;padding:0}
-    .dock button{padding:4px 6px;font-size:11px}
-    .dock #img-choix,.dock #amb-choix{max-width:106px}
-    .dock #init-crea{max-width:150px}
-    .dock #init-add{width:96px}
-    .dock #img-url,.dock #amb-fichier{width:82px}
-    .dock #init-round-fin{font-size:0;padding:4px 9px}
-    .dock #init-round-fin::after{content:"⏱";font-size:12px}
-    .dock #init-jets{font-size:0;padding:4px 9px}
-    .dock #init-jets::after{content:"⚄";font-size:13px}
-    .dock #init-ajout{font-size:0;padding:4px 9px}
-    .dock #init-ajout::after{content:"+ PJ";font-size:11px}
-  }
 
   /* Le panneau caméras replié vient se ranger dans le bandeau et le suit. */
   .cams.dans-entete{position:static;width:auto;min-width:0;height:auto;min-height:0;
@@ -384,8 +366,21 @@
     border:1px solid rgba(176,144,42,.3);background:rgba(176,144,42,.12);color:var(--parchemin)}
   .fen .trp{font-size:11px;opacity:.75;margin:0 0 4px}
 
-  /* ---- Dock compacté : trois groupes sur une seule rangée ---- */
-  .dock{gap:6px;padding:6px 8px}
+  /* ---- Dock : les trois groupes se répartissent en largeur, un au centre,
+         les deux autres aux extrémités sans toucher les bords. Les colonnes
+         latérales sont égales, donc le groupe du milieu est vraiment centré.
+         Il reste de la place pour un quatrième groupe le jour venu. ---- */
+  .dock{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+    align-items:stretch;gap:10px;padding:7px 20px}
+  .dock > .grp:nth-of-type(1){justify-self:start}
+  .dock > .grp:nth-of-type(2){justify-self:center}
+  .dock > .grp:nth-of-type(3){justify-self:end}
+  /* Vue joueur : les groupes du MJ disparaissent, le seul qui reste se centre. */
+  body:not(.est-mj) .dock{display:flex;justify-content:center;gap:10px}
+  /* Trop étroit pour trois colonnes : on revient à un simple enchaînement. */
+  @media(max-width:1100px){
+    .dock{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;padding:6px 10px}
+  }
   .dock .grp{padding:5px 7px;gap:4px}
   .dock .ligne{gap:5px}
   .dock label{font-size:10.5px}
@@ -400,6 +395,30 @@
   .dock .prefixe-img{font-size:10px}
   .dock #init-msg{max-width:132px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .dock #jet-secret-loc{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  @media(max-width:1500px){ header .titre{display:none} }
+  @media(max-width:1700px){
+    .dock .prefixe-img{display:none}
+    .dock #amb-vol{width:52px}
+    .dock #img-choix,.dock #amb-choix{max-width:112px}
+  }
+  @media(max-width:1440px){
+    .dock label[for="img-choix"],.dock label[for="amb-choix"]{display:none}
+    .dock label[for="cible"],.dock label[for="custom"]{display:none}
+    .dock #init-msg{max-width:0;padding:0}
+    .dock button{padding:4px 6px;font-size:11px}
+    .dock #img-choix,.dock #amb-choix{max-width:98px}
+    .dock #amb-vol{width:52px}
+    .dock #init-crea{max-width:150px}
+    .dock #init-add{width:96px}
+    .dock #img-url,.dock #amb-fichier{width:82px}
+    .dock #init-round-fin{font-size:0;padding:4px 9px}
+    .dock #init-round-fin::after{content:"⏱";font-size:12px}
+    .dock #init-jets{font-size:0;padding:4px 9px}
+    .dock #init-jets::after{content:"⚄";font-size:13px}
+    .dock #init-ajout{font-size:0;padding:4px 9px}
+    .dock #init-ajout::after{content:"+ PJ";font-size:11px}
+  }
 
   /* ---- Vignetage des critiques et des maladresses ---- */
   .vignette{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:0;
@@ -513,8 +532,8 @@
 
   /* ---- Dock du bas, compact et repliable ---- */
   .dock{position:fixed;left:0;right:0;bottom:0;z-index:28;
-    display:flex;align-items:stretch;gap:8px;flex-wrap:wrap;
-    padding:7px 10px;border-top:1px solid var(--bord);
+    align-items:stretch;
+    border-top:1px solid var(--bord);
     background:linear-gradient(0deg, rgba(8,6,4,.97), rgba(8,6,4,.78));
     transition:transform .2s ease}
   .dock.replie{transform:translateY(110%)}
