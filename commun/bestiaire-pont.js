@@ -327,7 +327,8 @@
     }
     if(cacheBestiaire){
       racine.innerHTML = '<style>' + CSS_SHADOW + '</style>' +
-        '<div class="err">Entrée absente du bestiaire (' + ech(bid) + ').</div>';
+        '<div class="err">Cette entrée n\'existe plus au bestiaire (' + ech(bid) + ').<br>' +
+        'Survole le bloc pour le faire pointer ailleurs, ou supprime-le de la scène.</div>';
       hote.__bid = bid;
     } else {
       racine.innerHTML = '<style>' + CSS_SHADOW + '</style>' +
@@ -351,9 +352,26 @@
     return false;
   }
 
+  var abonneBestiaire = false;
+  function suivreBestiaire(){
+    if(abonneBestiaire) return;
+    var db = base();
+    if(!db) return;
+    abonneBestiaire = true;
+    db.ref(RACINE_BESTIAIRE).on('value', function(sn){
+      var v = sn.val();
+      var liste = (v && v.payload && v.payload.entrees) || [];
+      if(liste && !Array.isArray(liste)) liste = Object.values(liste);
+      cacheBestiaire = liste || [];
+      document.querySelectorAll('.sr-hote').forEach(function(h){ h.__bid = null; });
+      peindreRefs();
+    }, function(e){ console.warn('Suivi du bestiaire interrompu :', e); });
+  }
+
   function peindreRefs(){
     var blocs = document.querySelectorAll('.stat-ref');
     if(!blocs.length) return;
+    suivreBestiaire();
     if(!cacheBestiaire){
       for(var i = 0; i < blocs.length; i++) peindreRef(blocs[i]);
       lireBestiaire().then(peindreRefs).catch(function(){});
