@@ -1754,7 +1754,7 @@ function sonMaladresse(){
   const c = ctxAudio(); if(!c) return;
   const t0 = c.currentTime;
   const sortie = c.createGain();
-  sortie.gain.value = 0.62;
+  sortie.gain.value = 0.744;
   const pb = c.createBiquadFilter();
   pb.type = "lowpass"; pb.frequency.value = 190;
   sortie.connect(pb); pb.connect(c.destination);
