@@ -344,7 +344,7 @@
   .vignette.crit{
     background:radial-gradient(ellipse at center,
       rgba(46,214,122,0) 34%, rgba(46,214,122,.20) 66%, rgba(74,255,150,.52) 100%);
-    animation:vig-crit 1400ms ease-out forwards}
+    animation:vig-crit 2000ms ease-out forwards}
   .vignette.fumble{
     mix-blend-mode:normal;
     background:radial-gradient(ellipse at center,
@@ -352,10 +352,13 @@
     animation:vig-fumble 2400ms ease-in-out forwards}
   @keyframes vig-crit{
     0%{opacity:0}
-    6%{opacity:1}
-    17%{opacity:.62}
-    26%{opacity:.86}
-    52%{opacity:.34}
+    14%{opacity:.05}
+    20%{opacity:.18}   /* la lueur monte avec le souffle */
+    21.5%{opacity:1}   /* l'impact, à 430 ms */
+    24%{opacity:1}
+    31%{opacity:.5}
+    36%{opacity:.66}
+    58%{opacity:.22}
     100%{opacity:0}
   }
   @keyframes vig-fumble{
@@ -1458,47 +1461,48 @@ function ctxAudio(){
   }, { once:false, passive:true });
 });
 
-// Critique : impact saturé, timbre tordu, grondement qui s'éteint.
-// Rien de mélodique : les rapports de fréquence sont volontairement dissonants,
-// c'est ce qui empêche l'oreille d'entendre une note et de trouver ça joli.
+// Critique : un souffle qui monte, puis l'impact.
+// La montée combine trois mouvements du même geste, filtre, volume et vitesse
+// de lecture, c'est ce qui donne la sensation de quelque chose qui arrive.
+// L'impact mêle du bruit saturé, du métal et des résonateurs : aucune note
+// juste, aucun rapport entier, rien qui puisse s'entendre comme une mélodie.
 function sonCritique(){
   const c = ctxAudio(); if(!c) return;
   const t = c.currentTime + 0.01;
+  const D = 0.42;                       // durée de la montée avant le coup
   const sr = c.sampleRate;
 
-  // Réverbération sombre, générée une fois puis gardée.
   if(!c.__reverbSombre){
-    const n = Math.floor(sr * 1.5);
+    const n = Math.floor(sr * 1.4);
     const buf = c.createBuffer(2, n, sr);
     for(let k = 0; k < 2; k++){
       const d = buf.getChannelData(k);
-      let prec = 0;
+      let p = 0;
       for(let i = 0; i < n; i++){
-        const brut = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 2.6);
-        prec = prec * 0.62 + brut * 0.38;      // rien de brillant ne survit
-        d[i] = prec;
+        const b = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 2.6);
+        p = p * 0.62 + b * 0.38;        // rien de brillant ne survit
+        d[i] = p;
       }
     }
     c.__reverbSombre = buf;
   }
 
   const maitre = c.createGain();
-  maitre.gain.value = 0.95;
+  maitre.gain.value = 0.375;
   const comp = c.createDynamicsCompressor();
-  comp.threshold.value = -22; comp.ratio.value = 8;
-  comp.attack.value = 0.001; comp.release.value = 0.18;
+  comp.threshold.value = -16; comp.ratio.value = 5;
+  comp.attack.value = 0.004; comp.release.value = 0.2;
   maitre.connect(comp); comp.connect(c.destination);
 
   const secG = c.createGain(), mouille = c.createGain();
   mouille.gain.value = 0.5;
   const rv = c.createConvolver(); rv.buffer = c.__reverbSombre;
   secG.connect(maitre); mouille.connect(rv); rv.connect(maitre);
-  const brancher = (n, envoi)=>{
+  const br = (n, envoi)=>{
     n.connect(secG);
     if(envoi){ const g = c.createGain(); g.gain.value = envoi; n.connect(g); g.connect(mouille); }
   };
 
-  // Saturation : c'est elle qui salit.
   const courbes = {};
   function sale(q){
     if(!courbes[q]){
@@ -1513,58 +1517,71 @@ function sonCritique(){
     ws.curve = courbes[q]; ws.oversample = "4x";
     return ws;
   }
-
   function bruit(secondes, forme){
     const n = Math.max(16, Math.floor(sr * secondes));
     const b = c.createBuffer(1, n, sr);
     const d = b.getChannelData(0);
-    for(let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, forme);
+    for(let i = 0; i < n; i++){
+      d[i] = (Math.random() * 2 - 1) * (forme ? Math.pow(1 - i / n, forme) : 1);
+    }
     const s = c.createBufferSource(); s.buffer = b; return s;
   }
 
-  // Le coup : bruit large bande dont le filtre s'effondre vers le grave.
-  function impact(quand, longueur, depart, arrivee, force, distorsion){
-    const s = bruit(longueur, 1.4);
+  /* ---------- la montée ---------- */
+  function montee(quand, duree, fDepart, fFin, force, largeur){
+    const s = bruit(duree * 1.15, 0);
+    s.playbackRate.setValueAtTime(0.72, quand);
+    s.playbackRate.linearRampToValueAtTime(1.5, quand + duree);
     const f = c.createBiquadFilter();
-    f.type = "bandpass"; f.Q.value = 0.7;
-    f.frequency.setValueAtTime(depart, quand);
-    f.frequency.exponentialRampToValueAtTime(arrivee, quand + longueur * 0.8);
+    f.type = "bandpass"; f.Q.value = largeur;
+    f.frequency.setValueAtTime(fDepart, quand);
+    f.frequency.exponentialRampToValueAtTime(fFin, quand + duree);
     const g = c.createGain();
-    g.gain.setValueAtTime(force, quand);
-    g.gain.exponentialRampToValueAtTime(0.0001, quand + longueur);
-    const ws = sale(distorsion);
-    s.connect(f); f.connect(ws); ws.connect(g); brancher(g, 0.7);
+    g.gain.setValueAtTime(0.0002, quand);
+    g.gain.exponentialRampToValueAtTime(force * 0.28, quand + duree * 0.62);
+    g.gain.exponentialRampToValueAtTime(force, quand + duree * 0.97);
+    g.gain.exponentialRampToValueAtTime(0.0002, quand + duree + 0.02);
+    s.connect(f); f.connect(g); br(g, 0.5);
+    s.start(quand);
+  }
+  function souffleGrave(quand, duree, force){
+    const s = bruit(duree * 1.1, 0);
+    const f = c.createBiquadFilter();
+    f.type = "lowpass"; f.Q.value = 1.2;
+    f.frequency.setValueAtTime(110, quand);
+    f.frequency.exponentialRampToValueAtTime(880, quand + duree);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.0002, quand);
+    g.gain.exponentialRampToValueAtTime(force, quand + duree * 0.95);
+    g.gain.exponentialRampToValueAtTime(0.0002, quand + duree + 0.03);
+    s.connect(f); f.connect(g); br(g, 0.3);
     s.start(quand);
   }
 
-  // Le grave saturé : le coup dans la poitrine.
-  function sub(quand, depart, arrivee, force, tenue, distorsion){
-    const o = c.createOscillator(), g = c.createGain(), ws = sale(distorsion);
-    o.type = "sine";
-    o.frequency.setValueAtTime(depart, quand);
-    o.frequency.exponentialRampToValueAtTime(arrivee, quand + tenue * 0.5);
-    g.gain.setValueAtTime(0, quand);
-    g.gain.linearRampToValueAtTime(force, quand + 0.004);
-    g.gain.exponentialRampToValueAtTime(0.00006, quand + tenue);
-    o.connect(ws); ws.connect(g); brancher(g, 0.12);
-    o.start(quand); o.stop(quand + tenue + 0.05);
+  /* ---------- le coup ---------- */
+  function impact(quand, longueur, fD, fA, force, dist){
+    const s = bruit(longueur, 1.5);
+    const f = c.createBiquadFilter();
+    f.type = "bandpass"; f.Q.value = 0.7;
+    f.frequency.setValueAtTime(fD, quand);
+    f.frequency.exponentialRampToValueAtTime(fA, quand + longueur * 0.8);
+    const g = c.createGain();
+    g.gain.setValueAtTime(force, quand);
+    g.gain.exponentialRampToValueAtTime(0.0001, quand + longueur);
+    const ws = sale(dist);
+    s.connect(f); f.connect(ws); ws.connect(g); br(g, 0.6);
+    s.start(quand);
   }
-
-  // Métal tordu : deux fréquences proches qui battent, passées en anneau.
   function metal(quand, f1, f2, force, tenue, anneau){
     const a = c.createOscillator(), b = c.createOscillator();
     a.type = "square"; b.type = "sawtooth";
     a.frequency.value = f1; b.frequency.value = f2;
-    const melange = c.createGain(); melange.gain.value = 0.5;
-    a.connect(melange); b.connect(melange);
-
+    const mel = c.createGain(); mel.gain.value = 0.5;
+    a.connect(mel); b.connect(mel);
     const m = c.createOscillator(), porte = c.createGain();
-    m.type = "sine"; m.frequency.value = anneau;
-    porte.gain.value = 0;
-    m.connect(porte.gain);
-    melange.connect(porte);
+    m.type = "sine"; m.frequency.value = anneau; porte.gain.value = 0;
+    m.connect(porte.gain); mel.connect(porte);
     m.start(quand); m.stop(quand + tenue + 0.05);
-
     const f = c.createBiquadFilter();
     f.type = "bandpass"; f.Q.value = 1.6;
     f.frequency.setValueAtTime(f1 * 1.4, quand);
@@ -1574,32 +1591,66 @@ function sonCritique(){
     g.gain.linearRampToValueAtTime(force, quand + 0.003);
     g.gain.exponentialRampToValueAtTime(0.00006, quand + tenue);
     const ws = sale(4);
-    porte.connect(f); f.connect(ws); ws.connect(g); brancher(g, 0.9);
+    porte.connect(f); f.connect(ws); ws.connect(g); br(g, 0.85);
     a.start(quand); b.start(quand);
     a.stop(quand + tenue + 0.05); b.stop(quand + tenue + 0.05);
   }
-
-  // La traîne sourde qui reste après le coup.
-  function grondement(quand, force, tenue, coupure){
-    const s = bruit(tenue, 0.7);
-    const f = c.createBiquadFilter();
-    f.type = "lowpass"; f.Q.value = 2.2;
-    f.frequency.setValueAtTime(coupure, quand);
-    f.frequency.exponentialRampToValueAtTime(80, quand + tenue);
-    const g = c.createGain();
+  // Du bruit très court met en vibration des fréquences propres : c'est ainsi
+  // qu'une masse de métal sonne, sans qu'aucun oscillateur ne joue de note.
+  function resonner(quand, modes, force, exciteDuree, coupure){
+    const exc = bruit(exciteDuree, 1.1);
+    const hp = c.createBiquadFilter();
+    hp.type = "highpass"; hp.frequency.value = coupure;
+    const gExc = c.createGain(); gExc.gain.value = force;
+    exc.connect(hp); hp.connect(gExc);
+    modes.forEach(m => {
+      const f = c.createBiquadFilter();
+      f.type = "bandpass"; f.frequency.value = m[0]; f.Q.value = m[3];
+      const g = c.createGain();
+      g.gain.setValueAtTime(m[1], quand);
+      g.gain.exponentialRampToValueAtTime(0.00005, quand + m[2]);
+      gExc.connect(f); f.connect(g); br(g, 0.9);
+    });
+    exc.start(quand);
+  }
+  function sub(quand, f0, f1, force, tenue, dist){
+    const o = c.createOscillator(), g = c.createGain(), ws = sale(dist);
+    o.type = "sine";
+    o.frequency.setValueAtTime(f0, quand);
+    o.frequency.exponentialRampToValueAtTime(f1, quand + tenue * 0.5);
     g.gain.setValueAtTime(0, quand);
-    g.gain.linearRampToValueAtTime(force, quand + 0.05);
+    g.gain.linearRampToValueAtTime(force, quand + 0.004);
     g.gain.exponentialRampToValueAtTime(0.00006, quand + tenue);
-    s.connect(f); f.connect(g); brancher(g, 0.8);
-    s.start(quand);
+    o.connect(ws); ws.connect(g); br(g, 0.1);
+    o.start(quand); o.stop(quand + tenue + 0.05);
+  }
+  // Le grave tenu qui s'installe sous le coup et le porte.
+  function noteFond(quand, freq, force, tenue){
+    [[freq, force, "triangle"], [freq * 2, force * 0.3, "sine"],
+     [freq * 3.01, force * 0.12, "sine"]].forEach(n => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = n[2];
+      o.frequency.setValueAtTime(n[0], quand);
+      g.gain.setValueAtTime(0, quand);
+      g.gain.linearRampToValueAtTime(n[1], quand + 0.02);
+      g.gain.setValueAtTime(n[1], quand + tenue * 0.25);
+      g.gain.exponentialRampToValueAtTime(0.00006, quand + tenue);
+      o.connect(g); br(g, 0.5);
+      o.start(quand); o.stop(quand + tenue + 0.05);
+    });
   }
 
-  impact(t, 0.1, 8500, 600, 0.8, 8);
-  impact(t + 0.018, 0.25, 2400, 260, 0.45, 4);
-  metal(t, 2140, 2237, 0.4, 0.35, 173);
-  sub(t, 118, 30, 1.2, 1.0, 4);
-  sub(t + 0.03, 58, 25, 0.65, 1.2, 3);
-  grondement(t + 0.05, 0.46, 1.6, 900);
+  montee(t, D, 260, 5200, 0.34, 0.9);
+  souffleGrave(t, D, 0.22);
+  impact(t + D, 0.1, 7600, 560, 1.05, 8);
+  impact(t + D + 0.03, 0.22, 2100, 260, 0.55, 5);
+  metal(t + D, 1870, 1958, 0.75, 0.4, 151);
+  resonner(t + D, [[934, 0.8, 0.62, 52], [1487, 0.62, 0.46, 48],
+                   [2216, 0.44, 0.34, 46], [3080, 0.28, 0.24, 44]], 1.55, 0.026, 800);
+  resonner(t + D + 0.038, [[1618, 0.42, 0.4, 50], [2489, 0.3, 0.3, 46],
+                           [3560, 0.18, 0.22, 44]], 1.1, 0.016, 1300);
+  sub(t + D, 84, 21, 1.15, 1.1, 5);
+  noteFond(t + D, 32.7, 0.46, 1.8);
 }
 
 // Maladresse : trois battements doubles, graves et sourds. Puis plus rien.
@@ -1647,7 +1698,7 @@ function effetJet(classe){
   v.className = "vignette";
   void v.offsetWidth;                      // relance l'animation même en rafale
   v.classList.add(crit ? "crit" : "fumble");
-  vigTimer = setTimeout(()=>{ v.className = "vignette"; }, crit ? 1500 : 2500);
+  vigTimer = setTimeout(()=>{ v.className = "vignette"; }, crit ? 2100 : 2500);
 
   try{ crit ? sonCritique() : sonMaladresse(); }catch(e){}
 }
