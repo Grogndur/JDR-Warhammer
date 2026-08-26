@@ -63,7 +63,11 @@
       payload.entrees = liste;
       cacheBestiaire = liste;
       return ref.set({ payload: payload, at: Date.now(), par: 'scenario-' + campagne() })
-        .then(function(){ return i >= 0; });
+        .then(function(){
+          document.querySelectorAll('.sr-hote').forEach(function(h){ h.__bid = null; });
+          peindreRefs();
+          return i >= 0;
+        });
     });
   }
 
@@ -90,6 +94,7 @@
       t = document.createElement('div');
       t.id = 'bp-toast';
       t.className = 'bp-toast';
+      t.__bp = true;
       document.body.appendChild(t);
     }
     t.textContent = msg;
@@ -234,11 +239,119 @@
     return h;
   }
 
+  /* ---------- bloc de référence : le scénario ne stocke qu'un identifiant ----------
+     Le profil est rendu dans un Shadow DOM. Les scénarios sauvegardent leurs
+     sections en clonant le HTML affiché : le shadow leur est invisible, donc
+     seule la référence part en base. Le nom et le rôle restent en clair pour
+     que la recherche interne du scénario retrouve la scène. */
+
+  function refDepuisEntree(e){
+    var h = '<div class="stat-ref" data-bid="' + ech(e.id) + '">';
+    h += '<div class="stat-head">';
+    h += '<span class="stat-name">' + ech(e.nom) + '</span>';
+    h += '<span class="stat-kind">' + ech(e.role || '') + '</span>';
+    h += '</div><div class="sr-hote"></div></div>';
+    return h;
+  }
+
+  var CSS_SHADOW = [
+    ':host{display:block}',
+    '.b{padding:0.5rem 0.9rem 0.7rem;font-family:inherit;font-size:0.86rem;line-height:1.5;',
+    '  color:var(--parchment-dark,#d4c8a8)}',
+    '.w{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 0.5rem}',
+    'table{border-collapse:collapse;width:100%;font-size:0.78rem}',
+    'th{background:rgba(169,113,59,0.2);color:var(--CUI-light,#d19a5e);font-weight:400;',
+    '  text-align:center;padding:0.2rem 0.35rem;border:1px solid rgba(169,113,59,0.3);',
+    '  font-size:0.68rem;letter-spacing:0.05em;white-space:nowrap}',
+    'th:first-child{text-align:left}',
+    'td{border:1px solid rgba(169,113,59,0.22);padding:0.24rem 0.35rem;text-align:center;',
+    '  font-variant-numeric:tabular-nums}',
+    'td:first-child{text-align:left;color:var(--CUI-light,#d19a5e);white-space:nowrap}',
+    '.l{display:block;font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;',
+    '  color:var(--CUI,#A9713B);margin:0.5rem 0 0.1rem}',
+    'p{margin:0 0 0.2rem}',
+    '.t{display:inline-block;padding:0 0.3rem;margin:0 0.25rem 0.2rem 0;border-radius:2px;',
+    '  font-size:0.76rem;border:1px solid rgba(169,113,59,0.35);background:rgba(169,113,59,0.14);',
+    '  color:var(--CUI-light,#d19a5e)}',
+    '.n{opacity:0.78;white-space:pre-wrap}',
+    '.err{padding:0.5rem 0.9rem 0.7rem;font-size:0.8rem;color:#c05050;font-style:italic}',
+    '@media print{.w{overflow:visible}}'
+  ].join('\n');
+
+  function corpsShadow(e){
+    var p = e.profil || {};
+    var h = '<style>' + CSS_SHADOW + '</style><div class="b">';
+    h += '<div class="w"><table><tbody><tr><th>Profil</th>';
+    for(var i = 0; i < CARACS.length; i++) h += '<th>' + CARACS[i] + '</th>';
+    h += '</tr><tr><td>' + ech(e.nom) + '</td>';
+    for(var j = 0; j < CARACS.length; j++) h += '<td>' + ech(p[CARACS[j]] || '—') + '</td>';
+    h += '</tr></tbody></table></div>';
+    if(e.armes) h += '<span class="l">Armes et armure</span><p>' + ech(e.armes) + '</p>';
+    if(e.competences) h += '<span class="l">Compétences</span><p>' + ech(e.competences) + '</p>';
+    var tr = e.traits;
+    if(tr && !Array.isArray(tr)) tr = tr ? Object.values(tr) : [];
+    if(tr && tr.length){
+      h += '<span class="l">Traits</span><p>';
+      for(var t = 0; t < tr.length; t++){
+        var x = tr[t] || {};
+        h += '<span class="t">' + ech(x.nom || String(x)) + '</span>';
+        if(x.precision) h += ' ' + ech(x.precision) + ' ';
+      }
+      h += '</p>';
+    }
+    if(e.notes) h += '<span class="l">En jeu</span><p class="n">' + ech(e.notes) + '</p>';
+    h += '</div>';
+    return h;
+  }
+
+  function peindreRef(bloc){
+    var hote = bloc.querySelector('.sr-hote');
+    if(!hote) return;
+    var bid = bloc.getAttribute('data-bid') || '';
+    var racine = hote.shadowRoot;
+    if(!racine){
+      try{ racine = hote.attachShadow({ mode:'open' }); }
+      catch(err){ return; }
+    }
+    if(hote.__bid === bid && racine.innerHTML) return;
+
+    var e = (cacheBestiaire || []).filter(function(x){ return x.id === bid; })[0];
+    if(e){
+      racine.innerHTML = corpsShadow(e);
+      hote.__bid = bid;
+      // Le nom et le rôle en clair suivent l'entrée du bestiaire.
+      var n = bloc.querySelector('.stat-name'), r = bloc.querySelector('.stat-kind');
+      if(n && n.textContent !== e.nom) n.textContent = e.nom;
+      if(r && r.textContent !== (e.role || '')) r.textContent = e.role || '';
+      return;
+    }
+    if(cacheBestiaire){
+      racine.innerHTML = '<style>' + CSS_SHADOW + '</style>' +
+        '<div class="err">Entrée absente du bestiaire (' + ech(bid) + ').</div>';
+      hote.__bid = bid;
+    } else {
+      racine.innerHTML = '<style>' + CSS_SHADOW + '</style>' +
+        '<div class="err">Lecture du bestiaire…</div>';
+    }
+  }
+
+  function peindreRefs(){
+    var blocs = document.querySelectorAll('.stat-ref');
+    if(!blocs.length) return;
+    if(!cacheBestiaire){
+      for(var i = 0; i < blocs.length; i++) peindreRef(blocs[i]);
+      lireBestiaire().then(peindreRefs).catch(function(){});
+      return;
+    }
+    for(var j = 0; j < blocs.length; j++) peindreRef(blocs[j]);
+  }
+
   /* ---------- habillage ---------- */
   function styles(){
     if(document.getElementById('bp-style')) return;
     var css = document.createElement('style');
     css.id = 'bp-style';
+    css.__bp = true;
     css.textContent = [
       '.bp-voile{position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:6000;display:none;',
       '  align-items:flex-start;justify-content:center;padding:4vh 1rem;overflow:auto}',
@@ -265,6 +378,23 @@
       '.bp-l .r{flex:1;min-width:0;opacity:0.65;font-size:0.76rem;overflow:hidden;',
       '  text-overflow:ellipsis;white-space:nowrap}',
       '.bp-l .b{opacity:0.55;font-size:0.72rem;white-space:nowrap}',
+      '.bp-conflit{border:1px solid rgba(169,113,59,0.4);border-left:3px solid #a9713b;',
+      '  border-radius:2px;background:rgba(169,113,59,0.08);padding:0.55rem 0.7rem;',
+      '  margin:0.2rem 0 0.6rem}',
+      '.bp-conflit > b{display:block;color:#d19f6a;font-size:0.84rem;margin:0 0 0.15rem}',
+      '.bp-conflit .bp-p{font-size:0.79rem;opacity:0.72;margin:0.15rem 0 0.4rem}',
+      '.bp-diff{display:flex;flex-wrap:wrap;gap:0.25rem;margin:0 0 0.55rem}',
+      '.bp-d{font-size:0.74rem;padding:0.12rem 0.4rem;border-radius:2px;',
+      '  border:1px solid rgba(169,113,59,0.3);background:rgba(13,12,17,0.75);color:#d4c8a8;',
+      '  white-space:nowrap;line-height:1.5}',
+      '.bp-d i{font-style:normal;color:#a9713b;letter-spacing:0.05em;margin-right:0.3rem}',
+      '.bp-d em{font-style:normal;opacity:0.45;margin:0 0.2rem}',
+      '.bp-choix{display:flex;gap:0.5rem;align-items:flex-start;padding:0.32rem 0;',
+      '  font-size:0.79rem;cursor:pointer;line-height:1.45;color:#d4c8a8}',
+      '.bp-choix + .bp-choix{border-top:1px solid rgba(169,113,59,0.18)}',
+      '.bp-choix input{margin:0.28rem 0 0;flex:0 0 auto}',
+      '.bp-choix span{flex:1;min-width:0}',
+      '.bp-choix b{color:#d19f6a;font-weight:600}',
       '.bp-act{display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap}',
       '.bp-act .sp{flex:1}',
       '.bp-btn{background:#241f1a;border:1px solid rgba(169,113,59,0.4);color:#d4c8a8;',
@@ -276,6 +406,14 @@
       '  border:1px solid rgba(169,113,59,0.55);color:#d19f6a;padding:0.12rem 0.45rem;border-radius:2px;',
       '  cursor:pointer;font-family:"Cinzel",serif;font-size:0.62rem;letter-spacing:0.08em;',
       '  text-transform:uppercase;display:none;box-shadow:0 2px 10px rgba(0,0,0,0.6)}',
+      '.stat-ref{border:1px solid rgba(169,113,59,0.42);border-left:3px solid var(--CUI,#A9713B);',
+      '  border-radius:2px;background:rgba(169,113,59,0.05);margin:1rem 0;overflow:hidden}',
+      '.stat-ref > .stat-head{background:rgba(169,113,59,0.2);padding:0.45rem 0.9rem;display:flex;',
+      '  justify-content:space-between;align-items:baseline;gap:0.7rem;flex-wrap:wrap;',
+      '  border-bottom:1px solid rgba(169,113,59,0.28)}',
+      '.stat-ref .stat-name{font-family:"Cinzel",serif;font-size:0.9rem;letter-spacing:0.05em;',
+      '  color:var(--CUI-light,#d19a5e)}',
+      '.stat-ref .stat-kind{font-size:0.72rem;font-style:italic;color:#9a7550}',
       '#bp-vers.on{display:block}',
       '#bp-vers:hover{border-color:#a9713b;color:#fff;background:#241f1a}',
       '.bp-toast{position:fixed;left:50%;bottom:4.5rem;transform:translateX(-50%) translateY(1rem);',
@@ -295,6 +433,7 @@
     v = document.createElement('div');
     v.className = 'bp-voile';
     v.id = 'bp-voile';
+    v.__bp = true;
     v.innerHTML = '<div class="bp-boite" id="bp-boite"></div>';
     document.body.appendChild(v);
     v.addEventListener('click', function(e){ if(e.target === v) fermer(); });
@@ -366,6 +505,19 @@
   function insererEntree(id){
     var e = (cacheBestiaire || []).filter(function(x){ return x.id === id; })[0];
     if(!e){ signal('Entrée introuvable.', true); return; }
+    // Le menu a été ouvert depuis une référence : on la fait pointer ailleurs.
+    if(refACibler){
+      var bloc = refACibler;
+      refACibler = null;
+      bloc.setAttribute('data-bid', e.id);
+      var hote = bloc.querySelector('.sr-hote');
+      if(hote) hote.__bid = null;
+      peindreRef(bloc);
+      marquer(bloc);
+      fermer();
+      signal('Le bloc appelle : ' + e.nom);
+      return;
+    }
     // Éclipse laisse plusieurs scènes sans display:none. Seule celle qui est
     // réellement rendue a un offsetParent : c'est celle que le MJ regarde.
     var scenes = document.querySelectorAll('.scene-panel');
@@ -379,12 +531,30 @@
       }
     }
     if(!visible){ signal('Ouvre une scène d\'abord.', true); fermer(); return; }
-    visible.insertAdjacentHTML('beforeend', carteDepuisEntree(e));
+    visible.insertAdjacentHTML('beforeend', refDepuisEntree(e));
     var carte = visible.lastElementChild;
+    peindreRef(carte);
     marquer(visible);
     fermer();
-    signal('Profil inséré : ' + e.nom);
+    signal('Profil appelé : ' + e.nom);
     if(carte && carte.scrollIntoView) carte.scrollIntoView({ block:'center', behavior:'smooth' });
+  }
+
+  /* ---------- écarts entre deux profils ---------- */
+  function ecarts(lu, e){
+    var src = lu.profils.length ? lu.profils[0].carac : {};
+    var out = [];
+    for(var i = 0; i < CARACS.length; i++){
+      var k = CARACS[i];
+      var a = String(src[k] || '').trim();
+      var b = String((e.profil || {})[k] || '').trim();
+      if(a === '—') a = '';
+      if(a !== b) out.push({ cle: k, bloc: a || '—', best: b || '—' });
+    }
+    return out;
+  }
+  function memeTexte(a, b){
+    return String(a || '').replace(/\s+/g, ' ').trim() === String(b || '').replace(/\s+/g, ' ').trim();
   }
 
   /* ---------- 2. verser un bloc vers le bestiaire ---------- */
@@ -394,15 +564,16 @@
     lireBestiaire().then(function(liste){
       var pris = liste.map(function(x){ return x.id; });
       var attendu = identifiant(lu.nom, []);
-      var existant = liste.filter(function(x){ return x.id === attendu; })[0];
+      var jumeau = liste.filter(function(x){ return x.id === attendu; })[0] || null;
 
-      var h = '<h3>Enregistrer dans le bestiaire</h3>';
+      var h = '<h3>Envoyer au bestiaire</h3>';
       if(multi){
-        h += '<p>Ce bloc porte ' + lu.profils.length + ' lignes de profil. Chacune devient une entrée ' +
-             'distincte, avec les armes, compétences et traits du bloc.</p>';
+        h += '<p>Ce bloc porte ' + lu.profils.length + ' lignes de profil. Chacune devient une ' +
+             'entrée distincte, avec les armes, compétences et traits du bloc. Le bloc du ' +
+             'scénario reste tel quel : une référence ne pointe que vers une entrée.</p>';
       } else {
-        h += '<p>Le profil, les armes, les compétences et les traits partent tels quels. ' +
-             'L\'entrée sera aussitôt sélectionnable dans le panneau de combat de la table.</p>';
+        h += '<p>Le profil part au bestiaire. Le bloc du scénario peut ensuite devenir un simple ' +
+             'appel : tu corriges la créature au bestiaire, la scène suit.</p>';
       }
       h += '<span class="bp-lab">Nom</span>';
       h += '<input type="text" class="bp-champ" id="bp-nom" value="' + ech(lu.nom) + '">';
@@ -414,18 +585,47 @@
            '<option value="bds"' + (lu.campagne === 'bds' ? ' selected' : '') + '>De Boue et de Sang</option>' +
            '<option value="eclipse"' + (lu.campagne === 'eclipse' ? ' selected' : '') + '>L\u2019Éclipse</option>' +
            '</select>';
-      if(existant && !multi){
-        h += '<p style="color:#d19f6a;opacity:1">Une entrée porte déjà ce nom. Elle sera remplacée.</p>';
+
+      if(jumeau && !multi){
+        var diff = ecarts(lu, jumeau);
+        var memeArmes = memeTexte(lu.armes, jumeau.armes);
+        var memeComp = memeTexte(lu.competences, jumeau.competences);
+        h += '<div class="bp-conflit">';
+        h += '<b>« ' + ech(jumeau.nom) +' » existe déjà au bestiaire.</b>';
+        if(!diff.length && memeArmes && memeComp){
+          h += '<p class="bp-p">Les deux versions sont identiques. Rattacher suffit.</p>';
+        } else {
+          h += '<p class="bp-p">Les deux versions diffèrent :</p><div class="bp-diff">';
+          for(var d = 0; d < diff.length; d++){
+            h += '<span class="bp-d"><i>' + ech(diff[d].cle) + '</i> ' +
+                 ech(diff[d].best) + ' <em>→</em> ' + ech(diff[d].bloc) + '</span>';
+          }
+          if(!memeArmes) h += '<span class="bp-d"><i>armes</i> texte différent</span>';
+          if(!memeComp) h += '<span class="bp-d"><i>compétences</i> texte différent</span>';
+          h += '</div>';
+        }
+        h += '<label class="bp-choix"><input type="radio" name="bp-mode" value="garder" checked>' +
+             '<span><b>Garder l\'entrée du bestiaire.</b> Le bloc affichera la version du bestiaire.</span></label>';
+        h += '<label class="bp-choix"><input type="radio" name="bp-mode" value="ecraser">' +
+             '<span><b>Écraser avec ce bloc.</b> Le scénario fait autorité, l\'entrée est remplacée.</span></label>';
+        h += '</div>';
       }
+
       h += '<div class="bp-act"><span class="sp"></span>' +
            '<button class="bp-btn" data-bp="fermer">Annuler</button>' +
-           '<button class="bp-btn pri" data-bp="verser-ok">Enregistrer</button></div>';
+           '<button class="bp-btn" data-bp="verser-ok">Enregistrer seulement</button>';
+      if(!multi){
+        h += '<button class="bp-btn pri" data-bp="verser-ref">Enregistrer et convertir</button>';
+      }
+      h += '</div>';
+
       var boite = ouvrir(h);
       boite.setAttribute('data-multi', multi ? '1' : '0');
-      cible = { lu: lu, pris: pris };
-      document.getElementById('bp-nom').focus();
+      cible = { lu: lu, pris: pris, carte: carte, jumeau: jumeau };
+      var champ = document.getElementById('bp-nom');
+      if(champ) champ.focus();
     }).catch(function(err){
-      ouvrir('<h3>Enregistrer dans le bestiaire</h3><p>Lecture impossible : ' + ech(err.message) + '</p>' +
+      ouvrir('<h3>Envoyer au bestiaire</h3><p>Lecture impossible : ' + ech(err.message) + '</p>' +
              '<div class="bp-act"><span class="sp"></span>' +
              '<button class="bp-btn" data-bp="fermer">Fermer</button></div>');
     });
@@ -433,12 +633,16 @@
 
   var cible = null;
 
-  function verserValider(){
-    if(!cible) return;
+  // Construit les entrées à écrire. Renvoie null si on garde le jumeau tel quel.
+  function entreesDepuisCible(){
     var lu = cible.lu, pris = cible.pris.slice();
     var nom = (document.getElementById('bp-nom').value || '').trim() || lu.nom;
     var role = (document.getElementById('bp-role').value || '').trim();
     var camp = document.getElementById('bp-camp').value;
+    var mode = document.querySelector('input[name="bp-mode"]:checked');
+    mode = mode ? mode.value : 'neuf';
+
+    if(cible.jumeau && mode === 'garder') return { garde: cible.jumeau, lot: [] };
 
     var socle = {
       role: role, campagne: camp, pa: lu.pa, armes: lu.armes,
@@ -470,10 +674,10 @@
       }
       lot.push(u);
     }
+    return { garde: null, lot: lot };
+  }
 
-    var bouton = document.querySelector('[data-bp="verser-ok"]');
-    if(bouton) bouton.setAttribute('disabled', 'disabled');
-
+  function ecrireLot(lot){
     var chaine = Promise.resolve();
     var remplaces = 0;
     lot.forEach(function(e){
@@ -481,17 +685,61 @@
         return ecrireBestiaire(e).then(function(remplace){ if(remplace) remplaces++; });
       });
     });
-    chaine.then(function(){
+    return chaine.then(function(){ return remplaces; });
+  }
+
+  function verserValider(convertir){
+    if(!cible) return;
+    var res;
+    try{ res = entreesDepuisCible(); }
+    catch(err){ signal('Lecture du bloc impossible.', true); return; }
+
+    var boutons = document.querySelectorAll('[data-bp="verser-ok"],[data-bp="verser-ref"]');
+    for(var b = 0; b < boutons.length; b++) boutons[b].setAttribute('disabled', 'disabled');
+
+    var carte = cible.carte;
+    var vise = res.garde || res.lot[0];
+
+    ecrireLot(res.lot).then(function(remplaces){
       fermer();
+      var n = res.lot.length;
+      if(convertir && carte && vise){
+        convertirEnRef(carte, vise);
+        signal('« ' + vise.nom + ' » : le bloc appelle désormais le bestiaire.');
+      } else if(!n){
+        signal('Entrée conservée : ' + vise.nom + '.');
+      } else {
+        signal(n > 1
+          ? (n + ' entrées enregistrées au bestiaire.')
+          : (remplaces ? 'Entrée mise à jour au bestiaire.' : 'Entrée ajoutée au bestiaire.'));
+      }
       cible = null;
-      var n = lot.length;
-      signal(n > 1
-        ? (n + ' entrées enregistrées dans le bestiaire.')
-        : (remplaces ? 'Entrée mise à jour dans le bestiaire.' : 'Entrée ajoutée au bestiaire.'));
     }).catch(function(err){
-      if(bouton) bouton.removeAttribute('disabled');
+      for(var k = 0; k < boutons.length; k++) boutons[k].removeAttribute('disabled');
       signal('Écriture impossible : ' + err.message, true);
     });
+  }
+
+  /* ---------- conversion d'un bloc figé en référence ---------- */
+  function convertirEnRef(carte, e){
+    if(!carte || !carte.parentNode) return;
+    var section = carte.closest('.section-panel');
+    var boite = document.createElement('div');
+    boite.innerHTML = refDepuisEntree(e);
+    var neuf = boite.firstChild;
+    carte.parentNode.replaceChild(neuf, carte);
+    peindreRef(neuf);
+    if(section) marquer(section);
+    else marquer(neuf);
+    carteSurvolee = null;
+    placerBouton();
+  }
+
+  /* ---------- changer la créature appelée par une référence ---------- */
+  var refACibler = null;
+  function changerRef(bloc){
+    refACibler = bloc;
+    choisirEntree();
   }
 
   /* ---------- bouton de versement, flottant ----------
@@ -506,13 +754,14 @@
     b = document.createElement('button');
     b.type = 'button';
     b.id = 'bp-vers';
+    b.__bp = true;
     b.setAttribute('contenteditable', 'false');
-    b.title = 'Enregistrer ce profil comme entrée du bestiaire';
-    b.textContent = '→ Bestiaire';
     b.addEventListener('click', function(ev){
       ev.preventDefault();
       ev.stopPropagation();
-      if(carteSurvolee) verserCarte(carteSurvolee);
+      if(!carteSurvolee) return;
+      if(carteSurvolee.classList.contains('stat-ref')) changerRef(carteSurvolee);
+      else verserCarte(carteSurvolee);
     });
     document.body.appendChild(b);
     return b;
@@ -526,6 +775,13 @@
     }
     var r = carteSurvolee.getBoundingClientRect();
     if(r.bottom < 0 || r.top > window.innerHeight){ b.classList.remove('on'); return; }
+    if(carteSurvolee.classList.contains('stat-ref')){
+      b.textContent = '⇄ Changer';
+      b.title = 'Appeler une autre créature du bestiaire';
+    } else {
+      b.textContent = '→ Bestiaire';
+      b.title = 'Envoyer ce profil au bestiaire, et le convertir en appel';
+    }
     b.classList.add('on');
     var l = Math.min(window.innerWidth - b.offsetWidth - 8, r.right - b.offsetWidth - 6);
     b.style.left = Math.max(8, l) + 'px';
@@ -534,7 +790,7 @@
 
   function suivreSurvol(){
     document.addEventListener('mouseover', function(ev){
-      var carte = ev.target.closest ? ev.target.closest('.stat-card') : null;
+      var carte = ev.target.closest ? ev.target.closest('.stat-card, .stat-ref') : null;
       if(carte === carteSurvolee) return;
       if(ev.target.closest && ev.target.closest('#bp-vers')) return;
       carteSurvolee = carte;
@@ -588,9 +844,10 @@
     var b = ev.target.closest ? ev.target.closest('[data-bp]') : null;
     if(!b) return;
     var a = b.getAttribute('data-bp');
-    if(a === 'fermer'){ fermer(); cible = null; return; }
+    if(a === 'fermer'){ fermer(); cible = null; refACibler = null; return; }
     if(a === 'prendre'){ insererEntree(b.getAttribute('data-id')); return; }
-    if(a === 'verser-ok'){ verserValider(); return; }
+    if(a === 'verser-ok'){ verserValider(false); return; }
+    if(a === 'verser-ref'){ verserValider(true); return; }
     if(a === 'verser'){
       var carte = b.closest('.stat-card');
       if(carte) verserCarte(carte);
@@ -598,17 +855,28 @@
     }
   });
 
+  // Un fichier exporté depuis le scénario embarque les éléments posés par ce
+  // module, privés de leurs écouteurs. On les jette avant de les recréer.
+  function nettoyerVestiges(){
+    ['bp-vers', 'bp-style', 'bp-voile', 'bp-toast'].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el && !el.__bp && el.parentNode) el.parentNode.removeChild(el);
+    });
+  }
+
   function demarrer(){
+    nettoyerVestiges();
     styles();
     boutonVerser();
     suivreSurvol();
     brancherBarre();
+    peindreRefs();
     // Les scénarios remplacent des sections entières en direct, et la barre
     // d'édition peut être reconstruite : on se rebranche sur ce qui apparaît.
     var attente = null;
     var obs = new MutationObserver(function(){
       clearTimeout(attente);
-      attente = setTimeout(function(){ brancherBarre(); placerBouton(); }, 250);
+      attente = setTimeout(function(){ brancherBarre(); peindreRefs(); placerBouton(); }, 250);
     });
     var racine = document.getElementById('main') || document.querySelector('.main') || document.body;
     obs.observe(racine, { childList:true, subtree:true });
