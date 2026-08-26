@@ -378,6 +378,19 @@
       '.bp-l .r{flex:1;min-width:0;opacity:0.65;font-size:0.76rem;overflow:hidden;',
       '  text-overflow:ellipsis;white-space:nowrap}',
       '.bp-l .b{opacity:0.55;font-size:0.72rem;white-space:nowrap}',
+      '.impl{display:flex;align-items:baseline;gap:0.45rem;width:100%;padding:0.3rem 0.4rem;',
+      '  border-bottom:1px solid rgba(169,113,59,0.14);font-size:0.83rem;cursor:pointer;',
+      '  color:#d4c8a8}',
+      '.impl:last-child{border-bottom:none}',
+      '.impl:hover{background:rgba(169,113,59,0.1)}',
+      '.impl input{margin:0;flex:0 0 auto}',
+      '.impl .n{color:#d19f6a;white-space:nowrap;flex:0 0 auto;max-width:48%;',
+      '  overflow:hidden;text-overflow:ellipsis}',
+      '.impl .r{flex:1;min-width:0;opacity:0.6;font-size:0.76rem;overflow:hidden;',
+      '  text-overflow:ellipsis;white-space:nowrap}',
+      '.impl .e{flex:0 0 auto;color:#8d8375;font-size:0.7rem;font-style:italic;white-space:nowrap}',
+      '.impl.bp-alerte .e{color:#d19f6a;font-style:normal}',
+      '.impl.bp-gris{opacity:0.45;cursor:default}',
       '.bp-conflit{border:1px solid rgba(169,113,59,0.4);border-left:3px solid #a9713b;',
       '  border-radius:2px;background:rgba(169,113,59,0.08);padding:0.55rem 0.7rem;',
       '  margin:0.2rem 0 0.6rem}',
@@ -742,6 +755,186 @@
     choisirEntree();
   }
 
+  /* ============================================================
+     Conversion en lot : toute la partie ouverte d'un coup
+     ============================================================ */
+  var lotBlocs = [];
+
+  function partieOuverte(){
+    var sections = document.querySelectorAll('.section-panel');
+    for(var i = 0; i < sections.length; i++){
+      if(sections[i].offsetParent !== null) return sections[i];
+    }
+    for(var j = 0; j < sections.length; j++){
+      if(sections[j].style.display !== 'none') return sections[j];
+    }
+    return null;
+  }
+
+  function titrePartie(sec){
+    var t = sec.querySelector('.section-title, .section-header h1, h1');
+    return t ? texte(t).replace(/\s*✎\s*$/, '') : (sec.id || 'la partie ouverte');
+  }
+
+  function ouvrirLot(){
+    var sec = partieOuverte();
+    if(!sec){ signal('Ouvre une partie d\'abord.', true); return; }
+    var cartes = sec.querySelectorAll('.stat-card');
+    if(!cartes.length){
+      ouvrir('<h3>Convertir en appels</h3>' +
+             '<p>Aucun bloc de statistiques figé dans cette partie.</p>' +
+             '<div class="bp-act"><span class="sp"></span>' +
+             '<button class="bp-btn" data-bp="fermer">Fermer</button></div>');
+      return;
+    }
+
+    var boite = ouvrir('<h3>Convertir en appels</h3><p>Lecture des blocs…</p>');
+    lireBestiaire().then(function(liste){
+      lotBlocs = [];
+      for(var i = 0; i < cartes.length; i++){
+        var lu = lireCarte(cartes[i]);
+        var attendu = identifiant(lu.nom, []);
+        var jumeau = liste.filter(function(x){ return x.id === attendu; })[0] || null;
+        var diff = jumeau ? ecarts(lu, jumeau) : [];
+        var identique = jumeau && !diff.length &&
+          memeTexte(lu.armes, jumeau.armes) && memeTexte(lu.competences, jumeau.competences);
+        lotBlocs.push({
+          carte: cartes[i], lu: lu, jumeau: jumeau,
+          multi: lu.profils.length > 1,
+          etat: !jumeau ? 'neuf' : (identique ? 'identique' : 'ecart'),
+          nbDiff: diff.length
+        });
+      }
+
+      var neufs = lotBlocs.filter(function(x){ return x.etat === 'neuf' && !x.multi; }).length;
+      var idem = lotBlocs.filter(function(x){ return x.etat === 'identique'; }).length;
+      var ecart = lotBlocs.filter(function(x){ return x.etat === 'ecart' && !x.multi; }).length;
+      var multi = lotBlocs.filter(function(x){ return x.multi; }).length;
+
+      var h = '<h3>Convertir en appels</h3>';
+      h += '<p>' + lotBlocs.length + ' blocs figés dans « ' + ech(titrePartie(sec)) + ' ». ' +
+           'Chaque bloc coché devient un appel vers le bestiaire. Les blocs identiques ' +
+           'et les nouveaux sont cochés, ceux qui divergent ne le sont pas.</p>';
+
+      h += '<div class="bp-conflit"><b>Ce que dit la lecture</b><div class="bp-diff">';
+      if(idem) h += '<span class="bp-d"><i>' + idem + '</i> déjà identiques</span>';
+      if(neufs) h += '<span class="bp-d"><i>' + neufs + '</i> absents du bestiaire</span>';
+      if(ecart) h += '<span class="bp-d"><i>' + ecart + '</i> divergents</span>';
+      if(multi) h += '<span class="bp-d"><i>' + multi + '</i> à profils multiples</span>';
+      h += '</div>';
+      if(ecart){
+        h += '<label class="bp-choix"><input type="radio" name="bp-lot-mode" value="garder" checked>' +
+             '<span><b>Sur divergence, garder le bestiaire.</b> Le bloc affichera la version enregistrée.</span></label>';
+        h += '<label class="bp-choix"><input type="radio" name="bp-lot-mode" value="ecraser">' +
+             '<span><b>Sur divergence, écraser avec le scénario.</b> L\'entrée du bestiaire est remplacée.</span></label>';
+      }
+      h += '</div>';
+
+      h += '<div class="bp-liste" id="bp-lot-liste">' + lignesLot() + '</div>';
+      h += '<div class="bp-act">' +
+           '<button class="bp-btn" data-bp="lot-tout">Tout cocher</button>' +
+           '<button class="bp-btn" data-bp="lot-rien">Tout décocher</button>' +
+           '<span class="sp"></span>' +
+           '<button class="bp-btn" data-bp="fermer">Annuler</button>' +
+           '<button class="bp-btn pri" data-bp="lot-ok">Convertir</button></div>';
+      boite.innerHTML = h;
+    }).catch(function(err){
+      boite.innerHTML = '<h3>Convertir en appels</h3><p>Lecture impossible : ' + ech(err.message) + '</p>' +
+        '<div class="bp-act"><span class="sp"></span>' +
+        '<button class="bp-btn" data-bp="fermer">Fermer</button></div>';
+    });
+  }
+
+  function lignesLot(){
+    var h = '';
+    for(var i = 0; i < lotBlocs.length; i++){
+      var x = lotBlocs[i];
+      var coche = (x.etat !== 'ecart') && !x.multi;
+      var mot, cls;
+      if(x.multi){ mot = 'profils multiples'; cls = ' bp-gris'; }
+      else if(x.etat === 'identique'){ mot = 'identique'; cls = ''; }
+      else if(x.etat === 'neuf'){ mot = 'à créer'; cls = ''; }
+      else {
+        mot = x.nbDiff ? (x.nbDiff + ' écart' + (x.nbDiff > 1 ? 's' : '')) : 'texte différent';
+        cls = ' bp-alerte';
+      }
+      h += '<label class="impl' + cls + '">' +
+           '<input type="checkbox" data-i="' + i + '"' + (coche ? ' checked' : '') +
+           (x.multi ? ' disabled' : '') + '>' +
+           '<span class="n">' + ech(x.lu.nom) + '</span>' +
+           '<span class="r">' + ech(x.lu.role || '') + '</span>' +
+           '<span class="e">' + mot + '</span></label>';
+    }
+    return h;
+  }
+
+  function lancerLot(){
+    var boites = document.querySelectorAll('#bp-lot-liste input[type=checkbox]');
+    var mode = document.querySelector('input[name="bp-lot-mode"]:checked');
+    mode = mode ? mode.value : 'garder';
+
+    var choisis = [];
+    for(var b = 0; b < boites.length; b++){
+      if(boites[b].checked && !boites[b].disabled) choisis.push(lotBlocs[+boites[b].getAttribute('data-i')]);
+    }
+    if(!choisis.length){ signal('Rien de coché.', true); return; }
+
+    var bouton = document.querySelector('[data-bp="lot-ok"]');
+    if(bouton){ bouton.setAttribute('disabled', 'disabled'); bouton.textContent = 'Conversion…'; }
+
+    var faits = 0, crees = 0, ecrases = 0;
+    var chaine = Promise.resolve();
+
+    choisis.forEach(function(x){
+      chaine = chaine.then(function(){
+        // Rien à écrire : l'entrée existe et on la garde telle quelle.
+        if(x.jumeau && (x.etat === 'identique' || mode === 'garder')){
+          convertirEnRef(x.carte, x.jumeau);
+          faits++;
+          return null;
+        }
+        var e = entreeSimple(x.lu, x.jumeau);
+        return ecrireBestiaire(e).then(function(remplace){
+          if(remplace) ecrases++; else crees++;
+          convertirEnRef(x.carte, e);
+          faits++;
+        });
+      });
+    });
+
+    chaine.then(function(){
+      fermer();
+      lotBlocs = [];
+      var bout = faits + ' bloc' + (faits > 1 ? 's' : '') + ' converti' + (faits > 1 ? 's' : '');
+      if(crees) bout += ', ' + crees + ' entrée' + (crees > 1 ? 's créées' : ' créée');
+      if(ecrases) bout += ', ' + ecrases + ' remplacée' + (ecrases > 1 ? 's' : '');
+      signal(bout + '.');
+    }).catch(function(err){
+      if(bouton){ bouton.removeAttribute('disabled'); bouton.textContent = 'Convertir'; }
+      signal('Conversion interrompue : ' + err.message, true);
+    });
+  }
+
+  // Une entrée de bestiaire depuis un bloc à profil unique.
+  function entreeSimple(lu, jumeau){
+    var e = {
+      id: jumeau ? jumeau.id : identifiant(lu.nom, []),
+      nom: lu.nom,
+      role: lu.role,
+      campagne: lu.campagne,
+      portrait: lu.portrait || (jumeau ? jumeau.portrait : ''),
+      pa: lu.pa, armes: lu.armes, competences: lu.competences,
+      traits: lu.traits, notes: lu.notes, source: 'scenario',
+      profil: {}
+    };
+    var src = lu.profils.length ? lu.profils[0].carac : {};
+    for(var i = 0; i < CARACS.length; i++){
+      var v = src[CARACS[i]] || '';
+      e.profil[CARACS[i]] = (v === '—') ? '' : v;
+    }
+    return e;
+  }
+
   /* ---------- bouton de versement, flottant ----------
      Il vit hors des sections : rien ne part dans les sauvegardes du scénario,
      et rien ne se retrouve dans le fichier exporté. */
@@ -819,9 +1012,11 @@
     var barre = laBarre();
     if(!barre) return;
     var deja = document.getElementById('bp-inserer');
+    var dejaLot = document.getElementById('bp-lot');
     // Un bouton venu d'un fichier exporté n'a pas d'écouteur : on le remplace.
-    if(deja && deja.__bp) return;
+    if(deja && deja.__bp && dejaLot && dejaLot.__bp) return;
     if(deja && deja.parentNode) deja.parentNode.removeChild(deja);
+    if(dejaLot && dejaLot.parentNode) dejaLot.parentNode.removeChild(dejaLot);
 
     var b = document.createElement('button');
     b.type = 'button';
@@ -833,21 +1028,43 @@
     b.addEventListener('click', function(ev){ ev.preventDefault(); choisirEntree(); });
     b.__bp = true;
 
+    var c = document.createElement('button');
+    c.type = 'button';
+    c.className = 'eb-btn eb2-b edit-btn';
+    c.id = 'bp-lot';
+    c.setAttribute('contenteditable', 'false');
+    c.textContent = '⇉ Convertir';
+    c.title = 'Convertir en appels tous les blocs de la partie ouverte';
+    c.addEventListener('click', function(ev){ ev.preventDefault(); ouvrirLot(); });
+    c.__bp = true;
+
     var hote = barre.querySelector('[data-ins="profil"]');
-    if(hote && hote.parentNode){ hote.parentNode.insertBefore(b, hote.nextSibling); return; }
+    if(hote && hote.parentNode){
+      hote.parentNode.insertBefore(b, hote.nextSibling);
+      b.parentNode.insertBefore(c, b.nextSibling);
+      return;
+    }
     var premier = barre.querySelector('button');
-    if(premier){ barre.insertBefore(b, premier); return; }
-    barre.appendChild(b);
+    if(premier){ barre.insertBefore(b, premier); barre.insertBefore(c, b.nextSibling); return; }
+    barre.appendChild(b); barre.appendChild(c);
   }
 
   document.addEventListener('click', function(ev){
     var b = ev.target.closest ? ev.target.closest('[data-bp]') : null;
     if(!b) return;
     var a = b.getAttribute('data-bp');
-    if(a === 'fermer'){ fermer(); cible = null; refACibler = null; return; }
+    if(a === 'fermer'){ fermer(); cible = null; refACibler = null; lotBlocs = []; return; }
     if(a === 'prendre'){ insererEntree(b.getAttribute('data-id')); return; }
     if(a === 'verser-ok'){ verserValider(false); return; }
     if(a === 'verser-ref'){ verserValider(true); return; }
+    if(a === 'lot-ok'){ lancerLot(); return; }
+    if(a === 'lot-tout' || a === 'lot-rien'){
+      var cases = document.querySelectorAll('#bp-lot-liste input[type=checkbox]');
+      for(var c = 0; c < cases.length; c++){
+        if(!cases[c].disabled) cases[c].checked = (a === 'lot-tout');
+      }
+      return;
+    }
     if(a === 'verser'){
       var carte = b.closest('.stat-card');
       if(carte) verserCarte(carte);
@@ -858,7 +1075,7 @@
   // Un fichier exporté depuis le scénario embarque les éléments posés par ce
   // module, privés de leurs écouteurs. On les jette avant de les recréer.
   function nettoyerVestiges(){
-    ['bp-vers', 'bp-style', 'bp-voile', 'bp-toast'].forEach(function(id){
+    ['bp-vers', 'bp-style', 'bp-voile', 'bp-toast', 'bp-lot'].forEach(function(id){
       var el = document.getElementById(id);
       if(el && !el.__bp && el.parentNode) el.parentNode.removeChild(el);
     });
