@@ -4286,7 +4286,7 @@ function wireEdit(){
   }
   async function check(){
     var v=document.getElementById('pwd-input').value;
-    if(await sha(v) === await sha('balrog')){
+    if(await sha(v) === await sha('Von Carstein')){
       sessionStorage.setItem(KEY,'1'); overlay.classList.add('unlocked');
     } else {
       document.getElementById('pwd-error').textContent='Mot de passe incorrect.';
