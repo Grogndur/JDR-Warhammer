@@ -3226,7 +3226,7 @@ document.getElementById('btn-menu').addEventListener('click', toggleSidebar);
     var val = document.getElementById('pwd-input').value;
     var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(val));
     var hash = Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
-    var buf2 = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('abimedenoirceur'));
+    var buf2 = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('Von Carstein'));
     var correct = Array.from(new Uint8Array(buf2)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
     if(hash===correct) {
       sessionStorage.setItem(KEY,'1');
