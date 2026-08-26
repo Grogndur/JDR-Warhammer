@@ -162,6 +162,47 @@
   .titre{display:flex;align-items:baseline;gap:.5ch;margin:0;
     position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
     white-space:nowrap;pointer-events:none}
+
+  /* ---- Bandeau du haut : les commandes de session y ont remplacé
+         le premier groupe du dock, qui gagne autant de hauteur. ---- */
+  .entete-gauche{display:flex;align-items:center;gap:10px;flex:0 1 auto;min-width:0;
+    pointer-events:auto}
+  .entete-grp{padding:5px 7px;background:rgba(36,29,21,.72);backdrop-filter:blur(2px)}
+  .entete-grp .ligne{gap:5px}
+  .entete-grp input[type=text]{width:118px;padding:4px 7px;font-size:12px}
+  .entete-grp button{padding:4px 8px;font-size:11.5px}
+  .entete-grp .toggle{font-size:11px}
+  .entete-droite{margin-left:auto;flex:0 0 auto;pointer-events:auto;
+    display:flex;align-items:center;min-height:1px}
+  header.replie .entete-gauche,header.replie .entete-droite{pointer-events:none}
+  /* Sous cette largeur, le titre chevaucherait les commandes : il s'efface. */
+  @media(max-width:1500px){ header .titre{display:none} }
+  @media(max-width:1700px){ .dock .prefixe-img{display:none} }
+  @media(max-width:1440px){
+    .dock label[for="img-choix"],.dock label[for="amb-choix"]{display:none}
+    .dock label[for="cible"],.dock label[for="custom"]{display:none}
+    .dock #init-msg{max-width:0;padding:0}
+    .dock button{padding:4px 6px;font-size:11px}
+    .dock #img-choix,.dock #amb-choix{max-width:106px}
+    .dock #init-crea{max-width:150px}
+    .dock #init-add{width:96px}
+    .dock #img-url,.dock #amb-fichier{width:82px}
+    .dock #init-round-fin{font-size:0;padding:4px 9px}
+    .dock #init-round-fin::after{content:"⏱";font-size:12px}
+    .dock #init-jets{font-size:0;padding:4px 9px}
+    .dock #init-jets::after{content:"⚄";font-size:13px}
+    .dock #init-ajout{font-size:0;padding:4px 9px}
+    .dock #init-ajout::after{content:"+ PJ";font-size:11px}
+  }
+
+  /* Le panneau caméras replié vient se ranger dans le bandeau et le suit. */
+  .cams.dans-entete{position:static;width:auto;min-width:0;height:auto;min-height:0;
+    resize:none;box-shadow:none;background:rgba(36,29,21,.72);backdrop-filter:blur(2px);
+    border-color:var(--bord)}
+  .cams.dans-entete .cams-tete{border-bottom:0;padding:3px 7px}
+  .cams.dans-entete .cams-tete .pt{font-size:11px}
+  .cams.dans-entete #cams-drag{cursor:default}
+  .cams.dans-entete .jitsi{display:none}
   .titre .comete{color:var(--oxblood-clair);font-size:.8em}
   .titre h1{font-size:clamp(15px,2vw,21px);margin:0;color:var(--laiton)}
   header .spacer{flex:1}
@@ -257,7 +298,12 @@
   body.est-mj .initiative{width:306px;min-height:170px}
   /* Sur téléphone, le dock mange le bas de l'écran : le panneau remonte. */
   @media(max-width:760px){
-    .initiative{top:96px;left:8px;width:auto;right:8px;z-index:26}
+    .entete-gauche{gap:6px;flex-wrap:wrap}
+    .entete-grp{padding:4px 6px}
+    .entete-grp .ligne{gap:4px}
+    .entete-grp input[type=text]{width:88px}
+    .entete-grp button{padding:3px 6px;font-size:11px}
+    .initiative{top:100px;left:8px;width:auto;right:8px;z-index:26}
     body.est-mj .initiative{width:auto}
   }
   .ini-chip{flex-wrap:wrap}
@@ -337,6 +383,23 @@
   .fen .tr{display:inline-block;padding:0 4px;margin:0 3px 3px 0;border-radius:3px;font-size:11px;
     border:1px solid rgba(176,144,42,.3);background:rgba(176,144,42,.12);color:var(--parchemin)}
   .fen .trp{font-size:11px;opacity:.75;margin:0 0 4px}
+
+  /* ---- Dock compacté : trois groupes sur une seule rangée ---- */
+  .dock{gap:6px;padding:6px 8px}
+  .dock .grp{padding:5px 7px;gap:4px}
+  .dock .ligne{gap:5px}
+  .dock label{font-size:10.5px}
+  .dock button{padding:4px 8px;font-size:11.5px}
+  .dock select,.dock input[type=text],.dock input[type=number]{padding:4px 6px;font-size:12px}
+  .dock #cible{width:52px}
+  .dock #custom{width:76px}
+  .dock #init-add{width:112px}
+  .dock #img-url,.dock #amb-fichier{width:94px}
+  .dock #img-choix,.dock #amb-choix{max-width:126px}
+  .dock #amb-vol{width:64px}
+  .dock .prefixe-img{font-size:10px}
+  .dock #init-msg{max-width:132px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dock #jet-secret-loc{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
   /* ---- Vignetage des critiques et des maladresses ---- */
   .vignette{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:0;
@@ -619,8 +682,21 @@
   <div id="dice3d"><div id="dice3d-d"></div><div id="dice3d-u"></div></div>
 
   <header>
-    <a class="retour" href="index.html" title="Retour à l'accueil">← Accueil</a>
+    <div class="entete-gauche">
+      <a class="retour" href="index.html" title="Retour à l'accueil">← Accueil</a>
+      <div class="grp entete-grp">
+        <div class="ligne">
+          <input type="text" id="nom" placeholder="Ton nom" maxlength="24" />
+          <label class="toggle"><input type="checkbox" id="mj" /> MJ</label>
+          <button id="ouvrir-cams" title="Afficher ou masquer les caméras">📹 Caméras</button>
+          <button id="ouvrir-journal" title="Afficher ou masquer le journal">📜 Journal</button>
+          <button id="ouvrir-init" title="Afficher ou masquer l'initiative">⚔ Initiative</button>
+          <button id="ouvrir-dessin" title="Zoom et dessin sur la carte">🖌 Dessin</button>
+        </div>
+      </div>
+    </div>
     <div class="titre"><span class="comete">✦</span><h1>La Table de Warhammer</h1></div>
+    <div class="entete-droite" id="entete-droite"></div>
   </header>
 
   <div class="alerte" id="alerte" style="display:none"></div>
@@ -713,17 +789,6 @@
 
     <div class="grp">
       <div class="ligne">
-        <input type="text" id="nom" placeholder="Ton nom" maxlength="24" />
-        <label class="toggle"><input type="checkbox" id="mj" /> MJ</label>
-        <button id="ouvrir-cams" title="Afficher ou masquer les caméras">📹 Caméras</button>
-        <button id="ouvrir-journal" title="Afficher ou masquer le journal">📜 Journal</button>
-        <button id="ouvrir-init" title="Afficher ou masquer l'initiative">⚔ Initiative</button>
-        <button id="ouvrir-dessin" title="Zoom et dessin sur la carte">🖌 Dessin</button>
-      </div>
-    </div>
-
-    <div class="grp">
-      <div class="ligne">
         <label for="cible">Test</label>
         <input type="number" id="cible" min="1" max="100" placeholder="—" />
         <button data-de="100">d100</button>
@@ -756,11 +821,11 @@
       </div>
       <div class="ligne">
         <input type="text" id="init-add" placeholder="Nom de PJ 42" title="Ajouter un personnage joueur : son nom puis son initiative" />
-        <button id="init-ajout">+ Combattant</button>
+        <button id="init-ajout" title="Ajouter ce personnage joueur">+ PJ</button>
         <button id="init-jets" title="Lancer l'initiative des créatures : 1d10 + Initiative, un jet par groupe">⚄ Init.</button>
         <button id="init-suivant" class="primaire">Tour ▶</button>
-        <button id="init-round-fin" title="Appliquer les pertes de fin de round">Fin de round</button>
-        <button id="init-annuler" title="Annuler le dernier décompte" disabled>Annuler</button>
+        <button id="init-round-fin" title="Appliquer les pertes de fin de round">Fin round</button>
+        <button id="init-annuler" title="Annuler le dernier décompte" disabled>↶</button>
         <button id="init-vider" title="Vider l'initiative">✕</button>
         <span class="secret-loc" id="init-msg"></span>
       </div>
@@ -771,25 +836,24 @@
         <label for="img-choix">Image</label>
         <select id="img-choix"></select>
         <span class="prefixe-img" id="prefixe-img">gallerie/</span>
-        <input type="text" id="img-url" placeholder="nom-image.jpg" />
-        <button class="primaire" id="afficher-img">Afficher</button>
+        <input type="text" id="img-url" placeholder="nom.jpg" title="Fichier dans gallerie/" />
+        <button class="primaire" id="afficher-img" title="Afficher l'image pour toute la table">Afficher</button>
         <button id="vider-img" title="Retirer l'image">✕</button>
       </div>
       <div class="ligne">
         <label for="amb-choix">Ambiance</label>
         <select id="amb-choix"></select>
         <span class="prefixe-img" id="prefixe-son">gallerie/</span>
-        <input type="text" id="amb-fichier" placeholder="nom.mp3" />
+        <input type="text" id="amb-fichier" placeholder="nom.mp3" title="Fichier dans gallerie/" />
         <button class="primaire" id="amb-load">Lancer</button>
         <button id="amb-pause" title="Pause">⏸</button>
         <button id="amb-stop" title="Couper">⏹</button>
         <input type="range" id="amb-vol" min="0" max="100" value="50" title="Volume" />
+        <button id="amb-activer" class="amb-activer" title="Démarrer le son d'ambiance si tu ne l'entends pas">🔊 Son</button>
       </div>
       <div class="galerie" id="galerie"></div>
       <div class="err" id="amb-err"></div>
     </div>
-
-    <button id="amb-activer" class="amb-activer" title="Démarrer le son d'ambiance si tu ne l'entends pas">🔊 Son</button>
 
   </section>
 
@@ -2587,6 +2651,7 @@ $("#initiative").addEventListener("focusout", e=>{
 });
 $("#fermer-init").addEventListener("click", ()=> $("#initiative").classList.add("replie"));
 rendreDeplacable($("#initiative"), $("#init-drag"));
+setTimeout(rangerCams, 0);
 
 if(refInit){
   onValue(refInit, snap=>{
@@ -2644,6 +2709,35 @@ function lancerCams(){
 }
 
 // ---------- Replier le panneau caméras (même principe que la barre du bas) ----------
+// Replié ou détaché, le panneau caméras n'est plus qu'une barre de titre :
+// il va se ranger en haut à droite du bandeau, dont il suit alors le repli.
+// Déplié dans la page, il redevient flottant et déplaçable.
+function rangerCams(){
+  const cams = $("#cams"), hote = $("#entete-droite");
+  if(!cams || !hote) return;
+  const ranger = cams.classList.contains("replie") || camsDetachees();
+  if(ranger){
+    if(cams.parentNode !== hote){
+      cams.dataset.gauche = cams.style.left || "";
+      cams.dataset.haut = cams.style.top || "";
+      cams.dataset.largeur = cams.style.width || "";
+      hote.appendChild(cams);
+    }
+    cams.classList.add("dans-entete");
+    cams.style.left = ""; cams.style.top = ""; cams.style.right = ""; cams.style.width = "";
+  }else{
+    if(cams.classList.contains("dans-entete")){
+      const app = $("#app");
+      if(app) app.insertBefore(cams, $("#journal-panel"));
+      cams.classList.remove("dans-entete");
+      cams.style.left = cams.dataset.gauche || "";
+      cams.style.top = cams.dataset.haut || "";
+      cams.style.width = cams.dataset.largeur || "";
+    }
+  }
+  zoneDes();
+}
+
 function replierCams(replie){
   const cams = $("#cams"), b = $("#cams-replier");
   if(!cams || !b) return;
@@ -2658,6 +2752,7 @@ function replierCams(replie){
   }
   b.textContent = replie ? "▴" : "▾";
   b.title = replie ? "Déplier le panneau caméras" : "Replier le panneau caméras";
+  rangerCams();
 }
 function camsRepliees(){ const c = $("#cams"); return !!(c && c.classList.contains("replie")); }
 
@@ -2723,6 +2818,7 @@ function detacherCams(){
   // On quitte l'appel dans la page : sinon on serait présent deux fois (écho, doublon).
   try{ if(callFrame){ callFrame.destroy(); callFrame = null; } }catch(e){}
   messageCamsDetachees();
+  replierCams(true);
 
   f.document.open();
   f.document.write(pageFenetreCams(url, nom()));
