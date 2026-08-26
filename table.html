@@ -540,7 +540,16 @@
   .prefixe-img + #img-url,.prefixe-img + #amb-fichier{border-radius:0 6px 6px 0;margin-left:-6px}
   .dock button{padding:5px 9px;font-size:12px}
   .dock input[type=range]{width:88px;accent-color:var(--laiton-sombre)}
-  .amb-activer{margin-left:auto;align-self:center}
+  /* Rappel du son : il ne se montre que si le navigateur a refusé la lecture.
+     C'est le joueur qui en a besoin, jamais le MJ, dont le clic sur Lancer
+     vaut déjà autorisation. */
+  .amb-activer{position:fixed;left:50%;transform:translateX(-50%) translateY(8px);
+    z-index:30;padding:7px 14px;font-size:13px;border-radius:9px;
+    border:1px solid var(--laiton);background:rgba(24,18,12,.97);color:var(--parchemin);
+    box-shadow:var(--ombre);cursor:pointer;display:none;opacity:0;
+    transition:opacity .18s ease,transform .18s ease}
+  .amb-activer.on{display:block;opacity:1;transform:translateX(-50%) translateY(0)}
+  .amb-activer:hover{border-color:var(--parchemin);color:#fff}
 
   .gm-only{display:none}
   body.est-mj .gm-only{display:flex}
@@ -849,13 +858,14 @@
         <button id="amb-pause" title="Pause">⏸</button>
         <button id="amb-stop" title="Couper">⏹</button>
         <input type="range" id="amb-vol" min="0" max="100" value="50" title="Volume" />
-        <button id="amb-activer" class="amb-activer" title="Démarrer le son d'ambiance si tu ne l'entends pas">🔊 Son</button>
       </div>
       <div class="galerie" id="galerie"></div>
       <div class="err" id="amb-err"></div>
     </div>
 
   </section>
+
+  <button id="amb-activer" class="amb-activer" title="Le navigateur a bloqué le son : un clic suffit">🔊 Activer le son</button>
 
   <button id="basculer-entete" class="entete-poignee" title="Masquer ou afficher le titre">▴</button>
   <button id="basculer-dock" class="dock-poignee" title="Plier ou afficher la barre">▾</button>
@@ -3032,6 +3042,7 @@ function appliquerAmb(a){
     audioAmb.pause();
     try{ audioAmb.currentTime = 0; }catch(e){}
     audioAmb.removeAttribute("src"); audioAmb.dataset.url = "";
+    montrerRappelSon(false);
     return;
   }
   if(a.url && audioAmb.dataset.url !== a.url){
@@ -3041,9 +3052,13 @@ function appliquerAmb(a){
   if(typeof a.volume === "number") audioAmb.volume = Math.max(0, Math.min(1, a.volume/100));
   if(a.etat === "play"){
     const p = audioAmb.play();
-    if(p && p.catch) p.catch(()=> flashSon("Clique 🔊 Son"));    // lecture bloquée tant qu'on n'a pas cliqué
+    if(p && p.then){
+      p.then(()=> montrerRappelSon(false))
+       .catch(()=> montrerRappelSon(true));   // le navigateur exige un geste
+    }
   } else if(a.etat === "pause"){
     audioAmb.pause();
+    montrerRappelSon(false);
   }
 }
 function pousserAmb(maj){
@@ -3077,8 +3092,15 @@ $("#amb-vol").addEventListener("change", e=>{  // diffusé à la table au relâc
   pousserAmb({ volume: parseInt(e.target.value,10) });
 });
 
+function montrerRappelSon(oui){
+  const b = $("#amb-activer");
+  if(!b) return;
+  b.classList.toggle("on", !!oui);
+  b.style.bottom = (($("#dock") ? $("#dock").offsetHeight : 60) + 14) + "px";
+}
 function flashSon(txt){
   const b = $("#amb-activer");
+  if(!b) return;
   if(!b.dataset.libelle) b.dataset.libelle = b.textContent;
   b.textContent = txt;
   clearTimeout(b.__t);
@@ -3086,14 +3108,23 @@ function flashSon(txt){
 }
 // "🔊 Son" : débloque et relance la lecture sur CHAQUE appareil (politique navigateur)
 $("#amb-activer").addEventListener("click", ()=>{
-  if(ambCourant && ambCourant.url && ambCourant.etat !== "stop"){
-    if(audioAmb.dataset.url !== ambCourant.url){ audioAmb.src = ambCourant.url; audioAmb.dataset.url = ambCourant.url; }
-    if(typeof ambCourant.volume === "number") audioAmb.volume = Math.max(0, Math.min(1, ambCourant.volume/100));
-    const p = audioAmb.play();
-    if(p && p.catch) p.catch(()=>{});
-    flashSon("Son activé ✓");
+  if(!(ambCourant && ambCourant.url && ambCourant.etat !== "stop")){
+    montrerRappelSon(false);
+    return;
+  }
+  if(audioAmb.dataset.url !== ambCourant.url){
+    audioAmb.src = ambCourant.url;
+    audioAmb.dataset.url = ambCourant.url;
+  }
+  if(typeof ambCourant.volume === "number"){
+    audioAmb.volume = Math.max(0, Math.min(1, ambCourant.volume/100));
+  }
+  const p = audioAmb.play();
+  if(p && p.then){
+    p.then(()=>{ flashSon("Son activé ✓"); setTimeout(()=> montrerRappelSon(false), 900); })
+     .catch(()=> flashSon("Toujours bloqué : vérifie l'onglet"));
   } else {
-    flashSon("Aucune ambiance lancée");
+    montrerRappelSon(false);
   }
 });
 </script>
