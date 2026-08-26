@@ -2068,20 +2068,41 @@ function iniJets(){
     initMsg("Aucune créature du bestiaire à lancer.");
     return;
   }
-  const des = {};
-  let groupes = 0;
-  cibles.forEach(c => {
-    if(des[c.bid] === undefined){
-      des[c.bid] = Math.floor(Math.random() * 10) + 1;
-      groupes++;
-    }
-    c.init = (parseInt(c.carI, 10) || 0) + des[c.bid];
-  });
-  pousserInit();
-  const pjs = ordre.length - cibles.length;
-  initMsg(groupes + (groupes > 1 ? " jets" : " jet") + " pour " + cibles.length +
-          " créature" + (cibles.length > 1 ? "s" : "") +
-          (pjs ? ", " + pjs + " PJ à saisir." : "."));
+  // L'Initiative se relit dans le bestiaire au moment du jet : les combattants
+  // ajoutés avant que la table ne la mémorise n'en portent pas, et une entrée
+  // corrigée depuis doit valoir sa nouvelle valeur.
+  initMsg("Lecture des profils…");
+  chargerBestiaire().then(liste => {
+    const parId = {};
+    (liste || []).forEach(e => { parId[e.id] = e; });
+
+    const des = {};
+    let groupes = 0, sansI = 0;
+    cibles.forEach(c => {
+      const e = parId[c.bid];
+      let I = parseInt(e && e.profil && e.profil.I, 10);
+      if(!isFinite(I)) I = parseInt(c.carI, 10);
+      if(!isFinite(I)){ I = 0; sansI++; }
+      c.carI = I;
+      if(e && e.profil){
+        const ag = parseInt(e.profil.Ag, 10);
+        if(isFinite(ag)) c.carAg = ag;
+      }
+      if(des[c.bid] === undefined){
+        des[c.bid] = Math.floor(Math.random() * 10) + 1;
+        groupes++;
+      }
+      c.init = I + des[c.bid];
+    });
+    pousserInit();
+
+    const pjs = ordre.length - cibles.length;
+    let bout = groupes + (groupes > 1 ? " jets" : " jet") + " pour " + cibles.length +
+               " créature" + (cibles.length > 1 ? "s" : "");
+    if(pjs) bout += ", " + pjs + " PJ à saisir";
+    if(sansI) bout += ". " + sansI + " sans Initiative au bestiaire";
+    initMsg(bout + ".");
+  }).catch(() => initMsg("Bestiaire illisible : jets impossibles.", true));
 }
 
 function iniAdd(){
