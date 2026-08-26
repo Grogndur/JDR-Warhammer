@@ -338,6 +338,37 @@
     border:1px solid rgba(176,144,42,.3);background:rgba(176,144,42,.12);color:var(--parchemin)}
   .fen .trp{font-size:11px;opacity:.75;margin:0 0 4px}
 
+  /* ---- Vignetage des critiques et des maladresses ---- */
+  .vignette{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:0;
+    mix-blend-mode:screen;transition:opacity .16s ease-out}
+  .vignette.crit{
+    background:radial-gradient(ellipse at center,
+      rgba(46,214,122,0) 34%, rgba(46,214,122,.20) 66%, rgba(74,255,150,.52) 100%);
+    animation:vig-crit 900ms ease-out forwards}
+  .vignette.fumble{
+    mix-blend-mode:normal;
+    background:radial-gradient(ellipse at center,
+      rgba(70,0,0,0) 26%, rgba(84,6,6,.42) 62%, rgba(46,2,2,.88) 100%);
+    animation:vig-fumble 2400ms ease-in-out forwards}
+  @keyframes vig-crit{
+    0%{opacity:0}
+    9%{opacity:1}
+    38%{opacity:.72}
+    100%{opacity:0}
+  }
+  @keyframes vig-fumble{
+    0%{opacity:0}
+    7%{opacity:.95}   14%{opacity:.42}
+    20%{opacity:.95}  28%{opacity:.30}
+    41%{opacity:.95}  48%{opacity:.42}
+    54%{opacity:.95}  62%{opacity:.30}
+    75%{opacity:.95}  82%{opacity:.42}
+    88%{opacity:.88}  100%{opacity:0}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .vignette.crit,.vignette.fumble{animation-duration:1ms;opacity:0}
+  }
+
   /* ---- Sélecteur de créature du bestiaire ---- */
   .dock #init-crea{display:inline-flex;align-items:center;gap:6px;max-width:230px;
     padding:5px 9px;font-size:13px;text-align:left}
@@ -654,6 +685,8 @@
     <div class="journal" id="journal"></div>
   </aside>
 
+
+  <div class="vignette" id="vignette" aria-hidden="true"></div>
 
   <div class="crea-menu" id="crea-menu">
     <div class="cm-haut">
@@ -1403,6 +1436,107 @@ $("#jet-secret").addEventListener("click", ()=>{
 
 // ---------- Journal ----------
 const journal = $("#journal");
+/* ============================================================
+   Critiques et maladresses : vignetage et son
+   Les sons sont synthétisés : aucun fichier à héberger, rien à charger.
+   ============================================================ */
+let audioEffets = null;
+function ctxAudio(){
+  if(audioEffets) return audioEffets;
+  const C = window.AudioContext || window.webkitAudioContext;
+  if(!C) return null;
+  try{ audioEffets = new C(); }catch(e){ return null; }
+  return audioEffets;
+}
+// Les navigateurs suspendent l'audio tant que rien n'a été cliqué.
+["pointerdown","keydown"].forEach(ev=>{
+  document.addEventListener(ev, ()=>{
+    const c = ctxAudio();
+    if(c && c.state === "suspended") c.resume().catch(()=>{});
+  }, { once:false, passive:true });
+});
+
+// Critique : un éclat court et clair, deux tons qui montent, plus un souffle bref.
+function sonCritique(){
+  const c = ctxAudio(); if(!c) return;
+  const t = c.currentTime;
+  const sortie = c.createGain();
+  sortie.gain.value = 0.22;
+  sortie.connect(c.destination);
+
+  [[1180, 0], [1770, 0.055]].forEach(([f, d], i)=>{
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = "triangle";
+    o.frequency.setValueAtTime(f, t + d);
+    o.frequency.exponentialRampToValueAtTime(f * 0.86, t + d + 0.16);
+    g.gain.setValueAtTime(0.0001, t + d);
+    g.gain.exponentialRampToValueAtTime(i ? 0.9 : 0.6, t + d + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + d + 0.19);
+    o.connect(g); g.connect(sortie);
+    o.start(t + d); o.stop(t + d + 0.22);
+  });
+
+  // le petit souffle métallique de l'impact
+  const n = c.createBufferSource();
+  const buf = c.createBuffer(1, Math.floor(c.sampleRate * 0.05), c.sampleRate);
+  const d0 = buf.getChannelData(0);
+  for(let i = 0; i < d0.length; i++){
+    d0[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d0.length, 3);
+  }
+  n.buffer = buf;
+  const pb = c.createBiquadFilter();
+  pb.type = "bandpass"; pb.frequency.value = 3600; pb.Q.value = 1.1;
+  const gn = c.createGain(); gn.gain.value = 0.35;
+  n.connect(pb); pb.connect(gn); gn.connect(sortie);
+  n.start(t);
+}
+
+// Maladresse : trois battements doubles, graves et sourds. Puis plus rien.
+function sonMaladresse(){
+  const c = ctxAudio(); if(!c) return;
+  const t0 = c.currentTime;
+  const sortie = c.createGain();
+  sortie.gain.value = 0.3;
+  const pb = c.createBiquadFilter();
+  pb.type = "lowpass"; pb.frequency.value = 190;
+  sortie.connect(pb); pb.connect(c.destination);
+
+  function coup(quand, depart, force){
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(depart, quand);
+    o.frequency.exponentialRampToValueAtTime(depart * 0.62, quand + 0.17);
+    g.gain.setValueAtTime(0.0001, quand);
+    g.gain.exponentialRampToValueAtTime(force, quand + 0.014);
+    g.gain.exponentialRampToValueAtTime(0.0001, quand + 0.26);
+    o.connect(g); g.connect(sortie);
+    o.start(quand); o.stop(quand + 0.3);
+  }
+  // boum-boum, boum-boum, boum-boum
+  for(let i = 0; i < 3; i++){
+    const base = t0 + i * 0.72;
+    coup(base, 62, 0.95);
+    coup(base + 0.235, 52, 0.62);
+  }
+}
+
+let vigTimer = null;
+function effetJet(classe){
+  const v = $("#vignette"); if(!v) return;
+  const mots = (" " + String(classe) + " ");
+  const crit = mots.indexOf(" crit ") >= 0;
+  const rate = mots.indexOf(" fumble ") >= 0;
+  if(!crit && !rate) return;
+
+  clearTimeout(vigTimer);
+  v.className = "vignette";
+  void v.offsetWidth;                      // relance l'animation même en rafale
+  v.classList.add(crit ? "crit" : "fumble");
+  vigTimer = setTimeout(()=>{ v.className = "vignette"; }, crit ? 1000 : 2500);
+
+  try{ crit ? sonCritique() : sonMaladresse(); }catch(e){}
+}
+
 function afficherJet(j){
   const boite = journal;
   const el = document.createElement("div");
@@ -1416,7 +1550,10 @@ function afficherJet(j){
   boite.prepend(el);
   while(boite.children.length > 60) boite.lastChild.remove();
   // Les dés 3D tombent sur le plateau partagé : jamais pour un jet secret.
-  if(!j.secret && j.des && (Date.now() - (j.ts||0) < 8000)) lancerDes3D(j.des, j.nom);
+  const frais = (Date.now() - (j.ts||0) < 8000);
+  if(!j.secret && j.des && frais) lancerDes3D(j.des, j.nom);
+  // Un jet secret ne s'annonce pas : ni vignetage, ni son.
+  if(!j.secret && frais) effetJet(j.classe || "");
 }
 function escape(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
