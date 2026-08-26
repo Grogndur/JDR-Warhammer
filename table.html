@@ -339,7 +339,39 @@
   .fen .trp{font-size:11px;opacity:.75;margin:0 0 4px}
 
   /* ---- Sélecteur de créature du bestiaire ---- */
-  .dock #init-crea{max-width:190px;padding:4px 6px;font-size:13px}
+  .dock #init-crea{display:inline-flex;align-items:center;gap:6px;max-width:230px;
+    padding:5px 9px;font-size:13px;text-align:left}
+  .dock #init-crea .ch{opacity:.55;font-size:10px;flex:0 0 auto}
+  .dock #init-crea #init-crea-nom{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dock #init-crea.choisi{border-color:var(--laiton);color:var(--parchemin)}
+
+  .crea-menu{position:fixed;z-index:42;width:340px;max-width:calc(100vw - 16px);
+    display:none;flex-direction:column;overflow:hidden;border-radius:11px;
+    background:rgba(18,14,10,.985);border:1px solid var(--bord);box-shadow:var(--ombre)}
+  .crea-menu.on{display:flex}
+  .cm-haut{display:flex;gap:5px;padding:7px;border-bottom:1px solid var(--bord)}
+  .cm-haut input{flex:1;min-width:0;padding:7px 9px;font-size:14px;border-radius:7px;
+    background:var(--noir-2);border:1px solid var(--bord);color:var(--parchemin);font-family:inherit}
+  .cm-haut input:focus{outline:none;border-color:var(--laiton)}
+  .cm-haut button{padding:0 10px;border-radius:7px;border:1px solid var(--bord);
+    background:rgba(40,32,24,.7);color:var(--parchemin-doux);cursor:pointer;font-size:13px}
+  .cm-haut button:hover{border-color:var(--laiton);color:#fff}
+  .cm-liste{overflow-y:auto;max-height:min(50vh,340px);padding:4px}
+  .cm-groupe{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--laiton);
+    padding:7px 8px 3px;opacity:.75}
+  .cm-l{display:flex;align-items:baseline;gap:7px;width:100%;text-align:left;padding:7px 8px;
+    border:1px solid transparent;border-radius:7px;background:transparent;cursor:pointer;
+    color:var(--parchemin-doux);font-family:inherit;font-size:13px}
+  .cm-l:hover,.cm-l.vise{border-color:var(--laiton);background:rgba(176,144,42,.13)}
+  .cm-l .n{color:var(--parchemin);white-space:nowrap;flex:0 0 auto;max-width:52%;
+    overflow:hidden;text-overflow:ellipsis}
+  .cm-l .r{flex:1;min-width:0;font-size:11px;opacity:.6;overflow:hidden;
+    text-overflow:ellipsis;white-space:nowrap}
+  .cm-l .b{flex:0 0 auto;font-size:11px;color:#e0a08c;font-variant-numeric:tabular-nums}
+  .cm-vide{padding:14px 10px;font-size:12px;opacity:.6;text-align:center}
+  .cm-bas{padding:5px 9px;border-top:1px solid var(--bord);font-size:10px;opacity:.55;
+    letter-spacing:.03em}
+
   .dock .nb-pas{display:inline-flex;align-items:stretch;gap:0;border:1px solid var(--bord);
     border-radius:7px;overflow:hidden;background:var(--noir-2)}
   .dock .nb-pas button{padding:0 11px;font-size:16px;line-height:1;border:0;border-radius:0;
@@ -623,6 +655,15 @@
   </aside>
 
 
+  <div class="crea-menu" id="crea-menu">
+    <div class="cm-haut">
+      <input type="search" id="crea-q" placeholder="Chercher un PNJ, un ennemi, un trait…" autocomplete="off">
+      <button type="button" id="crea-fermer" title="Fermer">✕</button>
+    </div>
+    <div class="cm-liste" id="crea-liste"></div>
+    <div class="cm-bas" id="crea-compte"></div>
+  </div>
+
   <div class="etats-menu" id="etats-menu">
     <div class="em-t">États</div>
     <div id="etats-liste"></div>
@@ -670,7 +711,7 @@
 
     <div class="grp gm-only">
       <div class="ligne">
-        <select id="init-crea" title="Créature ou PNJ du bestiaire"><option value="">Bestiaire…</option></select>
+        <button type="button" id="init-crea" title="Choisir une créature ou un PNJ du bestiaire"><span id="init-crea-nom">Bestiaire…</span> <span class="ch">▾</span></button>
         <span class="nb-pas"><button type="button" id="init-nb-moins" title="Un de moins">−</button><input type="text" inputmode="numeric" id="init-nb" value="1" title="Combien d'exemplaires"><button type="button" id="init-nb-plus" title="Un de plus">+</button></span>
         <button id="init-crea-ajout" class="primaire" title="Ajouter au combat">+</button>
         <button id="init-recharger" title="Relire le bestiaire">⟳</button>
@@ -1533,26 +1574,121 @@ function chargerBestiaire(force){
   return bestiaireEnCours;
 }
 
-function remplirSelecteur(){
-  const sel = $("#init-crea"); if(!sel) return;
-  const garde = sel.value;
-  const parCamp = { bds:[], eclipse:[], "":[] };
-  (bestiaire || []).forEach(e => { (parCamp[e.campagne || ""] || parCamp[""]).push(e); });
-  let h = '<option value="">Bestiaire…</option>';
-  const groupes = [["bds","De Boue et de Sang"],["eclipse","L\u2019Éclipse"],["","Sans campagne"]];
-  groupes.forEach(([cle, titre]) => {
-    const lot = parCamp[cle];
-    if(!lot || !lot.length) return;
-    lot.sort((a,b) => (a.nom||"").localeCompare(b.nom||"", "fr"));
-    h += `<optgroup label="${escape(titre)}">`;
-    lot.forEach(e => {
-      const b = (e.profil && e.profil.B) ? ` · B ${e.profil.B}` : "";
-      h += `<option value="${escape(e.id)}">${escape(e.nom)}${escape(b)}</option>`;
-    });
-    h += "</optgroup>";
+let creaChoisie = "";
+let creaVises = [];
+let creaVise = -1;
+
+function nomCampagneLong(c){
+  if(c === "bds") return "De Boue et de Sang";
+  if(c === "eclipse") return "L\u2019Éclipse";
+  return "Sans campagne";
+}
+
+function texteRecherche(e){
+  if(e.__cle) return e.__cle;
+  const traits = (Array.isArray(e.traits) ? e.traits : (e.traits ? Object.values(e.traits) : []))
+    .map(t => (t && t.nom) || String(t || "")).join(" ");
+  e.__cle = [e.nom, e.role, e.competences, e.armes, traits, nomCampagneLong(e.campagne)]
+    .join(" ")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  return e.__cle;
+}
+
+function sansAccent(s){
+  return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+function majBoutonCrea(){
+  const el = $("#init-crea-nom"), b = $("#init-crea");
+  if(!el || !b) return;
+  const e = (bestiaire || []).find(x => x.id === creaChoisie);
+  el.textContent = e ? e.nom : "Bestiaire…";
+  b.classList.toggle("choisi", !!e);
+}
+
+function rendreListeCrea(){
+  const liste = $("#crea-liste"), compte = $("#crea-compte");
+  if(!liste) return;
+  const q = sansAccent($("#crea-q") ? $("#crea-q").value.trim() : "");
+  const mots = q ? q.split(/\s+/) : [];
+  const tout = bestiaire || [];
+  creaVises = tout.filter(e => {
+    if(!mots.length) return true;
+    const cle = texteRecherche(e);
+    return mots.every(m => cle.indexOf(m) >= 0);
   });
-  sel.innerHTML = h;
-  if(garde) sel.value = garde;
+  creaVises.sort((a, b) => {
+    const ca = a.campagne || "zz", cb = b.campagne || "zz";
+    if(ca !== cb) return ca < cb ? -1 : 1;
+    return String(a.nom || "").localeCompare(String(b.nom || ""), "fr");
+  });
+  creaVise = creaVises.length ? 0 : -1;
+
+  if(!tout.length){
+    liste.innerHTML = `<div class="cm-vide">Bestiaire vide en base.<br>Ouvre mj/Bestiaire.html et clique sur Push.</div>`;
+    if(compte) compte.textContent = "";
+    return;
+  }
+  if(!creaVises.length){
+    liste.innerHTML = `<div class="cm-vide">Rien qui corresponde.</div>`;
+    if(compte) compte.textContent = tout.length + " entrées au bestiaire";
+    return;
+  }
+
+  let h = "", campActuelle = null;
+  creaVises.forEach((e, i) => {
+    const c = e.campagne || "";
+    if(c !== campActuelle){
+      campActuelle = c;
+      h += `<div class="cm-groupe">${escape(nomCampagneLong(c))}</div>`;
+    }
+    const b = (e.profil && e.profil.B) ? ("B " + e.profil.B) : "";
+    h += `<button type="button" class="cm-l${i === creaVise ? " vise" : ""}" data-i="${i}" data-id="${escape(e.id)}">` +
+         `<span class="n">${escape(e.nom)}</span>` +
+         `<span class="r">${escape(e.role || "")}</span>` +
+         `<span class="b">${escape(b)}</span></button>`;
+  });
+  liste.innerHTML = h;
+  if(compte){
+    compte.textContent = creaVises.length === tout.length
+      ? (tout.length + " entrées · Entrée pour choisir la première")
+      : (creaVises.length + " sur " + tout.length);
+  }
+}
+
+function ouvrirMenuCrea(){
+  const menu = $("#crea-menu"), b = $("#init-crea");
+  if(!menu || !b) return;
+  chargerBestiaire().then(() => {
+    rendreListeCrea();
+    menu.classList.add("on");
+    const r = b.getBoundingClientRect();
+    const h = menu.offsetHeight, w = menu.offsetWidth;
+    let x = r.left, y = r.top - h - 6;
+    if(y < 8) y = Math.min(window.innerHeight - h - 8, r.bottom + 6);
+    if(x + w > window.innerWidth - 8) x = Math.max(8, window.innerWidth - w - 8);
+    menu.style.left = Math.max(8, x) + "px";
+    menu.style.top = Math.max(8, y) + "px";
+    const q = $("#crea-q");
+    if(q && window.innerWidth > 760){ q.focus(); q.select(); }
+  });
+}
+
+function fermerMenuCrea(){
+  const menu = $("#crea-menu");
+  if(menu) menu.classList.remove("on");
+}
+
+function choisirCrea(id){
+  creaChoisie = id || "";
+  majBoutonCrea();
+  fermerMenuCrea();
+}
+
+function remplirSelecteur(){
+  majBoutonCrea();
+  const menu = $("#crea-menu");
+  if(menu && menu.classList.contains("on")) rendreListeCrea();
 }
 
 function initMsg(txt){
@@ -1576,8 +1712,8 @@ function nomLibre(base){
 }
 
 function iniAddCrea(){
-  const sel = $("#init-crea"); if(!sel || !sel.value) return;
-  const e = (bestiaire || []).find(x => x.id === sel.value);
+  if(!creaChoisie){ ouvrirMenuCrea(); return; }
+  const e = (bestiaire || []).find(x => x.id === creaChoisie);
   if(!e){ initMsg("Créature introuvable."); return; }
   const nb = nbExemplaires();
   const bmax = parseInt(e.profil && e.profil.B, 10);
@@ -1962,7 +2098,39 @@ $("#init-add").addEventListener("keydown", e=>{ if(e.key==="Enter") iniAdd(); })
 $("#init-suivant").addEventListener("click", iniSuivant);
 $("#init-vider").addEventListener("click", iniVider);
 $("#init-crea-ajout").addEventListener("click", iniAddCrea);
-$("#init-crea").addEventListener("keydown", e=>{ if(e.key==="Enter") iniAddCrea(); });
+$("#init-crea").addEventListener("click", ()=>{
+  const menu = $("#crea-menu");
+  if(menu && menu.classList.contains("on")) fermerMenuCrea(); else ouvrirMenuCrea();
+});
+$("#crea-fermer").addEventListener("click", fermerMenuCrea);
+$("#crea-q").addEventListener("input", rendreListeCrea);
+$("#crea-q").addEventListener("keydown", e=>{
+  if(e.key === "Escape"){ e.preventDefault(); fermerMenuCrea(); $("#init-crea").focus(); return; }
+  if(e.key === "Enter"){
+    e.preventDefault();
+    if(creaVise >= 0 && creaVises[creaVise]) choisirCrea(creaVises[creaVise].id);
+    return;
+  }
+  if(e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+  e.preventDefault();
+  if(!creaVises.length) return;
+  creaVise = (creaVise + (e.key === "ArrowDown" ? 1 : -1) + creaVises.length) % creaVises.length;
+  const lignes = document.querySelectorAll("#crea-liste .cm-l");
+  lignes.forEach((el, i) => el.classList.toggle("vise", i === creaVise));
+  const actif = lignes[creaVise];
+  if(actif && actif.scrollIntoView) actif.scrollIntoView({ block:"nearest" });
+});
+$("#crea-liste").addEventListener("click", e=>{
+  const b = e.target.closest(".cm-l"); if(!b) return;
+  choisirCrea(b.getAttribute("data-id"));
+});
+document.addEventListener("pointerdown", e=>{
+  const menu = $("#crea-menu");
+  if(!menu || !menu.classList.contains("on")) return;
+  if(e.target.closest("#crea-menu") || e.target.closest("#init-crea")) return;
+  fermerMenuCrea();
+});
+window.addEventListener("resize", fermerMenuCrea);
 $("#init-round-fin").addEventListener("click", ()=> finDeRound(false));
 $("#init-annuler").addEventListener("click", annulerDecompte);
 $("#init-recharger").addEventListener("click", ()=>{
