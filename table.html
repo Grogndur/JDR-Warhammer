@@ -152,11 +152,11 @@
     border:1px solid var(--bord);border-bottom:0;border-radius:8px 8px 0 0;
     background:linear-gradient(180deg,var(--surface-2),var(--surface));color:var(--laiton)}
   .dock-poignee:active{transform:translateY(1px)}
-  .entete-poignee{position:fixed;left:12px;top:0;z-index:29;
+  .entete-poignee{position:fixed;left:50%;transform:translateX(-50%);top:0;z-index:29;
     height:18px;line-height:16px;padding:0 20px;font-size:11px;cursor:pointer;
     border:1px solid var(--bord);border-top:0;border-radius:0 0 8px 8px;
     background:rgba(8,6,4,.92);color:var(--parchemin-doux);pointer-events:auto}
-  .entete-poignee:active{transform:translateY(-1px)}
+  .entete-poignee:active{transform:translateX(-50%) translateY(-1px)}
   header.replie{opacity:0;pointer-events:none}
   header.replie .retour{pointer-events:none}
   .titre{display:flex;align-items:baseline;gap:.5ch;margin:0;
@@ -510,7 +510,7 @@
   #dice3d canvas{display:block;width:100%;height:100%;background:transparent;border:0}
 
   /* ---- Caméras flottantes, déplaçables et redimensionnables ---- */
-  .cams{position:absolute;top:52px;left:12px;width:340px;height:250px;z-index:25;
+  .cams{position:absolute;top:60px;left:12px;width:340px;height:250px;z-index:25;
     border:1px solid var(--laiton-sombre);border-radius:10px;overflow:hidden;
     background:var(--noir-2);display:flex;flex-direction:column;
     resize:both;min-width:170px;min-height:120px;box-shadow:var(--ombre)}
@@ -576,7 +576,7 @@
   body.est-mj .gm-only{display:flex}
 
   /* Journal des jets (panneau vertical, à droite) */
-  .journal-panel{position:fixed;top:52px;bottom:104px;right:0;width:236px;z-index:24;
+  .journal-panel{position:fixed;top:58px;bottom:104px;right:0;width:236px;z-index:24;
     display:flex;flex-direction:column;overflow:hidden;
     background:rgba(18,14,10,.93);border:1px solid var(--bord);border-right:0;
     border-radius:10px 0 0 10px;box-shadow:var(--ombre)}
@@ -2333,6 +2333,17 @@ function pastilleEtats(c){
 }
 
 // Le panneau ne doit jamais passer sous le dock : on mesure au lieu de deviner.
+// Le journal s'arrête juste au-dessus du dock quand il est déplié, et descend
+// quand le dock est replié. La hauteur du dock varie avec la largeur de l'écran :
+// on la mesure au lieu de l'écrire en dur.
+function bornerJournal(){
+  const jp = $("#journal-panel"), dock = $("#dock");
+  if(!jp) return;
+  const plie = !dock || dock.classList.contains("replie");
+  jp.style.bottom = (plie ? 14 : dock.offsetHeight + 10) + "px";
+}
+window.addEventListener("resize", bornerJournal);
+
 function bornerInitiative(){
   const panel = $("#initiative"); if(!panel) return;
   const dock = $("#dock");
@@ -2683,6 +2694,7 @@ $("#initiative").addEventListener("focusout", e=>{
 $("#fermer-init").addEventListener("click", ()=> $("#initiative").classList.add("replie"));
 rendreDeplacable($("#initiative"), $("#init-drag"));
 setTimeout(rangerCams, 0);
+setTimeout(bornerJournal, 0);
 
 if(refInit){
   onValue(refInit, snap=>{
@@ -2717,7 +2729,7 @@ $("#mj").addEventListener("change", e=>{
   if(!e.target.checked) fermerToutesFenetres();
   if(e.target.checked) preparerBestiaire();
   rendreInit();
-  majPoignee(); zoneDes(); bornerInitiative();
+  majPoignee(); zoneDes(); bornerInitiative(); bornerJournal();
 });
 
 // ---------- Caméras (Daily, encastrées dans la page) ----------
@@ -2929,7 +2941,10 @@ $("#cams-detacher").addEventListener("click", detacherCams);
 $("#cams-replier").addEventListener("click", ()=> replierCams(!camsRepliees()));
 
 // ---------- Journal : afficher/masquer ----------
-$("#ouvrir-journal").addEventListener("click", ()=>{ $("#journal-panel").classList.toggle("replie"); zoneDes(); });
+$("#ouvrir-journal").addEventListener("click", ()=>{
+  $("#journal-panel").classList.toggle("replie");
+  bornerJournal(); zoneDes();
+});
 $("#fermer-journal").addEventListener("click", ()=>{ $("#journal-panel").classList.add("replie"); zoneDes(); });
 
 // ---------- Replier la barre du bas pour agrandir l'image ----------
@@ -2954,7 +2969,10 @@ $("#basculer-entete").addEventListener("click", ()=>{
 });
 window.addEventListener("resize", majEntete);
 setTimeout(majEntete, 0);
-$("#basculer-dock").addEventListener("click", ()=>{ $("#dock").classList.toggle("replie"); majPoignee(); zoneDes(); bornerInitiative(); });
+$("#basculer-dock").addEventListener("click", ()=>{
+  $("#dock").classList.toggle("replie");
+  majPoignee(); zoneDes(); bornerInitiative(); bornerJournal();
+});
 window.addEventListener("resize", majPoignee);
 setTimeout(majPoignee, 0);
 
