@@ -246,12 +246,46 @@
      que la recherche interne du scénario retrouve la scène. */
 
   function refDepuisEntree(e){
-    var h = '<div class="stat-ref" data-bid="' + ech(e.id) + '">';
+    var h = '<div class="stat-ref open" data-bid="' + ech(e.id) + '">';
     h += '<div class="stat-head">';
+    h += '<button class="sr-plier" type="button" contenteditable="false" ' +
+         'title="Plier ou déplier ce profil">\u25B8</button>';
     h += '<span class="stat-name">' + ech(e.nom) + '</span>';
     h += '<span class="stat-kind">' + ech(e.role || '') + '</span>';
     h += '</div><div class="sr-hote"></div></div>';
     return h;
+  }
+
+  /* Les blocs posés avant cette version n'ont pas de chevron : on le greffe
+     au passage, sans quoi rien n'indiquerait qu'ils se plient. */
+  function greffonPliage(bloc){
+    var tete = bloc.querySelector('.stat-head');
+    if(!tete || tete.querySelector('.sr-plier')) return;
+    var b = document.createElement('button');
+    b.className = 'sr-plier';
+    b.type = 'button';
+    b.setAttribute('contenteditable', 'false');
+    b.title = 'Plier ou déplier ce profil';
+    b.textContent = '\u25B8';
+    tete.insertBefore(b, tete.firstChild);
+    if(!bloc.classList.contains('plie')) bloc.classList.add('open');
+  }
+
+  function brancherPliage(){
+    if(document.__bpPliage) return;
+    document.__bpPliage = true;
+    document.addEventListener('click', function(e){
+      var t = e.target;
+      var b = t && t.closest ? t.closest('.sr-plier') : null;
+      if(!b) return;
+      var bloc = b.closest('.stat-ref');
+      if(!bloc) return;
+      e.preventDefault();
+      e.stopPropagation();
+      bloc.classList.toggle('open');
+      bloc.classList.toggle('plie', !bloc.classList.contains('open'));
+      marquer(bloc);
+    }, true);
   }
 
   var CSS_SHADOW = [
@@ -305,6 +339,7 @@
   }
 
   function peindreRef(bloc){
+    greffonPliage(bloc);
     var hote = bloc.querySelector('.sr-hote');
     if(!hote) return;
     var bid = bloc.getAttribute('data-bid') || '';
@@ -474,7 +509,19 @@
       '  transition:opacity 0.18s,transform 0.18s}',
       '.bp-toast.on{opacity:1;transform:translateX(-50%) translateY(0)}',
       '.bp-toast.err{border-color:rgba(139,26,26,0.7);color:#e5a08e}',
-      '@media print{#bp-vers,.bp-voile,.bp-toast{display:none !important}}'
+      // Pliage du bloc de profil, sur le modèle des fiches du scénario.
+      '.stat-ref > .stat-head{cursor:default}',
+      '.sr-plier{background:none;border:0;padding:0 0.35rem 0 0;margin:0;cursor:pointer;',
+      '  color:var(--CUI-light,#d19a5e);font-size:0.6rem;line-height:1;flex:0 0 auto;',
+      '  transition:transform 0.18s;display:inline-block;align-self:center}',
+      '.sr-plier:hover{color:var(--parchment,#f0e8d8)}',
+      '.stat-ref.open > .stat-head .sr-plier{transform:rotate(90deg)}',
+      '.stat-ref:not(.open) > .sr-hote{display:none}',
+      '.stat-ref:not(.open) > .stat-head{border-bottom:0}',
+      // Déplacement d'un bout à l'autre, pour ne plus remonter coup par coup.
+      '.bt button[data-b="tout-haut"],.bt button[data-b="tout-bas"]{font-size:0.85rem}',
+      '@media print{#bp-vers,.bp-voile,.bp-toast,.sr-plier{display:none !important}',
+      '  .stat-ref:not(.open) > .sr-hote{display:block !important}}'
     ].join('\n');
     document.head.appendChild(css);
   }
@@ -554,6 +601,60 @@
     });
   }
 
+/* ---------- où poser le bloc ----------
+   Insérer en fin de scène obligeait à remonter le bloc coup par coup, ce qui
+   est pénible au clavier et impraticable au doigt. On retient donc le dernier
+   endroit touché dans la scène, et le profil se pose juste après. */
+
+  var dernierAncre = null;
+
+  function estBlocDeScene(el, scene){
+    return el && el.parentNode === scene && el.nodeType === 1;
+  }
+
+  function ancreDepuis(noeud, scene){
+    while(noeud && noeud !== scene){
+      if(estBlocDeScene(noeud, scene)) return noeud;
+      noeud = noeud.parentNode;
+    }
+    return null;
+  }
+
+  function suivreAncre(){
+    if(document.__bpAncre) return;
+    document.__bpAncre = true;
+    document.addEventListener('click', function(e){
+      var t = e.target;
+      if(!t || !t.closest) return;
+      if(t.closest('.bp-voile') || t.closest('#bp-vers') || t.closest('.bt')) return;
+      var scene = t.closest('.scene-panel');
+      if(!scene) return;
+      var a = ancreDepuis(t, scene);
+      if(a) dernierAncre = a;
+    }, true);
+  }
+
+  // Le curseur d'édition prime : c'est l'intention la plus explicite.
+  function ancreDuCurseur(scene){
+    var sel = window.getSelection && window.getSelection();
+    if(!sel || !sel.rangeCount) return null;
+    var n = sel.getRangeAt(0).startContainer;
+    if(n.nodeType === 3) n = n.parentNode;
+    if(!n || !scene.contains(n)) return null;
+    return ancreDepuis(n, scene);
+  }
+
+  function poserRef(scene, e){
+    var ancre = ancreDuCurseur(scene);
+    if(!ancre && dernierAncre && scene.contains(dernierAncre)) ancre = dernierAncre;
+    if(ancre && ancre.parentNode === scene){
+      ancre.insertAdjacentHTML('afterend', refDepuisEntree(e));
+      return ancre.nextElementSibling;
+    }
+    scene.insertAdjacentHTML('beforeend', refDepuisEntree(e));
+    return scene.lastElementChild;
+  }
+
   function insererEntree(id){
     var e = (cacheBestiaire || []).filter(function(x){ return x.id === id; })[0];
     if(!e){ signal('Entrée introuvable.', true); return; }
@@ -583,12 +684,15 @@
       }
     }
     if(!visible){ signal('Ouvre une scène d\'abord.', true); fermer(); return; }
-    visible.insertAdjacentHTML('beforeend', refDepuisEntree(e));
-    var carte = visible.lastElementChild;
+    var carte = poserRef(visible, e);
     peindreRef(carte);
     marquer(visible);
+    dernierAncre = carte;
     fermer();
-    signal('Profil appelé : ' + e.nom);
+    var place = (carte && carte !== visible.lastElementChild)
+      ? 'Profil posé sous le bloc courant : '
+      : 'Profil appelé : ';
+    signal(place + e.nom);
     if(carte && carte.scrollIntoView) carte.scrollIntoView({ block:'center', behavior:'smooth' });
   }
 
@@ -1186,19 +1290,87 @@
     });
   }
 
+/* ---------- barre de bloc : aller au bout d'un coup ----------
+   Le scénario ne sait que monter ou descendre d'un cran. Sur téléphone, sortir
+   un bloc du bas d'une longue scène demandait vingt appuis. */
+
+  function enrichirBarre(){
+    // Un export antérieur a figé plusieurs barres dans le fichier : on les
+    // équipe toutes, et l'action passe par le document, pas par une barre
+    // précise, ce qui la rend insensible à celle qui est réellement active.
+    var barres = document.querySelectorAll('.bt');
+    for(var i = 0; i < barres.length; i++){
+      var bt = barres[i];
+      if(bt.querySelector('[data-b="tout-haut"]')) continue;
+      var haut = bt.querySelector('[data-b="haut"]');
+      var bas  = bt.querySelector('[data-b="bas"]');
+      if(!haut || !bas) continue;
+
+      var b1 = document.createElement('button');
+      b1.type = 'button';
+      b1.setAttribute('data-b', 'tout-haut');
+      b1.title = 'Placer tout en haut de la scène';
+      b1.innerHTML = '\u21C8';
+      var b2 = document.createElement('button');
+      b2.type = 'button';
+      b2.setAttribute('data-b', 'tout-bas');
+      b2.title = 'Placer tout en bas de la scène';
+      b2.innerHTML = '\u21CA';
+
+      haut.parentNode.insertBefore(b1, haut);
+      bas.parentNode.insertBefore(b2, bas.nextSibling);
+    }
+    brancherBout();
+  }
+
+  function brancherBout(){
+    if(document.__bpBout) return;
+    document.__bpBout = true;
+    document.addEventListener('click', function(e){
+      var b = e.target && e.target.closest ? e.target.closest('[data-b]') : null;
+      if(!b) return;
+      var a = b.getAttribute('data-b');
+      if(a !== 'tout-haut' && a !== 'tout-bas') return;
+      e.preventDefault();
+      e.stopPropagation();
+      var el = document.querySelector('.bt-cible');
+      if(!el || !el.parentNode){ signal('Sélectionne un bloc d\'abord.', true); return; }
+      var par = el.parentNode;
+      if(a === 'tout-haut'){
+        // La barre de titre de scène doit rester en tête.
+        var premier = par.firstElementChild;
+        if(premier && premier.classList.contains('scene-title-bar')) premier = premier.nextElementSibling;
+        if(!premier || premier === el){ signal('Déjà en haut.', true); return; }
+        par.insertBefore(el, premier);
+        signal('Bloc placé en haut.');
+      }else{
+        if(par.lastElementChild === el){ signal('Déjà en bas.', true); return; }
+        par.appendChild(el);
+        signal('Bloc placé en bas.');
+      }
+      marquer(el);
+      if(el.scrollIntoView) el.scrollIntoView({ block:'center', behavior:'smooth' });
+    }, true);
+  }
+
   function demarrer(){
     nettoyerVestiges();
     styles();
     boutonVerser();
     suivreSurvol();
     brancherBarre();
+    brancherPliage();
+    suivreAncre();
+    enrichirBarre();
     peindreRefs();
     // Les scénarios remplacent des sections entières en direct, et la barre
     // d'édition peut être reconstruite : on se rebranche sur ce qui apparaît.
     var attente = null;
     var obs = new MutationObserver(function(){
       clearTimeout(attente);
-      attente = setTimeout(function(){ brancherBarre(); peindreRefs(); placerBouton(); }, 250);
+      attente = setTimeout(function(){
+        brancherBarre(); enrichirBarre(); peindreRefs(); placerBouton();
+      }, 250);
     });
     var racine = document.getElementById('main') || document.querySelector('.main') || document.body;
     obs.observe(racine, { childList:true, subtree:true });
