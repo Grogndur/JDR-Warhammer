@@ -929,52 +929,62 @@ function texteDeSection(sec){
   var bouts = [];
   if(sec.title) bouts.push(sec.title);
   if(sec.note) bouts.push(sec.note);
-  if(Array.isArray(sec.items)) bouts = bouts.concat(sec.items);
-  if(Array.isArray(sec.rows)){
-    sec.rows.forEach(function(r){
-      if(r && Array.isArray(r.c)) bouts.push(r.c.join(' · '));
-    });
-  }
+  tab(sec.items).forEach(function(it){ if(it) bouts.push(String(it)); });
+  tab(sec.rows).forEach(function(r){
+    if(r) bouts.push(tab(r.c).join(' · '));
+  });
   if(sec.foot) bouts.push(sec.foot);
   return bouts.join('\n');
+}
+
+/* Firebase efface les tableaux vides et renumérote parfois en objet :
+   on remet tout d'aplomb avant de lire. */
+function tab(x){
+  if(Array.isArray(x)) return x;
+  if(x && typeof x === 'object'){
+    var k = Object.keys(x).sort(function(a, b){ return a - b; });
+    return k.map(function(c){ return x[c]; });
+  }
+  return [];
 }
 
 function moissonner(d, payload){
   var lot = [];
   if(!payload) return lot;
-  var secs = payload.sections;
-  if(secs && !Array.isArray(secs)) secs = Object.keys(secs).map(function(k){ return secs[k]; });
-  if(Array.isArray(secs)){
-    secs.forEach(function(sec){
+
+  function avaler(secs, prefixe){
+    tab(secs).forEach(function(sec){
       if(!sec) return;
-      lot.push({ doc:d, titre:sec.title || '', texte:texteDeSection(sec) });
+      var titre = sec.title || '';
+      if(prefixe) titre = titre ? prefixe + ' · ' + titre : prefixe;
+      lot.push({ doc:d, titre:titre, texte:texteDeSection(sec) });
     });
   }
-  var leg = payload.legend;
-  if(leg && !Array.isArray(leg)) leg = Object.keys(leg).map(function(k){ return leg[k]; });
-  if(Array.isArray(leg)){
-    leg.forEach(function(l){
-      if(l && l.term) lot.push({ doc:d, titre:'Légende', texte:l.term + ' : ' + (l.def || '') });
+
+  // Deux générations de documents cohabitent : les uns portent sections à la
+  // racine, les autres les rangent dans groups.
+  avaler(payload.sections, '');
+  tab(payload.groups).forEach(function(g){
+    if(!g) return;
+    avaler(g.sections, g.title || '');
+    if(g.note) lot.push({ doc:d, titre:g.title || '', texte:g.note });
+  });
+  if(payload.intro) lot.push({ doc:d, titre:'Introduction', texte:payload.intro });
+  tab(payload.legend).forEach(function(l){
+    if(l && l.term) lot.push({ doc:d, titre:'Légende', texte:l.term + ' : ' + (l.def || '') });
+  });
+  tab(payload.entrees).forEach(function(e){
+    if(!e || !e.nom) return;
+    var nomsTraits = tab(e.traits).map(function(t){
+      return (t && t.nom) || String(t || '');
+    }).join(', ');
+    lot.push({
+      doc:d,
+      titre:e.nom,
+      texte:[e.nom, e.role, nomsTraits, e.competences, e.armes, e.notes]
+            .filter(Boolean).join(' · ')
     });
-  }
-  var ent = payload.entrees;
-  if(ent && !Array.isArray(ent)) ent = Object.keys(ent).map(function(k){ return ent[k]; });
-  if(Array.isArray(ent)){
-    ent.forEach(function(e){
-      if(!e || !e.nom) return;
-      var traits = e.traits;
-      if(traits && !Array.isArray(traits)) traits = Object.keys(traits).map(function(k){ return traits[k]; });
-      var nomsTraits = Array.isArray(traits)
-        ? traits.map(function(t){ return (t && t.nom) || String(t || ''); }).join(', ')
-        : '';
-      lot.push({
-        doc:d,
-        titre:e.nom,
-        texte:[e.nom, e.role, nomsTraits, e.competences, e.armes, e.notes]
-              .filter(Boolean).join(' · ')
-      });
-    });
-  }
+  });
   return lot;
 }
 
