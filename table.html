@@ -312,6 +312,7 @@
   .ini-b button{padding:0 5px;font-size:13px;line-height:18px;border-radius:5px;
     border:1px solid var(--bord);background:rgba(40,32,24,.7);color:var(--parchemin-doux);cursor:pointer}
   .ini-b button:hover{border-color:var(--laiton)}
+  .vers-grimoire{font-size:11px;line-height:1}
   .ini-chip.abattu{border-color:var(--oxblood);background:rgba(120,26,26,.22)}
   .ini-chip.abattu .ini-b input{color:#e58e78;border-color:var(--oxblood)}
   .ini-crit{width:100%;font-size:10px;letter-spacing:.03em;color:#e58e78;display:none;padding-top:2px}
@@ -800,6 +801,16 @@
 
   <div class="vignette" id="vignette" aria-hidden="true"></div>
 
+  <div class="crea-menu" id="pj-menu">
+    <div class="cm-haut">
+      <span style="flex:1;align-self:center;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--laiton);padding-left:4px">Personnages joueurs</span>
+      <button type="button" id="pj-relire" title="Relire les fiches et remettre les Blessures à jour">⟳</button>
+      <button type="button" id="pj-fermer" title="Fermer">✕</button>
+    </div>
+    <div class="cm-liste" id="pj-liste"></div>
+    <div class="cm-bas">Lecture seule : la table ne modifie jamais une fiche.</div>
+  </div>
+
   <div class="crea-menu" id="crea-menu">
     <div class="cm-haut">
       <input type="search" id="crea-q" placeholder="Chercher un PNJ, un ennemi, un trait…" autocomplete="off">
@@ -853,6 +864,7 @@
       <div class="ligne">
         <input type="text" id="init-add" placeholder="Nom de PJ 42" title="Ajouter un personnage joueur : son nom puis son initiative" />
         <button id="init-ajout" title="Ajouter ce personnage joueur">+ PJ</button>
+        <button id="init-pj-fiches" title="Ajouter des personnages depuis leurs fiches, avec leurs Blessures">☩ Fiches</button>
         <button id="init-jets" title="Lancer l'initiative des créatures : 1d10 + Initiative, un jet par groupe">⚄ Init.</button>
         <button id="init-suivant" class="primaire">Tour ▶</button>
         <button id="init-round-fin" title="Appliquer les pertes de fin de round">Fin round</button>
@@ -2227,6 +2239,136 @@ function iniDup(id){
   pousserInit();
 }
 
+// ---------- Personnages joueurs, importés depuis leurs fiches ----------
+// L'annuaire vit dans personnages/<id>, la fiche elle-même dans fiches/<id>.
+// On lit les deux pour obtenir le nom, les Blessures et les caractéristiques
+// qui départagent l'initiative. La lecture est à sens unique : la table ne
+// touche jamais à la fiche d'un joueur.
+const refAnnuaire = db ? ref(db, "personnages") : null;
+let fichesPJ = null;
+
+function chargerFiches(force){
+  if(fichesPJ && !force) return Promise.resolve(fichesPJ);
+  if(!refAnnuaire) return Promise.resolve([]);
+  return get(refAnnuaire).then(snap => {
+    const v = snap.val() || {};
+    const ids = Object.keys(v);
+    return Promise.all(ids.map(id =>
+      get(ref(db, "fiches/" + id))
+        .then(s2 => ({ id, annuaire: v[id] || {}, fiche: s2.val() || {} }))
+        .catch(() => ({ id, annuaire: v[id] || {}, fiche: {} }))
+    ));
+  }).then(lot => {
+    fichesPJ = lot.filter(x => x.fiche && (x.fiche.woundsMax || x.fiche.identite || x.fiche.stats));
+    fichesPJ.sort((a, b) => nomFiche(a).localeCompare(nomFiche(b), "fr"));
+    return fichesPJ;
+  }).catch(e => {
+    console.warn("Fiches indisponibles :", e);
+    return [];
+  });
+}
+
+function nomFiche(x){
+  const i = x.fiche && x.fiche.identite;
+  return ((i && i.nom) || (x.annuaire && x.annuaire.nom) || x.id || "Personnage").trim();
+}
+
+function carFiche(x, cle){
+  const st = x.fiche && x.fiche.stats && x.fiche.stats[cle];
+  if(!st) return 0;
+  return (parseInt(st.natif,10)||0) + (parseInt(st.bonus,10)||0) + (parseInt(st.avance,10)||0);
+}
+
+function ouvrirMenuPJ(){
+  const menu = $("#pj-menu"), b = $("#init-pj-fiches");
+  if(!menu || !b) return;
+  const liste = $("#pj-liste");
+  menu.classList.add("on");
+  liste.innerHTML = `<div class="cm-vide">Lecture des fiches…</div>`;
+  placerMenuPJ(menu, b);
+  chargerFiches().then(lot => {
+    if(!lot.length){ liste.innerHTML = `<div class="cm-vide">Aucune fiche lisible.</div>`; return; }
+    const dedans = new Set((initEtat.ordre||[]).map(c => c.fid).filter(Boolean));
+    liste.innerHTML = lot.map(x => {
+      const b0 = parseInt(x.fiche.wounds,10);
+      const bm = parseInt(x.fiche.woundsMax,10);
+      const dispo = isFinite(bm) && bm > 0;
+      const deja = dedans.has(x.id);
+      return `<button class="cm-l" data-fid="${escape(x.id)}"` +
+             (deja ? ` title="Déjà présent : relit ses Blessures"` : ``) + `>` +
+             `<span class="n">${escape(nomFiche(x))}</span>` +
+             `<span class="r">${deja ? "déjà dans le combat" : ""}</span>` +
+             `<span class="b">${dispo ? (isFinite(b0)?b0:bm) + " / " + bm : "—"}</span>` +
+             `</button>`;
+    }).join("");
+    placerMenuPJ(menu, b);
+  });
+}
+
+function placerMenuPJ(menu, b){
+  const r = b.getBoundingClientRect();
+  const h = menu.offsetHeight, w = menu.offsetWidth;
+  let x = r.left, y = r.top - h - 6;
+  if(y < 8) y = Math.min(window.innerHeight - h - 8, r.bottom + 6);
+  if(x + w > window.innerWidth - 8) x = Math.max(8, window.innerWidth - w - 8);
+  menu.style.left = Math.max(8, x) + "px";
+  menu.style.top = Math.max(8, y) + "px";
+}
+
+function ajouterPJ(fid){
+  const x = (fichesPJ||[]).find(y => y.id === fid); if(!x) return;
+  const bm = parseInt(x.fiche.woundsMax, 10);
+  const b0 = parseInt(x.fiche.wounds, 10);
+  const deja = (initEtat.ordre||[]).find(c => c.fid === fid);
+  if(deja){ majBlessuresPJ(deja, x); initMsg(nomFiche(x) + " : Blessures relues."); return; }
+  initEtat.ordre = [...(initEtat.ordre||[]), initCombattant({
+    id: nouvelId(),
+    fid: fid,
+    nom: nomFiche(x),
+    pub: nomFiche(x),
+    init: 0, av: 0,
+    pf: x.fiche.portrait || "",
+    carI: carFiche(x, "ini"),
+    carAg: carFiche(x, "ag"),
+    b: isFinite(b0) ? b0 : (isFinite(bm) ? bm : 0),
+    bmax: isFinite(bm) ? bm : 0
+  })];
+  $("#initiative").classList.remove("replie");
+  pousserInit();
+  initMsg(nomFiche(x) + " ajouté.");
+}
+
+function majBlessuresPJ(c, x){
+  const bm = parseInt(x.fiche.woundsMax, 10);
+  const b0 = parseInt(x.fiche.wounds, 10);
+  if(isFinite(bm)) c.bmax = bm;
+  if(isFinite(b0)) c.b = b0;
+  c.carI = carFiche(x, "ini") || c.carI;
+  c.carAg = carFiche(x, "ag") || c.carAg;
+  pousserInit();
+}
+
+// Relit toutes les fiches et remet les Blessures à jour : à faire en début de
+// séance, quand les joueurs ont soigné entre deux aventures.
+function relirePJ(){
+  const cibles = (initEtat.ordre||[]).filter(c => c.fid);
+  if(!cibles.length){ initMsg("Aucun personnage importé."); return; }
+  chargerFiches(true).then(lot => {
+    let n = 0;
+    cibles.forEach(c => {
+      const x = lot.find(y => y.id === c.fid);
+      if(!x) return;
+      const bm = parseInt(x.fiche.woundsMax, 10);
+      const b0 = parseInt(x.fiche.wounds, 10);
+      if(isFinite(bm)) c.bmax = bm;
+      if(isFinite(b0)) c.b = b0;
+      n++;
+    });
+    pousserInit();
+    initMsg(n + (n > 1 ? " fiches relues." : " fiche relue."));
+  });
+}
+
 // ---------- Tour, round, décompte ----------
 function iniSuivant(){
   const list = ordreDeJeu();
@@ -2405,6 +2547,7 @@ function rendreInit(){
       h +=   `<span class="ini-outils">`;
       h +=     `<button data-act="etats" title="Poser un État">✚ État</button>`;
       h +=     `<button data-act="profil" title="Ouvrir le profil">▤</button>`;
+      h +=     `<button data-act="grimoire" class="vers-grimoire" title="Voir dans le Grimoire">📖</button>`;
       h +=     `<button data-act="dup" title="Dupliquer">⧉</button>`;
       h +=   `</span>`;
       h +=   `<span class="ini-crit">Prochaine touche : Blessure Critique. <a href="mj/Blessures-Maladies-et-Soins.html" target="_blank" rel="noopener">Tables</a></span>`;
@@ -2533,11 +2676,13 @@ function ouvrirProfil(id){
   f.style.top  = Math.min(window.innerHeight - 200, 96 + n * 26) + "px";
   f.innerHTML = `<div class="fen-tete"><span class="pt">${escape(c.nom)}</span>` +
                 `<span class="spacer"></span>` +
+                `<button class="mini vers-grimoire" data-grimoire="1" title="Voir dans le Grimoire">📖</button>` +
                 `<button class="mini" data-fermer="1" title="Fermer">×</button></div>` +
                 `<div class="fen-corps">Lecture du bestiaire…</div>`;
   document.body.appendChild(f);
   fenetres[id] = f;
   f.querySelector("[data-fermer]").addEventListener("click", () => fermerFenetre(id));
+  f.querySelector("[data-grimoire]").addEventListener("click", () => versGrimoire("Bestiaire.html", c.nom));
   rendreDeplacable(f, f.querySelector(".fen-tete"));
   chargerBestiaire().then(liste => {
     const e = (liste||[]).find(x => x.id === c.bid);
@@ -2571,6 +2716,17 @@ $("#ouvrir-init").addEventListener("click", ()=>{
   $("#initiative").classList.toggle("replie"); zoneDes(); bornerInitiative();
 });
 $("#init-ajout").addEventListener("click", iniAdd);
+$("#init-pj-fiches").addEventListener("click", ()=>{
+  const m = $("#pj-menu");
+  if(m.classList.contains("on")) m.classList.remove("on"); else ouvrirMenuPJ();
+});
+$("#pj-fermer").addEventListener("click", ()=> $("#pj-menu").classList.remove("on"));
+$("#pj-relire").addEventListener("click", ()=>{ relirePJ(); $("#pj-menu").classList.remove("on"); });
+$("#pj-liste").addEventListener("click", e=>{
+  const b = e.target.closest("[data-fid]"); if(!b) return;
+  ajouterPJ(b.dataset.fid);
+  $("#pj-menu").classList.remove("on");
+});
 $("#init-add").addEventListener("keydown", e=>{ if(e.key==="Enter") iniAdd(); });
 $("#init-jets").addEventListener("click", iniJets);
 $("#init-suivant").addEventListener("click", iniSuivant);
@@ -2659,6 +2815,10 @@ $("#initiative").addEventListener("click", e=>{
   else if(act==="b-") iniB(id, -1);
   else if(act==="dup") iniDup(id);
   else if(act==="profil") ouvrirProfil(id);
+  else if(act==="grimoire"){
+    const c = (initEtat.ordre||[]).find(x=>x.id===id);
+    if(c) versGrimoire(c.bid ? "Bestiaire.html" : "Etats-et-Reserves.html", c.bid ? c.nom : "");
+  }
   else if(act==="etats") ouvrirMenuEtats(id, btn);
   else if(act==="etat-") iniEtat(id, btn.getAttribute("data-cle"), -1);
 });
@@ -2910,6 +3070,30 @@ function fermerGrimoire(){
 
 // Le Grimoire ne doit jamais rester ouvert si la table n'est plus en mode MJ.
 window.addEventListener("pagehide", fermerGrimoire);
+
+// ---------- Envoi vers le Grimoire ----------
+// La fenêtre du Grimoire écoute : on lui dit quel document afficher et sur
+// quel terme le filtrer. Si elle n'est pas ouverte, on l'ouvre d'abord.
+function versGrimoire(fichier, terme){
+  const envoyer = () => {
+    try{
+      fenGrimoire.postMessage({ type:"grimoire:voir", fichier, terme: terme || "" }, location.origin);
+      fenGrimoire.focus();
+    }catch(e){}
+  };
+  if(grimoireOuvert()){ envoyer(); return; }
+  ouvrirGrimoire();
+  if(!grimoireOuvert()) return;
+  // On attend que la fenêtre annonce qu'elle est prête.
+  const relais = ev => {
+    if(ev.origin !== location.origin) return;
+    if(!ev.data || ev.data.type !== "grimoire:pret") return;
+    window.removeEventListener("message", relais);
+    envoyer();
+  };
+  window.addEventListener("message", relais);
+  setTimeout(() => { window.removeEventListener("message", relais); }, 15000);
+}
 
 function reintegrerCams(){
   try{ if(camsDetachees()) fenCams.close(); }catch(e){}
