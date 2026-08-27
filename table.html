@@ -722,6 +722,7 @@
           <button id="ouvrir-journal" title="Afficher ou masquer le journal">📜 Journal</button>
           <button id="ouvrir-init" title="Afficher ou masquer l'initiative">⚔ Initiative</button>
           <button id="ouvrir-dessin" title="Zoom et dessin sur la carte">🖌 Dessin</button>
+          <button id="ouvrir-grimoire" class="gm-only-in" title="Ouvrir le Grimoire dans une fenêtre séparée (MJ)">📖 Grimoire</button>
         </div>
       </div>
     </div>
@@ -2728,7 +2729,7 @@ $("#mj").addEventListener("change", e=>{
   }
   document.body.classList.toggle("est-mj", e.target.checked);
   lsSet("wh_mj", e.target.checked ? "1" : "0");
-  if(!e.target.checked) fermerToutesFenetres();
+  if(!e.target.checked){ fermerToutesFenetres(); fermerGrimoire(); }
   if(e.target.checked) preparerBestiaire();
   rendreInit();
   majPoignee(); zoneDes(); bornerInitiative(); bornerJournal();
@@ -2884,6 +2885,32 @@ function detacherCams(){
   }, 800);
 }
 
+// ---------- Grimoire (documents MJ, fenêtre séparée) ----------
+let fenGrimoire = null;
+
+function grimoireOuvert(){
+  try{ return fenGrimoire && !fenGrimoire.closed; }catch(e){ return false; }
+}
+
+function ouvrirGrimoire(){
+  if(grimoireOuvert()){ try{ fenGrimoire.focus(); }catch(e){} return; }
+  // La fenêtre ouverte hérite du sessionStorage : le mot de passe MJ n'est pas redemandé.
+  try{ sessionStorage.setItem("grimoire_mj", "1"); }catch(e){}
+  const f = window.open("mj/grimoire.html", "grimoireWarhammer",
+    "width=1280,height=860,menubar=no,toolbar=no,location=no,status=no");
+  if(!f){ alerte("Le navigateur a bloqué la fenêtre. Autorise les fenêtres surgissantes pour ce site."); return; }
+  fenGrimoire = f;
+  try{ f.focus(); }catch(e){}
+}
+
+function fermerGrimoire(){
+  try{ if(grimoireOuvert()) fenGrimoire.close(); }catch(e){}
+  fenGrimoire = null;
+}
+
+// Le Grimoire ne doit jamais rester ouvert si la table n'est plus en mode MJ.
+window.addEventListener("pagehide", fermerGrimoire);
+
 function reintegrerCams(){
   try{ if(camsDetachees()) fenCams.close(); }catch(e){}
   fenCams = null;
@@ -2940,6 +2967,7 @@ $("#cams-rejoindre").addEventListener("click", ()=>{
   lancerCams();
 });
 $("#cams-detacher").addEventListener("click", detacherCams);
+$("#ouvrir-grimoire").addEventListener("click", ouvrirGrimoire);
 $("#cams-replier").addEventListener("click", ()=> replierCams(!camsRepliees()));
 
 // ---------- Journal : afficher/masquer ----------
