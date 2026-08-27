@@ -420,13 +420,28 @@ function nomCampagne(c){
 }
 
 /* ---------- rendu ---------- */
+// Ordre d'affichage : alphabétique, accents et casse ignorés.
+function ordreAffiche(){
+  var liste = [];
+  for(var i = 0; i < data.entrees.length; i++) liste.push({ e: data.entrees[i], i: i });
+  // Les guillemets et tirets de tête ne comptent pas : « Le Saigneur » se
+  // range à la lettre L, pas avant tout le reste.
+  function cle(n){ return String(n || '').replace(/^[^\p{L}\p{N}]+/u, ''); }
+  liste.sort(function(a, b){
+    return cle(a.e.nom).localeCompare(cle(b.e.nom), 'fr',
+      { sensitivity: 'base', numeric: true });
+  });
+  return liste;
+}
+
 function rendre(){
   var intro = document.getElementById('intro');
   if(intro && document.activeElement !== intro) intro.textContent = data.intro || '';
 
   var h = '', montres = 0;
-  for(var i = 0; i < data.entrees.length; i++){
-    var e = data.entrees[i];
+  var range = ordreAffiche();
+  for(var n = 0; n < range.length; n++){
+    var e = range[n].e, i = range[n].i;
     if(!visible(e)) continue;
     montres++;
     var ouvert = !!ouverts[e.id];
@@ -542,6 +557,16 @@ document.addEventListener('input', function(ev){
   else if(t === 'trn') e.traits[+el.getAttribute('data-i')].nom = v;
   else if(t === 'trp') e.traits[+el.getAttribute('data-i')].precision = v;
   sauver();
+});
+
+document.addEventListener('focusout', function(ev){
+  var el = ev.target;
+  if(!el || !el.getAttribute || el.getAttribute('data-t') !== 'nom') return;
+  setTimeout(function(){
+    if(document.activeElement && document.activeElement.getAttribute &&
+       document.activeElement.getAttribute('data-t') === 'nom') return;
+    rendre();
+  }, 60);
 });
 
 document.addEventListener('change', function(ev){
