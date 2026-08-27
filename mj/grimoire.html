@@ -988,6 +988,45 @@ function moissonner(d, payload){
   return lot;
 }
 
+/* Un document jamais poussé n'a rien en base : il tourne sur la graine
+   inscrite dans son propre fichier. Cette graine est alors sa seule source,
+   donc la recherche doit savoir la lire. On découpe l'objet à la main :
+   JSON.parse ne sait pas s'arrêter à la fin d'un objet suivi d'autre code. */
+function decouperObjet(txt, depart){
+  var i = txt.indexOf('{', depart);
+  if(i < 0) return null;
+  var prof = 0, chaine = false, echap = false;
+  for(var j = i; j < txt.length; j++){
+    var c = txt[j];
+    if(chaine){
+      if(echap){ echap = false; }
+      else if(c === '\\'){ echap = true; }
+      else if(c === '"'){ chaine = false; }
+      continue;
+    }
+    if(c === '"'){ chaine = true; }
+    else if(c === '{'){ prof++; }
+    else if(c === '}'){
+      prof--;
+      if(prof === 0) return txt.slice(i, j + 1);
+    }
+  }
+  return null;
+}
+
+function graineDuFichier(d){
+  return fetch(d.f, { cache:'no-store' })
+    .then(function(r){ return r.ok ? r.text() : ''; })
+    .then(function(html){
+      var k = html.indexOf('var DEFAUT');
+      if(k < 0) return null;
+      var brut = decouperObjet(html, k);
+      if(!brut) return null;
+      try{ return JSON.parse(brut); }catch(e){ return null; }
+    })
+    .catch(function(){ return null; });
+}
+
 /* Une lecture par document, comme le fait chaque page du dossier mj/.
    Le nœud outils/ entier pèse trop lourd à cause des portraits du bestiaire. */
 function construireIndex(){
@@ -999,7 +1038,7 @@ function construireIndex(){
     return Promise.resolve(index);
   }
 
-  indexBilan = { lus:0, vides:0, erreurs:0, motif:'' };
+  indexBilan = { lus:0, graines:0, vides:0, erreurs:0, motif:'' };
   var avecBase = DOCS.filter(function(d){ return !!d.r; });
 
   indexEnCours = Promise.all(avecBase.map(function(d){
@@ -1007,14 +1046,21 @@ function construireIndex(){
       .then(function(sn){
         var v = sn.val();
         var payload = (v && v.payload) ? v.payload : v;
-        var lot = moissonner(d, payload);
-        if(lot.length) indexBilan.lus++; else indexBilan.vides++;
-        return lot;
+        return moissonner(d, payload);
       })
       .catch(function(e){
         indexBilan.erreurs++;
         if(!indexBilan.motif) indexBilan.motif = e && e.message ? e.message : 'lecture refusée';
         return [];
+      })
+      .then(function(lot){
+        if(lot.length){ indexBilan.lus++; return lot; }
+        // Rien en base : on retombe sur la graine, qui fait alors autorité.
+        return graineDuFichier(d).then(function(graine){
+          var lot2 = moissonner(d, graine);
+          if(lot2.length) indexBilan.graines++; else indexBilan.vides++;
+          return lot2;
+        });
       });
   })).then(function(paquets){
     index = [];
@@ -1081,11 +1127,13 @@ function lancerRecherche(){
       d.textContent = 'Base injoignable : ' + (indexBilan.motif || 'lecture refusée') +
                       '. La recherche a besoin d\'un accès en lecture à outils/.';
     }else if(!index.length){
-      d.textContent = 'Aucun document lu. ' + indexBilan.vides + ' nœuds vides, ' +
+      d.textContent = 'Aucun document lu : ' + indexBilan.vides + ' sans données, ' +
                       indexBilan.erreurs + ' en erreur.';
     }else{
-      d.textContent = 'Rien trouvé pour ce terme. ' + indexBilan.lus + ' documents indexés, ' +
-                      index.length + ' passages parcourus.';
+      d.textContent = 'Rien trouvé pour ce terme. ' +
+                      (indexBilan.lus + indexBilan.graines) + ' documents indexés (' +
+                      indexBilan.lus + ' depuis la base, ' + indexBilan.graines +
+                      ' depuis leur fichier), ' + index.length + ' passages parcourus.';
     }
     corps.appendChild(d);
     return;
