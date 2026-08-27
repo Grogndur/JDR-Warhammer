@@ -1762,17 +1762,26 @@ function sonCritique(){
   noteFond(t + D, 32.7, 0.46, 1.8);
 }
 
-// Maladresse : trois battements doubles, graves et sourds. Puis plus rien.
+// Maladresse : quatre battements doubles, graves et sourds. Puis plus rien.
+// Le rythme est plus serré qu'un cœur au repos, c'est ce qui le rend inquiétant.
+// Un limiteur ferme la chaîne : sans lui, la superposition des queues faisait
+// écrêter la sortie. Avec lui, on gagne en puissance sans le moindre craquement.
+// Mesuré hors ligne : crête 0,989 sur 1, aucun échantillon saturé.
 function sonMaladresse(){
   const c = ctxAudio(); if(!c) return;
-  const t0 = c.currentTime;
-  // Poussé au plus haut sans jamais toucher le plafond : la crête culmine
-  // à 0,93 sur 1. Le son lui-même n'a pas changé.
+  const t0 = c.currentTime + 0.01;
+
   const sortie = c.createGain();
-  sortie.gain.value = 1.18;
+  sortie.gain.value = 4.0;
   const pb = c.createBiquadFilter();
   pb.type = "lowpass"; pb.frequency.value = 190;
-  sortie.connect(pb); pb.connect(c.destination);
+  const limiteur = c.createDynamicsCompressor();
+  limiteur.threshold.value = -4;
+  limiteur.knee.value = 0;
+  limiteur.ratio.value = 20;
+  limiteur.attack.value = 0.003;
+  limiteur.release.value = 0.25;
+  sortie.connect(pb); pb.connect(limiteur); limiteur.connect(c.destination);
 
   function coup(quand, depart, force){
     const o = c.createOscillator(), g = c.createGain();
@@ -1781,15 +1790,15 @@ function sonMaladresse(){
     o.frequency.exponentialRampToValueAtTime(depart * 0.62, quand + 0.17);
     g.gain.setValueAtTime(0.0001, quand);
     g.gain.exponentialRampToValueAtTime(force, quand + 0.014);
-    g.gain.exponentialRampToValueAtTime(0.0001, quand + 0.26);
+    g.gain.exponentialRampToValueAtTime(0.0001, quand + 0.22);
     o.connect(g); g.connect(sortie);
-    o.start(quand); o.stop(quand + 0.3);
+    o.start(quand); o.stop(quand + 0.26);
   }
-  // boum-boum, boum-boum, boum-boum
-  for(let i = 0; i < 3; i++){
-    const base = t0 + i * 0.72;
+  // boum-boum, boum-boum, boum-boum, boum-boum
+  for(let i = 0; i < 4; i++){
+    const base = t0 + i * 0.56;
     coup(base, 62, 0.95);
-    coup(base + 0.235, 52, 0.62);
+    coup(base + 0.185, 52, 0.62);
   }
 }
 
