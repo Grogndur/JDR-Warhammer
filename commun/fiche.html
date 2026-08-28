@@ -2,6 +2,61 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<script>
+/* ═══════════ ACCÈS PARTAGÉ ENTRE LES ONGLETS ═══════════
+   sessionStorage est propre à chaque onglet : un « ouvrir dans un nouvel
+   onglet » repartait donc de zéro et redemandait le mot de passe. On mémorise
+   l'autorisation dans localStorage, avec une péremption. */
+window.ACCES = window.ACCES || (function () {
+  var CLE_MJ = "mjAccesJusqua";
+  var DUREE_MJ = 12 * 60 * 60 * 1000;           /* 12 heures */
+  var DUREE_FICHE = 30 * 24 * 60 * 60 * 1000;   /* 30 jours */
+
+  function lire(cle) {
+    try {
+      var v = parseInt(localStorage.getItem(cle) || "0", 10);
+      if (v > Date.now()) return true;
+      if (v) localStorage.removeItem(cle);
+    } catch (e) {}
+    return false;
+  }
+  function ecrire(cle, duree) {
+    try { localStorage.setItem(cle, String(Date.now() + duree)); } catch (e) {}
+  }
+
+  function mj() {
+    if (lire(CLE_MJ)) return true;
+    try { return sessionStorage.getItem("mjAccess") === "1"; } catch (e) {}
+    return false;
+  }
+  function ouvrirMj() {
+    ecrire(CLE_MJ, DUREE_MJ);
+    try {
+      sessionStorage.setItem("mjAccess", "1");
+      sessionStorage.setItem("carrieresMJ", "1");
+    } catch (e) {}
+  }
+  function fermerMj() {
+    try { localStorage.removeItem(CLE_MJ); } catch (e) {}
+    try {
+      sessionStorage.removeItem("mjAccess");
+      sessionStorage.removeItem("carrieresMJ");
+    } catch (e) {}
+  }
+  function fiche(id) {
+    if (lire("ficheAccesJusqua_" + id)) return true;
+    try { return sessionStorage.getItem("pw_ok_" + id) === "1"; } catch (e) {}
+    return false;
+  }
+  function ouvrirFiche(id) {
+    ecrire("ficheAccesJusqua_" + id, DUREE_FICHE);
+    try { sessionStorage.setItem("pw_ok_" + id, "1"); } catch (e) {}
+  }
+
+  return { mj: mj, ouvrirMj: ouvrirMj, fermerMj: fermerMj,
+           fiche: fiche, ouvrirFiche: ouvrirFiche };
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fiche de personnage</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
@@ -604,9 +659,7 @@
   }
 
   function demander(p, nom) {
-    var cle = "pw_ok_" + id;
-    try { if (sessionStorage.getItem(cle) === "1") { ouvrir(); return; } } catch (e) {}
-    try { if (sessionStorage.getItem("mjAccess") === "1") { ouvrir(); return; } } catch (e) {}
+    if (ACCES.fiche(id) || ACCES.mj()) { ouvrir(); return; }
 
     titre.textContent = nom;
     sous.textContent = "Cette fiche est protégée. Entre le mot de passe pour l'ouvrir.";
@@ -617,10 +670,8 @@
       var v = (input.value || "").trim();
       var h = cyrb53(v);
       if (h === p.mdp || h === MDP_MJ_HASH) {
-        try {
-          sessionStorage.setItem(cle, "1");
-          if (h === MDP_MJ_HASH) sessionStorage.setItem("mjAccess", "1");
-        } catch (e) {}
+        ACCES.ouvrirFiche(id);
+        if (h === MDP_MJ_HASH) ACCES.ouvrirMj();
         ouvrir();
       } else {
         err.style.display = "block";
@@ -3218,7 +3269,7 @@ load();
   try { refP = firebase.database().ref("personnages/" + id); } catch (e) {}
 
   function estMJ() {
-    try { return sessionStorage.getItem("mjAccess") === "1"; } catch (e) { return false; }
+    return ACCES.mj();
   }
   function peint(protegee) {
     btnMdp.textContent = protegee ? "Changer le mot de passe" : "Proteger cette fiche";
@@ -3249,7 +3300,7 @@ load();
     if (!refP) { alert("Base en ligne indisponible."); return; }
     refP.child("mdp").set(n ? window.cyrb53(n) : "")
       .then(function () {
-        try { sessionStorage.setItem("pw_ok_" + id, "1"); } catch (e) {}
+        ACCES.ouvrirFiche(id);
         alert(n ? "Fiche protegee." : "Protection retiree.");
       })
       .catch(function (e) { alert("Impossible d enregistrer : " + e.message); });
@@ -3257,16 +3308,16 @@ load();
 
   btnMj.addEventListener("click", function () {
     if (estMJ()) {
-      try { sessionStorage.removeItem("mjAccess"); } catch (e) {}
+      ACCES.fermerMj();
       peint(!!actuel);
       return;
     }
     var p = prompt("Mot de passe du Maitre du Jeu :");
     if (p === null) return;
     if (window.cyrb53(p.trim()) !== MDP_MJ_HASH) { alert("Mot de passe incorrect."); return; }
-    try { sessionStorage.setItem("mjAccess", "1"); } catch (e) {}
+    ACCES.ouvrirMj();
     peint(!!actuel);
-    alert("Mode MJ actif pour cette session : toutes les fiches s ouvrent sans mot de passe.");
+    alert("Mode MJ actif : toutes les fiches s ouvrent sans mot de passe, y compris dans un nouvel onglet.");
   });
 })();
 </script>
