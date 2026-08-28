@@ -26,7 +26,13 @@ window.ACCES = window.ACCES || (function () {
 
   function mj() {
     if (lire(CLE_MJ)) return true;
-    try { return sessionStorage.getItem("mjAccess") === "1"; } catch (e) {}
+    /* Session déverrouillée avant cette mise à jour, ou par une page pas encore
+       migrée : on reprend l'autorisation et on la recopie dans localStorage,
+       sinon les autres onglets ne la verraient jamais. */
+    var vieux = false;
+    try { vieux = sessionStorage.getItem("mjAccess") === "1"
+               || sessionStorage.getItem("carrieresMJ") === "1"; } catch (e) {}
+    if (vieux) { ecrire(CLE_MJ, DUREE_MJ); return true; }
     return false;
   }
   function ouvrirMj() {
@@ -45,7 +51,9 @@ window.ACCES = window.ACCES || (function () {
   }
   function fiche(id) {
     if (lire("ficheAccesJusqua_" + id)) return true;
-    try { return sessionStorage.getItem("pw_ok_" + id) === "1"; } catch (e) {}
+    var vieux = false;
+    try { vieux = sessionStorage.getItem("pw_ok_" + id) === "1"; } catch (e) {}
+    if (vieux) { ecrire("ficheAccesJusqua_" + id, DUREE_FICHE); return true; }
     return false;
   }
   function ouvrirFiche(id) {
