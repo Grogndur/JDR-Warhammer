@@ -83,7 +83,7 @@
   #scene.mosaique{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
   #scene.lecture{grid-template-columns:1fr;grid-template-rows:1fr}
   #scene.lecture .zone{display:none}
-  #scene.lecture .zone[data-z="0"]{display:flex}
+  #scene.lecture .zone.lue{display:flex;grid-column:1/-1;grid-row:1/-1}
   #scene.zoomee .zone{display:none}
   #scene.zoomee .zone.grande{display:flex;grid-column:1/-1;grid-row:1/-1}
 
@@ -459,7 +459,6 @@ function bâtirZones(){
 /* ---------------- documents ---------------- */
 
 function cibleCourante(){
-  if(etat.mode === 'lecture') return 0;
   if(etat.agrandie !== null) return etat.agrandie;
   return etat.visee;
 }
@@ -762,14 +761,18 @@ function viser(i){
 function basculerMode(m){
   etat.mode = m;
   etat.agrandie = null;
-  if(m === 'lecture') etat.visee = 0;
+  /* On reste sur la zone visée. Si elle est vide, on se rabat sur la première
+     zone garnie plutôt que d ouvrir la Lecture sur un panneau blanc. */
+  if(m === 'lecture' && !etat.zones[etat.visee]){
+    for(var i = 0; i < 4; i++){ if(etat.zones[i]){ etat.visee = i; break; } }
+  }
   majScene();
   majHaut();
   ecrireEtat();
 }
 
 function basculerAgrandie(i){
-  if(etat.mode === 'lecture'){ etat.visee = 0; majScene(); return; }
+  if(etat.mode === 'lecture'){ basculerMode('mosaique'); return; }
   etat.agrandie = (etat.agrandie === i) ? null : i;
   if(etat.agrandie !== null) etat.visee = i;
   majScene();
@@ -785,6 +788,7 @@ function majScene(){
   $$('#scene .zone').forEach(function(z){
     var i = parseInt(z.dataset.z, 10);
     z.classList.toggle('grande', etat.agrandie === i);
+    z.classList.toggle('lue', etat.mode === 'lecture' && etat.visee === i);
     z.classList.toggle('visee', etat.mode === 'mosaique' && etat.agrandie === null && etat.visee === i);
   });
   rafraichirRail();
@@ -806,7 +810,7 @@ function rafraichirRail(){
     var places = [];
     for(var i = 0; i < 4; i++){
       if(etat.zones[i] === f){
-        if(etat.mode === 'lecture' && i !== 0) continue;
+        if(etat.mode === 'lecture' && i !== etat.visee) continue;
         places.push(i + 1);
       }
     }
