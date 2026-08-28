@@ -2,6 +2,61 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<script>
+/* ═══════════ ACCÈS PARTAGÉ ENTRE LES ONGLETS ═══════════
+   sessionStorage est propre à chaque onglet : un « ouvrir dans un nouvel
+   onglet » repartait donc de zéro et redemandait le mot de passe. On mémorise
+   l'autorisation dans localStorage, avec une péremption. */
+window.ACCES = window.ACCES || (function () {
+  var CLE_MJ = "mjAccesJusqua";
+  var DUREE_MJ = 12 * 60 * 60 * 1000;           /* 12 heures */
+  var DUREE_FICHE = 30 * 24 * 60 * 60 * 1000;   /* 30 jours */
+
+  function lire(cle) {
+    try {
+      var v = parseInt(localStorage.getItem(cle) || "0", 10);
+      if (v > Date.now()) return true;
+      if (v) localStorage.removeItem(cle);
+    } catch (e) {}
+    return false;
+  }
+  function ecrire(cle, duree) {
+    try { localStorage.setItem(cle, String(Date.now() + duree)); } catch (e) {}
+  }
+
+  function mj() {
+    if (lire(CLE_MJ)) return true;
+    try { return sessionStorage.getItem("mjAccess") === "1"; } catch (e) {}
+    return false;
+  }
+  function ouvrirMj() {
+    ecrire(CLE_MJ, DUREE_MJ);
+    try {
+      sessionStorage.setItem("mjAccess", "1");
+      sessionStorage.setItem("carrieresMJ", "1");
+    } catch (e) {}
+  }
+  function fermerMj() {
+    try { localStorage.removeItem(CLE_MJ); } catch (e) {}
+    try {
+      sessionStorage.removeItem("mjAccess");
+      sessionStorage.removeItem("carrieresMJ");
+    } catch (e) {}
+  }
+  function fiche(id) {
+    if (lire("ficheAccesJusqua_" + id)) return true;
+    try { return sessionStorage.getItem("pw_ok_" + id) === "1"; } catch (e) {}
+    return false;
+  }
+  function ouvrirFiche(id) {
+    ecrire("ficheAccesJusqua_" + id, DUREE_FICHE);
+    try { sessionStorage.setItem("pw_ok_" + id, "1"); } catch (e) {}
+  }
+
+  return { mj: mj, ouvrirMj: ouvrirMj, fermerMj: fermerMj,
+           fiche: fiche, ouvrirFiche: ouvrirFiche };
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Deuxième groupe — De Boue et de Sang</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -307,8 +362,7 @@
       .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
   }
 
-  var estMJ = false;
-  try { estMJ = sessionStorage.getItem("mjAccess") === "1"; } catch (e) {}
+  var estMJ = ACCES.mj();
 
   var db = null, refP = null;
   try {
@@ -334,9 +388,18 @@
   function majBarre() {
     bouton.textContent = estMJ ? "Nouveau personnage" : "Mode MJ";
     bouton.classList.toggle("ghost", !estMJ);
-    astuce.textContent = estMJ
-      ? "Mode MJ actif : tu peux créer, rattacher, modifier et supprimer."
-      : "Les joueurs consultent, le MJ crée.";
+    if (estMJ) {
+      astuce.innerHTML = "Mode MJ actif : tu peux créer, rattacher, modifier et supprimer. " +
+        '<a href="#" id="mj-quit" style="color:inherit;text-decoration:underline">Quitter</a>';
+      var q = document.getElementById("mj-quit");
+      if (q) q.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        ACCES.fermerMj();
+        estMJ = false; majBarre(); rendre(courant);
+      });
+    } else {
+      astuce.textContent = "Les joueurs consultent, le MJ crée.";
+    }
     var r = document.getElementById("mj-attach");
     if (r) r.style.display = estMJ ? "" : "none";
   }
@@ -346,7 +409,7 @@
       var p = prompt("Mot de passe du Maître du Jeu :");
       if (p === null) return;
       if (cyrb53(p.trim()) !== MDP_MJ_HASH) { alert("Mot de passe incorrect."); return; }
-      try { sessionStorage.setItem("mjAccess", "1"); } catch (e) {}
+      ACCES.ouvrirMj();
       estMJ = true; majBarre(); rendre(courant);
       return;
     }
