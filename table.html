@@ -673,6 +673,12 @@
   .palette .taille{width:34px;display:flex;align-items:center;justify-content:center}
   .gm-only-in{display:none!important}
   body.est-mj .gm-only-in{display:inline-flex!important}
+  /* Dessin fermé aux joueurs : le MJ garde tout, les joueurs gardent zoom et grille. */
+  body.dessin-ferme .pj-dessin{display:none!important}
+  .pal-note{display:none;font-size:11px;line-height:1.4;color:var(--parchemin-doux);opacity:.8;
+    border-top:1px solid var(--bord);padding-top:7px}
+  body.dessin-ferme .pal-note{display:block}
+  .pal-autorisation{border-top:1px solid var(--bord);padding-top:7px}
 
   @media (max-width:760px){
     .palette{left:8px;margin-left:0;top:auto;bottom:118px;width:230px}
@@ -742,29 +748,37 @@
     <div class="pal-corps">
       <div class="pal-ligne">
         <button class="outil actif" data-outil="nav" title="Déplacer la carte (clic droit aussi)">✋</button>
-        <button class="outil" data-outil="dessin" title="Crayon">✏</button>
-        <button class="outil" data-outil="gomme" title="Gomme (efface les traits touchés)">🩹</button>
-        <span class="pal-sep"></span>
-        <button id="annuler-trait" title="Annuler mon dernier trait">↶</button>
+        <button class="outil pj-dessin" data-outil="dessin" title="Crayon">✏</button>
+        <button class="outil pj-dessin" data-outil="gomme" title="Gomme (efface les traits touchés)">🩹</button>
+        <span class="pal-sep pj-dessin"></span>
+        <button id="annuler-trait" class="pj-dessin" title="Annuler mon dernier trait">↶</button>
         <button id="effacer-tout" class="gm-only-in" title="Effacer tous les traits (MJ)">🗑</button>
       </div>
-      <div class="pal-ligne pal-couleurs" id="pal-couleurs"></div>
-      <div class="pal-ligne">
+      <div class="pal-ligne pal-couleurs pj-dessin" id="pal-couleurs"></div>
+      <div class="pal-ligne pj-dessin">
         <span class="pal-lib">Taille</span>
         <button class="taille" data-taille="1">•</button>
         <button class="taille actif" data-taille="2">●</button>
         <button class="taille" data-taille="3">⬤</button>
-        <span class="pal-sep"></span>
-        <label class="toggle"><input type="checkbox" id="grille-chk" /> Grille</label>
       </div>
       <div class="pal-ligne">
         <span class="pal-lib">Zoom</span>
         <button id="zoom-moins" title="Dézoomer">−</button>
         <button id="zoom-reset" title="Recentrer">⤢</button>
         <button id="zoom-plus" title="Zoomer">+</button>
-        <span class="spacer"></span>
-        <button id="carte-vierge" class="gm-only-in" title="Plateau vierge à dessiner (MJ)">Carte vierge</button>
+        <span class="pal-sep"></span>
+        <label class="toggle"><input type="checkbox" id="grille-chk" /> Grille</label>
       </div>
+      <div class="pal-ligne gm-only-in">
+        <span class="spacer"></span>
+        <button id="carte-vierge" title="Plateau vierge à dessiner (MJ)">Carte vierge</button>
+      </div>
+      <div class="pal-ligne pal-autorisation gm-only-in">
+        <label class="toggle" title="Ouvre le crayon et la gomme à toute la table">
+          <input type="checkbox" id="dessin-pj-chk" /> Dessin autorisé aux joueurs
+        </label>
+      </div>
+      <div class="pal-note" id="pal-note-verrou">Le crayon est refermé par le MJ. Zoom et grille restent à ta main.</div>
     </div>
   </aside>
 
@@ -944,6 +958,7 @@ const refSecrets = db ? ref(db, `salles/${salle}/jets-secrets`) : null;
 const refInit  = db ? ref(db, `salles/${salle}/initiative`) : null;
 const refDesClear = db ? ref(db, `salles/${salle}/desClear`) : null;
 const refDessin = db ? ref(db, `salles/${salle}/dessin`) : null;
+const refDessinPJ = db ? ref(db, `salles/${salle}/options/dessinPJ`) : null;
 
 // ---------- Plateau partagé (image ou carte vierge) + zoom + dessin ----------
 const img    = $("#image");
@@ -1283,8 +1298,8 @@ svg.addEventListener("pointerdown", e=>{
   try{ svg.setPointerCapture(e.pointerId); }catch(_){}
   if(e.pointerType === "touch"){ touches.set(e.pointerId, {x:e.clientX,y:e.clientY}); return; }
   if(e.button === 2 || outil === "nav"){ pan = true; panLast = {x:e.clientX,y:e.clientY}; svg.classList.add("glisse"); return; }
-  if(outil === "dessin"){ dessine = true; debutTrait(e); return; }
-  if(outil === "gomme"){ gomme = true; gommerEn(e); return; }
+  if(outil === "dessin"){ if(!dessinAutorise()) return; dessine = true; debutTrait(e); return; }
+  if(outil === "gomme"){ if(!dessinAutorise()) return; gomme = true; gommerEn(e); return; }
 });
 svg.addEventListener("pointermove", e=>{
   if(touches.has(e.pointerId)){ touches.set(e.pointerId, {x:e.clientX,y:e.clientY}); gererTouches(); return; }
@@ -1345,6 +1360,7 @@ COULEURS.forEach((c, i)=>{
   palCoul.appendChild(b);
 });
 function choisirOutil(o){
+  if(o !== "nav" && !dessinAutorise()) return;
   outil = o;
   document.querySelectorAll(".palette .outil").forEach(b=> b.classList.toggle("actif", b.dataset.outil===o));
   svg.classList.toggle("t-dessin", o==="dessin");
@@ -1375,6 +1391,32 @@ function basculerPalette(forcer){
 }
 $("#ouvrir-dessin").addEventListener("click", ()=> basculerPalette());
 $("#fermer-dessin").addEventListener("click", ()=> basculerPalette(false));
+
+// --- Autorisation de dessin accordée par le MJ ---
+// Hors Firebase, rien n'est partagé : chacun dessine chez soi, le verrou n'a pas de sens.
+let dessinPJ = !refDessinPJ;
+function dessinAutorise(){ return estMJ() || dessinPJ; }
+function majAutorisationDessin(){
+  const ok = dessinAutorise();
+  document.body.classList.toggle("dessin-ferme", !ok);
+  const chk = $("#dessin-pj-chk");
+  if(chk) chk.checked = dessinPJ;
+  if(!ok && outil !== "nav"){
+    outil = "nav";
+    document.querySelectorAll(".palette .outil").forEach(b=> b.classList.toggle("actif", b.dataset.outil === "nav"));
+    svg.classList.remove("t-dessin","t-gomme");
+    dessine = false; gomme = false; traitCourant = null; majLive();
+  }
+}
+if(refDessinPJ){
+  onValue(refDessinPJ, (snap)=>{ dessinPJ = snap.val() === true; majAutorisationDessin(); });
+}
+$("#dessin-pj-chk").addEventListener("change", e=>{
+  if(!estMJ()){ e.target.checked = dessinPJ; return; }
+  dessinPJ = e.target.checked;
+  if(refDessinPJ) set(refDessinPJ, dessinPJ); else majAutorisationDessin();
+});
+majAutorisationDessin();
 
 // Déplacer la palette
 (function(){
@@ -2901,6 +2943,7 @@ $("#mj").addEventListener("change", e=>{
   if(!e.target.checked){ fermerToutesFenetres(); fermerGrimoire(); }
   if(e.target.checked) preparerBestiaire();
   rendreInit();
+  majAutorisationDessin();
   majPoignee(); zoneDes(); bornerInitiative(); bornerJournal();
 });
 
@@ -3125,6 +3168,7 @@ const motDePasse = (window.MOT_DE_PASSE || "");
 const nomSauve = lsGet("wh_nom") || "";
 if(nomSauve){ $("#nom").value = nomSauve; gateNom.value = nomSauve; }
 if(lsGet("wh_mj") === "1"){ $("#mj").checked = true; document.body.classList.add("est-mj"); }
+majAutorisationDessin();
 if(!motDePasse){ gateMdp.style.display = "none"; }
 
 function entrer(){
