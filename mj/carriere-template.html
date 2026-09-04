@@ -329,12 +329,11 @@
     body.print-mobile .entry-cat .cat-meta { font-size:1.05rem; }
     body.print-mobile .regle-titre { font-size:1.5rem; }
     body.print-mobile .carac-chip.on { font-size:1.2rem; padding:0.4rem 0.8rem; }
-    /* Avec un texte deux fois plus gros, une vignette de côté n'a plus de sens :
-       l'illustration passe en bandeau, sur toute la largeur, au-dessus du titre. */
-    body.print-mobile .carr-header { flex-direction:column; gap:1.2rem; }
-    body.print-mobile .carr-illus { width:100% !important; }
-    body.print-mobile .illus-frame { max-width:100%; }
-    body.print-mobile .illus-frame img { width:100% !important; max-height:105mm; }
+    /* L'illustration reste à gauche du titre, comme à l'écran, mais elle grandit
+       dans les mêmes proportions que le texte pour ne pas paraître perdue. */
+    body.print-mobile .carr-header { gap:2rem; }
+    body.print-mobile .carr-illus { width:330px !important; }
+    body.print-mobile .illus-frame img { width:100% !important; }
   }
 </style>
 </head>
