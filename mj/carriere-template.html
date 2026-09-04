@@ -221,60 +221,87 @@
   .alerte { display:none; background:rgba(139,26,26,0.15); border:1px solid rgba(139,26,26,0.4); color:#e0a0a0; padding:0.6rem 0.9rem; border-radius:2px; margin-top:1rem; font-size:0.85rem; }
   .footnote { text-align:center; color:var(--SUB); font-size:0.72rem; font-style:italic; margin-top:2.5rem; opacity:0.8; }
 
-  /* ---- Impression / export PDF : version claire pour le joueur ---- */
+  /* ---- Impression / export PDF : version sombre ---- */
   @media print {
     * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-    @page { margin:14mm; }
+    /* La marge de page est nulle pour que le fond sombre couvre la feuille
+       entière. Le retrait est repris par le padding de la mise en page. */
+    @page { margin:0; }
+    html, body { background:#141210 !important; color:#e9e0c9 !important; }
+    body::before { display:none !important; }
+    .layout { max-width:100%; margin:0; padding:14mm; }
+
     nav, .tool-btn, .sync-dot, .add-btn, .entry-del, .entry-info, .lock-btn,
     .illus-btns, .illus-hint, .zone-hint, .footnote,
     .alerte, .empty-hint, .illus-empty { display:none !important; }
-    body { background:#fff !important; color:#221c10; }
-    body::before { display:none !important; }
-    .layout { max-width:100%; margin:0; padding:0; }
-    .carr-header { border-color:#c9b98a; padding-bottom:1rem; }
-    .carr-eyebrow { color:#8a6d2a; }
-    .titre-input { color:#2a2114; border:none; font-size:1.9rem; }
+
+    input, textarea { background:transparent !important; }
+
+    .carr-header { border-color:#443a26; padding-bottom:1rem; }
+    .carr-eyebrow { color:#c9a13f; }
+    .titre-input { color:#f2e9d2; border:none; font-size:1.9rem; }
     .soustitre-input { display:none !important; }
-    .soustitre-print { display:block !important; color:#6b5320; font-family:'Crimson Text',serif;
+    .soustitre-print { display:block !important; color:#c3ad78; font-family:'Crimson Text',serif;
                        font-style:italic; font-size:1rem; margin-top:0.3rem; line-height:1.4; }
-    .desc-input { color:#2a2416; border:none; padding:0; min-height:0; resize:none; margin-top:0.7rem; }
-    .illus-frame { border-color:#c9b98a; background:#faf6ea !important; }
-    .card { background:#fff; border:1px solid #d8caa0; margin-top:1rem; break-inside:avoid; }
-    .card-title { color:#8a6d2a; }
-    .card-title::after { background:#e0d4ab; }
+    .desc-input { color:#e2d8c0; border:none; padding:0; min-height:0; resize:none; margin-top:0.7rem; }
+    .illus-frame { border-color:#443a26; background:#1b1814 !important; }
+
+    .card { background:#1b1814; border:1px solid #3a3226; margin-top:1rem; break-inside:avoid; }
+    .card-title { color:#c9a13f; }
+    .card-title::after { background:#3a3226; }
+
     .carac-chip { display:none !important; }
-    .carac-chip.on { display:inline-block !important; background:#f3ecd6 !important; border-color:#b8922a; color:#2a2114; box-shadow:none; }
-    .entry { border-color:#d8caa0; border-left-color:#b8922a; background:#fff; break-inside:avoid; }
-    .entry-nom { color:#2a2114; border:none; font-weight:600; }
-    .entry-desc { color:#332b18; }
-    .entry-cat { display:block !important; background:#f7f3e6 !important; color:#332b18 !important;
-                 border-left:2px solid #b8922a !important; break-inside:avoid; }
-    .entry-cat .cat-meta { color:#6a5a2a !important; }
-    .ech-desc { color:#332b18; font-style:italic; }
-    .echelon-head { color:#8a6d2a; border-color:#d8caa0; }
-    .echelon-label { color:#8a6d2a; }
-    .ech-nom { color:#2a2114; border:none; font-weight:700; font-size:1rem; letter-spacing:0.02em; }
+    .carac-chip.on { display:inline-block !important; background:#2a2418 !important;
+                     border-color:#8a6d2a !important; color:#e3c66e !important; box-shadow:none; }
+
+    .entry { border-color:#3a3226; border-left-color:#8a6d2a; background:#1f1c16; break-inside:avoid; }
+    .entry-nom { color:#f2e9d2; border:none; font-weight:600; }
+    .entry-desc { color:#ddd2b6; }
+    .entry-cat { display:block !important; background:#241f17 !important; color:#cdc0a2 !important;
+                 border-left:2px solid #8a6d2a !important; break-inside:avoid; }
+    .entry-cat .cat-meta { color:#a89466 !important; }
+
+    .ech-desc { color:#ddd2b6; font-style:italic; }
+    .echelon-head { color:#c9a13f; border-color:#3a3226; }
+    .echelon-label { color:#c9a13f; }
+    .ech-nom { color:#f2e9d2; border:none; font-weight:700; font-size:1rem; letter-spacing:0.02em; }
     .ech-nom::placeholder { color:transparent; }
-    .regle-titre { color:#8a6d2a; border:none; font-weight:700; }
+
+    .regle-titre { color:#c9a13f; border:none; font-weight:700; }
     /* Une zone de saisie ne se coupe jamais proprement entre deux pages et se
        tronque à sa hauteur visible. Le texte des règles est donc recopié dans
        un bloc de texte ordinaire au moment d'imprimer. */
     #list-regles .entry-desc { display:none !important; }
-    .regle-print { display:block !important; white-space:pre-wrap; color:#332b18;
+    .regle-print { display:block !important; white-space:pre-wrap; color:#ddd2b6;
                    font-family:'Crimson Text',serif; font-size:0.86rem; line-height:1.55;
                    margin-top:0.5rem; }
     .regles-card.echelon-empty { display:none !important; }
+
     /* À l'impression, une zone de texte restée vide n'affiche plus son invite. */
     .entry-desc:placeholder-shown, .ech-desc:placeholder-shown { display:none !important; }
-    .statut-lbl { color:#6b5320; }
+
+    .statut-lbl { color:#a89466; }
     .statut-tier, .statut-rang { display:none !important; }
-    .statut-print { display:inline !important; color:#2a2114; font-style:normal; font-weight:600; }
-    .sub-title { color:#6b5320; }
+    .statut-print { display:inline !important; color:#f2e9d2; font-style:normal; font-weight:600; }
+    .sub-title { color:#a89466; }
     .echelon-card { break-inside:auto; }
     .fold-btn { display:none !important; }
     .echelon-card.collapsed .sub { display:block; }
-    .echelon-card.collapsed .echelon-head { border-bottom:1px solid #d8caa0; margin-bottom:0.4rem; }
+    .echelon-card.collapsed .echelon-head { border-bottom:1px solid #3a3226; margin-bottom:0.4rem; }
     .sub-empty, .echelon-empty { display:none !important; }
+
+    /* ---- Format mobile : page étroite, texte resserré ---- */
+    body.print-mobile .layout { padding:7mm; }
+    body.print-mobile .titre-input { font-size:1.35rem; }
+    body.print-mobile .soustitre-print { font-size:0.82rem; }
+    body.print-mobile .desc-input { font-size:0.82rem; }
+    body.print-mobile .card { margin-top:0.7rem; padding:0.6rem 0.7rem; }
+    body.print-mobile .entry-nom { font-size:0.88rem; }
+    body.print-mobile .entry-desc,
+    body.print-mobile .entry-cat,
+    body.print-mobile .regle-print { font-size:0.78rem; line-height:1.45; }
+    body.print-mobile .ech-nom { font-size:0.92rem; }
+    body.print-mobile .illus-frame { max-width:100%; }
   }
 </style>
 </head>
@@ -287,6 +314,7 @@
   <span class="nav-current">Carrière</span>
   <button class="lock-btn" id="btn-verrou" type="button" title="Passer en édition">🔒 Lecture seule</button>
   <button class="tool-btn" id="export-pdf" type="button" style="margin-left:0.5rem">⭳ Exporter en PDF</button>
+  <button class="tool-btn" id="export-pdf-mobile" type="button" style="margin-left:0.35rem">⭳ PDF mobile</button>
   <div class="sync-dot" id="sync"><span class="pip"></span><span id="sync-txt">connexion…</span></div>
 </nav>
 
@@ -400,6 +428,7 @@ function preparerImpression() {
 
 function restaurerApresImpression() {
   document.querySelectorAll('.regle-print, .soustitre-print').forEach(b => b.remove());
+  retirerFormatMobile();
   document.querySelectorAll('[data-replie="1"]').forEach(c => {
     c.classList.add('collapsed');
     delete c.dataset.replie;
@@ -409,7 +438,33 @@ function restaurerApresImpression() {
 window.addEventListener('beforeprint', preparerImpression);
 window.addEventListener('afterprint', restaurerApresImpression);
 
-document.getElementById('export-pdf').addEventListener('click', () => window.print());
+// Le format mobile impose une page étroite. La taille de page ne se pilote que
+// par une règle @page, qui ne peut pas dépendre d'une classe : on injecte donc
+// une feuille de style le temps de l'impression, puis on la retire.
+function poserFormatMobile() {
+  if (document.getElementById('page-mobile')) return;
+  const st = document.createElement('style');
+  st.id = 'page-mobile';
+  st.textContent = '@media print { @page { size:105mm 187mm; margin:0; } }';
+  document.head.appendChild(st);
+  document.body.classList.add('print-mobile');
+}
+
+function retirerFormatMobile() {
+  const st = document.getElementById('page-mobile');
+  if (st) st.remove();
+  document.body.classList.remove('print-mobile');
+}
+
+document.getElementById('export-pdf').addEventListener('click', () => {
+  retirerFormatMobile();
+  window.print();
+});
+
+document.getElementById('export-pdf-mobile').addEventListener('click', () => {
+  poserFormatMobile();
+  window.print();
+});
 
 // ---------- Catalogues de talents et de compétences ----------
 // Les effets officiels ne sont jamais recopiés dans la carrière : ils sont lus en direct
