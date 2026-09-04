@@ -116,6 +116,7 @@
                  color:var(--GLD-LT); font-family:'Cinzel',serif; font-size:0.86rem; letter-spacing:0.06em;
                  padding:0.15rem 0.2rem; outline:none; }
   .regle-titre:focus { border-bottom-color:var(--GLD); }
+  .regle-print { display:none; }
   .statut-zone { margin-left:auto; display:flex; align-items:center; gap:0.4rem; }
   .statut-lbl { font-family:'Cinzel',serif; font-size:0.56rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--SUB); }
   .statut-tier, .statut-rang { background:rgba(9,8,12,0.5); border:1px solid rgba(184,146,42,0.3); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.85rem; padding:0.25rem 0.4rem; border-radius:2px; }
@@ -253,6 +254,13 @@
     .ech-nom { color:#2a2114; border:none; font-weight:700; font-size:1rem; letter-spacing:0.02em; }
     .ech-nom::placeholder { color:transparent; }
     .regle-titre { color:#8a6d2a; border:none; font-weight:700; }
+    /* Une zone de saisie ne se coupe jamais proprement entre deux pages et se
+       tronque à sa hauteur visible. Le texte des règles est donc recopié dans
+       un bloc de texte ordinaire au moment d'imprimer. */
+    #list-regles .entry-desc { display:none !important; }
+    .regle-print { display:block !important; white-space:pre-wrap; color:#332b18;
+                   font-family:'Crimson Text',serif; font-size:0.86rem; line-height:1.55;
+                   margin-top:0.5rem; }
     .regles-card.echelon-empty { display:none !important; }
     /* À l'impression, une zone de texte restée vide n'affiche plus son invite. */
     .entry-desc:placeholder-shown, .ech-desc:placeholder-shown { display:none !important; }
@@ -362,6 +370,34 @@ const CARACS = ['CC','CT','F','E','I','Ag','Dex','Int','FM','Soc'];
 const ECHELONS = [1,2,3,4];
 
 // ---------- Export PDF (impression du navigateur -> Enregistrer en PDF) ----------
+// Deux choses empêchent le texte des règles associées de sortir sur le PDF.
+// La carte peut être repliée, et le texte vit dans une zone de saisie qui se
+// tronque à sa hauteur visible. On déplie donc tout et on recopie chaque règle
+// dans un bloc de texte ordinaire, puis on remet la page comme elle était.
+function preparerImpression() {
+  document.querySelectorAll('.echelon-card.collapsed').forEach(c => {
+    c.dataset.replie = '1';
+    c.classList.remove('collapsed');
+  });
+  document.querySelectorAll('#list-regles .entry-desc').forEach(ta => {
+    const bloc = document.createElement('div');
+    bloc.className = 'regle-print';
+    bloc.textContent = ta.value || '';
+    ta.parentNode.insertBefore(bloc, ta.nextSibling);
+  });
+}
+
+function restaurerApresImpression() {
+  document.querySelectorAll('.regle-print').forEach(b => b.remove());
+  document.querySelectorAll('[data-replie="1"]').forEach(c => {
+    c.classList.add('collapsed');
+    delete c.dataset.replie;
+  });
+}
+
+window.addEventListener('beforeprint', preparerImpression);
+window.addEventListener('afterprint', restaurerApresImpression);
+
 document.getElementById('export-pdf').addEventListener('click', () => window.print());
 
 // ---------- Catalogues de talents et de compétences ----------
