@@ -117,12 +117,7 @@
                  padding:0.15rem 0.2rem; outline:none; }
   .regle-titre:focus { border-bottom-color:var(--GLD); }
   .regle-print, .soustitre-print { display:none; }
-  .note-print { position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:9999;
-    max-width:min(560px, calc(100vw - 24px)); background:rgba(20,18,16,0.97);
-    border:1px solid rgba(184,146,42,0.5); border-radius:3px; padding:0.7rem 0.95rem;
-    color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.85rem; line-height:1.45;
-    box-shadow:0 6px 24px rgba(0,0,0,0.6); }
-  @media print { .note-print { display:none !important; } }
+
   .statut-zone { margin-left:auto; display:flex; align-items:center; gap:0.4rem; }
   .statut-lbl { font-family:'Cinzel',serif; font-size:0.56rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--SUB); }
   .statut-tier, .statut-rang { background:rgba(9,8,12,0.5); border:1px solid rgba(184,146,42,0.3); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.85rem; padding:0.25rem 0.4rem; border-radius:2px; }
@@ -296,18 +291,33 @@
     .echelon-card.collapsed .echelon-head { border-bottom:1px solid #3a3226; margin-bottom:0.4rem; }
     .sub-empty, .echelon-empty { display:none !important; }
 
-    /* ---- Format mobile : page étroite, texte resserré ---- */
-    body.print-mobile .layout { padding:7mm; }
-    body.print-mobile .titre-input { font-size:1.35rem; }
-    body.print-mobile .soustitre-print { font-size:0.82rem; }
-    body.print-mobile .desc-input { font-size:0.82rem; }
-    body.print-mobile .card { margin-top:0.7rem; padding:0.6rem 0.7rem; }
-    body.print-mobile .entry-nom { font-size:0.88rem; }
+    /* ---- Format mobile ----
+       La taille du papier est choisie par le navigateur et le CSS ne peut que
+       la proposer, ce que Chrome ignore la plupart du temps. On garde donc le
+       format habituel et on grossit tout : lu sur un téléphone, le document
+       remplit l'écran en largeur et se lit sans zoomer. */
+    body.print-mobile .layout { padding:10mm; }
+    body.print-mobile .titre-input { font-size:2.7rem; }
+    body.print-mobile .carr-eyebrow { font-size:0.95rem; }
+    body.print-mobile .soustitre-print { font-size:1.4rem; line-height:1.5; }
+    body.print-mobile .desc-input { font-size:1.4rem; line-height:1.55; }
+    body.print-mobile .card { margin-top:1.6rem; padding:1.1rem 1.2rem; }
+    body.print-mobile .card-title,
+    body.print-mobile .echelon-label,
+    body.print-mobile .sub-title,
+    body.print-mobile .statut-lbl { font-size:1.05rem; }
+    body.print-mobile .ech-nom { font-size:1.6rem; }
+    body.print-mobile .statut-print { font-size:1.3rem; }
+    body.print-mobile .entry { padding:0.8rem 0.9rem; }
+    body.print-mobile .entry-nom { font-size:1.45rem; }
     body.print-mobile .entry-desc,
+    body.print-mobile .ech-desc,
     body.print-mobile .entry-cat,
-    body.print-mobile .regle-print { font-size:0.78rem; line-height:1.45; }
-    body.print-mobile .ech-nom { font-size:0.92rem; }
-    body.print-mobile .illus-frame { max-width:100%; }
+    body.print-mobile .regle-print { font-size:1.3rem; line-height:1.6; }
+    body.print-mobile .entry-cat .cat-meta { font-size:1.05rem; }
+    body.print-mobile .regle-titre { font-size:1.5rem; }
+    body.print-mobile .carac-chip.on { font-size:1.2rem; padding:0.4rem 0.8rem; }
+    body.print-mobile .illus-frame { max-width:60%; }
   }
 </style>
 </head>
@@ -448,17 +458,10 @@ window.addEventListener('afterprint', restaurerApresImpression);
 // par une règle @page, qui ne peut pas dépendre d'une classe : on injecte donc
 // une feuille de style le temps de l'impression, puis on la retire.
 function poserFormatMobile() {
-  if (document.getElementById('page-mobile')) return;
-  const st = document.createElement('style');
-  st.id = 'page-mobile';
-  st.textContent = '@media print { @page { size:105mm 187mm portrait; margin:0; } }';
-  document.head.appendChild(st);
   document.body.classList.add('print-mobile');
 }
 
 function retirerFormatMobile() {
-  const st = document.getElementById('page-mobile');
-  if (st) st.remove();
   document.body.classList.remove('print-mobile');
 }
 
@@ -467,22 +470,8 @@ document.getElementById('export-pdf').addEventListener('click', () => {
   window.print();
 });
 
-// Le navigateur choisit lui-même la taille du papier : le CSS ne fait que la
-// proposer. Si le papier reste en A4, la page mobile s'imprime au centre d'une
-// feuille A4 et laisse une large bordure blanche. D'où ce rappel.
-function noteImpression(texte) {
-  const ancienne = document.querySelector('.note-print');
-  if (ancienne) ancienne.remove();
-  const n = document.createElement('div');
-  n.className = 'note-print';
-  n.textContent = texte;
-  document.body.appendChild(n);
-  setTimeout(() => n.remove(), 9000);
-}
-
 document.getElementById('export-pdf-mobile').addEventListener('click', () => {
   poserFormatMobile();
-  noteImpression("Dans la fenêtre d'impression, ouvre les paramètres et mets le format de papier sur 105 × 187 mm. Si tu laisses A4, la page sortira au centre d'une feuille blanche.");
   window.print();
 });
 
