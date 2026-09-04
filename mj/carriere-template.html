@@ -116,7 +116,7 @@
                  color:var(--GLD-LT); font-family:'Cinzel',serif; font-size:0.86rem; letter-spacing:0.06em;
                  padding:0.15rem 0.2rem; outline:none; }
   .regle-titre:focus { border-bottom-color:var(--GLD); }
-  .regle-print, .soustitre-print, .desc-print, .ech-desc-print { display:none; }
+  .regle-print, .soustitre-print, .desc-print, .ech-desc-print, .titre-print { display:none; }
 
   .statut-zone { margin-left:auto; display:flex; align-items:center; gap:0.4rem; }
   .statut-lbl { font-family:'Cinzel',serif; font-size:0.56rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--SUB); }
@@ -241,7 +241,10 @@
     .carr-header { border-color:#443a26; padding-bottom:1rem; align-items:stretch; }
     .carr-illus { width:230px !important; }
     .carr-eyebrow { color:#c9a13f; }
-    .titre-input { color:#f2e9d2; border:none; font-size:1.9rem; }
+    .titre-input { display:none !important; }
+    .titre-print { display:block !important; color:#f2e9d2; font-family:'Cinzel',serif;
+                   font-size:1.9rem; font-weight:700; letter-spacing:0.04em;
+                   line-height:1.15; word-wrap:break-word; }
     .soustitre-input { display:none !important; }
     .soustitre-print { display:block !important; color:#c3ad78; font-family:'Crimson Text',serif;
                        font-style:italic; font-size:1rem; margin-top:0.3rem; line-height:1.4; }
@@ -310,7 +313,7 @@
        format habituel et on grossit tout : lu sur un téléphone, le document
        remplit l'écran en largeur et se lit sans zoomer. */
     body.print-mobile .layout { padding:10mm; }
-    body.print-mobile .titre-input { font-size:2.7rem; }
+    body.print-mobile .titre-print { font-size:2.4rem; }
     body.print-mobile .carr-eyebrow { font-size:0.95rem; }
     body.print-mobile .soustitre-print { font-size:1.4rem; line-height:1.5; }
     body.print-mobile .desc-print { font-size:1.4rem; line-height:1.55; }
@@ -332,7 +335,7 @@
     /* L'illustration reste à gauche du titre, comme à l'écran, mais elle grandit
        dans les mêmes proportions que le texte pour ne pas paraître perdue. */
     body.print-mobile .carr-header { gap:2rem; }
-    body.print-mobile .carr-illus { width:330px !important; }
+    body.print-mobile .carr-illus { width:270px !important; }
     body.print-mobile .illus-frame img { width:100% !important; }
   }
 </style>
@@ -443,13 +446,14 @@ function preparerImpression() {
   });
   // Un champ de saisie coupe le texte à sa largeur : le sous-titre est recopié
   // dans un bloc qui, lui, revient à la ligne.
-  const st = document.getElementById('f-soustitre');
-  if (st) {
+  [['f-titre', 'titre-print'], ['f-soustitre', 'soustitre-print']].forEach(([id, cls]) => {
+    const champ = document.getElementById(id);
+    if (!champ) return;
     const bloc = document.createElement('div');
-    bloc.className = 'soustitre-print';
-    bloc.textContent = st.value || '';
-    st.parentNode.insertBefore(bloc, st.nextSibling);
-  }
+    bloc.className = cls;
+    bloc.textContent = champ.value || '';
+    champ.parentNode.insertBefore(bloc, champ.nextSibling);
+  });
   // Une zone de saisie se tronque à sa hauteur visible et ne se coupe jamais
   // entre deux pages. Chacune est donc doublée par un bloc de texte ordinaire.
   document.querySelectorAll('textarea').forEach(ta => {
@@ -463,7 +467,7 @@ function preparerImpression() {
 }
 
 function restaurerApresImpression() {
-  document.querySelectorAll('.regle-print, .soustitre-print, .desc-print, .ech-desc-print')
+  document.querySelectorAll('.regle-print, .soustitre-print, .desc-print, .ech-desc-print, .titre-print')
           .forEach(b => b.remove());
   retirerFormatMobile();
   document.querySelectorAll('[data-replie="1"]').forEach(c => {
