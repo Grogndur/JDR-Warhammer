@@ -490,6 +490,13 @@
     text-overflow:ellipsis;white-space:nowrap}
   .cm-l .b{flex:0 0 auto;font-size:11px;color:#e0a08c;font-variant-numeric:tabular-nums}
   .cm-vide{padding:14px 10px;font-size:12px;opacity:.6;text-align:center}
+  .cm-l .cocher{flex:0 0 auto;width:14px;height:14px;margin:0;cursor:pointer;accent-color:var(--laiton)}
+  .pj-barre{display:flex;gap:5px;padding:7px;border-top:1px solid var(--bord);align-items:center}
+  .pj-barre select{flex:1;min-width:0;padding:6px 7px;font-size:12px;border-radius:7px;
+    background:var(--noir-2);border:1px solid var(--bord);color:var(--parchemin);font-family:inherit}
+  .pj-barre button{padding:0 9px;border-radius:7px;border:1px solid var(--bord);
+    background:rgba(40,32,24,.7);color:var(--parchemin-doux);cursor:pointer;font-size:13px}
+  .pj-barre button:hover{border-color:var(--laiton);color:#fff}
   .cm-bas{padding:5px 9px;border-top:1px solid var(--bord);font-size:10px;opacity:.55;
     letter-spacing:.03em}
 
@@ -818,10 +825,17 @@
   <div class="crea-menu" id="pj-menu">
     <div class="cm-haut">
       <span style="flex:1;align-self:center;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--laiton);padding-left:4px">Personnages joueurs</span>
+      <button type="button" id="pj-cocher" title="Cocher ou décocher tout le monde">☑</button>
       <button type="button" id="pj-relire" title="Relire les fiches et remettre les Blessures à jour">⟳</button>
       <button type="button" id="pj-fermer" title="Fermer">✕</button>
     </div>
     <div class="cm-liste" id="pj-liste"></div>
+    <div class="pj-barre">
+      <select id="pj-groupe" title="Groupes enregistrés"><option value="">Groupe…</option></select>
+      <button type="button" id="pj-grp-ajout" title="Ajouter le groupe choisi, ou les personnages cochés">+ Ajouter</button>
+      <button type="button" id="pj-grp-save" title="Enregistrer les personnages cochés comme groupe">💾</button>
+      <button type="button" id="pj-grp-suppr" title="Supprimer le groupe choisi">🗑</button>
+    </div>
     <div class="cm-bas">Lecture seule : la table ne modifie jamais une fiche.</div>
   </div>
 
@@ -2272,7 +2286,9 @@ function iniAdd(){
   const m = v.match(/^(.*?)[\s,]+(-?\d+)\s*$/);          // "Nom 42"
   const nom = (m ? (m[1].trim()||"Combattant") : v).slice(0,24);
   const init = m ? parseInt(m[2],10) : 0;
-  initEtat.ordre = [...(initEtat.ordre||[]), initCombattant({ id: nouvelId(), nom, init, av:0 })];
+  // Un personnage joueur ajouté à la main porte le même nom des deux côtés :
+  // le MJ voit son nom, la table aussi. Rien à ressaisir.
+  initEtat.ordre = [...(initEtat.ordre||[]), initCombattant({ id: nouvelId(), nom, pub: nom, init, av:0 })];
   champ.value = "";
   $("#initiative").classList.remove("replie");
   pousserInit();
@@ -2297,6 +2313,41 @@ function iniDup(id){
 // touche jamais à la fiche d'un joueur.
 const refAnnuaire = db ? ref(db, "personnages") : null;
 let fichesPJ = null;
+
+// ---------- Groupes de joueurs ----------
+// Plusieurs tables tournent sur le même annuaire, donc ajouter tout le monde
+// n'a pas de sens. Le MJ coche les personnages d'une table, il enregistre la
+// sélection sous un nom, et il la rappelle en un clic les fois suivantes.
+// Les groupes vivent dans Firebase pour suivre le MJ d'un appareil à l'autre.
+const refGroupesPJ = db ? ref(db, "outils/table/groupesPJ") : null;
+let groupesPJ = null;
+
+function chargerGroupesPJ(){
+  if(groupesPJ) return Promise.resolve(groupesPJ);
+  if(!refGroupesPJ){ groupesPJ = {}; return Promise.resolve(groupesPJ); }
+  return get(refGroupesPJ)
+    .then(s => { groupesPJ = s.val() || {}; return groupesPJ; })
+    .catch(() => { groupesPJ = {}; return groupesPJ; });
+}
+
+function enregistrerGroupesPJ(){
+  if(refGroupesPJ) return set(refGroupesPJ, groupesPJ || {});
+  return Promise.resolve();
+}
+
+function remplirSelectGroupes(){
+  const sel = $("#pj-groupe"); if(!sel) return;
+  const noms = Object.keys(groupesPJ || {}).sort((a,b) => a.localeCompare(b,"fr"));
+  const avant = sel.value;
+  sel.innerHTML = `<option value="">Groupe…</option>` +
+    noms.map(n => `<option value="${escape(n)}">${escape(n)}</option>`).join("");
+  if(noms.indexOf(avant) >= 0) sel.value = avant;
+}
+
+function idsCoches(){
+  return [...document.querySelectorAll('#pj-liste .cocher:checked')]
+    .map(c => c.closest("[data-fid]").dataset.fid);
+}
 
 function chargerFiches(force){
   if(fichesPJ && !force) return Promise.resolve(fichesPJ);
@@ -2337,7 +2388,8 @@ function ouvrirMenuPJ(){
   menu.classList.add("on");
   liste.innerHTML = `<div class="cm-vide">Lecture des fiches…</div>`;
   placerMenuPJ(menu, b);
-  chargerFiches().then(lot => {
+  Promise.all([chargerFiches(), chargerGroupesPJ()]).then(([lot]) => {
+    remplirSelectGroupes();
     if(!lot.length){ liste.innerHTML = `<div class="cm-vide">Aucune fiche lisible.</div>`; return; }
     const dedans = new Set((initEtat.ordre||[]).map(c => c.fid).filter(Boolean));
     liste.innerHTML = lot.map(x => {
@@ -2345,13 +2397,15 @@ function ouvrirMenuPJ(){
       const bm = parseInt(x.fiche.woundsMax,10);
       const dispo = isFinite(bm) && bm > 0;
       const deja = dedans.has(x.id);
-      return `<button class="cm-l" data-fid="${escape(x.id)}"` +
+      return `<div class="cm-l" data-fid="${escape(x.id)}"` +
              (deja ? ` title="Déjà présent : relit ses Blessures"` : ``) + `>` +
+             `<input type="checkbox" class="cocher" title="Choisir pour un groupe">` +
              `<span class="n">${escape(nomFiche(x))}</span>` +
              `<span class="r">${deja ? "déjà dans le combat" : ""}</span>` +
              `<span class="b">${dispo ? (isFinite(b0)?b0:bm) + " / " + bm : "—"}</span>` +
-             `</button>`;
+             `</div>`;
     }).join("");
+    cocherSelonGroupe();
     placerMenuPJ(menu, b);
   });
 }
@@ -2366,12 +2420,12 @@ function placerMenuPJ(menu, b){
   menu.style.top = Math.max(8, y) + "px";
 }
 
-function ajouterPJ(fid){
+function ajouterPJ(fid, muet){
   const x = (fichesPJ||[]).find(y => y.id === fid); if(!x) return;
   const bm = parseInt(x.fiche.woundsMax, 10);
   const b0 = parseInt(x.fiche.wounds, 10);
   const deja = (initEtat.ordre||[]).find(c => c.fid === fid);
-  if(deja){ majBlessuresPJ(deja, x); initMsg(nomFiche(x) + " : Blessures relues."); return; }
+  if(deja){ majBlessuresPJ(deja, x); if(!muet) initMsg(nomFiche(x) + " : Blessures relues."); return; }
   initEtat.ordre = [...(initEtat.ordre||[]), initCombattant({
     id: nouvelId(),
     fid: fid,
@@ -2386,7 +2440,7 @@ function ajouterPJ(fid){
   })];
   $("#initiative").classList.remove("replie");
   pousserInit();
-  initMsg(nomFiche(x) + " ajouté.");
+  if(!muet) initMsg(nomFiche(x) + " ajouté.");
 }
 
 function majBlessuresPJ(c, x){
@@ -2773,10 +2827,66 @@ $("#init-pj-fiches").addEventListener("click", ()=>{
 });
 $("#pj-fermer").addEventListener("click", ()=> $("#pj-menu").classList.remove("on"));
 $("#pj-relire").addEventListener("click", ()=>{ relirePJ(); $("#pj-menu").classList.remove("on"); });
+
 $("#pj-liste").addEventListener("click", e=>{
+  // La case à cocher sert à composer un groupe : elle n'ajoute personne.
+  if(e.target.classList.contains("cocher")) return;
   const b = e.target.closest("[data-fid]"); if(!b) return;
   ajouterPJ(b.dataset.fid);
   $("#pj-menu").classList.remove("on");
+});
+$("#pj-cocher").addEventListener("click", ()=>{
+  const cases = [...document.querySelectorAll("#pj-liste .cocher")];
+  const tout = cases.every(c => c.checked);
+  cases.forEach(c => { c.checked = !tout; });
+});
+function cocherSelonGroupe(){
+  const nom = $("#pj-groupe") ? $("#pj-groupe").value : "";
+  const ids = new Set((groupesPJ && groupesPJ[nom]) || []);
+  document.querySelectorAll("#pj-liste [data-fid]").forEach(l => {
+    const c = l.querySelector(".cocher");
+    if(c) c.checked = ids.has(l.dataset.fid);
+  });
+}
+$("#pj-groupe").addEventListener("change", cocherSelonGroupe);
+$("#pj-grp-ajout").addEventListener("click", ()=>{
+  const nom = $("#pj-groupe").value;
+  let ids = idsCoches();
+  if(!ids.length && nom) ids = (groupesPJ && groupesPJ[nom]) || [];
+  if(!ids.length){ initMsg("Personne de coché.", true); return; }
+  chargerFiches().then(()=>{
+    let n = 0;
+    ids.forEach(id => { if((fichesPJ||[]).some(x => x.id === id)){ ajouterPJ(id, true); n++; } });
+    $("#pj-menu").classList.remove("on");
+    $("#initiative").classList.remove("replie");
+    if(!n) initMsg("Aucune fiche trouvée.", true);
+    else initMsg(n > 1 ? n + " personnages ajoutés." : "Ajouté.");
+  });
+});
+$("#pj-grp-save").addEventListener("click", ()=>{
+  const ids = idsCoches();
+  if(!ids.length){ initMsg("Coche d'abord les personnages du groupe.", true); return; }
+  const propose = $("#pj-groupe").value || "";
+  const nom = (window.prompt("Nom du groupe", propose) || "").trim().slice(0,32);
+  if(!nom) return;
+  groupesPJ = groupesPJ || {};
+  groupesPJ[nom] = ids;
+  enregistrerGroupesPJ().then(()=>{
+    remplirSelectGroupes();
+    $("#pj-groupe").value = nom;
+    initMsg("Groupe « " + nom + " » enregistré, " + ids.length + " personnages.");
+  });
+});
+$("#pj-grp-suppr").addEventListener("click", ()=>{
+  const nom = $("#pj-groupe").value;
+  if(!nom){ initMsg("Choisis un groupe à supprimer.", true); return; }
+  if(!window.confirm("Supprimer le groupe « " + nom + " » ?")) return;
+  delete groupesPJ[nom];
+  enregistrerGroupesPJ().then(()=>{
+    remplirSelectGroupes();
+    cocherSelonGroupe();
+    initMsg("Groupe supprimé.");
+  });
 });
 $("#init-add").addEventListener("keydown", e=>{ if(e.key==="Enter") iniAdd(); });
 $("#init-jets").addEventListener("click", iniJets);
