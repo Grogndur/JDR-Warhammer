@@ -1362,6 +1362,7 @@ window.MAGIE = {"sorts": [{"d": "Sorts mineurs", "n": "Alerte", "ni": 0, "p": "1
         function (a) {
           poser('wep-name', a.n); poser('wep-all', a.all); poser('wep-deg', a.deg);
           poser('wep-enc', parseInt(a.enc) || 0); poser('wep-attr', a.at === '–' ? '' : a.at);
+          poser('wep-sp', a.sp || '');
         });
     },
 
@@ -1382,6 +1383,7 @@ window.MAGIE = {"sorts": [{"d": "Sorts mineurs", "n": "Alerte", "ni": 0, "p": "1
           poser('ap-enc', parseInt(a.enc) || 0);
           poser('ap-pen', a.pen === '–' ? '' : a.pen);
           poser('ap-attr', a.at === '–' ? '' : a.at);
+          poser('ap-sp', a.sp || '');
         });
     },
 
