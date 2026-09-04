@@ -116,7 +116,7 @@
                  color:var(--GLD-LT); font-family:'Cinzel',serif; font-size:0.86rem; letter-spacing:0.06em;
                  padding:0.15rem 0.2rem; outline:none; }
   .regle-titre:focus { border-bottom-color:var(--GLD); }
-  .regle-print { display:none; }
+  .regle-print, .soustitre-print { display:none; }
   .statut-zone { margin-left:auto; display:flex; align-items:center; gap:0.4rem; }
   .statut-lbl { font-family:'Cinzel',serif; font-size:0.56rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--SUB); }
   .statut-tier, .statut-rang { background:rgba(9,8,12,0.5); border:1px solid rgba(184,146,42,0.3); color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.85rem; padding:0.25rem 0.4rem; border-radius:2px; }
@@ -234,7 +234,9 @@
     .carr-header { border-color:#c9b98a; padding-bottom:1rem; }
     .carr-eyebrow { color:#8a6d2a; }
     .titre-input { color:#2a2114; border:none; font-size:1.9rem; }
-    .soustitre-input { color:#6b5320; border:none; margin-top:0.3rem; }
+    .soustitre-input { display:none !important; }
+    .soustitre-print { display:block !important; color:#6b5320; font-family:'Crimson Text',serif;
+                       font-style:italic; font-size:1rem; margin-top:0.3rem; line-height:1.4; }
     .desc-input { color:#2a2416; border:none; padding:0; min-height:0; resize:none; margin-top:0.7rem; }
     .illus-frame { border-color:#c9b98a; background:#faf6ea !important; }
     .card { background:#fff; border:1px solid #d8caa0; margin-top:1rem; break-inside:avoid; }
@@ -379,6 +381,15 @@ function preparerImpression() {
     c.dataset.replie = '1';
     c.classList.remove('collapsed');
   });
+  // Un champ de saisie coupe le texte à sa largeur : le sous-titre est recopié
+  // dans un bloc qui, lui, revient à la ligne.
+  const st = document.getElementById('f-soustitre');
+  if (st) {
+    const bloc = document.createElement('div');
+    bloc.className = 'soustitre-print';
+    bloc.textContent = st.value || '';
+    st.parentNode.insertBefore(bloc, st.nextSibling);
+  }
   document.querySelectorAll('#list-regles .entry-desc').forEach(ta => {
     const bloc = document.createElement('div');
     bloc.className = 'regle-print';
@@ -388,7 +399,7 @@ function preparerImpression() {
 }
 
 function restaurerApresImpression() {
-  document.querySelectorAll('.regle-print').forEach(b => b.remove());
+  document.querySelectorAll('.regle-print, .soustitre-print').forEach(b => b.remove());
   document.querySelectorAll('[data-replie="1"]').forEach(c => {
     c.classList.add('collapsed');
     delete c.dataset.replie;
