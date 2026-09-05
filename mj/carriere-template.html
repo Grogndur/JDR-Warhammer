@@ -596,7 +596,10 @@ function remplirCatalogue(row) {
   const desc = row.querySelector('.entry-desc');
   if (desc && desc.value.trim() && f.effet) {
     const plat = s => String(s).toLowerCase().replace(/[^a-z0-9àâäéèêëîïôöùûüç]+/g, ' ').trim();
-    const a = plat(desc.value), b = plat(f.effet);
+    /* La fiche ajoute la liste des spécialisations que la description ne
+       contient pas : on compare sur le début du texte officiel seulement. */
+    const a = plat(desc.value);
+    const b = plat(String(f.effet).split(/sp[ée]cialisations\s*:/i)[0]).slice(0, 80);
     if (b.length > 15 && a.indexOf(b) !== -1) {
       desc.value = '';
       autoGrow(desc);
