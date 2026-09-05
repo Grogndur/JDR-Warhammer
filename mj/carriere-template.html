@@ -566,7 +566,7 @@ function chercherCatalogueCommun(type, nom) {
   if (type === 'talents') {
     const t = (C.talents || []).find(x => catNorm(x.n) === cible || catNorm(catRacine(x.n)) === racine);
     return t ? { nom: t.n, col1: 'Maxi : ' + (t.max || '–'),
-                 col2: 'Tests : ' + (t.t || '–'), effet: t.d || '' } : null;
+                 col2: 'Tests : ' + (t.ts || '–'), effet: t.d || '' } : null;
   }
   const c = (C.competences || []).find(x => catNorm(x.n) === cible || catNorm(x.n) === racine);
   return c ? { nom: c.n, col1: 'Caractéristique : ' + (c.c || '–'),
@@ -700,8 +700,8 @@ const PK = (function () {
     return (C.talents || []).map(t => ({
       n: t.n, marque: t.off ? '' : 'maison',
       m: meta([t.max ? 'Maxi ' + t.max : '',
-               (t.sp && t.sp.length) ? 'À préciser' : '', t.t]),
-      d: t.d || '', k: t.n + ' ' + (t.t || '') + ' ' + (t.d || ''),
+               (t.sp && t.sp.length) ? 'À préciser' : '', t.ts]),
+      d: t.d || '', k: t.n + ' ' + (t.ts || '') + ' ' + (t.d || ''),
       sp: (t.sp && t.sp.length) ? t.sp : null
     }));
   }
