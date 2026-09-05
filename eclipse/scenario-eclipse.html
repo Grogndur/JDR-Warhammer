@@ -190,7 +190,7 @@ body.editing .main{padding-bottom:6rem;}
 /* ── Barre d'insertion ── */
 .eb2{position:fixed;left:0;right:0;bottom:0;z-index:880;background:rgba(20,14,32,0.98);border-top:1px solid rgba(103,78,167,0.5);padding:0.4rem 0.6rem;display:none;gap:0.3rem;align-items:center;flex-wrap:wrap;}
 body.editing .eb2{display:flex;}
-body.editing .edit-bar{bottom:auto;}
+body.editing .edit-bar{display:none;}
 .eb2-g{display:flex;gap:0.28rem;align-items:center;flex-wrap:wrap;}
 .eb2-s{width:1px;height:20px;background:rgba(255,255,255,0.14);margin:0 0.3rem;}
 .eb2-b{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:var(--parchment);font-family:'Cinzel',serif;font-size:0.6rem;letter-spacing:0.05em;padding:0.34rem 0.55rem;border-radius:2px;cursor:pointer;white-space:nowrap;}
@@ -5158,6 +5158,40 @@ document.querySelectorAll(".edit-bar [onclick]").forEach(function(b){
 poserPortraits();
 hydrater();
 
+})();
+</script>
+
+<script>
+/* ── « Exporter le fichier » dans la barre visible ──────────────────
+   Le bouton vivait dans .edit-bar, que la barre .eb2 recouvre. On le
+   replace dans le dernier groupe de .eb2, à côté du témoin de synchro. */
+(function(){
+  function poser(){
+    var barre = document.getElementById("eb2");
+    if (!barre) return false;
+    if (document.getElementById("eb2-export")) return true;
+    var groupe = barre.querySelector(".eb2-g:last-of-type") || barre;
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "eb2-b prim";
+    b.id = "eb2-export";
+    b.setAttribute("contenteditable", "false");
+    b.textContent = "\u21e9 Exporter";
+    b.title = "Télécharger le fichier complet, à remettre sur GitHub";
+    b.addEventListener("click", function(ev){
+      ev.preventDefault();
+      if (typeof editDownload === "function") editDownload();
+      else if (window.toast) window.toast("Export indisponible", true);
+    });
+    groupe.insertBefore(b, groupe.firstChild);
+    return true;
+  }
+  if (!poser()) {
+    var essais = 0;
+    var t = setInterval(function(){
+      if (poser() || ++essais > 40) clearInterval(t);
+    }, 250);
+  }
 })();
 </script>
 </body>
