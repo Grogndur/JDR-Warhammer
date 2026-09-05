@@ -4006,23 +4006,35 @@ function encart(){
   return b;
 }
 
+/* Un chevron de pliage emballé par erreur dans le titre revient en tête. */
+function sortirPlieurs(){
+  document.querySelectorAll(".stat-head > .head-txt > .sr-plier").forEach(function(b){
+    var head = b.closest(".stat-head");
+    if (head) head.insertBefore(b, head.firstChild);
+  });
+}
+
 function poserPortraits(){
   nettoyerPortraitsPnj();
-  /* Profils de combat : on regroupe nom et sous-titre pour loger l'encart. */
-  document.querySelectorAll(".npc-stat").forEach(function(card){
-    if (card.querySelector(":scope > .npc-head")) return;
-    var nom = card.querySelector(":scope > .npc-name");
-    var sub = card.querySelector(":scope > .npc-sub");
-    if (!nom) return;
-    var head = document.createElement("div");
-    head.className = "npc-head";
-    var txt = document.createElement("div");
-    txt.className = "head-txt";
-    card.insertBefore(head, nom);
-    txt.appendChild(nom);
-    if (sub) txt.appendChild(sub);
+  sortirPlieurs();
+  /* Tout profil, figé ou venu du bestiaire, porte un .stat-head : c'est là
+     que se loge l'encart, à gauche du nom, comme dans « De Boue et de Sang ». */
+  document.querySelectorAll(".stat-head").forEach(function(head){
+    if (head.querySelector(":scope > .pf")) return;
+    var plieur = head.querySelector(":scope > .sr-plier");
+    if (plieur) plieur.remove();
+    var restant = Array.prototype.slice.call(head.childNodes);
+    var boite = head.querySelector(":scope > .head-txt");
+    if (!boite) {
+      boite = document.createElement("div");
+      boite.className = "head-txt";
+      restant.forEach(function(n){ boite.appendChild(n); });
+    } else {
+      boite.remove();
+    }
     head.appendChild(encart());
-    head.appendChild(txt);
+    head.appendChild(boite);
+    if (plieur) head.insertBefore(plieur, head.firstChild);
   });
 }
 
@@ -4040,6 +4052,11 @@ function nettoyerPortraitsPnj(){
 }
 
 var portraitsCharges = {};
+
+/* Le pont bestiaire repeint ses blocs après coup : on repose les encarts. */
+document.addEventListener("bestiaire:peint", function(){
+  try { poserPortraits(); chargerPortraitsVisibles(); } catch(e){}
+});
 
 function chargerPortraitsVisibles(){
   if (!refImg) return;
