@@ -589,6 +589,26 @@ function remplirCatalogue(row) {
     return;
   }
   info.style.display = '';
+
+  /* Les fiches saisies avant ce correctif portent une description qui répète
+     l'effet officiel. On la retire une fois pour toutes, sinon le PDF affiche
+     le même texte deux fois. Une note personnelle est conservée. */
+  const desc = row.querySelector('.entry-desc');
+  if (desc && desc.value.trim() && f.effet) {
+    const plat = s => String(s).toLowerCase().replace(/[^a-z0-9àâäéèêëîïôöùûüç]+/g, ' ').trim();
+    const a = plat(desc.value), b = plat(f.effet);
+    if (b.length > 15 && a.indexOf(b) !== -1) {
+      desc.value = '';
+      autoGrow(desc);
+      const ei = row.dataset.ei, idx = row.dataset.idx;
+      if (ei != null && idx != null && state.echelons[ei] && state.echelons[ei][type] &&
+          state.echelons[ei][type][idx]) {
+        state.echelons[ei][type][idx].desc = '';
+        programmerSauvegarde();
+      }
+    }
+  }
+
   const meta = document.createElement('div');
   meta.className = 'cat-meta';
   meta.textContent = f.nom + ' · ' + f.col1 + ' · ' + f.col2;
@@ -1139,6 +1159,8 @@ function rendreListe(ei, type) {
       : 'Description, spécialisation, condition d\'acquisition…';
     const estCat = (type === 'competences' || type === 'talents');
     row.dataset.type = type;
+    row.dataset.ei = ei;
+    row.dataset.idx = i;
     row.innerHTML =
       '<div class="entry-top">' +
         '<input class="entry-nom" placeholder="Nom">' +
@@ -1171,8 +1193,11 @@ function rendreListe(ei, type) {
       PK.ouvrir(type, function (o) {
         nom.value = o.n;
         state.echelons[ei][type][i].nom = o.n;
-        /* La description ne s'écrase jamais : elle se remplit si elle est vide. */
-        if (!desc.value.trim()) {
+        /* Pour une compétence ou un talent, l'effet officiel est déjà affiché
+           par la fiche du catalogue. Le recopier dans la description ferait
+           apparaître deux fois le même texte sur le PDF. La description reste
+           libre pour une note personnelle. */
+        if (!estCat && !desc.value.trim()) {
           const texte = [o.m, o.d].filter(Boolean).join(' \u2014 ');
           desc.value = texte;
           state.echelons[ei][type][i].desc = texte;
