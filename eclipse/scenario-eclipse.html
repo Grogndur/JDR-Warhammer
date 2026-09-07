@@ -9235,6 +9235,12 @@ hydrater();
       }
       zone.classList.add('open'); b.classList.add('on');
       if(zone.dataset.pret === '1') return;
+      /* une illustration imposée n'a pas besoin de la liste de la galerie */
+      var forcee = panel.getAttribute('data-illu');
+      if(forcee){
+        afficher(zone, forcee.split('|').map(function(x){ return x.trim(); }).filter(Boolean));
+        zone.dataset.pret = '1'; return;
+      }
       zone.innerHTML = '<p class="illu-vide">Recherche dans la galerie…</p>';
       charger().then(function(noms){
         afficher(zone, apparier(panel, noms));
