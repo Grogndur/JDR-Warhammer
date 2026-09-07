@@ -7013,10 +7013,24 @@ hydrater();
     }
     var g = document.createElement('div'); g.className = 'illu-grille';
     fichiers.forEach(function(f){
-      var url = RACINE + encodeURIComponent(f);
+      var enc = encodeURIComponent(f);
+      var url = RACINE + enc;
+      var secours = 'https://raw.githubusercontent.com/' + DEPOT + '/main/' + DOSSIER + enc;
       var v = document.createElement('div'); v.className = 'illu-vig';
       var im = document.createElement('img');
       im.src = url; im.alt = f; im.loading = 'lazy';
+      /* le chemin relatif dépend d'où la page est ouverte : on retombe sur le dépôt */
+      im.addEventListener('error', function(){
+        if(im.dataset.secours === '1'){
+          im.remove();
+          var p = document.createElement('p');
+          p.className = 'illu-vide';
+          p.textContent = 'Image introuvable : ' + f;
+          v.insertBefore(p, v.firstChild);
+          return;
+        }
+        im.dataset.secours = '1'; url = secours; im.src = secours;
+      });
       im.addEventListener('click', function(){ plein(url); });
       var lg = document.createElement('span');
       lg.textContent = f.replace(EXT, '').replace(/[_-]+/g, ' ');
