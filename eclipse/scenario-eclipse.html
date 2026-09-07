@@ -7674,6 +7674,9 @@ function apresRemplacement(){
   poserCrayons();
   if (window.editing) rendreEditable(true);
   chargerPortraitsVisibles();
+  /* Firebase remplace le DOM des parties : on rebranche nos boutons */
+  if (typeof window.brancherIllustrations === "function") window.brancherIllustrations();
+  if (typeof window.brancherGloses === "function") window.brancherGloses();
 }
 
 function rendreEditable(on){
@@ -9129,6 +9132,7 @@ hydrater();
   if(document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', init);
   else init();
+  window.brancherGloses = init;
 })();
 
 /* ---- Illustrations de scène ----------------------------------- */
@@ -9215,7 +9219,9 @@ hydrater();
   }
   function brancher(panel){
     var bar = panel.querySelector('.scene-title-bar');
-    if(!bar || panel.querySelector('.btn-illu')) return;
+    if(!bar) return;
+    /* un remplacement de DOM laisse la balise mais perd l'écouteur : on refait */
+    panel.querySelectorAll('.btn-illu,.illu-zone').forEach(function(e){ e.remove(); });
     var nav = bar.querySelector('.scene-nav') || bar;
     var b = document.createElement('button');
     b.type = 'button'; b.className = 'btn-illu';
