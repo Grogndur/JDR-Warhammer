@@ -797,6 +797,25 @@ body.gloss-off .gloss{display:none;}
 body.gloss-off .gloss-sp{display:none;}
 body.gloss-off.editing .gloss{display:inline;}
 @media(max-width:700px){.btn-gloss{font-size:.68rem;padding:.24rem .45rem;}}
+
+.btn-illu{background:transparent;border:1px solid var(--line);color:var(--SUB);
+  font-family:inherit;font-size:.68rem;letter-spacing:.04em;padding:.2rem .5rem;
+  border-radius:3px;cursor:pointer;margin-left:.4rem;white-space:nowrap;}
+.btn-illu:hover{color:var(--PARCH);border-color:var(--SUB);}
+.btn-illu.on{color:var(--CUI);border-color:var(--CUI);}
+.illu-zone{margin:.6rem 0 1rem;display:none;}
+.illu-zone.open{display:block;}
+.illu-grille{display:flex;flex-wrap:wrap;gap:.6rem;}
+.illu-vig{flex:0 0 auto;max-width:100%;text-align:center;}
+.illu-vig img{max-width:320px;max-height:320px;width:auto;height:auto;
+  border:1px solid var(--line);border-radius:3px;cursor:zoom-in;display:block;}
+.illu-vig span{display:block;font-size:.68rem;color:var(--SUB);
+  font-style:italic;margin-top:.2rem;}
+.illu-vide{font-size:.78rem;color:var(--SUB);font-style:italic;}
+.illu-plein{position:fixed;inset:0;background:rgba(5,5,9,.94);z-index:9000;
+  display:flex;align-items:center;justify-content:center;cursor:zoom-out;padding:2vh 2vw;}
+.illu-plein img{max-width:96vw;max-height:96vh;width:auto;height:auto;}
+@media(max-width:700px){.illu-vig img{max-width:100%;}}
 </style>
 <script defer="" src="../commun/bestiaire-pont.js"></script>
 </head>
@@ -7122,6 +7141,11 @@ function editReset(){
 
 // Reconstruit le fichier HTML complet, propre, prêt à héberger
 function buildFullHtml(){
+
+  /* les illustrations sont une pièce d'interface, jamais du document */
+  try{
+    doc.querySelectorAll('.btn-illu,.illu-zone,.illu-plein').forEach(function(e){ e.remove(); });
+  }catch(e){}
   /* l'interrupteur des gloses est une pièce d'interface, jamais du document */
   try{
     var _bg = document.getElementById('btn-gloss'); if(_bg) _bg.remove();
@@ -9105,6 +9129,128 @@ hydrater();
   if(document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', init);
   else init();
+})();
+
+/* ---- Illustrations de scène ----------------------------------- */
+(function(){
+  var DEPOT  = 'Grogndur/JDR-Warhammer';
+  var DOSSIER = 'gallerie/';
+  var RACINE = '../' + DOSSIER;          /* les scénarios sont dans un sous-dossier */
+  var EXT = /\.(jpe?g|png|webp|gif)$/i;
+  var liste = null, enCours = null;
+
+  function normaliser(t){
+    return (t||'').toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/[^a-z0-9]+/g,' ').trim();
+  }
+  function motsUtiles(t){
+    return normaliser(t).split(' ').filter(function(m){
+      return m.length >= 4 && ['dans','pour','avec','sans','leur','elle','tout',
+        'sur','scene','chapitre','phase','fil','les','des','une','the'].indexOf(m) < 0;
+    });
+  }
+  function charger(){
+    if(liste) return Promise.resolve(liste);
+    if(enCours) return enCours;
+    enCours = fetch('https://api.github.com/repos/' + DEPOT + '/contents/' + DOSSIER)
+      .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function(j){
+        liste = (j||[]).filter(function(e){ return e.type === 'file' && EXT.test(e.name); })
+                       .map(function(e){ return e.name; });
+        return liste;
+      });
+    return enCours;
+  }
+  function apparier(panel, noms){
+    var forcee = panel.getAttribute('data-illu');
+    if(forcee) return forcee.split('|').map(function(x){ return x.trim(); }).filter(Boolean);
+    /* les noms que la scène contient : profils, puis titre */
+    var cles = [];
+    panel.querySelectorAll('.stat-name').forEach(function(e){
+      cles.push(normaliser(e.textContent));
+    });
+    var titre = panel.querySelector('.scene-title');
+    var motsTitre = titre ? motsUtiles(titre.textContent) : [];
+    var trouve = [];
+    noms.forEach(function(f){
+      var base = normaliser(f.replace(EXT, ''));
+      var ok = cles.some(function(c){
+        if(!c) return false;
+        return base.indexOf(c) >= 0 || c.indexOf(base) >= 0;
+      });
+      if(!ok) ok = motsTitre.some(function(m){ return base.split(' ').indexOf(m) >= 0; });
+      if(ok && trouve.indexOf(f) < 0) trouve.push(f);
+    });
+    return trouve;
+  }
+  function plein(src){
+    var d = document.createElement('div');
+    d.className = 'illu-plein';
+    d.setAttribute('data-ui','1');
+    var i = document.createElement('img'); i.src = src; d.appendChild(i);
+    d.addEventListener('click', function(){ d.remove(); });
+    document.body.appendChild(d);
+  }
+  function afficher(zone, fichiers){
+    zone.innerHTML = '';
+    if(!fichiers.length){
+      var p = document.createElement('p');
+      p.className = 'illu-vide';
+      p.textContent = 'Aucune illustration ne correspond à cette scène dans la galerie.';
+      zone.appendChild(p); return;
+    }
+    var g = document.createElement('div'); g.className = 'illu-grille';
+    fichiers.forEach(function(f){
+      var url = RACINE + encodeURIComponent(f);
+      var v = document.createElement('div'); v.className = 'illu-vig';
+      var im = document.createElement('img');
+      im.src = url; im.alt = f; im.loading = 'lazy';
+      im.addEventListener('click', function(){ plein(url); });
+      var lg = document.createElement('span');
+      lg.textContent = f.replace(EXT, '').replace(/[_-]+/g, ' ');
+      v.appendChild(im); v.appendChild(lg); g.appendChild(v);
+    });
+    zone.appendChild(g);
+  }
+  function brancher(panel){
+    var bar = panel.querySelector('.scene-title-bar');
+    if(!bar || panel.querySelector('.btn-illu')) return;
+    var nav = bar.querySelector('.scene-nav') || bar;
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'btn-illu';
+    b.setAttribute('contenteditable','false');
+    b.setAttribute('data-ui','1');
+    b.textContent = 'Illustrations';
+    b.title = 'Afficher les illustrations liées à cette scène';
+    nav.appendChild(b);
+    var zone = document.createElement('div');
+    zone.className = 'illu-zone';
+    zone.setAttribute('contenteditable','false');
+    zone.setAttribute('data-ui','1');
+    bar.insertAdjacentElement('afterend', zone);
+    b.addEventListener('click', function(){
+      if(zone.classList.contains('open')){
+        zone.classList.remove('open'); b.classList.remove('on'); return;
+      }
+      zone.classList.add('open'); b.classList.add('on');
+      if(zone.dataset.pret === '1') return;
+      zone.innerHTML = '<p class="illu-vide">Recherche dans la galerie…</p>';
+      charger().then(function(noms){
+        afficher(zone, apparier(panel, noms));
+        zone.dataset.pret = '1';
+      }).catch(function(e){
+        zone.innerHTML = '<p class="illu-vide">Galerie injoignable (' + e.message + ').</p>';
+      });
+    });
+  }
+  function init(){
+    document.querySelectorAll('.scene-panel').forEach(brancher);
+  }
+  if(document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', init);
+  else init();
+  window.brancherIllustrations = init;
 })();
 </script>
 </body></html>
