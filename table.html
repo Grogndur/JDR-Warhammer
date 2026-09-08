@@ -313,7 +313,11 @@
     border:1px solid var(--bord);background:rgba(40,32,24,.7);color:var(--parchemin-doux);cursor:pointer}
   .ini-b button:hover{border-color:var(--laiton)}
   .vers-grimoire{font-size:11px;line-height:1}
-  .ini-chip.abattu{border-color:var(--oxblood);background:rgba(120,26,26,.22)}
+  .ini-chip.abattu{border-color:var(--oxblood);background:rgba(120,26,26,.34);
+  box-shadow:inset 0 0 14px rgba(120,26,26,.5)}
+  .ini-chip.abattu .ini-nom,.ini-chip.abattu .ini-pub{color:#e58e78}
+  /* la mention des critiques et ses tables restent réservées au meneur */
+  body:not(.est-mj) .ini-chip.abattu .ini-crit{display:none}
   .ini-chip.abattu .ini-b input{color:#e58e78;border-color:var(--oxblood)}
   .ini-crit{width:100%;font-size:10px;letter-spacing:.03em;color:#e58e78;display:none;padding-top:2px}
   .ini-chip.abattu .ini-crit{display:block}
@@ -2695,7 +2699,8 @@ function rendreInit(){
     const a = (c.id===initEtat.actif) ? " actif" : "";
     const aPf = c.pf ? " a-pf" : "";
     const aB = isFinite(c.bmax) && c.bmax > 0 ? " a-b" : "";
-    const abattu = (mj && aB && (c.b||0) <= 0) ? " abattu" : "";
+    /* un combattant à zéro Blessure est visible de tous, MJ comme joueurs */
+      const abattu = (aB && (c.b||0) <= 0) ? " abattu" : "";
     const affiche = mj ? escape(c.nom) : (escape(c.pub || "") || "—");
     let h = `<div class="ini-chip${a}${aPf}${aB}${abattu}" data-id="${c.id}">`;
     h += `<div class="ini-haut">`;
