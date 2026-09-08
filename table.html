@@ -159,7 +159,7 @@
   .entete-poignee:active{transform:translateY(-1px)}
   header.replie{opacity:0;pointer-events:none}
   header.replie .retour{pointer-events:none}
-  .titre{display:flex;align-items:center;margin:0 auto;white-space:nowrap;pointer-events:none}
+  .titre{display:block;margin:0;pointer-events:none}
 
   /* ---- Bandeau du haut : les commandes de session y ont remplacé
          le premier groupe du dock, qui gagne autant de hauteur. ---- */
@@ -395,7 +395,7 @@
   .dock #init-msg{max-width:132px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .dock #jet-secret-loc{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-  @media(max-width:1500px){ header .titre{display:flex;position:static;transform:none;margin:0 auto;pointer-events:none;align-items:center;flex:0 0 auto;} }
+  @media(max-width:1500px){ header .titre{display:block;position:absolute;left:0;right:0;top:6px;transform:none;margin:0;pointer-events:none;text-align:center;} }
   @media(max-width:1700px){
     .dock .prefixe-img{display:none}
     .dock #init-msg{max-width:104px}
@@ -700,8 +700,8 @@
 /* ---- Cadran jour / nuit ----------------------------------------
    Aucune coordonnée codée en dur : le script mesure lui-même l'image
    du socle au chargement et place tout dessus. */
-.cadran{position:relative;height:104px;width:calc(104px * 1400 / 647);
-  max-width:54vw;margin:0 auto;pointer-events:auto;user-select:none;z-index:30;}
+.cadran{position:relative;display:inline-block;height:132px;width:calc(132px * 1400 / 647);
+  max-width:56vw;margin:0 auto;pointer-events:auto;user-select:none;z-index:30;}
 .cadran-socle{display:block;width:100%;height:100%;object-fit:contain;
   pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,.85));}
 .cadran-zones{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:4;}
@@ -716,12 +716,18 @@
   color:var(--laiton);opacity:.9;text-shadow:0 0 4px #000;pointer-events:none;}
 .cadran-cran{cursor:default;}
 body.cadran-mj .cadran-cran{cursor:pointer;}
-body.cadran-mj .cadran-cran:hover circle{fill:rgba(201,161,58,.18);}
+body.cadran-mj .cadran-cran:hover path{fill:rgba(201,161,58,.22);}
 
 @media(max-width:760px){
-  .cadran{height:66px;width:calc(66px * 1400 / 647);max-width:76vw;}
+  .cadran{height:78px;width:calc(78px * 1400 / 647);max-width:80vw;}
   .cadran-heure{font-size:9px;letter-spacing:.08em;bottom:-11px;}
 }
+
+/* centrage du cadran : posé en fin de feuille pour primer sur tout le reste */
+header .titre{position:absolute !important;left:50% !important;right:auto !important;
+  top:6px !important;transform:translateX(-50%) !important;margin:0 !important;
+  display:block !important;pointer-events:none;}
+header .titre .cadran{margin:0 !important;}
 </style>
 </head>
 <body>
@@ -3660,7 +3666,7 @@ $("#amb-activer").addEventListener("click", ()=>{
     var R = rs.length ? rs[Math.floor(rs.length / 2)] : W * 0.28;
 
     /* la taille des astres : largeur de la volute */
-    var taille = Math.max(W * 0.10, Math.min(W * 0.20, Math.abs(gau.x - 0) * 2.2));
+    var taille = W * 0.20;
     return {W:W, H:H, piv:piv, gau:gau, dro:dro, R:R, taille:taille};
   }
 
@@ -3690,31 +3696,46 @@ $("#amb-activer").addEventListener("click", ()=>{
     return true;
   }
 
+  /* Une seule zone : toute la couronne de l'arc. On clique n'importe où
+     dessus et l'heure la plus proche est retenue. Viser vingt-quatre
+     petits cercles était impraticable. */
   function construireZones(){
     var svg = document.getElementById('cadran-arc');
     if(!svg || !geo) return;
     var ns = 'http://www.w3.org/2000/svg';
     svg.innerHTML = '';
-    for(var h = 0; h < HEURES; h++){
-      var R = (180 + angle(h)) * Math.PI / 180;
-      var x = geo.piv.x + geo.R * Math.sin(R);
-      var y = geo.piv.y - geo.R * Math.cos(R);
-      var g = document.createElementNS(ns, 'g');
-      g.setAttribute('class', 'cadran-cran');
-      g.dataset.h = h;
-      var c = document.createElementNS(ns, 'circle');
-      c.setAttribute('cx', x.toFixed(1)); c.setAttribute('cy', y.toFixed(1));
-      c.setAttribute('r', (geo.W * 0.022).toFixed(1));
-      c.setAttribute('fill', 'transparent');
-      g.appendChild(c);
-      (function(hh){
-        g.addEventListener('click', function(){
-          if(!document.body.classList.contains('cadran-mj')) return;
-          poser(hh, true);
-        });
-      })(h);
-      svg.appendChild(g);
+    var g = document.createElementNS(ns, 'g');
+    g.setAttribute('class', 'cadran-cran');
+    var ep = geo.R * 0.42;                     /* épaisseur de la couronne */
+    function pt(a, r){
+      var R = (180 + a) * Math.PI / 180;
+      return [(geo.piv.x + r * Math.sin(R)).toFixed(1),
+              (geo.piv.y - r * Math.cos(R)).toFixed(1)];
     }
+    var A0 = angle(0), A1 = angle(HEURES - 1);
+    var M = 6;                       /* marge : les extrémités doivent rester cliquables */
+    var re1 = geo.R + ep / 2, ri = geo.R - ep / 2;
+    var a = pt(A0 + M, re1), b = pt(A1 - M, re1), c = pt(A1 - M, ri), d = pt(A0 + M, ri);
+    var p = document.createElementNS(ns, 'path');
+    p.setAttribute('d',
+      'M ' + a[0] + ' ' + a[1] +
+      ' A ' + re1 + ' ' + re1 + ' 0 0 0 ' + b[0] + ' ' + b[1] +
+      ' L ' + c[0] + ' ' + c[1] +
+      ' A ' + ri + ' ' + ri + ' 0 0 1 ' + d[0] + ' ' + d[1] + ' Z');
+    p.setAttribute('fill', 'transparent');
+    g.appendChild(p);
+    svg.appendChild(g);
+    g.addEventListener('click', function(ev){
+      if(!document.body.classList.contains('cadran-mj')) return;
+      var r = svg.getBoundingClientRect();
+      var x = (ev.clientX - r.left) / r.width  * geo.W;
+      var y = (ev.clientY - r.top)  / r.height * geo.H;
+      /* la pointe est en x = piv.x - R sin(a), y = piv.y + R cos(a) */
+      var dx = x - geo.piv.x, dy = y - geo.piv.y;
+      var a  = Math.atan2(-dx, dy) * 180 / Math.PI;
+      var h  = Math.round((A0 - a) / (A0 - A1) * (HEURES - 1));
+      poser(Math.max(0, Math.min(HEURES - 1, h)), true);
+    });
   }
 
   function peindre(){
