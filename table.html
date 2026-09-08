@@ -159,7 +159,9 @@
   .entete-poignee:active{transform:translateY(-1px)}
   header.replie{opacity:0;pointer-events:none}
   header.replie .retour{pointer-events:none}
-  .titre{display:block;margin:0;pointer-events:none}
+  .titre{display:flex;align-items:baseline;gap:.5ch;margin:0;
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    white-space:nowrap;pointer-events:none}
 
   /* ---- Bandeau du haut : les commandes de session y ont remplacé
          le premier groupe du dock, qui gagne autant de hauteur. ---- */
@@ -395,7 +397,7 @@
   .dock #init-msg{max-width:132px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .dock #jet-secret-loc{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-  @media(max-width:1500px){ header .titre{display:block;position:absolute;left:0;right:0;top:6px;transform:none;margin:0;pointer-events:none;text-align:center;} }
+  @media(max-width:1500px){ header .titre{display:flex;position:absolute;top:2px;left:50%;transform:translateX(-50%);pointer-events:none;align-items:flex-start} }
   @media(max-width:1700px){
     .dock .prefixe-img{display:none}
     .dock #init-msg{max-width:104px}
@@ -690,44 +692,72 @@
   }
 
 /* ---- Cadran jour / nuit ---------------------------------------- */
+.cadran{position:relative;width:430px;max-width:66vw;height:112px;margin:0 auto;
+  pointer-events:auto;user-select:none;}
+.cadran-arc{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
+.cadran-astre{position:absolute;width:50px;height:50px;z-index:2;object-fit:contain;
+  transition:opacity .5s ease, filter .5s ease;}
+.cadran-soleil{left:94px;top:0;
+  filter:sepia(.55) saturate(2.6) hue-rotate(-18deg) brightness(1.05);}
+.cadran-lune{right:94px;top:0;
+  filter:grayscale(.5) sepia(.35) hue-rotate(178deg) saturate(2.2) brightness(1.08);}
 
-
-/* ---- Cadran jour / nuit ----------------------------------------
-   Tout est posé en pourcentage du socle : les trois ancrages ont été
-   mesurés dans l'image, le cadran reste juste à n'importe quelle taille. */
-
-
-/* ---- Cadran jour / nuit ----------------------------------------
-   Aucune coordonnée codée en dur : le script mesure lui-même l'image
-   du socle au chargement et place tout dessus. */
-.cadran{position:relative;display:inline-block;height:132px;width:calc(132px * 1400 / 647);
-  max-width:56vw;margin:0 auto;pointer-events:auto;user-select:none;z-index:30;}
-.cadran-socle{display:block;width:100%;height:100%;object-fit:contain;
-  pointer-events:none;filter:drop-shadow(0 2px 5px rgba(0,0,0,.85));}
-.cadran-zones{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:4;}
-.cadran-astre{position:absolute;object-fit:contain;pointer-events:none;z-index:2;
-  transform:translate(-50%,-50%);transition:filter .5s ease;}
-.cadran-aiguille{position:absolute;width:auto;pointer-events:none;z-index:3;
-  transform-origin:50% 100%;transition:transform .55s cubic-bezier(.4,1.5,.5,1);
-  filter:brightness(2.4) contrast(1.2)
-    drop-shadow(0 0 3px rgba(0,0,0,1)) drop-shadow(0 0 9px rgba(0,0,0,.8));}
-.cadran-heure{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);
-  font-family:"Cinzel",serif;font-size:11px;letter-spacing:.16em;white-space:nowrap;
+.cadran-aiguille{position:absolute;left:50%;top:-54px;height:78px;width:auto;
+  transform-origin:50% 100%;transform:translateX(-50%) rotate(180deg);
+  transition:transform .55s cubic-bezier(.4,1.5,.5,1);
+  filter:brightness(2.1) contrast(1.15) drop-shadow(0 0 4px rgba(0,0,0,.95));
+  pointer-events:none;z-index:3;}
+.cadran-heure{position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+  font-family:"Cinzel",serif;font-size:12px;letter-spacing:.18em;
   color:var(--laiton);opacity:.9;text-shadow:0 0 4px #000;pointer-events:none;}
 .cadran-cran{cursor:default;}
 body.cadran-mj .cadran-cran{cursor:pointer;}
-body.cadran-mj .cadran-cran:hover path{fill:rgba(201,161,58,.22);}
-
+body.cadran-mj .cadran-cran:hover circle{r:5.4;}
 @media(max-width:760px){
-  .cadran{height:78px;width:calc(78px * 1400 / 647);max-width:80vw;}
-  .cadran-heure{font-size:9px;letter-spacing:.08em;bottom:-11px;}
+  .cadran{width:290px;height:86px;}
+  .cadran-astre{width:36px;height:36px;}
+  .cadran-soleil{left:60px;top:2px;}
+  .cadran-lune{right:60px;top:2px;}
+  .cadran-aiguille{height:60px;top:-42px;}
+  .cadran-heure{font-size:10px;letter-spacing:.1em;}
 }
 
-/* centrage du cadran : posé en fin de feuille pour primer sur tout le reste */
+/* ---- Jauge jour / nuit ----------------------------------------- */
 header .titre{position:absolute !important;left:50% !important;right:auto !important;
-  top:6px !important;transform:translateX(-50%) !important;margin:0 !important;
+  top:8px !important;transform:translateX(-50%) !important;margin:0 !important;
   display:block !important;pointer-events:none;}
-header .titre .cadran{margin:0 !important;}
+.jauge{position:relative;display:flex;align-items:center;gap:10px;
+  pointer-events:auto;user-select:none;padding-bottom:14px;}
+.jauge-astre{width:38px;height:38px;object-fit:contain;flex:0 0 auto;
+  transition:filter .45s ease;}
+.jauge-piste{position:relative;width:300px;height:16px;flex:0 0 auto;cursor:default;}
+body.jauge-mj .jauge-piste{cursor:pointer;}
+.jauge-fond{position:absolute;inset:0;border-radius:9px;
+  border:1px solid rgba(120,100,60,.55);
+  background:linear-gradient(90deg,
+    #d4761f 0%, #e8a02c 14%, #f2c94c 28%, #f6e6a8 42%,
+    #e8eef2 50%, #b9cbe0 60%, #7f9ac4 74%, #5b62a8 88%, #46407e 100%);
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.55), 0 0 5px rgba(0,0,0,.6);}
+.jauge-crans{position:absolute;inset:0;}
+.jauge-cran{position:absolute;top:-4px;width:22px;height:24px;
+  transform:translateX(-50%);background:transparent;}
+.jauge-cran::before{content:"";position:absolute;left:50%;top:4px;
+  width:2px;height:16px;transform:translateX(-50%);
+  background:rgba(30,22,10,.55);border-radius:1px;}
+body.jauge-mj .jauge-cran:hover::before{background:rgba(20,14,4,.85);width:3px;}
+.jauge-cran.actif::before{width:4px;height:22px;top:1px;
+  background:#1a1206;box-shadow:0 0 5px rgba(255,240,200,.9);}
+.jauge-heure{position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);
+  font-family:"Cinzel",serif;font-size:11px;letter-spacing:.16em;white-space:nowrap;
+  color:var(--laiton);opacity:.9;text-shadow:0 0 4px #000;pointer-events:none;}
+@media(max-width:760px){
+  .jauge{gap:7px;padding-bottom:13px;}
+  .jauge-astre{width:28px;height:28px;}
+  .jauge-piste{width:min(52vw,210px);height:13px;}
+  .jauge-cran{width:18px;height:20px;}
+  .jauge-cran::before{height:13px;}
+  .jauge-heure{font-size:9px;letter-spacing:.1em;}
+}
 </style>
 </head>
 <body>
@@ -779,13 +809,14 @@ header .titre .cadran{margin:0 !important;}
       </div>
     </div>
     <div class="titre">
-      <div class="cadran" id="cadran" title="Heure de la table">
-        <img class="cadran-socle" id="cadran-socle" src="gallerie/Socle.png" alt="" />
-        <img class="cadran-astre cadran-soleil" id="cadran-soleil" src="gallerie/Soleil.png" alt="" />
-        <img class="cadran-astre cadran-lune" id="cadran-lune" src="gallerie/Lune.png" alt="" />
-        <img class="cadran-aiguille" id="cadran-aiguille" src="gallerie/Aiguille.png" alt="" />
-        <svg class="cadran-zones" id="cadran-arc" aria-hidden="true"></svg>
-        <span class="cadran-heure" id="cadran-heure">XII</span>
+      <div class="jauge" id="jauge" title="Heure de la table">
+        <img class="jauge-astre jauge-soleil" id="jauge-soleil" src="gallerie/Soleil.png" alt="" />
+        <div class="jauge-piste" id="jauge-piste">
+          <div class="jauge-fond"></div>
+          <div class="jauge-crans" id="jauge-crans"></div>
+        </div>
+        <img class="jauge-astre jauge-lune" id="jauge-lune" src="gallerie/Lune.png" alt="" />
+        <span class="jauge-heure" id="jauge-heure">VI du jour</span>
       </div>
     </div>
     <div class="entete-droite" id="entete-droite"></div>
@@ -3592,150 +3623,26 @@ $("#amb-activer").addEventListener("click", ()=>{
 });
 </script>
 <script>
+
 /* ---- Cadran jour / nuit ----------------------------------------
-   Le socle est mesuré au chargement : on repère dans l'image le trou
-   du pivot, les deux volutes et le rayon de la graduation. Rien n'est
-   codé en dur, donc rien ne peut se désaligner si l'image change. */
+   Vingt-quatre crans sur un arc. L'aiguille pivote de -90 (minuit du
+   matin, côté soleil levant) à +90 (minuit, côté lune). Le MJ clique
+   un cran, tout le monde voit bouger. */
 (function(){
   var HEURES = 24;
   var ROM = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
-  var heure = 12, refH = null, geo = null;
+  var heure = 12;                       /* midi par défaut */
+  var refH = null, pretH = false;
 
-  function angle(h){ return 74 - (h / (HEURES - 1)) * 148; }
-  function jour(h){ var t = h / (HEURES - 1); return (1 + Math.cos(Math.PI * t)) / 2; }
+  function angle(h){ return -90 + (h / (HEURES - 1)) * 180; }
+  /* l'arc pend : l'aiguille pointe vers le bas et balaie de gauche à droite */
 
-  /* Proportions relevées sur le socle livré, au cas où la lecture de
-     l'image serait refusée par le navigateur. */
-  function repli(W, H){
-    return {W:W, H:H,
-            piv:{x:0.5007*W, y:0.2156*H},
-            gau:{x:0.0690*W, y:0.1890*H},
-            dro:{x:0.9317*W, y:0.1851*H},
-            R:0.300*W, taille:0.170*W};
-  }
-
-  /* ---- Mesure du socle -------------------------------------- */
-  function mesurer(img){
-    var W = img.naturalWidth, H = img.naturalHeight;
-    var c = document.createElement('canvas');
-    c.width = W; c.height = H;
-    var x = c.getContext('2d', {willReadFrequently:true});
-    x.drawImage(img, 0, 0);
-    var d;
-    try{ d = x.getImageData(0, 0, W, H).data; }
-    catch(e){ return repli(W, H); }       /* canevas verrouillé : on retombe sur les mesures connues */
-    function op(px, py){ return d[((py * W + px) << 2) + 3] > 60; }
-
-    /* le pivot : premier vide entouré de matière, au centre haut */
-    var cx = Math.round(W / 2), piv = null;
-    for(var y = 0; y < H * 0.45; y++){
-      if(!op(cx, y)) continue;
-      var y2 = y;
-      while(y2 < H && op(cx, y2)) y2++;
-      var y3 = y2;
-      while(y3 < H && !op(cx, y3)) y3++;
-      if(y3 < H && y3 - y2 > 4 && y3 - y2 < H * 0.12){ piv = {x: cx, y: (y2 + y3) / 2}; break; }
-      y = y3;
-    }
-    if(!piv) piv = {x: cx, y: H * 0.22};
-
-    /* les volutes : centre de matière des deux extrémités */
-    function bout(x0, x1){
-      var sx = 0, sy = 0, n = 0;
-      for(var px = x0; px < x1; px += 2)
-        for(var py = 0; py < H; py += 2)
-          if(op(px, py)){ sx += px; sy += py; n++; }
-      return n ? {x: sx / n, y: sy / n} : {x: (x0 + x1) / 2, y: H * 0.2};
-    }
-    var gau = bout(0, Math.round(W * 0.11));
-    var dro = bout(Math.round(W * 0.89), W);
-
-    /* le rayon : distance du pivot au bord intérieur de la bande */
-    var rs = [];
-    for(var k2 = 1; k2 <= 5; k2++){
-      var px2 = Math.round(piv.x + W * 0.09 * k2);
-      if(px2 >= W) break;
-      for(var py2 = Math.round(piv.y + 20); py2 < H; py2++){
-        if(op(px2, py2)){
-          rs.push(Math.sqrt(Math.pow(px2 - piv.x, 2) + Math.pow(py2 - piv.y, 2)));
-          break;
-        }
-      }
-    }
-    rs.sort(function(a, b){ return a - b; });
-    var R = rs.length ? rs[Math.floor(rs.length / 2)] : W * 0.28;
-
-    /* la taille des astres : largeur de la volute */
-    var taille = W * 0.20;
-    return {W:W, H:H, piv:piv, gau:gau, dro:dro, R:R, taille:taille};
-  }
-
-  function poserGeometrie(){
-    var img = document.getElementById('cadran-socle');
-    if(!img || !img.naturalWidth) return false;
-    geo = mesurer(img);
-    if(!geo) return false;
-    var pc = function(v, tot){ return (v / tot * 100).toFixed(3) + '%'; };
-    var sol = document.getElementById('cadran-soleil');
-    var lun = document.getElementById('cadran-lune');
-    var aig = document.getElementById('cadran-aiguille');
-    var svg = document.getElementById('cadran-arc');
-    [sol, lun].forEach(function(e){
-      e.style.width = pc(geo.taille, geo.W);
-      e.style.height = 'auto';
-    });
-    sol.style.left = pc(geo.gau.x, geo.W); sol.style.top = pc(geo.gau.y, geo.H);
-    lun.style.left = pc(geo.dro.x, geo.W); lun.style.top = pc(geo.dro.y, geo.H);
-    aig.style.left = pc(geo.piv.x, geo.W);
-    aig.style.height = pc(geo.R, geo.H);
-    aig.style.top = ((geo.piv.y - geo.R) / geo.H * 100).toFixed(3) + '%';
-    aig.style.transform = 'translateX(-50%) rotate(180deg)';
-    svg.setAttribute('viewBox', '0 0 ' + geo.W + ' ' + geo.H);
-    construireZones();
-    peindre();
-    return true;
-  }
-
-  /* Une seule zone : toute la couronne de l'arc. On clique n'importe où
-     dessus et l'heure la plus proche est retenue. Viser vingt-quatre
-     petits cercles était impraticable. */
-  function construireZones(){
-    var svg = document.getElementById('cadran-arc');
-    if(!svg || !geo) return;
-    var ns = 'http://www.w3.org/2000/svg';
-    svg.innerHTML = '';
-    var g = document.createElementNS(ns, 'g');
-    g.setAttribute('class', 'cadran-cran');
-    var ep = geo.R * 0.42;                     /* épaisseur de la couronne */
-    function pt(a, r){
-      var R = (180 + a) * Math.PI / 180;
-      return [(geo.piv.x + r * Math.sin(R)).toFixed(1),
-              (geo.piv.y - r * Math.cos(R)).toFixed(1)];
-    }
-    var A0 = angle(0), A1 = angle(HEURES - 1);
-    var M = 6;                       /* marge : les extrémités doivent rester cliquables */
-    var re1 = geo.R + ep / 2, ri = geo.R - ep / 2;
-    var a = pt(A0 + M, re1), b = pt(A1 - M, re1), c = pt(A1 - M, ri), d = pt(A0 + M, ri);
-    var p = document.createElementNS(ns, 'path');
-    p.setAttribute('d',
-      'M ' + a[0] + ' ' + a[1] +
-      ' A ' + re1 + ' ' + re1 + ' 0 0 0 ' + b[0] + ' ' + b[1] +
-      ' L ' + c[0] + ' ' + c[1] +
-      ' A ' + ri + ' ' + ri + ' 0 0 1 ' + d[0] + ' ' + d[1] + ' Z');
-    p.setAttribute('fill', 'transparent');
-    g.appendChild(p);
-    svg.appendChild(g);
-    g.addEventListener('click', function(ev){
-      if(!document.body.classList.contains('cadran-mj')) return;
-      var r = svg.getBoundingClientRect();
-      var x = (ev.clientX - r.left) / r.width  * geo.W;
-      var y = (ev.clientY - r.top)  / r.height * geo.H;
-      /* la pointe est en x = piv.x - R sin(a), y = piv.y + R cos(a) */
-      var dx = x - geo.piv.x, dy = y - geo.piv.y;
-      var a  = Math.atan2(-dx, dy) * 180 / Math.PI;
-      var h  = Math.round((A0 - a) / (A0 - A1) * (HEURES - 1));
-      poser(Math.max(0, Math.min(HEURES - 1, h)), true);
-    });
+  /* L'arc se lit de gauche à droite : douze crans de jour côté soleil, douze
+     crans de nuit côté lune. La bascule est douce au milieu et les quatre
+     crans de chaque extrémité sont les plus tranchés. */
+  function jour(h){
+    var t = h / (HEURES - 1);                       /* 0 à gauche, 1 à droite */
+    return (1 + Math.cos(Math.PI * t)) / 2;         /* 1 plein jour, 0 pleine nuit */
   }
 
   function peindre(){
@@ -3744,16 +3651,28 @@ $("#amb-activer").addEventListener("click", ()=>{
     var lun = document.getElementById('cadran-lune');
     var aig = document.getElementById('cadran-aiguille');
     var lab = document.getElementById('cadran-heure');
-    if(sol) sol.style.filter = 'saturate(' + (0.25 + 1.15 * j).toFixed(2) +
-      ') brightness(' + (0.42 + 0.68 * j).toFixed(2) + ') contrast(' + (0.9 + 0.25 * j).toFixed(2) + ')' +
-      (j > 0.55 ? ' drop-shadow(0 0 ' + (10 * (j - 0.55) / 0.45).toFixed(1) +
-                  'px rgba(255,168,60,' + (0.85 * (j - 0.55) / 0.45).toFixed(2) + '))' : '');
-    if(lun) lun.style.filter = 'saturate(' + (0.25 + 1.2 * n).toFixed(2) +
-      ') brightness(' + (0.42 + 0.72 * n).toFixed(2) + ') contrast(' + (0.9 + 0.25 * n).toFixed(2) + ')' +
-      (n > 0.55 ? ' drop-shadow(0 0 ' + (10 * (n - 0.55) / 0.45).toFixed(1) +
-                  'px rgba(150,190,255,' + (0.8 * (n - 0.55) / 0.45).toFixed(2) + '))' : '');
-    if(aig) aig.style.transform = 'translateX(-50%) rotate(' + (180 + angle(heure)).toFixed(2) + 'deg)';
+    if(sol){
+      sol.style.opacity = (0.18 + 0.82 * j).toFixed(3);
+      sol.style.filter  = 'sepia(.55) saturate(' + (0.5 + 2.4 * j).toFixed(2) +
+                          ') hue-rotate(-18deg) brightness(' + (0.42 + 0.72 * j).toFixed(2) + ')';
+    }
+    if(lun){
+      lun.style.opacity = (0.18 + 0.82 * n).toFixed(3);
+      lun.style.filter  = 'grayscale(.5) sepia(.35) hue-rotate(178deg) saturate(' +
+                          (0.4 + 2.1 * n).toFixed(2) + ') brightness(' +
+                          (0.42 + 0.78 * n).toFixed(2) + ')';
+    }
+    if(aig) aig.style.transform = 'translateX(-50%) rotate(' + (180 - angle(heure)).toFixed(2) + 'deg)';
     if(lab) lab.textContent = ROM[heure % 12] + (heure < 12 ? ' du jour' : ' de la nuit');
+    /* les crans franchis s'allument */
+    document.querySelectorAll('.cadran-cran').forEach(function(g){
+      var h = parseInt(g.dataset.h, 10);
+      var c = g.querySelector('circle');
+      if(!c) return;
+      var actif = (h === heure);
+      c.setAttribute('fill', actif ? '#c9a13a' : '#3a3226');
+      c.setAttribute('r', actif ? 5 : 3);
+    });
   }
 
   function poser(h, diffuser){
@@ -3762,19 +3681,183 @@ $("#amb-activer").addEventListener("click", ()=>{
     if(diffuser && refH){ try{ refH.set(heure); }catch(e){} }
   }
 
+  function construireArc(){
+    var svg = document.getElementById('cadran-arc');
+    if(!svg) return;
+    var CX = 215, CY = 24, R = 76;
+    var d = 'M ' + (CX - R) + ' ' + CY + ' A ' + R + ' ' + R + ' 0 0 0 ' + (CX + R) + ' ' + CY;
+    var ns = 'http://www.w3.org/2000/svg';
+    svg.innerHTML = '';
+    /* la bande de bronze */
+    var arc = document.createElementNS(ns, 'path');
+    arc.setAttribute('d', d);
+    arc.setAttribute('fill', 'none');
+    arc.setAttribute('stroke', '#3a3226');
+    arc.setAttribute('stroke-width', '10');
+    arc.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(arc);
+    var arc2 = document.createElementNS(ns, 'path');
+    arc2.setAttribute('d', d);
+    arc2.setAttribute('fill', 'none');
+    arc2.setAttribute('stroke', '#8a7442');
+    arc2.setAttribute('stroke-width', '1.2');
+    svg.appendChild(arc2);
+    /* les crans */
+    for(var h = 0; h < HEURES; h++){
+      var a = (90 - angle(h)) * Math.PI / 180;
+      var x = CX + R * Math.cos(a), y = CY + R * Math.sin(a);
+      var g = document.createElementNS(ns, 'g');
+      g.setAttribute('class', 'cadran-cran');
+      g.dataset.h = h;
+      var zone = document.createElementNS(ns, 'circle');
+      zone.setAttribute('cx', x); zone.setAttribute('cy', y);
+      zone.setAttribute('r', 11); zone.setAttribute('fill', 'transparent');
+      var pt = document.createElementNS(ns, 'circle');
+      pt.setAttribute('cx', x); pt.setAttribute('cy', y);
+      pt.setAttribute('r', 3); pt.setAttribute('fill', '#3a3226');
+      /* un cran plus long toutes les six heures */
+      if(h % 6 === 0 || h === 11 || h === 12){
+        var t = document.createElementNS(ns, 'line');
+        t.setAttribute('x1', CX + (R - 10) * Math.cos(a));
+        t.setAttribute('y1', CY + (R - 10) * Math.sin(a));
+        t.setAttribute('x2', CX + (R + 8) * Math.cos(a));
+        t.setAttribute('y2', CY + (R + 8) * Math.sin(a));
+        t.setAttribute('stroke', '#6b5a33'); t.setAttribute('stroke-width', '1.6');
+        g.appendChild(t);
+      }
+      g.appendChild(zone); g.appendChild(pt);
+      (function(hh){
+        g.addEventListener('click', function(){
+          if(!document.body.classList.contains('cadran-mj')) return;
+          poser(hh, true);
+        });
+      })(h);
+      svg.appendChild(g);
+    }
+  }
+
+  /* La Table marque le meneur par la classe « est-mj » sur le corps de page.
+     On la surveille au lieu de deviner. */
   function droitMJ(){
     var mj = document.getElementById('mj');
     var actif = document.body.classList.contains('est-mj') || (mj && mj.checked);
     document.body.classList.toggle('cadran-mj', !!actif);
     var c = document.getElementById('cadran');
-    if(c) c.title = actif ? 'Clique un cran pour changer l\'heure' : 'Heure de la table';
+    if(c) c.title = actif ? 'Clique un cran pour changer l\'heure'
+                          : 'Heure de la table';
   }
 
   function init(){
-    var img = document.getElementById('cadran-socle');
-    if(!img) return;
-    if(img.complete && img.naturalWidth) poserGeometrie();
-    else img.addEventListener('load', poserGeometrie);
+    if(!document.getElementById('cadran')) return;
+    construireArc();
+    peindre();
+    droitMJ();
+    var mj = document.getElementById('mj');
+    if(mj) mj.addEventListener('change', droitMJ);
+    /* la classe est-mj peut arriver bien après le chargement */
+    try{ new MutationObserver(droitMJ).observe(document.body,
+         {attributes:true, attributeFilter:['class']}); }catch(e){}
+    setInterval(droitMJ, 1500);
+    /* partage en ligne */
+    try{
+      if(typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length){
+        refH = firebase.database().ref('table/heure');
+        refH.on('value', function(snap){
+          var v = snap.val();
+          pretH = true;
+          if(typeof v === 'number') poser(v, false);
+        });
+      }
+    }catch(e){ console.warn('Cadran hors ligne :', e); }
+  }
+  if(document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', init);
+  else init();
+  window.cadranHeure = function(h){ poser(h, true); };
+})();
+
+</script>
+<script>
+/* ---- Jauge jour / nuit ------------------------------------------
+   Douze crans du soleil à la lune. Le MJ clique un cran, toute la
+   table voit l'heure changer. Le soleil et la lune s'allument ou
+   s'éteignent selon la position, sans jamais devenir transparents. */
+(function(){
+  var N = 12;
+  var ROM = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+  var cran = 5, refH = null;
+
+  function part(i){ return N === 1 ? 0.5 : i / (N - 1); }
+
+  function peindre(){
+    var t = part(cran);              /* 0 plein jour, 1 pleine nuit */
+    var j = 1 - t, n = t;
+    var sol = document.getElementById('jauge-soleil');
+    var lun = document.getElementById('jauge-lune');
+    var lab = document.getElementById('jauge-heure');
+    if(sol) sol.style.filter =
+      'saturate(' + (0.2 + 1.3 * j).toFixed(2) + ') brightness(' + (0.4 + 0.75 * j).toFixed(2) +
+      ') contrast(' + (0.9 + 0.25 * j).toFixed(2) + ')' +
+      (j > 0.5 ? ' drop-shadow(0 0 ' + (11 * (j - 0.5) * 2).toFixed(1) +
+                 'px rgba(255,170,60,' + (0.9 * (j - 0.5) * 2).toFixed(2) + '))' : '');
+    if(lun) lun.style.filter =
+      'saturate(' + (0.2 + 1.3 * n).toFixed(2) + ') brightness(' + (0.4 + 0.78 * n).toFixed(2) +
+      ') contrast(' + (0.9 + 0.25 * n).toFixed(2) + ')' +
+      (n > 0.5 ? ' drop-shadow(0 0 ' + (11 * (n - 0.5) * 2).toFixed(1) +
+                 'px rgba(150,190,255,' + (0.85 * (n - 0.5) * 2).toFixed(2) + '))' : '');
+    if(lab) lab.textContent = ROM[cran] + (cran < 6 ? ' du jour' : ' de la nuit');
+    document.querySelectorAll('.jauge-cran').forEach(function(e){
+      e.classList.toggle('actif', parseInt(e.dataset.i, 10) === cran);
+    });
+  }
+
+  function poser(i, diffuser){
+    cran = Math.max(0, Math.min(N - 1, i));
+    peindre();
+    if(diffuser && refH){ try{ refH.set(cran); }catch(e){} }
+  }
+
+  function construire(){
+    var box = document.getElementById('jauge-crans');
+    if(!box) return;
+    box.innerHTML = '';
+    for(var i = 0; i < N; i++){
+      var d = document.createElement('div');
+      d.className = 'jauge-cran';
+      d.dataset.i = i;
+      d.style.left = (part(i) * 100).toFixed(3) + '%';
+      d.title = ROM[i] + (i < 6 ? ' du jour' : ' de la nuit');
+      (function(k){
+        d.addEventListener('click', function(ev){
+          ev.stopPropagation();
+          if(!document.body.classList.contains('jauge-mj')) return;
+          poser(k, true);
+        });
+      })(i);
+      box.appendChild(d);
+    }
+    /* on peut aussi cliquer entre deux crans : le plus proche est pris */
+    var piste = document.getElementById('jauge-piste');
+    piste.addEventListener('click', function(ev){
+      if(!document.body.classList.contains('jauge-mj')) return;
+      var r = piste.getBoundingClientRect();
+      var f = Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width));
+      poser(Math.round(f * (N - 1)), true);
+    });
+  }
+
+  function droitMJ(){
+    var mj = document.getElementById('mj');
+    var actif = document.body.classList.contains('est-mj') || (mj && mj.checked);
+    document.body.classList.toggle('jauge-mj', !!actif);
+    var j = document.getElementById('jauge');
+    if(j) j.title = actif ? 'Clique un cran pour changer l\'heure' : 'Heure de la table';
+  }
+
+  function init(){
+    if(!document.getElementById('jauge')) return;
+    construire();
+    peindre();
     droitMJ();
     var mj = document.getElementById('mj');
     if(mj) mj.addEventListener('change', droitMJ);
@@ -3789,13 +3872,12 @@ $("#amb-activer").addEventListener("click", ()=>{
           if(typeof v === 'number') poser(v, false);
         });
       }
-    }catch(e){ console.warn('Cadran hors ligne :', e); }
+    }catch(e){ console.warn('Jauge hors ligne :', e); }
   }
   if(document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', init);
   else init();
-  window.cadranHeure = function(h){ poser(h, true); };
-  window.cadranGeo = function(){ return geo; };
+  window.jaugeHeure = function(i){ poser(i, true); };
 })();
 </script>
 </body>
