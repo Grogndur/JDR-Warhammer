@@ -397,7 +397,7 @@
   .dock #init-msg{max-width:132px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .dock #jet-secret-loc{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-  @media(max-width:1500px){ header .titre{display:none} }
+  @media(max-width:1500px){ header .titre{display:flex;position:absolute;top:0;left:50%;transform:translateX(-50%);pointer-events:none;align-items:flex-start} }
   @media(max-width:1700px){
     .dock .prefixe-img{display:none}
     .dock #init-msg{max-width:104px}
@@ -690,6 +690,33 @@
   @media (max-width:760px){
     .palette{left:8px;margin-left:0;top:auto;bottom:118px;width:230px}
   }
+
+/* ---- Cadran jour / nuit ---------------------------------------- */
+.cadran{position:relative;width:400px;max-width:62vw;height:132px;margin:0 auto;
+  pointer-events:auto;user-select:none;}
+.cadran-arc{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
+.cadran-astre{position:absolute;width:66px;height:66px;object-fit:contain;
+  transition:opacity .5s ease, filter .5s ease;}
+.cadran-soleil{left:6px;bottom:8px;
+  filter:sepia(.55) saturate(2.6) hue-rotate(-18deg) brightness(1.05);}
+.cadran-lune{right:6px;bottom:8px;
+  filter:grayscale(.5) sepia(.35) hue-rotate(178deg) saturate(2.2) brightness(1.08);}
+.cadran-aiguille{position:absolute;left:50%;bottom:12px;height:118px;width:auto;
+  transform-origin:50% 100%;transform:translateX(-50%) rotate(0deg);
+  transition:transform .55s cubic-bezier(.4,1.5,.5,1);
+  filter:drop-shadow(0 0 3px rgba(0,0,0,.9));pointer-events:none;}
+.cadran-heure{position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+  font-family:"Cinzel",serif;font-size:12px;letter-spacing:.18em;
+  color:var(--laiton);opacity:.9;text-shadow:0 0 4px #000;pointer-events:none;}
+.cadran-cran{cursor:default;}
+body.cadran-mj .cadran-cran{cursor:pointer;}
+body.cadran-mj .cadran-cran:hover circle{r:5.4;}
+@media(max-width:760px){
+  .cadran{width:280px;height:100px;}
+  .cadran-astre{width:42px;height:42px;}
+  .cadran-aiguille{height:78px;bottom:8px;}
+  .cadran-heure{font-size:10px;}
+}
 </style>
 </head>
 <body>
@@ -740,7 +767,15 @@
         </div>
       </div>
     </div>
-    <div class="titre"><span class="comete">✦</span><h1>La Table de Warhammer</h1></div>
+    <div class="titre">
+      <div class="cadran" id="cadran" title="Heure de la table">
+        <img class="cadran-astre cadran-soleil" id="cadran-soleil" src="gallerie/Soleil.png" alt="" />
+        <svg class="cadran-arc" id="cadran-arc" viewBox="0 0 400 132" aria-hidden="true"></svg>
+        <img class="cadran-astre cadran-lune" id="cadran-lune" src="gallerie/Lune.png" alt="" />
+        <img class="cadran-aiguille" id="cadran-aiguille" src="gallerie/Aiguille.png" alt="" />
+        <span class="cadran-heure" id="cadran-heure">XII</span>
+      </div>
+    </div>
     <div class="entete-droite" id="entete-droite"></div>
   </header>
 
@@ -3543,6 +3578,154 @@ $("#amb-activer").addEventListener("click", ()=>{
     montrerRappelSon(false);
   }
 });
+</script>
+<script>
+
+/* ---- Cadran jour / nuit ----------------------------------------
+   Vingt-quatre crans sur un arc. L'aiguille pivote de -90 (minuit du
+   matin, côté soleil levant) à +90 (minuit, côté lune). Le MJ clique
+   un cran, tout le monde voit bouger. */
+(function(){
+  var HEURES = 24;
+  var ROM = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+  var heure = 12;                       /* midi par défaut */
+  var refH = null, pretH = false;
+
+  function angle(h){ return -90 + (h / (HEURES - 1)) * 180; }
+
+  /* L'arc se lit de gauche à droite : douze crans de jour côté soleil, douze
+     crans de nuit côté lune. La bascule est douce au milieu et les quatre
+     crans de chaque extrémité sont les plus tranchés. */
+  function jour(h){
+    var t = h / (HEURES - 1);                       /* 0 à gauche, 1 à droite */
+    return (1 + Math.cos(Math.PI * t)) / 2;         /* 1 plein jour, 0 pleine nuit */
+  }
+
+  function peindre(){
+    var j = jour(heure), n = 1 - j;
+    var sol = document.getElementById('cadran-soleil');
+    var lun = document.getElementById('cadran-lune');
+    var aig = document.getElementById('cadran-aiguille');
+    var lab = document.getElementById('cadran-heure');
+    if(sol){
+      sol.style.opacity = (0.18 + 0.82 * j).toFixed(3);
+      sol.style.filter  = 'sepia(.55) saturate(' + (0.5 + 2.4 * j).toFixed(2) +
+                          ') hue-rotate(-18deg) brightness(' + (0.42 + 0.72 * j).toFixed(2) + ')';
+    }
+    if(lun){
+      lun.style.opacity = (0.18 + 0.82 * n).toFixed(3);
+      lun.style.filter  = 'grayscale(.5) sepia(.35) hue-rotate(178deg) saturate(' +
+                          (0.4 + 2.1 * n).toFixed(2) + ') brightness(' +
+                          (0.42 + 0.78 * n).toFixed(2) + ')';
+    }
+    if(aig) aig.style.transform = 'translateX(-50%) rotate(' + angle(heure).toFixed(2) + 'deg)';
+    if(lab) lab.textContent = ROM[heure % 12] + (heure < 12 ? ' du jour' : ' de la nuit');
+    /* les crans franchis s'allument */
+    document.querySelectorAll('.cadran-cran').forEach(function(g){
+      var h = parseInt(g.dataset.h, 10);
+      var c = g.querySelector('circle');
+      if(!c) return;
+      var actif = (h === heure);
+      c.setAttribute('fill', actif ? '#c9a13a' : '#3a3226');
+      c.setAttribute('r', actif ? 5 : 3);
+    });
+  }
+
+  function poser(h, diffuser){
+    heure = ((h % HEURES) + HEURES) % HEURES;
+    peindre();
+    if(diffuser && refH){ try{ refH.set(heure); }catch(e){} }
+  }
+
+  function construireArc(){
+    var svg = document.getElementById('cadran-arc');
+    if(!svg) return;
+    var CX = 200, CY = 120, R = 96;
+    var d = 'M ' + (CX - R) + ' ' + CY + ' A ' + R + ' ' + R + ' 0 0 1 ' + (CX + R) + ' ' + CY;
+    var ns = 'http://www.w3.org/2000/svg';
+    svg.innerHTML = '';
+    /* la bande de bronze */
+    var arc = document.createElementNS(ns, 'path');
+    arc.setAttribute('d', d);
+    arc.setAttribute('fill', 'none');
+    arc.setAttribute('stroke', '#3a3226');
+    arc.setAttribute('stroke-width', '9');
+    arc.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(arc);
+    var arc2 = document.createElementNS(ns, 'path');
+    arc2.setAttribute('d', d);
+    arc2.setAttribute('fill', 'none');
+    arc2.setAttribute('stroke', '#6b5a33');
+    arc2.setAttribute('stroke-width', '1.2');
+    svg.appendChild(arc2);
+    /* les crans */
+    for(var h = 0; h < HEURES; h++){
+      var a = (angle(h) - 90) * Math.PI / 180;
+      var x = CX + R * Math.cos(a), y = CY + R * Math.sin(a);
+      var g = document.createElementNS(ns, 'g');
+      g.setAttribute('class', 'cadran-cran');
+      g.dataset.h = h;
+      var zone = document.createElementNS(ns, 'circle');
+      zone.setAttribute('cx', x); zone.setAttribute('cy', y);
+      zone.setAttribute('r', 11); zone.setAttribute('fill', 'transparent');
+      var pt = document.createElementNS(ns, 'circle');
+      pt.setAttribute('cx', x); pt.setAttribute('cy', y);
+      pt.setAttribute('r', 3); pt.setAttribute('fill', '#3a3226');
+      /* un cran plus long toutes les six heures */
+      if(h % 6 === 0 || h === 11 || h === 12){
+        var t = document.createElementNS(ns, 'line');
+        t.setAttribute('x1', CX + (R - 10) * Math.cos(a));
+        t.setAttribute('y1', CY + (R - 10) * Math.sin(a));
+        t.setAttribute('x2', CX + (R + 8) * Math.cos(a));
+        t.setAttribute('y2', CY + (R + 8) * Math.sin(a));
+        t.setAttribute('stroke', '#6b5a33'); t.setAttribute('stroke-width', '1.6');
+        g.appendChild(t);
+      }
+      g.appendChild(zone); g.appendChild(pt);
+      (function(hh){
+        g.addEventListener('click', function(){
+          if(!document.body.classList.contains('cadran-mj')) return;
+          poser(hh, true);
+        });
+      })(h);
+      svg.appendChild(g);
+    }
+  }
+
+  function droitMJ(){
+    var mj = document.getElementById('mj');
+    var actif = false;
+    try{ actif = (typeof estMJ === 'function') ? estMJ() : (mj && mj.checked); }
+    catch(e){ actif = (mj && mj.checked); }
+    document.body.classList.toggle('cadran-mj', !!actif);
+  }
+
+  function init(){
+    if(!document.getElementById('cadran')) return;
+    construireArc();
+    peindre();
+    droitMJ();
+    var mj = document.getElementById('mj');
+    if(mj) mj.addEventListener('change', droitMJ);
+    document.addEventListener('click', function(){ setTimeout(droitMJ, 60); });
+    /* partage en ligne */
+    try{
+      if(typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length){
+        refH = firebase.database().ref('table/heure');
+        refH.on('value', function(snap){
+          var v = snap.val();
+          pretH = true;
+          if(typeof v === 'number') poser(v, false);
+        });
+      }
+    }catch(e){ console.warn('Cadran hors ligne :', e); }
+  }
+  if(document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', init);
+  else init();
+  window.cadranHeure = function(h){ poser(h, true); };
+})();
+
 </script>
 </body>
 </html>
