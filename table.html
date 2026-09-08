@@ -397,7 +397,7 @@
   .dock #init-msg{max-width:132px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .dock #jet-secret-loc{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-  @media(max-width:1500px){ header .titre{display:flex;position:absolute;top:2px;left:50%;transform:translateX(-50%);pointer-events:none;align-items:flex-start} }
+  @media(max-width:1500px){ header .titre{display:flex;position:absolute;top:2px;z-index:30;left:50%;transform:translateX(-50%);pointer-events:none;align-items:flex-start} }
   @media(max-width:1700px){
     .dock .prefixe-img{display:none}
     .dock #init-msg{max-width:104px}
@@ -692,34 +692,37 @@
   }
 
 /* ---- Cadran jour / nuit ---------------------------------------- */
-.cadran{position:relative;width:430px;max-width:66vw;height:112px;margin:0 auto;
-  pointer-events:auto;user-select:none;}
-.cadran-arc{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
-.cadran-astre{position:absolute;width:50px;height:50px;z-index:2;object-fit:contain;
-  transition:opacity .5s ease, filter .5s ease;}
-.cadran-soleil{left:94px;top:0;
-  filter:sepia(.55) saturate(2.6) hue-rotate(-18deg) brightness(1.05);}
-.cadran-lune{right:94px;top:0;
-  filter:grayscale(.5) sepia(.35) hue-rotate(178deg) saturate(2.2) brightness(1.08);}
+@media(max-width:760px){
+}
 
-.cadran-aiguille{position:absolute;left:50%;top:-54px;height:78px;width:auto;
+/* ---- Cadran jour / nuit ----------------------------------------
+   Tout est posé en pourcentage du socle : les trois ancrages ont été
+   mesurés dans l'image, le cadran reste juste à n'importe quelle taille. */
+.cadran{position:relative;width:420px;max-width:64vw;aspect-ratio:1000/557;
+  margin:0 auto;pointer-events:auto;user-select:none;z-index:30;}
+.cadran-socle{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+  pointer-events:none;
+  filter:drop-shadow(0 2px 5px rgba(0,0,0,.85));}
+.cadran-zones{position:absolute;inset:0;width:100%;height:100%;overflow:visible;z-index:4;}
+.cadran-astre{position:absolute;width:19.6%;aspect-ratio:1;object-fit:contain;
+  transform:translate(-50%,-50%);transition:opacity .5s ease, filter .5s ease;
+  pointer-events:none;z-index:2;}
+.cadran-soleil{left:13.03%;top:65.01%;}
+.cadran-lune{left:86.97%;top:65.04%;}
+.cadran-aiguille{position:absolute;left:49.84%;top:-27.62%;height:56%;width:auto;
   transform-origin:50% 100%;transform:translateX(-50%) rotate(180deg);
   transition:transform .55s cubic-bezier(.4,1.5,.5,1);
-  filter:brightness(2.1) contrast(1.15) drop-shadow(0 0 4px rgba(0,0,0,.95));
+  filter:brightness(2) contrast(1.12) drop-shadow(0 0 4px rgba(0,0,0,.95));
   pointer-events:none;z-index:3;}
-.cadran-heure{position:absolute;left:50%;bottom:0;transform:translateX(-50%);
-  font-family:"Cinzel",serif;font-size:12px;letter-spacing:.18em;
+.cadran-heure{position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);
+  font-family:"Cinzel",serif;font-size:11px;letter-spacing:.16em;
   color:var(--laiton);opacity:.9;text-shadow:0 0 4px #000;pointer-events:none;}
 .cadran-cran{cursor:default;}
 body.cadran-mj .cadran-cran{cursor:pointer;}
-body.cadran-mj .cadran-cran:hover circle{r:5.4;}
+body.cadran-mj .cadran-cran:hover circle{fill:rgba(201,161,58,.16);}
 @media(max-width:760px){
-  .cadran{width:290px;height:86px;}
-  .cadran-astre{width:36px;height:36px;}
-  .cadran-soleil{left:60px;top:2px;}
-  .cadran-lune{right:60px;top:2px;}
-  .cadran-aiguille{height:60px;top:-42px;}
-  .cadran-heure{font-size:10px;letter-spacing:.1em;}
+  .cadran{width:300px;max-width:80vw;}
+  .cadran-heure{font-size:10px;letter-spacing:.1em;bottom:-4px;}
 }
 </style>
 </head>
@@ -773,10 +776,11 @@ body.cadran-mj .cadran-cran:hover circle{r:5.4;}
     </div>
     <div class="titre">
       <div class="cadran" id="cadran" title="Heure de la table">
+        <img class="cadran-socle" src="gallerie/Socle.png" alt="" />
         <img class="cadran-astre cadran-soleil" id="cadran-soleil" src="gallerie/Soleil.png" alt="" />
-        <svg class="cadran-arc" id="cadran-arc" viewBox="0 0 430 112" aria-hidden="true"></svg>
         <img class="cadran-astre cadran-lune" id="cadran-lune" src="gallerie/Lune.png" alt="" />
         <img class="cadran-aiguille" id="cadran-aiguille" src="gallerie/Aiguille.png" alt="" />
+        <svg class="cadran-zones" id="cadran-arc" viewBox="0 0 1000 557" aria-hidden="true"></svg>
         <span class="cadran-heure" id="cadran-heure">XII</span>
       </div>
     </div>
@@ -3584,26 +3588,25 @@ $("#amb-activer").addEventListener("click", ()=>{
 });
 </script>
 <script>
-
 /* ---- Cadran jour / nuit ----------------------------------------
-   Vingt-quatre crans sur un arc. L'aiguille pivote de -90 (minuit du
-   matin, côté soleil levant) à +90 (minuit, côté lune). Le MJ clique
-   un cran, tout le monde voit bouger. */
+   L'aiguille pend du pivot du socle et balaie l'arc gravé, du soleil
+   à gauche vers la lune à droite. Seul le MJ déplace l'heure. */
 (function(){
   var HEURES = 24;
   var ROM = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
-  var heure = 12;                       /* midi par défaut */
-  var refH = null, pretH = false;
+  /* mesuré dans l'image du socle, en pourcentage de sa largeur */
+  var VB_W = 1000, VB_H = 557;
+  var PIV = {x: 498.4, y: 158.1};
+  var GAU = {x: 130.3, y: 362.1};
+  var DRO = {x: 869.7, y: 362.3};
+  var RAYON = 330;               /* course de la pointe, en unités du viewBox */
+  var heure = 12, refH = null;
 
-  function angle(h){ return -90 + (h / (HEURES - 1)) * 180; }
-  /* l'arc pend : l'aiguille pointe vers le bas et balaie de gauche à droite */
+  function angle(h){ return 78 - (h / (HEURES - 1)) * 156; }
 
-  /* L'arc se lit de gauche à droite : douze crans de jour côté soleil, douze
-     crans de nuit côté lune. La bascule est douce au milieu et les quatre
-     crans de chaque extrémité sont les plus tranchés. */
   function jour(h){
-    var t = h / (HEURES - 1);                       /* 0 à gauche, 1 à droite */
-    return (1 + Math.cos(Math.PI * t)) / 2;         /* 1 plein jour, 0 pleine nuit */
+    var t = h / (HEURES - 1);
+    return (1 + Math.cos(Math.PI * t)) / 2;
   }
 
   function peindre(){
@@ -3613,27 +3616,19 @@ $("#amb-activer").addEventListener("click", ()=>{
     var aig = document.getElementById('cadran-aiguille');
     var lab = document.getElementById('cadran-heure');
     if(sol){
-      sol.style.opacity = (0.18 + 0.82 * j).toFixed(3);
+      sol.style.opacity = (0.16 + 0.84 * j).toFixed(3);
       sol.style.filter  = 'sepia(.55) saturate(' + (0.5 + 2.4 * j).toFixed(2) +
-                          ') hue-rotate(-18deg) brightness(' + (0.42 + 0.72 * j).toFixed(2) + ')';
+                          ') hue-rotate(-18deg) brightness(' + (0.4 + 0.74 * j).toFixed(2) + ')';
     }
     if(lun){
-      lun.style.opacity = (0.18 + 0.82 * n).toFixed(3);
+      lun.style.opacity = (0.16 + 0.84 * n).toFixed(3);
       lun.style.filter  = 'grayscale(.5) sepia(.35) hue-rotate(178deg) saturate(' +
                           (0.4 + 2.1 * n).toFixed(2) + ') brightness(' +
-                          (0.42 + 0.78 * n).toFixed(2) + ')';
+                          (0.4 + 0.8 * n).toFixed(2) + ')';
     }
-    if(aig) aig.style.transform = 'translateX(-50%) rotate(' + (180 - angle(heure)).toFixed(2) + 'deg)';
+    if(aig) aig.style.transform = 'translateX(-50%) rotate(' + (180 + angle(heure)).toFixed(2) + 'deg)';
     if(lab) lab.textContent = ROM[heure % 12] + (heure < 12 ? ' du jour' : ' de la nuit');
-    /* les crans franchis s'allument */
-    document.querySelectorAll('.cadran-cran').forEach(function(g){
-      var h = parseInt(g.dataset.h, 10);
-      var c = g.querySelector('circle');
-      if(!c) return;
-      var actif = (h === heure);
-      c.setAttribute('fill', actif ? '#c9a13a' : '#3a3226');
-      c.setAttribute('r', actif ? 5 : 3);
-    });
+    /* aucun marqueur : l'aiguille indique seule, le socle porte sa graduation */
   }
 
   function poser(h, diffuser){
@@ -3642,51 +3637,25 @@ $("#amb-activer").addEventListener("click", ()=>{
     if(diffuser && refH){ try{ refH.set(heure); }catch(e){} }
   }
 
-  function construireArc(){
+  /* Les zones cliquables suivent la course de la pointe : le socle porte
+     déjà sa graduation, on ne redessine rien. */
+  function construireZones(){
     var svg = document.getElementById('cadran-arc');
     if(!svg) return;
-    var CX = 215, CY = 24, R = 76;
-    var d = 'M ' + (CX - R) + ' ' + CY + ' A ' + R + ' ' + R + ' 0 0 0 ' + (CX + R) + ' ' + CY;
     var ns = 'http://www.w3.org/2000/svg';
     svg.innerHTML = '';
-    /* la bande de bronze */
-    var arc = document.createElementNS(ns, 'path');
-    arc.setAttribute('d', d);
-    arc.setAttribute('fill', 'none');
-    arc.setAttribute('stroke', '#3a3226');
-    arc.setAttribute('stroke-width', '10');
-    arc.setAttribute('stroke-linecap', 'round');
-    svg.appendChild(arc);
-    var arc2 = document.createElementNS(ns, 'path');
-    arc2.setAttribute('d', d);
-    arc2.setAttribute('fill', 'none');
-    arc2.setAttribute('stroke', '#8a7442');
-    arc2.setAttribute('stroke-width', '1.2');
-    svg.appendChild(arc2);
-    /* les crans */
     for(var h = 0; h < HEURES; h++){
-      var a = (90 - angle(h)) * Math.PI / 180;
-      var x = CX + R * Math.cos(a), y = CY + R * Math.sin(a);
+      /* même direction que l'aiguille : rotation R depuis la verticale haute */
+      var R = (180 + angle(h)) * Math.PI / 180;
+      var x = PIV.x + RAYON * Math.sin(R);
+      var y = PIV.y - RAYON * Math.cos(R);
       var g = document.createElementNS(ns, 'g');
       g.setAttribute('class', 'cadran-cran');
       g.dataset.h = h;
-      var zone = document.createElementNS(ns, 'circle');
-      zone.setAttribute('cx', x); zone.setAttribute('cy', y);
-      zone.setAttribute('r', 11); zone.setAttribute('fill', 'transparent');
-      var pt = document.createElementNS(ns, 'circle');
-      pt.setAttribute('cx', x); pt.setAttribute('cy', y);
-      pt.setAttribute('r', 3); pt.setAttribute('fill', '#3a3226');
-      /* un cran plus long toutes les six heures */
-      if(h % 6 === 0 || h === 11 || h === 12){
-        var t = document.createElementNS(ns, 'line');
-        t.setAttribute('x1', CX + (R - 10) * Math.cos(a));
-        t.setAttribute('y1', CY + (R - 10) * Math.sin(a));
-        t.setAttribute('x2', CX + (R + 8) * Math.cos(a));
-        t.setAttribute('y2', CY + (R + 8) * Math.sin(a));
-        t.setAttribute('stroke', '#6b5a33'); t.setAttribute('stroke-width', '1.6');
-        g.appendChild(t);
-      }
-      g.appendChild(zone); g.appendChild(pt);
+      var c = document.createElementNS(ns, 'circle');
+      c.setAttribute('cx', x.toFixed(1)); c.setAttribute('cy', y.toFixed(1));
+      c.setAttribute('r', 26); c.setAttribute('fill', 'transparent');
+      g.appendChild(c);
       (function(hh){
         g.addEventListener('click', function(){
           if(!document.body.classList.contains('cadran-mj')) return;
@@ -3697,35 +3666,29 @@ $("#amb-activer").addEventListener("click", ()=>{
     }
   }
 
-  /* La Table marque le meneur par la classe « est-mj » sur le corps de page.
-     On la surveille au lieu de deviner. */
   function droitMJ(){
     var mj = document.getElementById('mj');
     var actif = document.body.classList.contains('est-mj') || (mj && mj.checked);
     document.body.classList.toggle('cadran-mj', !!actif);
     var c = document.getElementById('cadran');
-    if(c) c.title = actif ? 'Clique un cran pour changer l\'heure'
-                          : 'Heure de la table';
+    if(c) c.title = actif ? 'Clique un cran pour changer l\'heure' : 'Heure de la table';
   }
 
   function init(){
     if(!document.getElementById('cadran')) return;
-    construireArc();
+    construireZones();
     peindre();
     droitMJ();
     var mj = document.getElementById('mj');
     if(mj) mj.addEventListener('change', droitMJ);
-    /* la classe est-mj peut arriver bien après le chargement */
     try{ new MutationObserver(droitMJ).observe(document.body,
          {attributes:true, attributeFilter:['class']}); }catch(e){}
     setInterval(droitMJ, 1500);
-    /* partage en ligne */
     try{
       if(typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length){
         refH = firebase.database().ref('table/heure');
         refH.on('value', function(snap){
           var v = snap.val();
-          pretH = true;
           if(typeof v === 'number') poser(v, false);
         });
       }
@@ -3736,7 +3699,6 @@ $("#amb-activer").addEventListener("click", ()=>{
   else init();
   window.cadranHeure = function(h){ poser(h, true); };
 })();
-
 </script>
 </body>
 </html>
