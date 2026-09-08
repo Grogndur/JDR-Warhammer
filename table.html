@@ -708,7 +708,7 @@
 .cadran-soleil{left:6.9%;top:19%;}
 .cadran-lune{left:93.2%;top:18.5%;}
 
-.cadran-aiguille{position:absolute;left:50.07%;top:-35.5%;height:57%;width:auto;
+.cadran-aiguille{position:absolute;left:50.07%;top:-45%;height:66.5%;width:auto;
   transform-origin:50% 100%;transform:translateX(-50%) rotate(180deg);
   transition:transform .55s cubic-bezier(.4,1.5,.5,1);
   filter:brightness(2.4) contrast(1.2)
@@ -722,7 +722,7 @@ body.cadran-mj .cadran-cran{cursor:pointer;}
 body.cadran-mj .cadran-cran:hover circle{fill:rgba(201,161,58,.28);}
 @media(max-width:760px){
   .cadran{width:280px;max-width:76vw;}
-  .cadran-aiguille{height:55%;top:-33.5%;}
+  .cadran-aiguille{height:64%;top:-42.5%;}
   .cadran-heure{font-size:10px;letter-spacing:.1em;bottom:-4px;}
 }
 </style>
@@ -3600,7 +3600,7 @@ $("#amb-activer").addEventListener("click", ()=>{
   var PIV = {x: 498.4, y: 283.8};
   var GAU = {x: 130.3, y: 650.1};
   var DRO = {x: 869.7, y: 650.4};
-  var RAYON = 264;               /* course de la pointe, en unités du viewBox */
+  var RAYON = 300;               /* course de la pointe, en unités du viewBox */
   var heure = 12, refH = null;
 
   function angle(h){ return 74 - (h / (HEURES - 1)) * 148; }
