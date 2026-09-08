@@ -727,7 +727,7 @@ header .titre{position:absolute !important;left:50% !important;right:auto !impor
   top:8px !important;transform:translateX(-50%) !important;margin:0 !important;
   display:block !important;pointer-events:none;}
 .jauge{position:relative;display:flex;align-items:center;gap:10px;
-  pointer-events:auto;user-select:none;padding-bottom:14px;}
+  pointer-events:auto;user-select:none;}
 .jauge-astre{width:38px;height:38px;object-fit:contain;flex:0 0 auto;
   transition:filter .45s ease;}
 .jauge-piste{position:relative;width:300px;height:16px;flex:0 0 auto;cursor:default;}
@@ -747,16 +747,12 @@ body.jauge-mj .jauge-piste{cursor:pointer;}
 body.jauge-mj .jauge-cran:hover::before{background:rgba(20,14,4,.85);width:3px;}
 .jauge-cran.actif::before{width:4px;height:22px;top:1px;
   background:#1a1206;box-shadow:0 0 5px rgba(255,240,200,.9);}
-.jauge-heure{position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);
-  font-family:"Cinzel",serif;font-size:11px;letter-spacing:.16em;white-space:nowrap;
-  color:var(--laiton);opacity:.9;text-shadow:0 0 4px #000;pointer-events:none;}
 @media(max-width:760px){
-  .jauge{gap:7px;padding-bottom:13px;}
+  .jauge{gap:7px;}
   .jauge-astre{width:28px;height:28px;}
   .jauge-piste{width:min(52vw,210px);height:13px;}
   .jauge-cran{width:18px;height:20px;}
   .jauge-cran::before{height:13px;}
-  .jauge-heure{font-size:9px;letter-spacing:.1em;}
 }
 </style>
 </head>
@@ -816,7 +812,6 @@ body.jauge-mj .jauge-cran:hover::before{background:rgba(20,14,4,.85);width:3px;}
           <div class="jauge-crans" id="jauge-crans"></div>
         </div>
         <img class="jauge-astre jauge-lune" id="jauge-lune" src="gallerie/Lune.png" alt="" />
-        <span class="jauge-heure" id="jauge-heure">VI du jour</span>
       </div>
     </div>
     <div class="entete-droite" id="entete-droite"></div>
@@ -3794,18 +3789,18 @@ $("#amb-activer").addEventListener("click", ()=>{
     var j = 1 - t, n = t;
     var sol = document.getElementById('jauge-soleil');
     var lun = document.getElementById('jauge-lune');
-    var lab = document.getElementById('jauge-heure');
     if(sol) sol.style.filter =
-      'saturate(' + (0.2 + 1.3 * j).toFixed(2) + ') brightness(' + (0.4 + 0.75 * j).toFixed(2) +
-      ') contrast(' + (0.9 + 0.25 * j).toFixed(2) + ')' +
-      (j > 0.5 ? ' drop-shadow(0 0 ' + (11 * (j - 0.5) * 2).toFixed(1) +
-                 'px rgba(255,170,60,' + (0.9 * (j - 0.5) * 2).toFixed(2) + '))' : '');
+      'saturate(' + (0.2 + 1.9 * j).toFixed(2) + ') brightness(' + (0.4 + 1.35 * j).toFixed(2) +
+      ') contrast(' + (0.9 + 0.35 * j).toFixed(2) + ')' +
+      (j > 0.25 ? ' drop-shadow(0 0 ' + (9 * (j - 0.25) / 0.75).toFixed(1) +
+                  'px rgba(255,190,80,' + (0.95 * (j - 0.25) / 0.75).toFixed(2) + '))' +
+                  ' drop-shadow(0 0 ' + (24 * (j - 0.25) / 0.75).toFixed(1) +
+                  'px rgba(255,140,30,' + (0.75 * (j - 0.25) / 0.75).toFixed(2) + '))' : '');
     if(lun) lun.style.filter =
       'saturate(' + (0.2 + 1.3 * n).toFixed(2) + ') brightness(' + (0.4 + 0.78 * n).toFixed(2) +
       ') contrast(' + (0.9 + 0.25 * n).toFixed(2) + ')' +
       (n > 0.5 ? ' drop-shadow(0 0 ' + (11 * (n - 0.5) * 2).toFixed(1) +
                  'px rgba(150,190,255,' + (0.85 * (n - 0.5) * 2).toFixed(2) + '))' : '');
-    if(lab) lab.textContent = ROM[cran] + (cran < 6 ? ' du jour' : ' de la nuit');
     document.querySelectorAll('.jauge-cran').forEach(function(e){
       e.classList.toggle('actif', parseInt(e.dataset.i, 10) === cran);
     });
