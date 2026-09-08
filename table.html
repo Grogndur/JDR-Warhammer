@@ -397,7 +397,7 @@
   .dock #init-msg{max-width:132px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .dock #jet-secret-loc{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-  @media(max-width:1500px){ header .titre{display:flex;position:absolute;top:2px;left:50%;transform:translateX(-50%);pointer-events:none;align-items:flex-start} }
+  @media(max-width:1500px){ header .titre{display:flex;position:absolute;top:-4px;left:50%;transform:translateX(-50%);pointer-events:none;align-items:flex-start} }
   @media(max-width:1700px){
     .dock .prefixe-img{display:none}
     .dock #init-msg{max-width:104px}
@@ -698,17 +698,18 @@
 /* ---- Cadran jour / nuit ----------------------------------------
    Tout est posé en pourcentage du socle : les trois ancrages ont été
    mesurés dans l'image, le cadran reste juste à n'importe quelle taille. */
-.cadran{position:relative;width:460px;max-width:70vw;aspect-ratio:1301/508;
+.cadran{position:relative;width:390px;max-width:58vw;aspect-ratio:1400/647;
   margin:0 auto;pointer-events:auto;user-select:none;}
 .cadran-socle{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
   filter:drop-shadow(0 2px 5px rgba(0,0,0,.85));}
 .cadran-zones{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
-.cadran-astre{position:absolute;width:20%;aspect-ratio:1;object-fit:contain;
+.cadran-astre{position:absolute;width:17%;aspect-ratio:1;object-fit:contain;
   transform:translate(-50%,-50%);transition:opacity .5s ease, filter .5s ease;z-index:2;}
-.cadran-soleil{left:10.5%;top:68%;}
-.cadran-lune{left:89.5%;top:68%;}
-.cadran-aiguille{position:absolute;left:49.84%;top:28.38%;height:52%;width:auto;
-  transform-origin:50% 0%;transform:translateX(-50%) rotate(0deg);
+.cadran-soleil{left:6.9%;top:19%;}
+.cadran-lune{left:93.2%;top:18.5%;}
+
+.cadran-aiguille{position:absolute;left:50.07%;top:-35.5%;height:57%;width:auto;
+  transform-origin:50% 100%;transform:translateX(-50%) rotate(180deg);
   transition:transform .55s cubic-bezier(.4,1.5,.5,1);
   filter:brightness(2.4) contrast(1.2)
     drop-shadow(0 0 3px rgba(0,0,0,1)) drop-shadow(0 0 9px rgba(0,0,0,.8));
@@ -720,7 +721,8 @@
 body.cadran-mj .cadran-cran{cursor:pointer;}
 body.cadran-mj .cadran-cran:hover circle{fill:rgba(201,161,58,.28);}
 @media(max-width:760px){
-  .cadran{width:300px;max-width:80vw;}
+  .cadran{width:280px;max-width:76vw;}
+  .cadran-aiguille{height:55%;top:-33.5%;}
   .cadran-heure{font-size:10px;letter-spacing:.1em;bottom:-4px;}
 }
 </style>
@@ -779,7 +781,7 @@ body.cadran-mj .cadran-cran:hover circle{fill:rgba(201,161,58,.28);}
         <img class="cadran-astre cadran-soleil" id="cadran-soleil" src="gallerie/Soleil.png" alt="" />
         <img class="cadran-astre cadran-lune" id="cadran-lune" src="gallerie/Lune.png" alt="" />
         <img class="cadran-aiguille" id="cadran-aiguille" src="gallerie/Aiguille.png" alt="" />
-        <svg class="cadran-zones" id="cadran-arc" viewBox="0 0 1000 390" aria-hidden="true"></svg>
+        <svg class="cadran-zones" id="cadran-arc" viewBox="0 0 1000 462" aria-hidden="true"></svg>
         <span class="cadran-heure" id="cadran-heure">XII</span>
       </div>
     </div>
@@ -3594,11 +3596,11 @@ $("#amb-activer").addEventListener("click", ()=>{
   var HEURES = 24;
   var ROM = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
   /* mesuré dans l'image du socle, en pourcentage de sa largeur */
-  var VB_W = 1000, VB_H = 390;
+  var VB_W = 1000, VB_H = 462;
   var PIV = {x: 498.4, y: 283.8};
   var GAU = {x: 130.3, y: 650.1};
   var DRO = {x: 869.7, y: 650.4};
-  var RAYON = 300;               /* course de la pointe, en unités du viewBox */
+  var RAYON = 264;               /* course de la pointe, en unités du viewBox */
   var heure = 12, refH = null;
 
   function angle(h){ return 74 - (h / (HEURES - 1)) * 148; }
@@ -3631,7 +3633,7 @@ $("#amb-activer").addEventListener("click", ()=>{
                                      'px rgba(150,190,255,' + (0.8 * (n - 0.55) / 0.45).toFixed(2) + '))'
                                    : '');
     }
-    if(aig) aig.style.transform = 'translateX(-50%) rotate(' + (180 - angle(heure)).toFixed(2) + 'deg)';
+    if(aig) aig.style.transform = 'translateX(-50%) rotate(' + (180 + angle(heure)).toFixed(2) + 'deg)';
     if(lab) lab.textContent = ROM[heure % 12] + (heure < 12 ? ' du jour' : ' de la nuit');
     /* aucun marqueur : l'aiguille indique seule */
   }
