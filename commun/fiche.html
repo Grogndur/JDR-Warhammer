@@ -895,10 +895,10 @@ window.ACCES = window.ACCES || (function () {
   <div class="card cet-card">
     <div class="card-title red">Corruption · Mutations · Maladies · États</div>
     <div class="cet-grid">
-      <div class="cet-box"><span class="cet-label">Corruption</span><textarea class="cet-input" id="cet-corruption" placeholder="—"></textarea></div>
-      <div class="cet-box"><span class="cet-label">Mutations</span><textarea class="cet-input" id="cet-mutations" placeholder="—"></textarea></div>
-      <div class="cet-box"><span class="cet-label">Maladies &amp; Blessures durables</span><textarea class="cet-input" id="cet-maladies" placeholder="—"></textarea></div>
-      <div class="cet-box"><span class="cet-label">États actifs</span><textarea class="cet-input" id="cet-etats" placeholder="Sonné, Exténué…"></textarea></div>
+      <div class="cet-box"><span class="cet-label">Corruption</span><textarea class="cet-input" id="cet-corruption" placeholder="—" onchange="saveAll()"></textarea></div>
+      <div class="cet-box"><span class="cet-label">Mutations</span><textarea class="cet-input" id="cet-mutations" placeholder="—" onchange="saveAll()"></textarea></div>
+      <div class="cet-box"><span class="cet-label">Maladies &amp; Blessures durables</span><textarea class="cet-input" id="cet-maladies" placeholder="—" onchange="saveAll()"></textarea></div>
+      <div class="cet-box"><span class="cet-label">États actifs</span><textarea class="cet-input" id="cet-etats" placeholder="Sonné, Exténué…" onchange="saveAll()"></textarea></div>
     </div>
   </div>
 
@@ -981,7 +981,7 @@ window.ACCES = window.ACCES || (function () {
             <input class="form-input" id="mg-c" placeholder="Cible" />
             <input class="form-input" id="mg-du" placeholder="Durée" />
             <input class="form-input" id="mg-r" placeholder="Résistance de la cible" />
-            <textarea class="free-area" id="mg-de" rows="3" placeholder="Description et effets" style="grid-column:1/-1;"></textarea>
+            <textarea class="free-area" id="mg-de" rows="3" placeholder="Description et effets" style="grid-column:1/-1;" onchange="saveAll()"></textarea>
           </div>
           <div style="display:flex;gap:0.4rem;">
             <button class="btn-add btn-acc" onclick="mgAjoutManuel()">Ajouter</button>
@@ -1129,7 +1129,7 @@ window.ACCES = window.ACCES || (function () {
   <!-- NOTES SESSION -->
   <div class="card full">
     <div class="card-title">Notes de session</div>
-    <textarea class="notes-area" id="session-notes" rows="5" placeholder="Plans, contacts, observations..."></textarea>
+    <textarea class="notes-area" id="session-notes" rows="5" placeholder="Plans, contacts, observations..." onchange="saveAll()"></textarea>
     <span class="save-confirm" id="save-confirm">✓ Sauvegardé</span>
   </div>
 
@@ -1972,16 +1972,19 @@ function save() { localStorage.setItem('template_v1', JSON.stringify(state)); }
 function saveAll() {
 
   state.notes = document.getElementById('session-notes').value;
+  var _mg = document.getElementById('mg-de'); if (_mg) state.mgDe = _mg.value;
   if (!state.cet) state.cet = {};
   ['corruption','mutations','maladies','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) state.cet[k]=el.value; });
   state.xp.actuelle = parseInt(document.getElementById('xp-actuelle').value)||0;
   state.xp.depensee = parseInt(document.getElementById('xp-depensee').value)||0;
-  state.xp.totale   = parseInt(document.getElementById('xp-totale').value)||0;
-  save();
-  const c = document.getElementById('save-confirm');
-  c.style.opacity='1'; setTimeout(()=>c.style.opacity='0',2000);
-  if(!state.libres) state.libres={};
-  LIBRES_CHAMPS.forEach(function(k){ var el=document.getElementById(k); if(el) state.libres[k]=el.value; });
+  state.xp.totale = parseInt(document.getElementById('xp-totale').value)||0;
+      /* Les champs libres doivent entrer dans l'état AVANT l'écriture,
+         sinon ils sont toujours sauvegardés avec un tour de retard. */
+      if(!state.libres) state.libres={};
+      LIBRES_CHAMPS.forEach(function(k){ var el=document.getElementById(k); if(el) state.libres[k]=el.value; });
+      save();
+      const c = document.getElementById('save-confirm');
+      c.style.opacity='1'; setTimeout(()=>c.style.opacity='0',2000);
 }
 
 function renderAll() {
@@ -2001,6 +2004,7 @@ function renderAll() {
   updateWC();
   ['or','argent','cuivre'].forEach(k => document.getElementById('m-'+k).textContent = state.money[k]||0);
   document.getElementById('session-notes').value = state.notes||'';
+  var _mgl=document.getElementById('mg-de'); if(_mgl) _mgl.value = state.mgDe||'';
   ['corruption','mutations','maladies','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) el.value=(state.cet&&state.cet[k])||''; });
   document.getElementById('xp-actuelle').value = state.xp.actuelle;
   document.getElementById('xp-depensee').value = state.xp.depensee;
@@ -3360,6 +3364,44 @@ load();
     peint(!!actuel);
     alert("Mode MJ actif : toutes les fiches s ouvrent sans mot de passe, y compris dans un nouvel onglet.");
   });
+})();
+
+/* ---- Filets de sauvegarde des zones de texte -------------------
+   Deux causes de perte étaient possibles : un champ sans déclencheur,
+   et un champ quitté par fermeture d'onglet sans changement de focus.
+   On couvre les deux. */
+(function(){
+  var ZONES = ['session-notes','cet-corruption','cet-mutations','cet-maladies',
+               'cet-etats','mg-de','traits-raciaux','amb-courte','amb-motivation',
+               'amb-longue','traits-plus','traits-minus','histo'];
+  var minuteur = null;
+  function enregistrer(){
+    if (typeof saveAll === 'function') { try { saveAll(); } catch(e){} }
+  }
+  function brancher(){
+    ZONES.forEach(function(id){
+      var el = document.getElementById(id);
+      if (!el || el.dataset.filet === '1') return;
+      el.dataset.filet = '1';
+      /* une seconde après la dernière frappe */
+      el.addEventListener('input', function(){
+        clearTimeout(minuteur);
+        minuteur = setTimeout(enregistrer, 1000);
+      });
+      /* et dès qu'on quitte le champ */
+      el.addEventListener('blur', enregistrer);
+    });
+  }
+  /* fermeture d'onglet, bascule d'application, verrouillage du téléphone */
+  window.addEventListener('beforeunload', enregistrer);
+  window.addEventListener('pagehide', enregistrer);
+  document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState === 'hidden') enregistrer();
+  });
+  if (document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', brancher);
+  else brancher();
+  window.brancherFiletsFiche = brancher;
 })();
 </script>
 </body>
