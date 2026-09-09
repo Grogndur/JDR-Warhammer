@@ -762,20 +762,26 @@ header .titre{position:static !important;left:auto !important;right:auto !import
    Les deux blocs tiennent sur une seule ligne et n'ajoutent pas un pixel
    de hauteur à la barre : ils s'étalent vers la droite au lieu de
    s'empiler. */
-.monde{display:flex;align-items:center;gap:30px;flex-wrap:wrap;
+.monde{display:flex;align-items:center;gap:58px;flex-wrap:wrap;padding-right:16px;
   pointer-events:auto;user-select:none;}
 .cycle{display:flex;align-items:center;gap:9px;}
 .cycle-svg{display:block;height:30px;width:268px;overflow:visible;}
 .monde-mot{font-family:"Cinzel",serif;font-size:12px;font-weight:600;letter-spacing:.2em;
   text-transform:uppercase;text-shadow:0 0 5px #000,0 0 12px rgba(0,0,0,.85);
-  white-space:nowrap;min-width:88px;transition:color .5s ease;}
+  white-space:nowrap;overflow:hidden;flex:none;transition:color .5s ease;}
+/* Largeur figée sur le mot le plus long de chaque bloc : Crépuscule d'un
+   côté, Couvert de l'autre. Rien ne bouge quand le mot change. */
+.cycle .monde-mot{width:118px;}
+.meteo .monde-mot{width:86px;}
 .cycle-cran{cursor:default;}
 body.jauge-mj .cycle-cran{cursor:pointer;}
 body.jauge-mj .cycle-cran:hover circle.pt{r:5.4;}
 @media(max-width:1100px){
-  .monde{gap:16px;}
+  .monde{gap:26px;padding-right:10px;}
   .cycle-svg{width:212px;height:26px;}
-  .monde-mot{font-size:11px;letter-spacing:.12em;min-width:72px;}
+  .monde-mot{font-size:11px;letter-spacing:.12em;}
+  .cycle .monde-mot{width:98px;}
+  .meteo .monde-mot{width:74px;}
 }
 .jauge{position:relative;display:block;height:96px;width:calc(96px * 1600 / 428);
   max-width:56vw;pointer-events:auto;user-select:none;}
@@ -853,6 +859,7 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
   .j-nom{font-family:"Cinzel",serif;fill:#f4ecd8;stroke:#0d0a06;stroke-linejoin:round;
     paint-order:stroke;text-anchor:middle;pointer-events:none;user-select:none}
   .j-vide{fill:#241c12}
+  .j-mort{filter:grayscale(.72) brightness(.72)}
   .j-init{font-family:"Cinzel",serif;fill:#e8dcc0;text-anchor:middle;pointer-events:none;user-select:none}
   .j-num{font-family:"Cinzel",serif;fill:#0d0a06;text-anchor:middle;pointer-events:none;user-select:none;font-weight:700}
   .j-l .etat{width:36px;height:6px;border-radius:3px;flex:none;box-shadow:0 0 0 1px #00000066}
@@ -860,9 +867,16 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
   /* Rond du jeton et illustration au clic : deux boutons voisins, jamais
      confondus. Le premier est un disque, le second un cadre portrait. */
   .j-l .b-rond{font-size:13px;line-height:1;color:var(--parchemin-doux)}
+  /* Trois disques de tailles croissantes : la taille du bouton dit ce qu'il fait. */
+  .jetons-panel .j-taille{line-height:1;color:var(--parchemin-doux);padding:3px 6px}
+  .jetons-panel .j-taille:nth-of-type(1){font-size:9px}
+  .jetons-panel .j-taille:nth-of-type(2){font-size:13px}
+  .jetons-panel .j-taille:nth-of-type(3){font-size:18px}
+  .jetons-panel .j-taille.actif{color:var(--laiton)}
   .j-l .b-illus{font-size:14px;line-height:1;letter-spacing:0;
     transform:scaleY(1.25);color:var(--parchemin-doux)}
   .j-l .b-illus.mis{color:var(--laiton);border-color:var(--laiton)}
+  .j-l .b-reveler{font-size:13px;line-height:1;color:var(--laiton)}
 
   /* Panneau Jetons (MJ) : reprend l'habillage de la palette de dessin. */
   .jetons-panel{width:290px;left:auto;right:14px;margin-left:0;top:54px;max-height:calc(100vh - 120px);
@@ -1025,10 +1039,10 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
     </div>
     <div class="pal-corps">
       <div class="pal-ligne">
-        <span class="pal-lib">Taille</span>
-        <button class="j-taille" data-taille="0.032">S</button>
-        <button class="j-taille actif" data-taille="0.05">M</button>
-        <button class="j-taille" data-taille="0.075">L</button>
+        <span class="pal-lib">Taille des jetons posés</span>
+        <button class="j-taille" data-taille="0.032" title="Petits jetons">●</button>
+        <button class="j-taille actif" data-taille="0.05" title="Jetons moyens">●</button>
+        <button class="j-taille" data-taille="0.075" title="Grands jetons">●</button>
         <span class="spacer"></span>
         <button id="jetons-vider" title="Retirer tous les jetons de la carte">Tout retirer</button>
       </div>
@@ -1692,7 +1706,9 @@ let dernierEnvoi = 0;
 // Les PJ portent un cadre doré fixe : ils connaissent leur propre état.
 // Les PNJ et les créatures portent un anneau qui glisse du vert au rouge
 // à mesure qu'ils encaissent, sans jamais afficher de chiffre.
-const ETAT_JETON = ["#a8241c", "#c2621f", "#c08a2a", "#7f9a2f", "#4a9e3f"];
+// Six crans, du mort au sain. Le cran 0 est la mort : le portrait passe
+// sous un voile rouge, sans qu'aucun chiffre ne soit jamais affiché.
+const ETAT_JETON = ["#7d1d16", "#a8241c", "#c2621f", "#c08a2a", "#7f9a2f", "#4a9e3f"];
 const ETAT_MAX = ETAT_JETON.length - 1;
 const OR_JETON = "#c9a25a";
 const COULEUR_JETON = { pj: OR_JETON, pnj:"#c9a25a", crea:"#c1453f" };
@@ -1708,12 +1724,24 @@ function jetonsDeplacables(){ return estMJ() || jetonsPJ; }
 
 // Le nom du MJ ne part jamais dans Firebase : le jeton porte le nom public,
 // et le MJ retrouve le vrai nom localement, par l'identifiant du combattant.
-function nomAffiche(j){
-  if(estMJ() && j.cid){
+// Sur la carte, un jeton ne porte que son nom public, y compris sur l'écran
+// du MJ : rien ne peut échapper par un partage d'écran. Le vrai nom reste
+// dans le panneau, qui n'appartient qu'au MJ, et le bouton Révéler le
+// publie d'un clic quand le moment est venu.
+function nomAffiche(j){ return j.nom || ""; }
+
+function nomPanneau(j){
+  if(j.cid){
     const c = (initEtat.ordre||[]).find(x => x.id === j.cid);
     if(c && c.nom) return c.nom;
   }
-  return j.nom || "";
+  return j.nom || "Sans nom";
+}
+
+function nomReel(j){
+  if(!j.cid) return "";
+  const c = (initEtat.ordre||[]).find(x => x.id === j.cid);
+  return (c && c.nom) ? c.nom : "";
 }
 
 const portraitsDemandes = {};
@@ -1760,8 +1788,10 @@ function rendreJetons(){
     const idc = "clipj-" + j.id;
     let h = `<g data-id="${escape(j.id)}" transform="translate(${X.toFixed(1)},${Y.toFixed(1)})">`;
     h += `<clipPath id="${idc}"><circle r="${R.toFixed(1)}"></circle></clipPath>`;
+    const mort = (j.type !== "pj" && j.pv === 0);
     if(url){
-      h += `<image href="${escape(url)}" x="${(-R).toFixed(1)}" y="${(-R).toFixed(1)}" ` +
+      h += `<image class="${mort ? "j-mort" : ""}" href="${escape(url)}" ` +
+           `x="${(-R).toFixed(1)}" y="${(-R).toFixed(1)}" ` +
            `width="${(R*2).toFixed(1)}" height="${(R*2).toFixed(1)}" ` +
            `preserveAspectRatio="xMidYMid slice" clip-path="url(#${idc})"></image>`;
     } else {
@@ -1799,6 +1829,9 @@ function rendreJetons(){
       h += `<text class="j-num" x="${cx.toFixed(1)}" y="${(cy + rp*0.36).toFixed(1)}" ` +
            `font-size="${(rp*1.15).toFixed(1)}">${escape(String(j.num))}</text>`;
     }
+    if(mort){
+      h += `<circle r="${R.toFixed(1)}" fill="#8e1f18" opacity="0.44"></circle>`;
+    }
     if(nom){
       h += `<text class="j-nom" y="${(R*1.62).toFixed(1)}" font-size="${(R*0.62).toFixed(1)}" ` +
            `stroke-width="${(R*0.16).toFixed(2)}">${escape(nom)}</text>`;
@@ -1834,6 +1867,12 @@ function placeLibre(){
   return { x: 0.30 + col*pas, y: 0.34 + rang*pas + (col%2 ? pas/2 : 0) };
 }
 
+// Le jeton posé depuis le combat est le plus petit des trois : il accompagne
+// une troupe, souvent nombreuse. Celui de la galerie, plus souvent seul,
+// tient un cran au-dessus. La taille choisie dans le panneau reste la
+// référence des deux.
+const FACTEUR_POSE = { galerie: 0.8, combat: 0.64 };
+
 function poserJeton(o){
   if(!base.iw){ alerte("Affiche d'abord une carte ou une image."); return; }
   const p = placeLibre();
@@ -1842,7 +1881,7 @@ function poserJeton(o){
     nom: o.nom || "",
     type: o.type || "pnj",
     x: p.x, y: p.y,
-    r: tailleJeton,
+    r: +(tailleJeton * (FACTEUR_POSE[o.source] || 1)).toFixed(4),
     ts: Date.now(),
     par: nom()
   };
@@ -2000,7 +2039,7 @@ function rendreListeJetons(){
   }
   boite.innerHTML = liste.map(j => {
     const coul = couleurEtat(j);
-    const nom = nomAffiche(j) || "Sans nom";
+    const nom = nomPanneau(j);
     const pj = j.type === "pj";
     let h = `<div class="j-l" data-id="${escape(j.id)}">` +
             `<span class="pastel" style="background:${coul}"></span>` +
@@ -2014,6 +2053,10 @@ function rendreListeJetons(){
     h += `<button data-act="image" class="b-rond" title="Rond du jeton : applique l'image choisie dans la galerie">●</button>`;
     h += `<button data-act="illus" class="b-illus${j.illus ? " mis" : ""}" ` +
          `title="Illustration au clic : applique l'image choisie dans la galerie. Clic droit pour la retirer.">▯</button>`;
+    const cache = nomReel(j) && nomReel(j) !== j.nom;
+    if(cache){
+      h += `<button data-act="reveler" class="b-reveler" title="Afficher le vrai nom sur la carte, pour toute la table">◇</button>`;
+    }
     h += `<button data-act="petit" title="Réduire">−</button>` +
          `<button data-act="grand" title="Agrandir">+</button>` +
          `<button data-act="retirer" title="Retirer de la carte">×</button>` +
@@ -2090,7 +2133,8 @@ $("#jetons-combat").addEventListener("click", e => {
     nom: c.pub || "",
     type: c.fid ? "pj" : "crea",
     pf: c.pf || "", camp: c.camp || "",
-    cid: c.id
+    cid: c.id,
+    source: "combat"
   });
   setTimeout(rendreCombatJetons, 120);
 });
@@ -2101,6 +2145,11 @@ $("#jetons-poses").addEventListener("click", e => {
   const j = jetonsCourants()[id]; if(!j) return;
   const act = b.dataset.act;
   if(act === "retirer"){ retirerJeton(id); return; }
+  if(act === "reveler"){
+    const vrai = nomReel(j);
+    if(vrai) ecrireJeton(Object.assign({}, j, { nom: vrai }));
+    return;
+  }
   if(act === "image" || act === "illus"){
     const sel = $("#jetons-img");
     const choix = sel && sel.value ? lienImageDirect(sel.value) : "";
@@ -2147,7 +2196,7 @@ $("#jetons-poser").addEventListener("click", () => {
   const url = sel && sel.value ? lienImageDirect(sel.value) : "";
   const saisi = ($("#jetons-nom").value || "").trim();
   if(!url){ alerte("Choisis une image dans la liste avant de poser un jeton."); return; }
-  poserJeton({ url, nom: saisi || joliNomImage(sel.value), type: "pnj" });
+  poserJeton({ url, nom: saisi || joliNomImage(sel.value), type: "pnj", source: "galerie" });
   $("#jetons-nom").value = "";
 });
 
