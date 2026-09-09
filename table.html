@@ -862,8 +862,8 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
   .j-mort{filter:grayscale(.72) brightness(.72)}
   .j-init{font-family:"Cinzel",serif;fill:#e8dcc0;text-anchor:middle;pointer-events:none;user-select:none}
   .j-num{font-family:"Cinzel",serif;fill:#0d0a06;text-anchor:middle;pointer-events:none;user-select:none;font-weight:700}
-  .j-l .etat{width:36px;height:6px;border-radius:3px;flex:none;box-shadow:0 0 0 1px #00000066}
-  .j-l input.num{width:30px;padding:1px 3px;font-size:12px;text-align:center;flex:none}
+  .j-l .etat{width:26px;height:6px;border-radius:3px;flex:none;box-shadow:0 0 0 1px #00000066}
+  .j-l input.num{width:26px;padding:1px 2px;font-size:12px;text-align:center;flex:none}
   /* Rond du jeton et illustration au clic : deux boutons voisins, jamais
      confondus. Le premier est un disque, le second un cadre portrait. */
   .j-l .b-rond{font-size:13px;line-height:1;color:var(--parchemin-doux)}
@@ -879,18 +879,19 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
   .j-l .b-reveler{font-size:13px;line-height:1;color:var(--laiton)}
 
   /* Panneau Jetons (MJ) : reprend l'habillage de la palette de dessin. */
-  .jetons-panel{width:290px;left:auto;right:14px;margin-left:0;top:54px;max-height:calc(100vh - 120px);
+  .jetons-panel{width:396px;left:auto;right:14px;margin-left:0;top:54px;max-height:calc(100vh - 120px);
     display:flex;flex-direction:column}
   .jetons-panel .pal-corps{overflow:auto;gap:6px}
   .jetons-panel input[type=text]{flex:1;min-width:0}
   .j-sect{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--laiton);
     border-top:1px solid var(--bord);padding-top:6px;margin-top:2px}
   .j-liste{display:flex;flex-direction:column;gap:3px;max-height:180px;overflow:auto}
-  .j-l{display:flex;align-items:center;gap:6px;padding:3px 5px;border:1px solid var(--bord);
+  .j-l{display:flex;align-items:center;gap:4px;padding:3px 4px;border:1px solid var(--bord);
     border-radius:6px;background:rgba(0,0,0,.25)}
   .j-l .n{flex:1;min-width:0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .j-l .pastel{width:10px;height:10px;border-radius:50%;flex:none;box-shadow:0 0 0 1px #00000066}
-  .j-l button{padding:2px 6px;font-size:12px;line-height:1}
+  .j-l button{padding:2px 4px;font-size:12px;line-height:1;flex:none}
+  .j-l .n{flex:1 1 60px}
   .j-vide-note{font-size:12px;color:var(--parchemin-doux);opacity:.75;padding:2px 1px}
   .jetons-panel select{max-width:100%}
 
