@@ -2345,12 +2345,12 @@ function lancerTest(cible, secret, impose){
       (secret ? envoyerJetSecret : envoyerJet)({
         nom: nom(),
         res: `+${bonus}`,
-        detail: "Dé de fortune du 01",
+        detail: "Rage d'Ulric !",
         classe: "succes",
         marque: "",
         des: { faces:10, vals:[bonus], ajout:true }
       });
-    }, 900);
+    }, 2400);
   }
 }
 
@@ -2871,9 +2871,8 @@ function lancerDes3D(des, n){
   // qui l'a fait naître.
   if(des.ajout){
     try{
-      if(boxU.updateConfig) boxU.updateConfig({ theme_customColorset: TEINTE_FORTUNE });
       const notation = des.vals.length + "d" + des.faces + "@" + des.vals.join(",");
-      (boxU.add ? boxU.add(notation) : boxU.roll(notation));
+      if(boxU.add) boxU.add(notation);
     }catch(e){ /* silencieux : le journal fait foi */ }
     return;
   }
