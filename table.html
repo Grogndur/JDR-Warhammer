@@ -1162,6 +1162,7 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <span class="nb-pas"><button type="button" id="init-nb-moins" title="Un de moins">−</button><input type="text" inputmode="numeric" id="init-nb" value="1" title="Combien d'exemplaires"><button type="button" id="init-nb-plus" title="Un de plus">+</button></span>
         <button id="init-crea-ajout" class="primaire" title="Ajouter au combat">+</button>
         <button id="init-recharger" title="Relire le bestiaire">⟳</button>
+        <button id="ouvrir-jetons" title="Poser des jetons sur la carte">◉ Jetons</button>
       </div>
       <div class="ligne">
         <input type="text" id="init-add" placeholder="Nom de PJ 42" title="Ajouter un personnage joueur : son nom puis son initiative" />
@@ -1184,7 +1185,6 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <button id="ouvrir-journal" title="Afficher ou masquer le journal">📜 Journal</button>
         <button id="ouvrir-init" title="Afficher ou masquer l'initiative">⚔ Initiative</button>
         <button id="ouvrir-dessin" title="Zoom et dessin sur la carte">🖌 Dessin</button>
-        <button id="ouvrir-jetons" class="gm-only-in" title="Poser des jetons sur la carte (MJ)">◉ Jetons</button>
         <button id="ouvrir-grimoire" class="gm-only-in" title="Ouvrir le Grimoire dans une fenêtre séparée (MJ)">📖 Grimoire</button>
       </div>
       <div class="ligne gm-only">
@@ -1748,17 +1748,15 @@ function jetonsDeplacables(){ return estMJ() || jetonsPJ; }
 function nomAffiche(j){ return j.nom || ""; }
 
 function nomPanneau(j){
+  return nomReel(j) || j.nom || "Sans nom";
+}
+
+function nomReel(j){
   if(j.cid){
     const c = (initEtat.ordre||[]).find(x => x.id === j.cid);
     if(c && c.nom) return c.nom;
   }
-  return j.nom || "Sans nom";
-}
-
-function nomReel(j){
-  if(!j.cid) return "";
-  const c = (initEtat.ordre||[]).find(x => x.id === j.cid);
-  return (c && c.nom) ? c.nom : "";
+  return j.vrai || "";
 }
 
 const portraitsDemandes = {};
@@ -1906,6 +1904,7 @@ function poserJeton(o){
   if(o.pf)   j.pf   = o.pf;
   if(o.camp) j.camp = o.camp;
   if(o.cid)  j.cid  = o.cid;
+  if(o.vrai) j.vrai = o.vrai;
   // Deuxième exemplaire d'une même figure : la troupe se numérote seule,
   // et le premier posé reçoit son 1 au passage.
   const memes = Object.keys(jetonsCourants())
@@ -2235,7 +2234,7 @@ $("#jetons-poser").addEventListener("click", () => {
   if(!url){ alerte("Choisis une image dans la liste avant de poser un jeton."); return; }
   // Le nom du fichier ne devient jamais le nom du jeton : il trahirait la
   // créature avant qu'elle se montre. Sans saisie, le jeton reste muet.
-  poserJeton({ url, nom: saisi, type: "pnj", source: "galerie" });
+  poserJeton({ url, nom: saisi, vrai: joliNomImage(sel.value), type: "pnj", source: "galerie" });
   $("#jetons-nom").value = "";
 });
 
