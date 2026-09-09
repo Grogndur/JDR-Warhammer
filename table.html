@@ -1118,6 +1118,7 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <span class="spacer"></span>
         <button id="brouillard-rien" title="Tout révéler">☀</button>
         <button id="brouillard-tout" title="Tout recouvrir">🌑</button>
+        <button id="annuler-tout" title="Annuler le dernier geste : dessin, brouillard, jeton, image (Ctrl+Z)">↶ Annuler</button>
       </div>
       <div class="pal-ligne">
         <span class="pal-lib">Zoom</span>
@@ -1350,7 +1351,9 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <input type="text" id="scene-nom" placeholder="Nom de la scène" maxlength="40" />
         <button id="scene-enregistrer" title="Enregistrer l'état courant : image, jetons, brouillard, heure et temps">Enregistrer</button>
         <button id="scene-supprimer" title="Supprimer la scène choisie">✕</button>
-        <button id="salle-export" title="Télécharger toute la salle en fichier JSON : scènes, initiative, réglages">⤓ Sauvegarde</button>
+        <button id="salle-export" title="Tout télécharger : fiches, bestiaire, portraits, scènes, salle">⤓ Sauvegarde</button>
+        <button id="salle-import" title="Restaurer depuis un fichier de sauvegarde">⤒ Restaurer</button>
+        <input type="file" id="salle-fichier" accept="application/json,.json" hidden />
         <span class="secret-loc" id="scene-msg"></span>
       </div>
       <div class="galerie gm-only" id="galerie"></div>
@@ -1491,8 +1494,22 @@ if(refDessin){
 // Changer de fond efface les traits (ils sont calés sur l'ancienne carte).
 function pousserImage(url){
   if(!refImage){ alerte("Firebase requis pour partager une image."); return; }
+  // Changer d'image balaie jetons, dessin et brouillard : on garde de quoi
+  // tout remettre en place si c'est un faux mouvement.
+  const avant = {
+    img: imageActuelle,
+    jetons: Object.assign({}, jetonsCourants()),
+    traits: Object.assign({}, (refDessin ? strokesDB : strokesLocal)),
+    brumes: Object.assign({}, brumesCourantes())
+  };
+  memoriser("un changement d'image", () => {
+    set(refImage, avant.img || null);
+    if(refJetons) set(refJetons, avant.jetons); else { jetonsLocaux = avant.jetons; rendreJetons(); }
+    if(refDessin) set(refDessin, avant.traits); else { strokesLocal = avant.traits; rendreStrokes(); }
+    if(refBrouillard) set(refBrouillard, avant.brumes); else { brumesLocales = avant.brumes; rendreBrouillard(); }
+  });
   if(refDessin) set(refDessin, null);
-  viderJetons();
+  viderJetons(true);
   if(refBrouillard) set(refBrouillard, null); else { brumesLocales = {}; rendreBrouillard(); }
   mesTraits.length = 0;
   set(refImage, url ? { url, par: nom(), ts: Date.now() } : null);
@@ -1501,10 +1518,10 @@ function carteVierge(){
   const sw = scene.clientWidth || 1280, sh = scene.clientHeight || 800;
   const W = 1600, H = Math.max(600, Math.round(1600*sh/sw));
   if(!refImage){
-    strokesLocal = {}; viderJetons(); montrerVierge({ w:W, h:H, bg:"#e9dcc2" }); return;
+    strokesLocal = {}; viderJetons(true); montrerVierge({ w:W, h:H, bg:"#e9dcc2" }); return;
   }
   if(refDessin) set(refDessin, null);
-  viderJetons();
+  viderJetons(true);
   mesTraits.length = 0;
   set(refImage, { blank:true, w:W, h:H, bg:"#e9dcc2", par:nom(), ts:Date.now() });
 }
@@ -1512,6 +1529,34 @@ function carteVierge(){
 // ---------- Rendu des traits (SVG, calés sur l'image en coordonnées 0..1) ----------
 let traitCourant = null;
 const mesTraits = [];  // clés de mes propres traits, pour « Annuler »
+
+// ---------- Annulation générale ----------
+// Chaque geste réversible dépose ici de quoi revenir en arrière : un trait,
+// un coup de pinceau de brouillard, un jeton posé, déplacé ou retiré, un
+// effacement, un changement d'image. Ctrl+Z remonte le fil.
+const histoire = [];
+const HISTOIRE_MAX = 60;
+
+function memoriser(quoi, defaire){
+  histoire.push({ quoi, defaire });
+  if(histoire.length > HISTOIRE_MAX) histoire.shift();
+}
+
+function annulerDernier(){
+  const pas = histoire.pop();
+  if(!pas){ alerte("Rien à annuler."); return; }
+  try{ pas.defaire(); alerte("Annulé : " + pas.quoi); }
+  catch(e){ alerte("Annulation impossible : " + e.message); }
+}
+
+document.addEventListener("keydown", e => {
+  if(!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== "z" || e.shiftKey) return;
+  const c = document.activeElement;
+  // On laisse le navigateur faire son travail dans les champs de saisie.
+  if(c && (c.tagName === "INPUT" || c.tagName === "TEXTAREA" || c.isContentEditable)) return;
+  e.preventDefault();
+  annulerDernier();
+});
 
 function cheminD(s){
   return s.pts.map((p,i)=> (i?"L":"M") + (p[0]*base.iw).toFixed(1) + " " + (p[1]*base.ih).toFixed(1)).join(" ");
@@ -1724,8 +1769,15 @@ function suiteTrait(e){
 }
 function finTrait(){
   if(traitCourant && traitCourant.pts.length){
-    if(refDessin){ const rr = push(refDessin); set(rr, traitCourant); mesTraits.push(rr.key); }
-    else { strokesLocal["l"+Date.now()+Math.random().toString(36).slice(2,5)] = traitCourant; rendreStrokes(); }
+    if(refDessin){
+      const rr = push(refDessin); set(rr, traitCourant); mesTraits.push(rr.key);
+      memoriser("un trait", () => set(ref(db, `salles/${salle}/dessin/${rr.key}`), null));
+    }
+    else {
+      const cle = "l"+Date.now()+Math.random().toString(36).slice(2,5);
+      strokesLocal[cle] = traitCourant; rendreStrokes();
+      memoriser("un trait", () => { delete strokesLocal[cle]; rendreStrokes(); });
+    }
   }
   traitCourant = null; majLive();
 }
@@ -1754,6 +1806,13 @@ function annulerTrait(){
   else { delete strokesLocal[k]; rendreStrokes(); }
 }
 function effacerTout(){
+  const avant = refDessin ? Object.assign({}, strokesDB) : Object.assign({}, strokesLocal);
+  if(Object.keys(avant).length){
+    memoriser("l'effacement du dessin", () => {
+      if(refDessin) return set(refDessin, avant);
+      strokesLocal = avant; rendreStrokes();
+    });
+  }
   if(refDessin) set(refDessin, null); else { strokesLocal = {}; rendreStrokes(); }
   mesTraits.length = 0;
 }
@@ -1856,6 +1915,7 @@ document.querySelectorAll(".palette .taille").forEach(b=>
     if(outil === "nav") choisirOutil("dessin");
   }));
 $("#annuler-trait").addEventListener("click", annulerTrait);
+if($("#annuler-tout")) $("#annuler-tout").addEventListener("click", annulerDernier);
 $("#effacer-tout").addEventListener("click", effacerTout);
 $("#carte-vierge").addEventListener("click", carteVierge);
 $("#grille-chk").addEventListener("change", e=>{ grilleOn = e.target.checked; majGrille(); });
@@ -1934,8 +1994,16 @@ function suiteBrouillard(e){
 }
 function finBrouillard(){
   if(brumeCourante && brumeCourante.pts.length){
-    if(refBrouillard){ const rr = push(refBrouillard); set(rr, brumeCourante); mesBrumes.push(rr.key); }
-    else { brumesLocales["b"+Date.now()+Math.random().toString(36).slice(2,5)] = brumeCourante; }
+    const quoi = (brumeCourante.m === "v") ? "un voile de brouillard" : "une zone révélée";
+    if(refBrouillard){
+      const rr = push(refBrouillard); set(rr, brumeCourante); mesBrumes.push(rr.key);
+      memoriser(quoi, () => set(ref(db, `salles/${salle}/brouillard/${rr.key}`), null));
+    }
+    else {
+      const cle = "b"+Date.now()+Math.random().toString(36).slice(2,5);
+      brumesLocales[cle] = brumeCourante;
+      memoriser(quoi, () => { delete brumesLocales[cle]; rendreBrouillard(); });
+    }
   }
   brumeCourante = null;
   rendreBrouillard();
@@ -2023,6 +2091,11 @@ if(refVoile){
   const tout = $("#brouillard-tout");
   if(tout) tout.addEventListener("click", () => {
     if(!estMJ()) return;
+    const av = Object.assign({}, brumesCourantes());
+    if(Object.keys(av).length) memoriser("le brouillard remis à zéro", () => {
+      if(refBrouillard) return set(refBrouillard, av);
+      brumesLocales = av; rendreBrouillard();
+    });
     if(refBrouillard) set(refBrouillard, null);
     else { brumesLocales = {}; rendreBrouillard(); }
   });
@@ -2032,8 +2105,16 @@ if(refVoile){
     // Un trait unique, assez large pour tout découvrir d'un coup.
     const t = { m:"r", w:+(Math.max(base.iw, base.ih)*2).toFixed(1),
                 pts:[[0.5,0.5]] };
-    if(refBrouillard) set(push(refBrouillard), t);
-    else { brumesLocales["tout"] = t; rendreBrouillard(); }
+    if(refBrouillard){
+      const rr = push(refBrouillard); set(rr, t);
+      memoriser("la carte entièrement révélée",
+                () => set(ref(db, `salles/${salle}/brouillard/${rr.key}`), null));
+    }
+    else {
+      brumesLocales["tout"] = t; rendreBrouillard();
+      memoriser("la carte entièrement révélée",
+                () => { delete brumesLocales["tout"]; rendreBrouillard(); });
+    }
   });
   document.querySelectorAll(".brume-taille").forEach(b => {
     b.addEventListener("click", () => {
@@ -2282,17 +2363,32 @@ function rendreJetons(){
 }
 
 // ---------- Écriture ----------
-function ecrireJeton(j){
-  if(refJetons) return set(ref(db, `salles/${salle}/jetons/${j.id}`), j);
-  jetonsLocaux[j.id] = j; rendreJetons(); rendreListeJetons();
+function poserJetonBrut(id, val){
+  if(refJetons) return set(ref(db, `salles/${salle}/jetons/${id}`), val);
+  if(val) jetonsLocaux[id] = val; else delete jetonsLocaux[id];
+  rendreJetons(); rendreListeJetons();
   return Promise.resolve();
+}
+
+function ecrireJeton(j, muet){
+  const avant = jetonsCourants()[j.id] || null;
+  if(!muet) memoriser(avant ? "une retouche de jeton" : "un jeton posé",
+                      () => poserJetonBrut(j.id, avant));
+  return poserJetonBrut(j.id, j);
 }
 function retirerJeton(id){
-  if(refJetons) return set(ref(db, `salles/${salle}/jetons/${id}`), null);
-  delete jetonsLocaux[id]; rendreJetons(); rendreListeJetons();
-  return Promise.resolve();
+  const avant = jetonsCourants()[id] || null;
+  if(avant) memoriser("un jeton retiré", () => poserJetonBrut(id, avant));
+  return poserJetonBrut(id, null);
 }
-function viderJetons(){
+function viderJetons(muet){
+  const avant = Object.assign({}, jetonsCourants());
+  if(!muet && Object.keys(avant).length){
+    memoriser("le retrait de tous les jetons", () => {
+      if(refJetons) return set(refJetons, avant);
+      jetonsLocaux = avant; rendreJetons(); rendreListeJetons();
+    });
+  }
   if(refJetons) return set(refJetons, null);
   jetonsLocaux = {}; rendreJetons(); rendreListeJetons();
   return Promise.resolve();
@@ -2339,7 +2435,7 @@ function poserJeton(o){
     const max = memes.reduce((m,x) => Math.max(m, parseInt(x.num,10) || 0), 0);
     j.num = String(Math.max(max, memes.length) + 1);
     const premier = memes.find(x => !x.num);
-    if(premier && memes.length === 1) ecrireJeton(Object.assign({}, premier, { num:"1" }));
+    if(premier && memes.length === 1) ecrireJeton(Object.assign({}, premier, { num:"1" }), true);
   }
   ecrireJeton(j);
 }
@@ -2391,6 +2487,7 @@ function fermerPortraitJeton(){
     const p = ptCalque(e.clientX, e.clientY);
     enMain = {
       id: el.dataset.id, el,
+      depart0: { x:j.x||0.5, y:j.y||0.5 },
       dx: (j.x||0.5)*base.iw - p.x,
       dy: (j.y||0.5)*base.ih - p.y,
       x: j.x||0.5, y: j.y||0.5,
@@ -2419,7 +2516,12 @@ function fermerPortraitJeton(){
     if(!enMain) return;
     const m = enMain; enMain = null;
     if(m.el) m.el.classList.remove("pris");
-    if(m.bouge && m.libre) envoyerPosition(m, true);
+    if(m.bouge && m.libre){
+      const j0 = jetonsCourants()[m.id];
+      if(j0) memoriser("un déplacement de jeton",
+        () => poserJetonBrut(m.id, Object.assign({}, jetonsCourants()[m.id] || j0, m.depart0)));
+      envoyerPosition(m, true);
+    }
     else { choisirJeton(m.id); ouvrirPortraitJeton(m.id); }
     if(rendreEnAttente){ rendreEnAttente = false; rendreJetons(); rendreListeJetons(); }
   }
@@ -2760,22 +2862,6 @@ if($("#scene-nom")) $("#scene-nom").addEventListener("keydown", e => {
   if(e.key === "Enter") enregistrerScene();
 });
 
-// Sauvegarde complète : tout ce que Firebase tient pour cette salle part
-// dans un fichier, scènes comprises. À garder avant toute grosse séance.
-if($("#salle-export")) $("#salle-export").addEventListener("click", () => {
-  if(!db){ motScene("Firebase indisponible."); return; }
-  motScene("Lecture de la salle…");
-  get(ref(db, `salles/${salle}`)).then(snap => {
-    const data = { salle, exporte: new Date().toISOString(), contenu: snap.val() || {} };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `table-${salle}-${new Date().toISOString().slice(0,10)}.json`;
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-    motScene("Sauvegarde téléchargée.");
-  }).catch(err => motScene("Échec : " + err.message));
-});
 
 
 
@@ -3205,6 +3291,104 @@ if($("#chrono-60")) $("#chrono-60").addEventListener("click", () => lancerChrono
 if($("#chrono-stop")) $("#chrono-stop").addEventListener("click", () => {
   if(refChrono) set(refChrono, null); else appliquerChrono(null);
 });
+
+
+
+
+// ============ Sauvegarde et restauration ============
+// Le dépôt GitHub garde le code ; personne ne garde les données. Les fiches
+// des joueurs, le bestiaire et les portraits n'existent que dans Firebase,
+// et rien ne les protège d'une fausse manœuvre. Ces deux boutons sont la
+// seule copie de secours du travail de plusieurs mois.
+const BRANCHES = [
+  { cle:"fiches",     chemin:"fiches",              nom:"fiches de personnage" },
+  { cle:"personnages",chemin:"personnages",         nom:"annuaire des personnages" },
+  { cle:"bestiaire",  chemin:"outils/bestiaire",    nom:"bestiaire" },
+  { cle:"outilsTable",chemin:"outils/table",        nom:"réglages et groupes" },
+  { cle:"scenarios",  chemin:"scenarios",           nom:"portraits et données de scénario" },
+  { cle:"salle",      chemin:null,                  nom:"salle en cours" }   // chemin calculé
+];
+
+function cheminBranche(b){ return b.chemin || `salles/${salle}`; }
+
+function sauvegarderTout(){
+  if(!db){ motScene("Firebase indisponible."); return; }
+  motScene("Lecture de la base…");
+  const lots = BRANCHES.map(b =>
+    get(ref(db, cheminBranche(b)))
+      .then(sn => ({ cle:b.cle, val: sn.val() }))
+      .catch(() => ({ cle:b.cle, val: null }))
+  );
+  Promise.all(lots).then(res => {
+    const contenu = {};
+    res.forEach(r => { contenu[r.cle] = r.val; });
+    const data = {
+      format: "table-warhammer/1",
+      salle,
+      exporte: new Date().toISOString(),
+      contenu
+    };
+    const txt = JSON.stringify(data);
+    const blob = new Blob([txt], { type:"application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `sauvegarde-warhammer-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 6000);
+    lsSet("wh_sauvegarde", String(Date.now()));
+    const mo = (txt.length / 1048576).toFixed(2);
+    motScene(`Sauvegarde téléchargée (${mo} Mo).`);
+  }).catch(err => motScene("Échec : " + err.message));
+}
+
+function restaurerDepuis(file){
+  if(!db){ motScene("Firebase indisponible."); return; }
+  const lecteur = new FileReader();
+  lecteur.onload = () => {
+    let data;
+    try{ data = JSON.parse(lecteur.result); }
+    catch(e){ motScene("Fichier illisible."); return; }
+    if(!data || !data.contenu){ motScene("Ce fichier n'est pas une sauvegarde de la Table."); return; }
+
+    const presentes = BRANCHES.filter(b => data.contenu[b.cle] != null);
+    if(!presentes.length){ motScene("Sauvegarde vide."); return; }
+
+    const detail = presentes.map(b => "· " + b.nom).join("\n");
+    const quand = (data.exporte || "").slice(0, 16).replace("T", " à ");
+    if(!confirm(
+      `Restaurer la sauvegarde du ${quand} ?\n\n${detail}\n\n` +
+      `Ce qui est actuellement dans la base sera REMPLACÉ pour ces branches. ` +
+      `Fais d'abord une sauvegarde de l'état présent si tu as le moindre doute.`
+    )) return;
+    if(!confirm("Dernière vérification. On écrase pour de bon ?")) return;
+
+    motScene("Écriture…");
+    Promise.all(presentes.map(b => set(ref(db, cheminBranche(b)), data.contenu[b.cle])))
+      .then(() => motScene("Restauration terminée. Recharge la page."))
+      .catch(err => motScene("Échec : " + err.message));
+  };
+  lecteur.onerror = () => motScene("Lecture impossible.");
+  lecteur.readAsText(file);
+}
+
+if($("#salle-export")) $("#salle-export").addEventListener("click", sauvegarderTout);
+if($("#salle-import")) $("#salle-import").addEventListener("click", () => {
+  if(!estMJ()){ motScene("Réservé au MJ."); return; }
+  $("#salle-fichier").click();
+});
+if($("#salle-fichier")) $("#salle-fichier").addEventListener("change", e => {
+  if(e.target.files && e.target.files[0]) restaurerDepuis(e.target.files[0]);
+  e.target.value = "";
+});
+
+// Rappel : sans copie récente, une bêtise coûte tout.
+setTimeout(() => {
+  if(!estMJ() || !db) return;
+  const der = parseInt(lsGet("wh_sauvegarde"), 10) || 0;
+  const jours = der ? Math.floor((Date.now() - der) / 86400000) : null;
+  if(jours === null) alerte("Aucune sauvegarde sur cet ordinateur. Un clic sur ⤓ Sauvegarde et c'est réglé.");
+  else if(jours >= 7) alerte(`Dernière sauvegarde il y a ${jours} jours.`);
+}, 6000);
 
 
 $("#jetons-pj-chk").addEventListener("change", e => {
