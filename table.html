@@ -804,6 +804,12 @@ body.jauge-mj .jauge-bouton:hover{background:rgba(255,244,214,.20);
   .j-num{font-family:"Cinzel",serif;fill:#0d0a06;text-anchor:middle;pointer-events:none;user-select:none;font-weight:700}
   .j-l .etat{width:36px;height:6px;border-radius:3px;flex:none;box-shadow:0 0 0 1px #00000066}
   .j-l input.num{width:30px;padding:1px 3px;font-size:12px;text-align:center;flex:none}
+  /* Rond du jeton et illustration au clic : deux boutons voisins, jamais
+     confondus. Le premier est un disque, le second un cadre portrait. */
+  .j-l .b-rond{font-size:13px;line-height:1;color:var(--parchemin-doux)}
+  .j-l .b-illus{font-size:14px;line-height:1;letter-spacing:0;
+    transform:scaleY(1.25);color:var(--parchemin-doux)}
+  .j-l .b-illus.mis{color:var(--laiton);border-color:var(--laiton)}
 
   /* Panneau Jetons (MJ) : reprend l'habillage de la palette de dessin. */
   .jetons-panel{width:290px;left:auto;right:14px;margin-left:0;top:54px;max-height:calc(100vh - 120px);
@@ -1814,7 +1820,10 @@ function envoyerPosition(m, fin){
 
 function ouvrirPortraitJeton(id){
   const j = jetonsCourants()[id]; if(!j) return;
-  const url = imageJeton(j);
+  // Deux visuels par jeton : le rond, petit et recadré, qui vit sur la carte,
+  // et l'illustration en pied qu'on ouvre d'un clic. À défaut d'illustration,
+  // c'est le rond qu'on agrandit.
+  const url = j.illus || imageJeton(j);
   const vue = $("#jeton-vue"), img = $("#jeton-vue-img"), leg = $("#jeton-vue-nom");
   if(!vue || !img) return;
   if(!url){ alerte("Ce jeton n'a pas de portrait à montrer."); return; }
@@ -1944,7 +1953,9 @@ function rendreListeJetons(){
       h += `<button data-act="soigner" title="Un cran d'état en plus">▲</button>`;
     }
     h += `<input class="num" data-act="num" value="${escape(j.num||"")}" maxlength="2" title="Numéro de troupe" />`;
-    h += `<button data-act="image" title="Remplacer le portrait par l'image choisie dans la galerie">◉</button>`;
+    h += `<button data-act="image" class="b-rond" title="Rond du jeton : applique l'image choisie dans la galerie">●</button>`;
+    h += `<button data-act="illus" class="b-illus${j.illus ? " mis" : ""}" ` +
+         `title="Illustration au clic : applique l'image choisie dans la galerie. Clic droit pour la retirer.">▯</button>`;
     h += `<button data-act="petit" title="Réduire">−</button>` +
          `<button data-act="grand" title="Agrandir">+</button>` +
          `<button data-act="retirer" title="Retirer de la carte">×</button>` +
@@ -2032,10 +2043,11 @@ $("#jetons-poses").addEventListener("click", e => {
   const j = jetonsCourants()[id]; if(!j) return;
   const act = b.dataset.act;
   if(act === "retirer"){ retirerJeton(id); return; }
-  if(act === "image"){
+  if(act === "image" || act === "illus"){
     const sel = $("#jetons-img");
     const choix = sel && sel.value ? lienImageDirect(sel.value) : "";
     if(!choix){ alerte("Choisis d'abord une image dans la liste de la galerie."); return; }
+    if(act === "illus"){ ecrireJeton(Object.assign({}, j, { illus: choix })); return; }
     // url l'emporte sur pf au rendu : on efface donc le portrait de fiche
     // pour que le nouveau visuel s'applique vraiment.
     const copie = Object.assign({}, j, { url: choix });
@@ -2051,6 +2063,16 @@ $("#jetons-poses").addEventListener("click", e => {
   }
   const pas = act === "grand" ? 1.25 : 1/1.25;
   const copie = Object.assign({}, j, { r: Math.max(0.015, Math.min(0.18, (j.r||0.05) * pas)) });
+  ecrireJeton(copie);
+});
+
+$("#jetons-poses").addEventListener("contextmenu", e => {
+  const b = e.target.closest("button[data-act='illus']"); if(!b) return;
+  e.preventDefault();
+  const id = b.closest("[data-id]").dataset.id;
+  const j = jetonsCourants()[id]; if(!j || !j.illus) return;
+  const copie = Object.assign({}, j);
+  delete copie.illus;
   ecrireJeton(copie);
 });
 
