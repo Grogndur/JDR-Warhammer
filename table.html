@@ -8,6 +8,10 @@
 <!-- Daily (caméras encastrées dans la page) -->
 <script src="https://unpkg.com/@daily-co/daily-js"></script>
 
+<!-- Moteur de test WFRP, partagé avec la fiche de personnage.
+     Chargé avant le reste : la Table s'en sert pour résoudre les d100. -->
+<script src="commun/jet-wfrp.js"></script>
+
 <!--
   ============================================================
    À CONFIGURER (une seule fois)
@@ -404,6 +408,17 @@
   .forcer-grp{align-items:center;gap:5px}
   .forcer-grp input{width:56px}
   .forcer-grp button{border-color:rgba(201,162,90,.5);color:var(--laiton)}
+  /* Jauge de difficulté : le cran choisi vaut pour tous les tests d100, ici
+     comme sur les fiches de personnage, tant que le MJ ne le change pas. */
+  .diff-grp{align-items:center;gap:4px;flex-wrap:wrap}
+  .diff-lbl{font-family:"Cinzel",serif;font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--laiton)}
+  .diff-b,.dock .diff-b{padding:4px 7px;font-size:11px;border-radius:6px;
+    border:1px solid rgba(255,255,255,.10);border-left:3px solid var(--c,var(--laiton-sombre));
+    background:rgba(20,17,13,.6);color:var(--parchemin-doux)}
+  .diff-b:hover,.dock .diff-b:hover{color:var(--parchemin);background:rgba(44,36,25,.85)}
+  .diff-b.sel,.dock .diff-b.sel{background:var(--c,var(--laiton-sombre));color:#14110d;
+    font-weight:700;box-shadow:0 0 9px -2px var(--c,var(--laiton-sombre))}
 
   @media(max-width:1500px){ header .titre{display:flex;position:absolute;top:2px;left:50%;transform:translateX(-50%);pointer-events:none;align-items:flex-start} }
   @media(max-width:1700px){
@@ -810,11 +825,6 @@ body.cadran-mj .cadran-cran:hover circle{r:5.4;}
 header .titre{position:absolute !important;left:50% !important;right:auto !important;
   top:8px !important;transform:translateX(-50%) !important;margin:0 !important;
   display:block !important;pointer-events:none;}
-.jauge-cran.actif::before{width:4px;height:22px;top:1px;
-  background:#1a1206;box-shadow:0 0 5px rgba(255,240,200,.9);}
-@media(max-width:760px){
-}
-
 /* ---- Jauge jour / nuit ------------------------------------------
    Les douze boutons sont posés sur les pastilles de cire, dont la
    position a été relevée dans l'image. */
@@ -847,51 +857,6 @@ body.jauge-mj .cycle-cran:hover circle.pt{r:5.4;}
   .monde-mot{font-size:11px;letter-spacing:.12em;}
   .cycle .monde-mot{width:98px;}
   .meteo .monde-mot{width:74px;}
-}
-.jauge{position:relative;display:block;height:96px;width:calc(96px * 1600 / 428);
-  max-width:56vw;pointer-events:auto;user-select:none;}
-.jauge-piece{display:block;width:100%;height:100%;object-fit:contain;
-  pointer-events:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.85));}
-
-
-
-
-/* Le halo est une copie floutée de la pièce, découpée sur l'astre :
-   il épouse les rayons et le croissant au lieu d'un cercle vide. */
-.jauge-halo{position:absolute;top:0;height:100%;pointer-events:none;
-  background-image:url("gallerie/Jauge.png");background-repeat:no-repeat;
-  mix-blend-mode:screen;transition:opacity .5s ease, filter .5s ease;}
-.jauge-h-soleil{left:0;width:27%;background-size:370.4% 100%;background-position:left center;
-  -webkit-mask-image:radial-gradient(ellipse 60% 60% at 46% 43%,#000 40%,transparent 100%);
-  mask-image:radial-gradient(ellipse 60% 60% at 46% 43%,#000 40%,transparent 100%);}
-.jauge-h-lune{right:0;width:19%;background-size:526.3% 100%;background-position:right center;
-  -webkit-mask-image:radial-gradient(ellipse 52% 52% at 60% 46%,#000 34%,transparent 100%);
-  mask-image:radial-gradient(ellipse 52% 52% at 60% 46%,#000 34%,transparent 100%);}
-.jauge-boutons{position:absolute;inset:0;}
-.jauge-bouton{position:absolute;border-radius:50%;transform:translate(-50%,-50%);
-  background:transparent;transition:box-shadow .35s ease, background .35s ease;}
-/* Chaque pastille porte la couleur de son moment : on repère l'aube et le
-   crépuscule sans compter les crans. Un anneau, pas un aplat : la cire
-   de la pièce reste visible dessous. */
-.jauge-bouton.ph-aube{box-shadow:0 0 0 2px rgba(213,121,159,.55), 0 0 9px rgba(213,121,159,.40);}
-.jauge-bouton.ph-jour{box-shadow:0 0 0 2px rgba(226,186,78,.42), 0 0 8px rgba(226,186,78,.28);}
-.jauge-bouton.ph-crepuscule{box-shadow:0 0 0 2px rgba(226,129,55,.60), 0 0 10px rgba(226,129,55,.42);}
-.jauge-bouton.ph-nuit{box-shadow:0 0 0 2px rgba(113,161,207,.42), 0 0 8px rgba(113,161,207,.26);}
-body.jauge-mj .jauge-bouton{cursor:pointer;}
-body.jauge-mj .jauge-bouton:hover{background:rgba(255,244,214,.20);
-  box-shadow:0 0 10px 2px rgba(255,240,200,.45);}
-.jauge-bouton.actif{background:rgba(255,250,232,.16);
-  box-shadow:0 0 14px 4px rgba(255,248,225,.95), 0 0 30px 10px rgba(255,236,180,.5),
-  inset 0 0 14px rgba(255,252,240,.7);}
-/* Le moment de la journée, sous la jauge : un mot, dans sa propre couleur. */
-.jauge-phase{display:block;text-align:center;margin-top:2px;
-  font-family:"Cinzel",serif;font-size:13px;font-weight:600;letter-spacing:.24em;
-  text-transform:uppercase;text-shadow:0 0 5px #000,0 0 12px rgba(0,0,0,.85);
-  pointer-events:none;transition:color .5s ease;}
-@media(max-width:760px){ .jauge-phase{font-size:11px;letter-spacing:.15em;} }
-/* les autres pastilles gardent leur cire : rien ne les assombrit */
-@media(max-width:760px){
-  .jauge{height:66px;width:calc(66px * 1600 / 428);max-width:80vw;}
 }
 
 /* ---- Météo de la table -------------------------------------------
@@ -1267,6 +1232,13 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <span class="secret-res" id="secret-res">—</span>
         <span class="secret-loc" id="secret-loc"></span>
       </div>
+      <!-- Jauge de difficulté : les sept crans officiels de la quatrième
+           édition. Le cran choisi s'applique à tous les tests d100, y compris
+           ceux lancés depuis les fiches de personnage. -->
+      <div class="ligne gm-only diff-grp">
+        <span class="diff-lbl">Difficulté</span>
+        <span id="diff-boutons" style="display:flex;gap:4px;flex-wrap:wrap"></span>
+      </div>
       <div class="ligne gm-only forcer-grp">
         <label for="forcer-val">Forcer</label>
         <input type="number" id="forcer-val" min="1" max="100" placeholder="01"
@@ -1411,6 +1383,7 @@ if(!cfg.databaseURL){
 
 const refImage = db ? ref(db, `salles/${salle}/image`) : null;
 const refJets  = db ? ref(db, `salles/${salle}/jets`)  : null;
+const refDiff  = db ? ref(db, `salles/${salle}/difficulte`) : null;
 const refSecrets = db ? ref(db, `salles/${salle}/jets-secrets`) : null;
 const refInit  = db ? ref(db, `salles/${salle}/initiative`) : null;
 const refDesClear = db ? ref(db, `salles/${salle}/desClear`) : null;
@@ -3495,30 +3468,20 @@ function envoyerJetSecret(jet){
 function lancerTest(cible, secret, impose){
   // impose : le MJ vérifie ce que déclenche un résultat précis. Le jet suit
   // ensuite exactement le même chemin qu'un jet ordinaire, dés compris.
-  const r = impose ? Math.max(1, Math.min(100, impose))
-                   : Math.floor(Math.random()*100)+1;       // 1..100
-  const dizR = (r===100) ? 0 : Math.floor(r/10);
-  const uniR = (r===100) ? 0 : r%10;
-  const dizC = Math.floor(cible/10);
-  const sl = dizC - ((r===100)?10:dizR);            // Degrés de Réussite
-  const succes = r <= cible;
-  const dbl = (dizR === uniR);                      // doublé = crit/maladresse
-  const loc = localisation(uniR*10 + dizR);         // localisation (dés inversés)
-  let classe = succes ? "succes" : "echec";
-  let marque = `DR ${sl>=0?"+":""}${sl}`;
-  if(dbl && succes){ classe += " crit";   marque = "Critique ! " + marque; }
-  if(dbl && !succes){ classe += " fumble"; marque = "Maladresse ! " + marque; }
-  // Le 01 naturel : réussite parfaite, effet renforcé, et un dé de fortune
-  // qui tombe juste après, une fois le résultat sec affiché au journal.
-  const parfait = (r === 1);
-  if(parfait){ classe += " crit crit01"; marque = "01 ! " + marque.replace(/^Critique ! /, ""); }
-  const affR = (r===100) ? "00" : String(r).padStart(2,"0");
+  // La difficulté choisie par le MJ s'ajoute à la valeur testée : sans cran
+  // posé, le modificateur vaut zéro et le jet est celui d'avant.
+  const mod = modDifficulte;
+  const finale = JET_WFRP.cibleFinale(cible, mod);
+  const t = JET_WFRP.resoudre(finale, impose);
+  // Le 01 naturel appelle un dé de fortune qui tombe juste après, une fois
+  // le résultat sec affiché au journal.
+  const parfait = t.parfait;
   (secret ? envoyerJetSecret : envoyerJet)({
     nom: nom(),
-    res: `${affR}  (cible ${cible})`,
-    detail: (succes ? "Réussite" : "Échec") + " · " + loc,
-    classe, marque,
-    des: { faces:10, vals:[dizR, uniR], pct:true }
+    res: `${t.aff}  (${JET_WFRP.libelleCible(cible, mod)})`,
+    detail: t.detail,
+    classe: t.classe, marque: t.marque,
+    des: t.des
   });
   if(parfait){
     const bonus = Math.floor(Math.random()*10)+1;
@@ -3617,6 +3580,46 @@ $("#custom").addEventListener("keydown", e=>{ if(e.key==="Enter") lancerCustom()
 majBoutonCustom();                              // grisé tant que le champ est vide ou invalide
 
 $("#vider-des").addEventListener("click", demanderViderDes);
+
+// ---------- Jauge de difficulté (MJ) ----------
+// Sept crans, ceux de la quatrième édition. Le cran choisi s'applique à tous
+// les tests d100 tant qu'il n'est pas changé : ceux lancés ici, et ceux
+// lancés depuis les fiches de personnage, qui lisent la même valeur.
+let modDifficulte = 0;
+
+function peindreDifficulte(){
+  document.querySelectorAll("#diff-boutons .diff-b").forEach(b=>{
+    b.classList.toggle("sel", parseInt(b.dataset.mod,10) === modDifficulte);
+  });
+}
+function poserDifficulte(mod, pousser){
+  const m = parseInt(mod,10);
+  modDifficulte = isNaN(m) ? 0 : m;
+  peindreDifficulte();
+  if(pousser && refDiff) set(refDiff, modDifficulte).catch(()=>{});
+}
+
+(function(){
+  const hote = $("#diff-boutons");
+  if(!hote || !window.JET_WFRP) return;
+  JET_WFRP.DIFFICULTES.forEach(d=>{
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "diff-b";
+    b.dataset.mod = d.mod;
+    b.style.setProperty("--c", d.couleur);
+    b.textContent = d.nom;
+    b.title = `${d.nom} : ${d.mod>0?"+":""}${d.mod} sur la valeur testée`;
+    b.addEventListener("click", ()=>{ if(estMJ()) poserDifficulte(d.mod, true); });
+    hote.appendChild(b);
+  });
+  peindreDifficulte();
+})();
+
+if(refDiff) onValue(refDiff, snap=>{
+  const v = snap.val();
+  poserDifficulte(typeof v === "number" ? v : 0, false);
+});
 
 // ---------- Jet secret (MJ) : localisation des touches ----------
 // On inverse d'abord le résultat des dés (ex: 52 -> 25), puis on lit la table.
