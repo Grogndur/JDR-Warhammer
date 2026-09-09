@@ -610,6 +610,7 @@
   /* Les commandes de session vivent maintenant dans la barre du bas. Chez le
      MJ elles ouvrent le bloc image et ambiance ; chez les joueurs, elles
      forment à elles seules ce bloc. */
+  .ligne-session{padding-bottom:1px}
   .ligne-outils{padding-bottom:2px}
   body.est-mj .ligne-outils{border-bottom:1px solid var(--bord);padding-bottom:6px;margin-bottom:2px}
 
@@ -1274,17 +1275,20 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <span class="nb-pas"><button type="button" id="init-nb-moins" title="Un de moins">−</button><input type="text" inputmode="numeric" id="init-nb" value="1" title="Combien d'exemplaires"><button type="button" id="init-nb-plus" title="Un de plus">+</button></span>
         <button id="init-crea-ajout" class="primaire" title="Ajouter au combat">+</button>
         <button id="init-recharger" title="Relire le bestiaire">⟳</button>
-        <button id="ouvrir-jetons" title="Poser des jetons sur la carte">◉ Jetons</button>
       </div>
       <div class="ligne">
         <input type="text" id="init-add" placeholder="Nom de PJ 42" title="Ajouter un personnage joueur : son nom puis son initiative" />
         <button id="init-ajout" title="Ajouter ce personnage joueur">+ PJ</button>
         <button id="init-pj-fiches" title="Ajouter des personnages depuis leurs fiches, avec leurs Blessures">☩ Fiches</button>
+      </div>
+      <div class="ligne">
         <button id="init-jets" title="Lancer l'initiative des créatures : 1d10 + Initiative, un jet par groupe">⚄ Init.</button>
         <button id="init-suivant" class="primaire">Tour ▶</button>
         <button id="init-round-fin" title="Appliquer les pertes de fin de round">Fin round</button>
         <button id="init-annuler" title="Annuler le dernier décompte" disabled>↶</button>
         <button id="init-vider" title="Vider l'initiative">✕</button>
+        <span class="pal-sep"></span>
+        <button id="ouvrir-jetons" title="Poser des jetons sur la carte">◉ Jetons</button>
         <span class="secret-loc" id="init-msg"></span>
       </div>
       <div class="ligne">
@@ -1293,7 +1297,9 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
                title="Un effet qui dure un certain nombre de rounds" />
         <span class="nb-pas"><button type="button" id="mint-moins">−</button><input type="text" inputmode="numeric" id="mint-nb" value="3" title="Combien de rounds"><button type="button" id="mint-plus">+</button></span>
         <button id="mint-ajout" title="Décompte à chaque fin de round">+ Minuteur</button>
-        <span class="pal-sep"></span>
+      </div>
+      <div class="ligne">
+        <label>Compte à rebours</label>
         <button id="chrono-15" title="Compte à rebours de 15 secondes, pour toute la table">⏱ 15s</button>
         <button id="chrono-30" title="Compte à rebours de 30 secondes">⏱ 30s</button>
         <button id="chrono-60" title="Compte à rebours d'une minute">⏱ 1min</button>
@@ -1302,9 +1308,11 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
     </div>
 
     <div class="grp grp-scene">
-      <div class="ligne ligne-outils">
+      <div class="ligne ligne-session">
         <input type="text" id="nom" placeholder="Ton nom" maxlength="24" />
         <label class="toggle"><input type="checkbox" id="mj" /> MJ</label>
+      </div>
+      <div class="ligne ligne-outils">
         <button id="ouvrir-cams" title="Afficher ou masquer les caméras">📹 Caméras</button>
         <button id="ouvrir-journal" title="Afficher ou masquer le journal">📜 Journal</button>
         <button id="ouvrir-chat" title="Parler à la table ou en privé">💬 Chat<span class="chat-pastille" id="chat-pastille"></span></button>
@@ -1940,7 +1948,7 @@ const refVoile = db ? ref(db, `salles/${salle}/options/voile`) : null;
 
 const TEINTE_PHASE = {
   aube:       { c:"#6a4a6b", a:0.18 },
-  jour:       { c:"#f0d79a", a:0.05 },
+  jour:       { c:"#f0d79a", a:0.00 },
   crepuscule: { c:"#a8531f", a:0.20 },
   nuit:       { c:"#101f3a", a:0.40 }
 };
@@ -1967,7 +1975,13 @@ function rendreVoile(){
   v.setAttribute("height", base.ih);
   const ph = (typeof window.phaseCycle === "function") ? window.phaseCycle() : "jour";
   const tp = (typeof window.tempsTable === "function") ? window.tempsTable() : 0;
-  const m = melange(TEINTE_PHASE[ph] || TEINTE_PHASE.jour, TEINTE_TEMPS[tp] || TEINTE_TEMPS[0]);
+  const a = TEINTE_PHASE[ph] || TEINTE_PHASE.jour;
+  const b = TEINTE_TEMPS[tp] || TEINTE_TEMPS[0];
+  if(a.a <= 0 && b.a <= 0){          // plein jour, ciel clair : rien à teinter
+    v.setAttribute("opacity", "0");
+    return;
+  }
+  const m = melange(a, b);
   v.setAttribute("fill", m.c);
   v.setAttribute("opacity", m.a.toFixed(3));
 }
@@ -3065,20 +3079,20 @@ function peindreChrono(){
   if(!boite || !val) return;
   if(!chronoFin){ boite.classList.remove("on", "presse"); chronoDernier = -1; return; }
   const reste = Math.max(0, Math.ceil((chronoFin - Date.now()) / 1000));
-  const total = parseInt(boite.dataset.total, 10) || 30;
   boite.classList.add("on");
-  boite.classList.toggle("presse", reste <= 5);
+  boite.classList.toggle("presse", reste <= 3);
   val.textContent = reste;
-  if(reste !== chronoDernier){
-    chronoDernier = reste;
-    if(reste > 0 && reste <= 3) { try{ sonTic(reste); }catch(e){} }
-    else {
-      try{ sonFinChrono(); }catch(e){}
-      setTimeout(() => { boite.classList.remove("on", "presse"); }, 1600);
-      chronoFin = 0;
-      clearInterval(chronoTimer); chronoTimer = null;
-    }
+  if(reste === chronoDernier) return;
+  chronoDernier = reste;
+  if(reste > 0){
+    // Silence complet, puis trois coups sourds sur la fin.
+    if(reste <= 3){ try{ sonTic(reste); }catch(e){} }
+    return;
   }
+  try{ sonFinChrono(); }catch(e){}
+  setTimeout(() => { boite.classList.remove("on", "presse"); }, 2400);
+  chronoFin = 0;
+  clearInterval(chronoTimer); chronoTimer = null;
 }
 
 function lancerChrono(sec){
