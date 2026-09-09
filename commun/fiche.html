@@ -150,7 +150,8 @@ window.ACCES = window.ACCES || (function () {
   .stat-box { background:rgba(184,112,42,0.05); border:1px solid rgba(184,112,42,0.12); border-radius:2px; padding:0.45rem 0.3rem; text-align:center; }
   .stat-label { font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--SUB); display:block; margin-bottom:0.2rem; }
   .stat-total { font-family:'Cinzel',serif; font-size:1.3rem; font-weight:700; color:var(--acc2); display:block; margin-top:0.1rem; }
-  .stat-bonus { font-size:0.6rem; color:var(--SUB); display:block; margin-top:0.05rem; }
+  .stat-bonus { font-family:'Cinzel',serif; font-size:0.82rem; font-weight:600;
+    color:rgba(212,200,168,0.74); display:block; margin-top:0.1rem; letter-spacing:0.02em; }
   .stat-edit-row { display:flex; gap:0.25rem; justify-content:center; align-items:center; margin-top:0.3rem; }
   .stat-edit-row .editable-num { font-size:0.78rem; width:34px; color:var(--parchment-dark); border-bottom-color:rgba(255,255,255,0.06); }
   .stat-edit-row .plus { color:var(--acc2); font-size:0.65rem; }
@@ -194,11 +195,11 @@ window.ACCES = window.ACCES || (function () {
   .skill-group .skill-sub { display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap; margin-left:0.55rem; padding:0.22rem 0 0.22rem 0.6rem; border-left:1px solid rgba(184,146,42,0.28); }
   .skill-group .skill-sub .skill-name { font-size:0.74rem; color:var(--SUB); }
   .skill-group .skill-sub .skill-total { font-size:0.8rem; }
-  .grp-toggle { cursor:pointer; user-select:none; color:var(--acc2); font-size:0.6rem; width:0.7rem; flex-shrink:0; opacity:0.8; }
+  .grp-toggle { cursor:pointer; user-select:none; color:var(--acc2); font-size:0.8rem; width:0.95rem; flex-shrink:0; opacity:0.9; }
   .grp-toggle:hover { opacity:1; }
   .grp-hint { font-size:0.6rem; color:var(--SUB); opacity:0.65; font-style:italic; }
   @media(max-width:700px){ .skill-list { column-count:1; } }
-  .del-btn { color:rgba(139,26,26,0.4); cursor:pointer; font-size:0.72rem; flex-shrink:0; transition:color 0.15s; }
+  .del-btn { color:rgba(152,44,38,0.58); cursor:pointer; font-size:0.8rem; flex-shrink:0; transition:color 0.15s; }
   .del-btn:hover { color:#e08080; }
 
   /* ── TALENTS ── */
@@ -438,7 +439,7 @@ window.ACCES = window.ACCES || (function () {
   .xp-badge:hover { background:rgba(184,146,42,0.16); border-color:rgba(184,146,42,0.55); }
   .xp-badge .xp-aug { color:var(--parchment-dark); }
   .xp-badge .xp-cost { font-weight:700; color:#e8c45a; background:rgba(184,146,42,0.18); padding:0.02rem 0.3rem; border-radius:2px; }
-  .xp-badge .xp-caret { font-size:0.5rem; opacity:0.6; transition:transform 0.15s; }
+  .xp-badge .xp-caret { font-size:0.64rem; opacity:0.78; transition:transform 0.15s; }
   .xp-badge.open .xp-caret { transform:rotate(180deg); }
   .xp-grid-pop { display:none; margin-top:0.35rem; background:rgba(8,8,12,0.92); border:1px solid rgba(184,146,42,0.3); border-radius:3px; padding:0.5rem 0.6rem; }
   .xp-grid-pop.open { display:block; }
@@ -463,7 +464,7 @@ window.ACCES = window.ACCES || (function () {
   /* ══ PROFIL : TOILE + JAUGES (blocs repliables) ══ */
   .prof-head { display:flex; align-items:center; gap:0.5rem; cursor:pointer; user-select:none; }
   .prof-head .card-title { margin-bottom:0; flex:1; }
-  .prof-arrow { font-size:0.55rem; color:var(--SUB); transition:transform 0.2s; flex-shrink:0; }
+  .prof-arrow { font-size:0.72rem; color:var(--parchment-dark); opacity:0.7; transition:transform 0.2s; flex-shrink:0; }
   .prof-head.open .prof-arrow { transform:rotate(90deg); }
   .prof-body { display:none; padding-top:0.9rem; }
   .prof-body.open { display:block; }
