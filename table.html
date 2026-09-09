@@ -401,9 +401,8 @@
   .dock #init-msg{max-width:132px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .dock #jet-secret-loc{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   /* Banc d'essai du MJ : imposer un résultat pour vérifier ce qu'il déclenche. */
-  .forcer-grp{align-items:center;gap:4px;margin-left:6px;
-    padding-left:8px;border-left:1px solid var(--bord)}
-  .forcer-grp input{width:52px}
+  .forcer-grp{align-items:center;gap:5px}
+  .forcer-grp input{width:56px}
   .forcer-grp button{border-color:rgba(201,162,90,.5);color:var(--laiton)}
 
   @media(max-width:1500px){ header .titre{display:flex;position:absolute;top:2px;left:50%;transform:translateX(-50%);pointer-events:none;align-items:flex-start} }
@@ -1249,11 +1248,6 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <button data-de="4">d4</button>
         <button class="primaire" id="lancer-test">Lancer</button>
         <button id="secret-test" class="secret-btn" title="Lancer en secret : seuls toi et le MJ voyez le résultat">Secret</button>
-        <span class="gm-only-in forcer-grp">
-          <input type="number" id="forcer-val" min="1" max="100" placeholder="01"
-                 title="Résultat imposé au d100" />
-          <button id="forcer-lancer" title="Lancer un test avec ce résultat exact : journal, dés, son et vignetage comme un vrai jet (MJ)">Forcer</button>
-        </span>
       </div>
       <div class="ligne">
         <label for="custom">Dés</label>
@@ -1261,6 +1255,12 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <button class="primaire" id="lancer-custom">Lancer</button>
         <button id="secret-custom" class="secret-btn" title="Lancer en secret : seuls toi et le MJ voyez le résultat">Secret</button>
         <button id="vider-des" title="Retirer les dés de la table">🧹 Table</button>
+      </div>
+      <div class="ligne gm-only forcer-grp">
+        <label for="forcer-val">Forcer</label>
+        <input type="number" id="forcer-val" min="1" max="100" placeholder="01"
+               title="Résultat imposé au d100" />
+        <button id="forcer-lancer" title="Lancer un test avec ce résultat exact : journal, dés, son et vignetage comme un vrai jet (MJ)">Lancer ce résultat</button>
       </div>
       <div class="ligne gm-only">
         <button id="jet-secret">Jet secret</button>
@@ -1273,12 +1273,12 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
       <div class="ligne">
         <button type="button" id="init-crea" title="Choisir une créature ou un PNJ du bestiaire"><span id="init-crea-nom">Bestiaire…</span> <span class="ch">▾</span></button>
         <span class="nb-pas"><button type="button" id="init-nb-moins" title="Un de moins">−</button><input type="text" inputmode="numeric" id="init-nb" value="1" title="Combien d'exemplaires"><button type="button" id="init-nb-plus" title="Un de plus">+</button></span>
-        <button id="init-crea-ajout" class="primaire" title="Ajouter au combat">+</button>
+        <button id="init-crea-ajout" title="Ajouter cette créature ou ce PNJ au combat">+ PNJ</button>
         <button id="init-recharger" title="Relire le bestiaire">⟳</button>
       </div>
       <div class="ligne">
         <input type="text" id="init-add" placeholder="Nom de PJ 42" title="Ajouter un personnage joueur : son nom puis son initiative" />
-        <button id="init-ajout" title="Ajouter ce personnage joueur">+ PJ</button>
+        <button id="init-ajout" title="Ajouter ce personnage joueur au combat">+ PJ</button>
         <button id="init-pj-fiches" title="Ajouter des personnages depuis leurs fiches, avec leurs Blessures">☩ Fiches</button>
       </div>
       <div class="ligne">
