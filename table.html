@@ -952,7 +952,7 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
     </div>
   </section>
 
-  <div id="dice3d"><div id="dice3d-d"></div><div id="dice3d-u"></div></div>
+  <div id="dice3d"><div id="dice3d-d"></div><div id="dice3d-u"></div><div id="dice3d-f"></div></div>
 
   <header>
     <div class="entete-gauche">
@@ -2350,7 +2350,7 @@ function lancerTest(cible, secret, impose){
         marque: "",
         des: { faces:10, vals:[bonus], ajout:true }
       });
-    }, 2400);
+    }, 1500);
   }
 }
 
@@ -2810,7 +2810,7 @@ if(refJets){
 // ---------- Dés 3D (physique, par-dessus le plateau) ----------
 // Le calque #dice3d est dimensionné pour s'arrêter au bandeau du haut, à la barre
 // du bas et au journal : les dés rebondissent sur ces bords et restent visibles.
-let boxU = null, boxD = null, box3dPret = false;
+let boxU = null, boxD = null, boxF = null, box3dPret = false;
 const TEINTE_DIZAINE = { background:"#14110d", foreground:"#e6dcc3", texture:"none", material:"plastic" };
 const TEINTE_UNITE   = { background:"#efe6d2", foreground:"#1a1510", texture:"none", material:"plastic" };
 const TEINTE_FORTUNE = { background:"#c9a25a", foreground:"#241a08", texture:"none", material:"metal" };
@@ -2862,6 +2862,11 @@ async function initDes3D(){
       boxD = new DiceBox("#dice3d-d", opts);
       await boxD.initialize();
     }catch(e2){ console.warn("Calque dizaine indisponible, repli sur couleur unique :", e2); boxD = null; }
+    try{
+      boxF = new DiceBox("#dice3d-f", opts);
+      await boxF.initialize();
+      if(boxF.updateConfig) boxF.updateConfig({ theme_customColorset: TEINTE_FORTUNE });
+    }catch(e3){ console.warn("Calque du dé d'Ulric indisponible :", e3); boxF = null; }
   }catch(e){ console.warn("Dés 3D indisponibles (le reste fonctionne) :", e); box3dPret = false; }
 }
 function lancerDes3D(des, n){
@@ -2870,9 +2875,13 @@ function lancerDes3D(des, n){
   // balayer. C'est le cas du dé de fortune, qui doit tomber à côté du 01
   // qui l'a fait naître.
   if(des.ajout){
+    // Le dé d'Ulric a son propre calque : il roule par-dessus les dés du
+    // test, en or, sans les déranger.
     try{
+      const cible = boxF || boxU;
       const notation = des.vals.length + "d" + des.faces + "@" + des.vals.join(",");
-      if(boxU.add) boxU.add(notation);
+      if(boxF){ boxF.roll(notation); }
+      else if(cible.add){ cible.add(notation); }
     }catch(e){ /* silencieux : le journal fait foi */ }
     return;
   }
@@ -2896,7 +2905,7 @@ function lancerDes3D(des, n){
   }catch(e){ /* silencieux : le journal fait foi */ }
 }
 function viderTableLocal(){
-  for(const b of [boxU, boxD]){ if(b){ try{ if(b.clearDice) b.clearDice(); }catch(e){} } }
+  for(const b of [boxU, boxD, boxF]){ if(b){ try{ if(b.clearDice) b.clearDice(); }catch(e){} } }
 }
 function demanderViderDes(){ if(refDesClear) set(refDesClear, Date.now()); else viderTableLocal(); }
 if(refDesClear){ onValue(refDesClear, ()=> viderTableLocal()); }
