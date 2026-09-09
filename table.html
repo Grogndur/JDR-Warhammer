@@ -779,15 +779,50 @@ header .titre{position:absolute !important;left:50% !important;right:auto !impor
 .jauge-boutons{position:absolute;inset:0;}
 .jauge-bouton{position:absolute;border-radius:50%;transform:translate(-50%,-50%);
   background:transparent;transition:box-shadow .35s ease, background .35s ease;}
+/* Chaque pastille porte la couleur de son moment : on repère l'aube et le
+   crépuscule sans compter les crans. Un anneau, pas un aplat : la cire
+   de la pièce reste visible dessous. */
+.jauge-bouton.ph-aube{box-shadow:0 0 0 2px rgba(213,121,159,.55), 0 0 9px rgba(213,121,159,.40);}
+.jauge-bouton.ph-jour{box-shadow:0 0 0 2px rgba(226,186,78,.42), 0 0 8px rgba(226,186,78,.28);}
+.jauge-bouton.ph-crepuscule{box-shadow:0 0 0 2px rgba(226,129,55,.60), 0 0 10px rgba(226,129,55,.42);}
+.jauge-bouton.ph-nuit{box-shadow:0 0 0 2px rgba(113,161,207,.42), 0 0 8px rgba(113,161,207,.26);}
 body.jauge-mj .jauge-bouton{cursor:pointer;}
 body.jauge-mj .jauge-bouton:hover{background:rgba(255,244,214,.20);
   box-shadow:0 0 10px 2px rgba(255,240,200,.45);}
 .jauge-bouton.actif{background:rgba(255,250,232,.16);
   box-shadow:0 0 14px 4px rgba(255,248,225,.95), 0 0 30px 10px rgba(255,236,180,.5),
   inset 0 0 14px rgba(255,252,240,.7);}
+/* Le moment de la journée, sous la jauge : un mot, dans sa propre couleur. */
+.jauge-phase{display:block;text-align:center;margin-top:2px;
+  font-family:"Cinzel",serif;font-size:13px;font-weight:600;letter-spacing:.24em;
+  text-transform:uppercase;text-shadow:0 0 5px #000,0 0 12px rgba(0,0,0,.85);
+  pointer-events:none;transition:color .5s ease;}
+@media(max-width:760px){ .jauge-phase{font-size:11px;letter-spacing:.15em;} }
 /* les autres pastilles gardent leur cire : rien ne les assombrit */
 @media(max-width:760px){
   .jauge{height:66px;width:calc(66px * 1600 / 428);max-width:80vw;}
+}
+
+/* ---- Météo de la table -------------------------------------------
+   Même principe que la jauge : une seule icône allumée, les autres en
+   veilleuse, et un mot dessous. Le MJ seul peut changer le temps. */
+.meteo{display:flex;flex-direction:column;align-items:center;gap:2px;
+  pointer-events:auto;user-select:none;}
+.meteo-rangee{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;}
+.meteo-b{width:34px;height:34px;padding:0;border:0;background:transparent;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;opacity:.26;cursor:default;
+  transition:opacity .35s ease, filter .35s ease, background .2s ease;}
+.meteo-b svg{width:26px;height:26px;display:block;}
+body.jauge-mj .meteo-b{cursor:pointer;}
+body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
+.meteo-b.actif{opacity:1;filter:drop-shadow(0 0 7px currentColor);}
+.meteo-mot{font-family:"Cinzel",serif;font-size:13px;font-weight:600;letter-spacing:.24em;
+  text-transform:uppercase;text-shadow:0 0 5px #000,0 0 12px rgba(0,0,0,.85);
+  pointer-events:none;transition:color .5s ease;}
+@media(max-width:760px){
+  .meteo-b{width:28px;height:28px;}
+  .meteo-b svg{width:22px;height:22px;}
+  .meteo-mot{font-size:11px;letter-spacing:.15em;}
 }
   /* ---- Jetons posés sur la carte ---------------------------------- */
   #g-jetons{pointer-events:none}
@@ -897,6 +932,11 @@ body.jauge-mj .jauge-bouton:hover{background:rgba(255,244,214,.20);
         <div class="jauge-halo jauge-h-soleil" id="jauge-l-soleil"></div>
         <div class="jauge-halo jauge-h-lune" id="jauge-l-lune"></div>
         <div class="jauge-boutons" id="jauge-boutons"></div>
+        <span class="jauge-phase" id="jauge-phase"></span>
+      </div>
+      <div class="meteo" id="meteo" title="Temps qu'il fait">
+        <div class="meteo-rangee" id="meteo-rangee"></div>
+        <span class="meteo-mot" id="meteo-mot"></span>
       </div>
     </div>
       </div>
@@ -4480,6 +4520,21 @@ $("#amb-activer").addEventListener("click", ()=>{
   var N = X.length;
   var cran = 5, refH = null;
 
+  /* Quatre moments sur les douze pastilles : l'aube ouvre la course côté
+     soleil, le crépuscule tient la bascule du milieu, la nuit occupe la fin. */
+  function phase(i){
+    if(i === 0)            return 'aube';
+    if(i <= 4)             return 'jour';
+    if(i <= 6)             return 'crepuscule';
+    return 'nuit';
+  }
+  var MOTS = {
+    aube:       { mot:'Aube',       coul:'#d5799f' },
+    jour:       { mot:'Jour',       coul:'#e2ba4e' },
+    crepuscule: { mot:'Crépuscule', coul:'#e28137' },
+    nuit:       { mot:'Nuit',       coul:'#71a1cf' }
+  };
+
   function peindre(){
     var t = N === 1 ? 0.5 : cran / (N - 1);   /* 0 plein jour, 1 pleine nuit */
     var j = 1 - t, n = t;
@@ -4503,6 +4558,12 @@ $("#amb-activer").addEventListener("click", ()=>{
       var i = parseInt(e.dataset.i, 10);
       e.classList.toggle('actif', i === cran);
     });
+    var m = document.getElementById('jauge-phase');
+    if(m){
+      var ph = MOTS[phase(cran)];
+      m.textContent = ph.mot;
+      m.style.color = ph.coul;
+    }
   }
 
   function poser(i, diffuser){
@@ -4517,7 +4578,7 @@ $("#amb-activer").addEventListener("click", ()=>{
     box.innerHTML = '';
     for(var i = 0; i < N; i++){
       var d = document.createElement('div');
-      d.className = 'jauge-bouton';
+      d.className = 'jauge-bouton ph-' + phase(i);
       d.dataset.i = i;
       d.style.left = (X[i] * 100).toFixed(3) + '%';
       d.style.top  = (Y * 100).toFixed(3) + '%';
@@ -4566,6 +4627,111 @@ $("#amb-activer").addEventListener("click", ()=>{
     document.addEventListener('DOMContentLoaded', init);
   else init();
   window.jaugeHeure = function(i){ poser(i, true); };
+})();
+</script>
+<script>
+/* ---- Météo de la table ------------------------------------------
+   Huit temps, un seul allumé. Les icônes sont dessinées ici même, en
+   trait, pour prendre la couleur de leur temps sans dépendre d'un
+   fichier. Le MJ clique, tout le monde voit changer. */
+(function(){
+  var T = [
+    { c:'clair',  mot:'Clair',  coul:'#e2ba4e' },
+    { c:'voile',  mot:'Voilé',  coul:'#c9b07a' },
+    { c:'gris',   mot:'Couvert',coul:'#9aa2ab' },
+    { c:'vent',   mot:'Vent',   coul:'#8fb3a8' },
+    { c:'pluie',  mot:'Pluie',  coul:'#71a1cf' },
+    { c:'orage',  mot:'Orage',  coul:'#b79ad8' },
+    { c:'brume',  mot:'Brume',  coul:'#aab2ba' },
+    { c:'neige',  mot:'Neige',  coul:'#d3e3ee' }
+  ];
+  var temps = 0, refM = null;
+
+  /* Un nuage, réutilisé par la moitié des icônes. */
+  var NUAGE = '<path d="M7 16.5a3.4 3.4 0 0 1 .5-6.8 5 5 0 0 1 9.6-1.2 3.9 3.9 0 0 1 .6 7.9z" />';
+  var SOLEIL = '<circle cx="12" cy="12" r="4.2" />' +
+    '<path d="M12 3.6v2.1M12 18.3v2.1M3.6 12h2.1M18.3 12h2.1' +
+    'M6.1 6.1l1.5 1.5M16.4 16.4l1.5 1.5M17.9 6.1l-1.5 1.5M7.6 16.4l-1.5 1.5" />';
+
+  function dessin(c){
+    var g;
+    if(c === 'clair')  g = SOLEIL;
+    else if(c === 'voile')
+      g = '<circle cx="9" cy="8.4" r="3.1" />' +
+          '<path d="M9 2.7v1.6M3.3 8.4h1.6M4.9 4.3l1.1 1.1M13.1 4.3l-1.1 1.1" />' +
+          '<path d="M9 19.5a3.2 3.2 0 0 1 .4-6.4 4.7 4.7 0 0 1 9 .6 3.6 3.6 0 0 1-.4 5.8z" />';
+    else if(c === 'gris')
+      g = '<path d="M4.5 13.6a3 3 0 0 1 .6-6 4.5 4.5 0 0 1 8.5-1" />' + NUAGE;
+    else if(c === 'vent')
+      g = '<path d="M3 8.5h9.5a2.6 2.6 0 1 0-2.6-2.9M3 12.5h13a2.6 2.6 0 1 1-2.6 2.9' +
+          'M4 16.6h6.5a2.3 2.3 0 1 1-2.3 2.5" />';
+    else if(c === 'pluie')
+      g = NUAGE + '<path d="M8.6 18.6l-1.2 3M12.2 18.6l-1.2 3M15.8 18.6l-1.2 3" />';
+    else if(c === 'orage')
+      g = NUAGE + '<path d="M12.8 17.2l-3.4 4.2h3l-1.4 3.4" />' +
+          '<path d="M7.4 18.8l-.9 2.3" />';
+    else if(c === 'brume')
+      g = '<path d="M3.5 8.6h13M6 12h14.5M3.5 15.4h13M7.5 18.8h11" />';
+    else
+      g = NUAGE + '<path d="M8.4 19.4v3.1M6.9 20.2l3 1.5M9.9 20.2l-3 1.5' +
+          'M15.2 19.4v3.1M13.7 20.2l3 1.5M16.7 20.2l-3 1.5" />';
+    return '<svg viewBox="0 0 24 25" fill="none" stroke="currentColor" stroke-width="1.5" ' +
+           'stroke-linecap="round" stroke-linejoin="round">' + g + '</svg>';
+  }
+
+  function peindre(){
+    var t = T[temps] || T[0];
+    document.querySelectorAll('.meteo-b').forEach(function(b){
+      var i = parseInt(b.dataset.i, 10);
+      b.classList.toggle('actif', i === temps);
+      b.style.color = T[i].coul;
+    });
+    var m = document.getElementById('meteo-mot');
+    if(m){ m.textContent = t.mot; m.style.color = t.coul; }
+  }
+
+  function poser(i, diffuser){
+    temps = Math.max(0, Math.min(T.length - 1, i));
+    peindre();
+    if(diffuser && refM){ try{ refM.set(temps); }catch(e){} }
+  }
+
+  function construire(){
+    var box = document.getElementById('meteo-rangee');
+    if(!box) return;
+    box.innerHTML = '';
+    T.forEach(function(t, i){
+      var b = document.createElement('button');
+      b.className = 'meteo-b';
+      b.dataset.i = i;
+      b.title = t.mot;
+      b.innerHTML = dessin(t.c);
+      b.addEventListener('click', function(){
+        if(!document.body.classList.contains('jauge-mj')) return;
+        poser(i, true);
+      });
+      box.appendChild(b);
+    });
+  }
+
+  function init(){
+    if(!document.getElementById('meteo')) return;
+    construire();
+    peindre();
+    try{
+      if(typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length){
+        refM = firebase.database().ref('table/meteo');
+        refM.on('value', function(snap){
+          var v = snap.val();
+          if(typeof v === 'number') poser(v, false);
+        });
+      }
+    }catch(e){ console.warn('Météo hors ligne :', e); }
+  }
+  if(document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', init);
+  else init();
+  window.meteoTable = function(i){ poser(i, true); };
 })();
 </script>
 </body>
