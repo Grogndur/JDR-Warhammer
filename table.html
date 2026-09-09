@@ -756,7 +756,7 @@ header .titre{position:absolute !important;left:50% !important;right:auto !impor
    position a été relevée dans l'image. */
 header .titre{position:absolute !important;left:50% !important;right:auto !important;
   top:4px !important;transform:translateX(-50%) !important;margin:0 !important;
-  display:block !important;pointer-events:none;}
+  display:flex !important;align-items:flex-start;gap:20px;pointer-events:none;}
 .jauge{position:relative;display:block;height:96px;width:calc(96px * 1600 / 428);
   max-width:56vw;pointer-events:auto;user-select:none;}
 .jauge-piece{display:block;width:100%;height:100%;object-fit:contain;
@@ -806,9 +806,10 @@ body.jauge-mj .jauge-bouton:hover{background:rgba(255,244,214,.20);
 /* ---- Météo de la table -------------------------------------------
    Même principe que la jauge : une seule icône allumée, les autres en
    veilleuse, et un mot dessous. Le MJ seul peut changer le temps. */
-.meteo{display:flex;flex-direction:column;align-items:center;gap:2px;
+.meteo{display:flex;flex-direction:column;align-items:center;gap:3px;margin-top:4px;
   pointer-events:auto;user-select:none;}
-.meteo-rangee{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;}
+.meteo-rangee{display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:center;
+  max-width:166px;}
 .meteo-b{width:34px;height:34px;padding:0;border:0;background:transparent;border-radius:8px;
   display:flex;align-items:center;justify-content:center;opacity:.26;cursor:default;
   transition:opacity .35s ease, filter .35s ease, background .2s ease;}
@@ -820,6 +821,7 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
   text-transform:uppercase;text-shadow:0 0 5px #000,0 0 12px rgba(0,0,0,.85);
   pointer-events:none;transition:color .5s ease;}
 @media(max-width:760px){
+  .meteo-rangee{max-width:138px;gap:4px;}
   .meteo-b{width:28px;height:28px;}
   .meteo-b svg{width:22px;height:22px;}
   .meteo-mot{font-size:11px;letter-spacing:.15em;}
