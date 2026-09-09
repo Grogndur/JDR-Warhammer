@@ -401,7 +401,7 @@
   .dock #init-msg{max-width:132px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .dock #jet-secret-loc{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-  @media(max-width:1500px){ }
+  @media(max-width:1500px){ header .titre{display:flex;position:absolute;top:2px;left:50%;transform:translateX(-50%);pointer-events:none;align-items:flex-start} }
   @media(max-width:1700px){
     .dock .prefixe-img{display:none}
     .dock #init-msg{max-width:104px}
@@ -434,6 +434,22 @@
     background:radial-gradient(ellipse at center,
       rgba(46,214,122,0) 34%, rgba(46,214,122,.20) 66%, rgba(74,255,150,.52) 100%);
     animation:vig-crit 2000ms ease-out forwards}
+  /* Le 01 naturel : même vert, mais il envahit l'écran et tient plus longtemps. */
+  .vignette.crit01{
+    background:radial-gradient(ellipse at center,
+      rgba(46,214,122,0) 14%, rgba(46,214,122,.40) 48%, rgba(120,255,180,.92) 100%);
+    animation:vig-crit01 3000ms ease-out forwards}
+  @keyframes vig-crit01{
+    0%{opacity:0}
+    12%{opacity:.10}
+    19%{opacity:.34}
+    21.5%{opacity:1}
+    30%{opacity:1}
+    38%{opacity:.62}
+    46%{opacity:.82}
+    70%{opacity:.34}
+    100%{opacity:0}
+  }
   .vignette.fumble{
     mix-blend-mode:normal;
     background:radial-gradient(ellipse at center,
@@ -460,7 +476,7 @@
     88%{opacity:.88}  100%{opacity:0}
   }
   @media(prefers-reduced-motion:reduce){
-    .vignette.crit,.vignette.fumble{animation-duration:1ms;opacity:0}
+    .vignette.crit,.vignette.crit01,.vignette.fumble{animation-duration:1ms;opacity:0}
   }
 
   /* ---- Sélecteur de créature du bestiaire ---- */
@@ -694,20 +710,84 @@
   @media (max-width:760px){
     .palette{left:8px;margin-left:0;top:auto;bottom:118px;width:230px}
   }
+
+/* ---- Cadran jour / nuit ---------------------------------------- */
+.cadran{position:relative;width:430px;max-width:66vw;height:112px;margin:0 auto;
+  pointer-events:auto;user-select:none;}
+.cadran-arc{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
+.cadran-astre{position:absolute;width:50px;height:50px;z-index:2;object-fit:contain;
+  transition:opacity .5s ease, filter .5s ease;}
+.cadran-soleil{left:94px;top:0;
+  filter:sepia(.55) saturate(2.6) hue-rotate(-18deg) brightness(1.05);}
+.cadran-lune{right:94px;top:0;
+  filter:grayscale(.5) sepia(.35) hue-rotate(178deg) saturate(2.2) brightness(1.08);}
+
+.cadran-aiguille{position:absolute;left:50%;top:-54px;height:78px;width:auto;
+  transform-origin:50% 100%;transform:translateX(-50%) rotate(180deg);
+  transition:transform .55s cubic-bezier(.4,1.5,.5,1);
+  filter:brightness(2.1) contrast(1.15) drop-shadow(0 0 4px rgba(0,0,0,.95));
+  pointer-events:none;z-index:3;}
+.cadran-heure{position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+  font-family:"Cinzel",serif;font-size:12px;letter-spacing:.18em;
+  color:var(--laiton);opacity:.9;text-shadow:0 0 4px #000;pointer-events:none;}
+.cadran-cran{cursor:default;}
+body.cadran-mj .cadran-cran{cursor:pointer;}
+body.cadran-mj .cadran-cran:hover circle{r:5.4;}
 @media(max-width:760px){
+  .cadran{width:290px;height:86px;}
+  .cadran-astre{width:36px;height:36px;}
+  .cadran-soleil{left:60px;top:2px;}
+  .cadran-lune{right:60px;top:2px;}
+  .cadran-aiguille{height:60px;top:-42px;}
+  .cadran-heure{font-size:10px;letter-spacing:.1em;}
 }
+
+/* ---- Jauge jour / nuit ----------------------------------------- */
+header .titre{position:absolute !important;left:50% !important;right:auto !important;
+  top:8px !important;transform:translateX(-50%) !important;margin:0 !important;
+  display:block !important;pointer-events:none;}
 .jauge-cran.actif::before{width:4px;height:22px;top:1px;
   background:#1a1206;box-shadow:0 0 5px rgba(255,240,200,.9);}
 @media(max-width:760px){
 }
+
+/* ---- Jauge jour / nuit ------------------------------------------
+   Les douze boutons sont posés sur les pastilles de cire, dont la
+   position a été relevée dans l'image. */
+header .titre{position:absolute !important;left:50% !important;right:auto !important;
+  top:4px !important;transform:translateX(-50%) !important;margin:0 !important;
+  display:block !important;pointer-events:none;}
+.jauge{position:relative;display:block;height:96px;width:calc(96px * 1600 / 428);
+  max-width:56vw;pointer-events:auto;user-select:none;}
+.jauge-piece{display:block;width:100%;height:100%;object-fit:contain;
+  pointer-events:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.85));}
 
 
 
 
 /* Le halo est une copie floutée de la pièce, découpée sur l'astre :
    il épouse les rayons et le croissant au lieu d'un cercle vide. */
+.jauge-halo{position:absolute;top:0;height:100%;pointer-events:none;
+  background-image:url("gallerie/Jauge.png");background-repeat:no-repeat;
+  mix-blend-mode:screen;transition:opacity .5s ease, filter .5s ease;}
+.jauge-h-soleil{left:0;width:27%;background-size:370.4% 100%;background-position:left center;
+  -webkit-mask-image:radial-gradient(ellipse 60% 60% at 46% 43%,#000 40%,transparent 100%);
+  mask-image:radial-gradient(ellipse 60% 60% at 46% 43%,#000 40%,transparent 100%);}
+.jauge-h-lune{right:0;width:19%;background-size:526.3% 100%;background-position:right center;
+  -webkit-mask-image:radial-gradient(ellipse 52% 52% at 60% 46%,#000 34%,transparent 100%);
+  mask-image:radial-gradient(ellipse 52% 52% at 60% 46%,#000 34%,transparent 100%);}
+.jauge-boutons{position:absolute;inset:0;}
+.jauge-bouton{position:absolute;border-radius:50%;transform:translate(-50%,-50%);
+  background:transparent;transition:box-shadow .35s ease, background .35s ease;}
+body.jauge-mj .jauge-bouton{cursor:pointer;}
+body.jauge-mj .jauge-bouton:hover{background:rgba(255,244,214,.20);
+  box-shadow:0 0 10px 2px rgba(255,240,200,.45);}
+.jauge-bouton.actif{background:rgba(255,250,232,.16);
+  box-shadow:0 0 14px 4px rgba(255,248,225,.95), 0 0 30px 10px rgba(255,236,180,.5),
+  inset 0 0 14px rgba(255,252,240,.7);}
 /* les autres pastilles gardent leur cire : rien ne les assombrit */
 @media(max-width:760px){
+  .jauge{height:66px;width:calc(66px * 1600 / 428);max-width:80vw;}
 }
   /* ---- Jetons posés sur la carte ---------------------------------- */
   #g-jetons{pointer-events:none}
@@ -721,6 +801,9 @@
     paint-order:stroke;text-anchor:middle;pointer-events:none;user-select:none}
   .j-vide{fill:#241c12}
   .j-init{font-family:"Cinzel",serif;fill:#e8dcc0;text-anchor:middle;pointer-events:none;user-select:none}
+  .j-num{font-family:"Cinzel",serif;fill:#0d0a06;text-anchor:middle;pointer-events:none;user-select:none;font-weight:700}
+  .j-l .etat{width:36px;height:6px;border-radius:3px;flex:none;box-shadow:0 0 0 1px #00000066}
+  .j-l input.num{width:30px;padding:1px 3px;font-size:12px;text-align:center;flex:none}
 
   /* Panneau Jetons (MJ) : reprend l'habillage de la palette de dessin. */
   .jetons-panel{width:290px;left:auto;right:14px;margin-left:0;top:54px;max-height:calc(100vh - 120px);
@@ -750,22 +833,6 @@
   @media (max-width:760px){
     .jetons-panel{right:8px;left:8px;width:auto;top:auto;bottom:118px;max-height:60vh}
   }
-
-/* ---- Jauge jour / nuit ------------------------------------------
-   Entièrement dessinée, dans la charte de la table. */
-header .titre{position:absolute !important;left:50% !important;right:auto !important;
-  top:3px !important;transform:translateX(-50%) !important;margin:0 !important;
-  display:block !important;pointer-events:none;}
-.jauge{position:relative;display:block;width:430px;max-width:52vw;
-  pointer-events:auto;user-select:none;line-height:0;}
-.jauge svg{display:block;width:100%;height:auto;overflow:visible;}
-.jauge-creux{cursor:default;}
-body.jauge-mj .jauge-creux{cursor:pointer;}
-body.jauge-mj .jauge-creux:hover .jauge-halo-c{opacity:.55;}
-@media(max-width:760px){
-  .jauge{width:250px;max-width:66vw;}
-  header .titre{position:fixed !important;left:50% !important;transform:translateX(-50%) !important;}
-}
 </style>
 </head>
 <body>
@@ -819,8 +886,12 @@ body.jauge-mj .jauge-creux:hover .jauge-halo-c{opacity:.55;}
       </div>
     </div>
     <div class="titre">
-      <div class="jauge" id="jauge" title="Heure de la table"></div>
-    </div>
+      <div class="jauge" id="jauge" title="Heure de la table">
+        <img class="jauge-piece" id="jauge-piece" src="gallerie/Jauge.png" alt="" />
+        <div class="jauge-halo jauge-h-soleil" id="jauge-l-soleil"></div>
+        <div class="jauge-halo jauge-h-lune" id="jauge-l-lune"></div>
+        <div class="jauge-boutons" id="jauge-boutons"></div>
+      </div>
     </div>
       </div>
     </div>
@@ -1091,13 +1162,6 @@ const refInit  = db ? ref(db, `salles/${salle}/initiative`) : null;
 const refDesClear = db ? ref(db, `salles/${salle}/desClear`) : null;
 const refDessin = db ? ref(db, `salles/${salle}/dessin`) : null;
 const refDessinPJ = db ? ref(db, `salles/${salle}/options/dessinPJ`) : null;
-
-  /* Pont vers la jauge : elle vit hors du module et doit écrire dans la
-     même salle que le reste de la table. */
-  window.jaugeSync = db ? {
-    lire:   function(cb){ onValue(ref(db, `salles/${salle}/heure`), function(sn){ cb(sn.val()); }); },
-    ecrire: function(v){ set(ref(db, `salles/${salle}/heure`), v); }
-  } : null;
 
 // ---------- Plateau partagé (image ou carte vierge) + zoom + dessin ----------
 const img    = $("#image");
@@ -1549,7 +1613,19 @@ let enMain = null;          // jeton en cours de déplacement
 let rendreEnAttente = false;
 let dernierEnvoi = 0;
 
-const COULEUR_JETON = { pj:"#5a9e3f", pnj:"#c9a25a", crea:"#c1453f" };
+// Les PJ portent un cadre doré fixe : ils connaissent leur propre état.
+// Les PNJ et les créatures portent un anneau qui glisse du vert au rouge
+// à mesure qu'ils encaissent, sans jamais afficher de chiffre.
+const ETAT_JETON = ["#a8241c", "#c2621f", "#c08a2a", "#7f9a2f", "#4a9e3f"];
+const ETAT_MAX = ETAT_JETON.length - 1;
+const OR_JETON = "#c9a25a";
+const COULEUR_JETON = { pj: OR_JETON, pnj:"#c9a25a", crea:"#c1453f" };
+
+function couleurEtat(j){
+  if(j.type === "pj") return OR_JETON;
+  const n = (j.pv == null) ? ETAT_MAX : Math.max(0, Math.min(ETAT_MAX, j.pv));
+  return ETAT_JETON[n];
+}
 
 function jetonsCourants(){ return refJetons ? jetonsDB : jetonsLocaux; }
 function jetonsDeplacables(){ return estMJ() || jetonsPJ; }
@@ -1603,7 +1679,7 @@ function rendreJetons(){
     const X  = (j.x != null ? j.x : 0.5) * base.iw;
     const Y  = (j.y != null ? j.y : 0.5) * base.ih;
     const url = imageJeton(j);
-    const coul = COULEUR_JETON[j.type] || COULEUR_JETON.pnj;
+    const coul = couleurEtat(j);
     const nom = nomAffiche(j);
     const idc = "clipj-" + j.id;
     let h = `<g data-id="${escape(j.id)}" transform="translate(${X.toFixed(1)},${Y.toFixed(1)})">`;
@@ -1617,8 +1693,36 @@ function rendreJetons(){
       h += `<text class="j-init" y="${(R*0.32).toFixed(1)}" font-size="${(R*0.85).toFixed(1)}">` +
            `${escape(initialesJeton(j))}</text>`;
     }
-    h += `<circle r="${R.toFixed(1)}" fill="none" stroke="${coul}" ` +
-         `stroke-width="${Math.max(1, R*0.13).toFixed(2)}"></circle>`;
+    // Cadre : couronne ouvragée pour les PJ, anneau d'état pour les autres.
+    if(j.type === "pj"){
+      h += `<circle r="${R.toFixed(1)}" fill="none" stroke="#2a1f0e" ` +
+           `stroke-width="${(R*0.26).toFixed(2)}"></circle>`;
+      h += `<circle r="${R.toFixed(1)}" fill="none" stroke="${OR_JETON}" ` +
+           `stroke-width="${(R*0.15).toFixed(2)}"></circle>`;
+      h += `<circle r="${(R*0.87).toFixed(1)}" fill="none" stroke="#6f5322" ` +
+           `stroke-width="${(R*0.04).toFixed(2)}"></circle>`;
+      const t = R*0.17;
+      [[0,-R],[R,0],[0,R],[-R,0]].forEach(p => {
+        h += `<path d="M ${p[0].toFixed(1)},${(p[1]-t).toFixed(1)} ` +
+             `L ${(p[0]+t).toFixed(1)},${p[1].toFixed(1)} ` +
+             `L ${p[0].toFixed(1)},${(p[1]+t).toFixed(1)} ` +
+             `L ${(p[0]-t).toFixed(1)},${p[1].toFixed(1)} Z" ` +
+             `fill="${OR_JETON}" stroke="#2a1f0e" stroke-width="${(R*0.03).toFixed(2)}"></path>`;
+      });
+    } else {
+      h += `<circle r="${(R*1.02).toFixed(1)}" fill="none" stroke="#0d0a06" ` +
+           `stroke-width="${(R*0.20).toFixed(2)}"></circle>`;
+      h += `<circle r="${R.toFixed(1)}" fill="none" stroke="${coul}" ` +
+           `stroke-width="${Math.max(1, R*0.14).toFixed(2)}"></circle>`;
+    }
+    // Numéro de troupe, en pastille sous le rond.
+    if(j.num){
+      const rp = R*0.36, cx = R*0.70, cy = R*0.70;
+      h += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${rp.toFixed(1)}" ` +
+           `fill="${coul}" stroke="#0d0a06" stroke-width="${(R*0.06).toFixed(2)}"></circle>`;
+      h += `<text class="j-num" x="${cx.toFixed(1)}" y="${(cy + rp*0.36).toFixed(1)}" ` +
+           `font-size="${(rp*1.15).toFixed(1)}">${escape(String(j.num))}</text>`;
+    }
     if(nom){
       h += `<text class="j-nom" y="${(R*1.62).toFixed(1)}" font-size="${(R*0.62).toFixed(1)}" ` +
            `stroke-width="${(R*0.16).toFixed(2)}">${escape(nom)}</text>`;
@@ -1666,10 +1770,22 @@ function poserJeton(o){
     ts: Date.now(),
     par: nom()
   };
+  if(o.type !== "pj") j.pv = ETAT_MAX;
   if(o.url)  j.url  = o.url;
   if(o.pf)   j.pf   = o.pf;
   if(o.camp) j.camp = o.camp;
   if(o.cid)  j.cid  = o.cid;
+  // Deuxième exemplaire d'une même figure : la troupe se numérote seule,
+  // et le premier posé reçoit son 1 au passage.
+  const memes = Object.keys(jetonsCourants())
+    .map(k => jetonsCourants()[k]).filter(Boolean)
+    .filter(x => (o.cid && x.cid === o.cid) || (!o.cid && o.url && x.url === o.url));
+  if(memes.length){
+    const max = memes.reduce((m,x) => Math.max(m, parseInt(x.num,10) || 0), 0);
+    j.num = String(Math.max(max, memes.length) + 1);
+    const premier = memes.find(x => !x.num);
+    if(premier && memes.length === 1) ecrireJeton(Object.assign({}, premier, { num:"1" }));
+  }
   ecrireJeton(j);
 }
 
@@ -1754,6 +1870,19 @@ function fermerPortraitJeton(){
     if(rendreEnAttente){ rendreEnAttente = false; rendreJetons(); rendreListeJetons(); }
   });
 
+  // Clic droit sur un jeton : un cran d'état en moins, avec Maj un cran de
+  // plus. Réservé au MJ, et sans le moindre chiffre affiché.
+  g.addEventListener("contextmenu", e => {
+    const el = e.target.closest("g[data-id]"); if(!el) return;
+    e.preventDefault(); e.stopPropagation();
+    if(!estMJ()) return;
+    const j = jetonsCourants()[el.dataset.id]; if(!j || j.type === "pj") return;
+    const n = (j.pv == null) ? ETAT_MAX : j.pv;
+    const suivant = Math.max(0, Math.min(ETAT_MAX, n + (e.shiftKey ? 1 : -1)));
+    if(suivant === n) return;
+    ecrireJeton(Object.assign({}, j, { pv: suivant }));
+  });
+
   const vue = $("#jeton-vue");
   if(vue) vue.addEventListener("click", fermerPortraitJeton);
   document.addEventListener("keydown", e => {
@@ -1791,15 +1920,24 @@ function rendreListeJetons(){
     return;
   }
   boite.innerHTML = liste.map(j => {
-    const coul = COULEUR_JETON[j.type] || COULEUR_JETON.pnj;
+    const coul = couleurEtat(j);
     const nom = nomAffiche(j) || "Sans nom";
-    return `<div class="j-l" data-id="${escape(j.id)}">` +
-           `<span class="pastel" style="background:${coul}"></span>` +
-           `<span class="n">${escape(nom)}</span>` +
-           `<button data-act="petit" title="Réduire">−</button>` +
-           `<button data-act="grand" title="Agrandir">+</button>` +
-           `<button data-act="retirer" title="Retirer de la carte">×</button>` +
-           `</div>`;
+    const pj = j.type === "pj";
+    let h = `<div class="j-l" data-id="${escape(j.id)}">` +
+            `<span class="pastel" style="background:${coul}"></span>` +
+            `<span class="n">${escape(nom)}</span>`;
+    if(!pj){
+      h += `<span class="etat" style="background:${coul}" title="État, du vert au rouge"></span>`;
+      h += `<button data-act="blesser" title="Un cran d'état en moins">▼</button>`;
+      h += `<button data-act="soigner" title="Un cran d'état en plus">▲</button>`;
+    }
+    h += `<input class="num" data-act="num" value="${escape(j.num||"")}" maxlength="2" title="Numéro de troupe" />`;
+    h += `<button data-act="image" title="Remplacer le portrait par l'image choisie dans la galerie">◉</button>`;
+    h += `<button data-act="petit" title="Réduire">−</button>` +
+         `<button data-act="grand" title="Agrandir">+</button>` +
+         `<button data-act="retirer" title="Retirer de la carte">×</button>` +
+         `</div>`;
+    return h;
   }).join("");
 }
 
@@ -1882,9 +2020,34 @@ $("#jetons-poses").addEventListener("click", e => {
   const j = jetonsCourants()[id]; if(!j) return;
   const act = b.dataset.act;
   if(act === "retirer"){ retirerJeton(id); return; }
+  if(act === "image"){
+    const sel = $("#jetons-img");
+    const choix = sel && sel.value ? lienImageDirect(sel.value) : "";
+    if(!choix){ alerte("Choisis d'abord une image dans la liste de la galerie."); return; }
+    // url l'emporte sur pf au rendu : on efface donc le portrait de fiche
+    // pour que le nouveau visuel s'applique vraiment.
+    const copie = Object.assign({}, j, { url: choix });
+    delete copie.pf; delete copie.camp;
+    ecrireJeton(copie);
+    return;
+  }
+  if(act === "blesser" || act === "soigner"){
+    const n = (j.pv == null) ? ETAT_MAX : j.pv;
+    const suivant = Math.max(0, Math.min(ETAT_MAX, n + (act === "soigner" ? 1 : -1)));
+    if(suivant !== n) ecrireJeton(Object.assign({}, j, { pv: suivant }));
+    return;
+  }
   const pas = act === "grand" ? 1.25 : 1/1.25;
   const copie = Object.assign({}, j, { r: Math.max(0.015, Math.min(0.18, (j.r||0.05) * pas)) });
   ecrireJeton(copie);
+});
+
+$("#jetons-poses").addEventListener("change", e => {
+  const champ = e.target.closest("input[data-act='num']"); if(!champ) return;
+  const id = champ.closest("[data-id]").dataset.id;
+  const j = jetonsCourants()[id]; if(!j) return;
+  const v = (champ.value || "").trim().slice(0,2);
+  ecrireJeton(Object.assign({}, j, { num: v }));
 });
 
 $("#jetons-poser").addEventListener("click", () => {
@@ -1992,6 +2155,10 @@ function lancerTest(cible, secret){
   let marque = `DR ${sl>=0?"+":""}${sl}`;
   if(dbl && succes){ classe += " crit";   marque = "Critique ! " + marque; }
   if(dbl && !succes){ classe += " fumble"; marque = "Maladresse ! " + marque; }
+  // Le 01 naturel : réussite parfaite, effet renforcé, et un dé de fortune
+  // qui tombe juste après, une fois le résultat sec affiché au journal.
+  const parfait = (r === 1);
+  if(parfait){ classe += " crit crit01"; marque = "01 ! " + marque.replace(/^Critique ! /, ""); }
   const affR = (r===100) ? "00" : String(r).padStart(2,"0");
   (secret ? envoyerJetSecret : envoyerJet)({
     nom: nom(),
@@ -2000,6 +2167,19 @@ function lancerTest(cible, secret){
     classe, marque,
     des: { faces:10, vals:[dizR, uniR], pct:true }
   });
+  if(parfait){
+    const bonus = Math.floor(Math.random()*10)+1;
+    setTimeout(()=>{
+      (secret ? envoyerJetSecret : envoyerJet)({
+        nom: nom(),
+        res: `+${bonus}`,
+        detail: "Dé de fortune du 01",
+        classe: "succes",
+        marque: "",
+        des: { faces:10, vals:[bonus], ajout:true }
+      });
+    }, 900);
+  }
 }
 
 function lancerExpr(expr, secret){
@@ -2133,7 +2313,7 @@ function ctxAudio(){
 // de lecture, c'est ce qui donne la sensation de quelque chose qui arrive.
 // L'impact mêle du bruit saturé, du métal et des résonateurs : aucune note
 // juste, aucun rapport entier, rien qui puisse s'entendre comme une mélodie.
-function sonCritique(){
+function sonCritique(parfait){
   const c = ctxAudio(); if(!c) return;
   const t = c.currentTime + 0.01;
   const D = 0.42;                       // durée de la montée avant le coup
@@ -2154,17 +2334,50 @@ function sonCritique(){
     c.__reverbSombre = buf;
   }
 
+  // Sur un 01, la salle s'agrandit : queue trois fois plus longue, décroissance
+  // plus lente, et le coup part se perdre au loin au lieu de retomber.
+  if(parfait && !c.__reverbVaste){
+    const n = Math.floor(sr * 3.6);
+    const buf = c.createBuffer(2, n, sr);
+    for(let k = 0; k < 2; k++){
+      const d = buf.getChannelData(k);
+      let p = 0;
+      for(let i = 0; i < n; i++){
+        const b = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 1.7);
+        p = p * 0.74 + b * 0.26;
+        d[i] = p;
+      }
+    }
+    c.__reverbVaste = buf;
+  }
+
   const maitre = c.createGain();
-  maitre.gain.value = 0.375;
+  maitre.gain.value = parfait ? 0.40 : 0.375;
   const comp = c.createDynamicsCompressor();
   comp.threshold.value = -16; comp.ratio.value = 5;
   comp.attack.value = 0.004; comp.release.value = 0.2;
   maitre.connect(comp); comp.connect(c.destination);
 
   const secG = c.createGain(), mouille = c.createGain();
-  mouille.gain.value = 0.5;
-  const rv = c.createConvolver(); rv.buffer = c.__reverbSombre;
+  mouille.gain.value = parfait ? 0.95 : 0.5;
+  const rv = c.createConvolver();
+  rv.buffer = parfait ? c.__reverbVaste : c.__reverbSombre;
   secG.connect(maitre); mouille.connect(rv); rv.connect(maitre);
+  // Écho amorti : trois renvois audibles, de plus en plus sourds, qui
+  // repartent aussi dans la réverbération pour ne pas rester détachés.
+  if(parfait){
+    const retard = c.createDelay(1.2);
+    retard.delayTime.value = 0.30;
+    const reprise = c.createGain(); reprise.gain.value = 0.44;
+    const amorti = c.createBiquadFilter();
+    amorti.type = "lowpass"; amorti.frequency.value = 1900;
+    const niveau = c.createGain(); niveau.gain.value = 0.55;
+    secG.connect(retard);
+    retard.connect(amorti); amorti.connect(reprise); reprise.connect(retard);
+    amorti.connect(niveau); niveau.connect(maitre);
+    const versSalle = c.createGain(); versSalle.gain.value = 0.5;
+    amorti.connect(versSalle); versSalle.connect(mouille);
+  }
   const br = (n, envoi)=>{
     n.connect(secG);
     if(envoi){ const g = c.createGain(); g.gain.value = envoi; n.connect(g); g.connect(mouille); }
@@ -2363,7 +2576,11 @@ function sonMaladresse(){
 let vigTimer = null;
 // Accessible depuis la console pour régler le volume et vérifier le rendu :
 // testEffet("crit") ou testEffet("fumble").
-window.testEffet = function(quoi){ effetJet(quoi === "fumble" ? "echec fumble" : "succes crit"); };
+window.testEffet = function(quoi){
+  if(quoi === "fumble") return effetJet("echec fumble");
+  if(quoi === "01" || quoi === "crit01") return effetJet("succes crit crit01");
+  return effetJet("succes crit");
+};
 
 function effetJet(classe){
   const v = $("#vignette"); if(!v) return;
@@ -2372,13 +2589,16 @@ function effetJet(classe){
   const rate = mots.indexOf(" fumble ") >= 0;
   if(!crit && !rate) return;
 
+  const parfait = mots.indexOf(" crit01 ") >= 0;
+
   clearTimeout(vigTimer);
   v.className = "vignette";
   void v.offsetWidth;                      // relance l'animation même en rafale
-  v.classList.add(crit ? "crit" : "fumble");
-  vigTimer = setTimeout(()=>{ v.className = "vignette"; }, crit ? 2100 : 2500);
+  v.classList.add(parfait ? "crit01" : (crit ? "crit" : "fumble"));
+  vigTimer = setTimeout(()=>{ v.className = "vignette"; },
+                        parfait ? 3100 : (crit ? 2100 : 2500));
 
-  try{ crit ? sonCritique() : sonMaladresse(); }catch(e){}
+  try{ crit ? sonCritique(parfait) : sonMaladresse(); }catch(e){}
 }
 
 function afficherJet(j){
@@ -2421,6 +2641,7 @@ if(refJets){
 let boxU = null, boxD = null, box3dPret = false;
 const TEINTE_DIZAINE = { background:"#14110d", foreground:"#e6dcc3", texture:"none", material:"plastic" };
 const TEINTE_UNITE   = { background:"#efe6d2", foreground:"#1a1510", texture:"none", material:"plastic" };
+const TEINTE_FORTUNE = { background:"#c9a25a", foreground:"#241a08", texture:"none", material:"metal" };
 
 function couleurDe(n){                                   // une teinte stable par lanceur
   let h = 0; for(const c of (n||"Aventurier")) h = (h*31 + c.charCodeAt(0)) % 360;
@@ -2473,6 +2694,17 @@ async function initDes3D(){
 }
 function lancerDes3D(des, n){
   if(!box3dPret || !boxU || !des || !des.vals || !des.vals.length) return;
+  // des.ajout : le dé rejoint ceux qui sont déjà sur la table au lieu de les
+  // balayer. C'est le cas du dé de fortune, qui doit tomber à côté du 01
+  // qui l'a fait naître.
+  if(des.ajout){
+    try{
+      if(boxU.updateConfig) boxU.updateConfig({ theme_customColorset: TEINTE_FORTUNE });
+      const notation = des.vals.length + "d" + des.faces + "@" + des.vals.join(",");
+      (boxU.add ? boxU.add(notation) : boxU.roll(notation));
+    }catch(e){ /* silencieux : le journal fait foi */ }
+    return;
+  }
   viderTableLocal();                                  // les dés du jet précédent disparaissent
   try{
     if(des.pct){                                        // test : dizaine noire, unité claire
@@ -4048,190 +4280,224 @@ $("#amb-activer").addEventListener("click", ()=>{
   }
 });
 </script>
-
-
 <script>
-/* ---- Jauge jour / nuit ------------------------------------------
-   Plaque de laiton patiné, douze creux de cire, un soleil et une lune
-   gravés aux extrémités. Le MJ clique un creux, la table entière voit
-   l'heure changer. */
+
+/* ---- Cadran jour / nuit ----------------------------------------
+   Vingt-quatre crans sur un arc. L'aiguille pivote de -90 (minuit du
+   matin, côté soleil levant) à +90 (minuit, côté lune). Le MJ clique
+   un cran, tout le monde voit bouger. */
 (function(){
-  var N = 12;
-  var W = 860, H = 150;                 /* repère de dessin */
-  var X0 = 214, X1 = 646;               /* premier et dernier creux */
-  var YC = 78;                          /* axe des creux */
-  var R  = 15.5, RC = 20;               /* rayon d'un creux, du grand central */
-  var SOL = {x: 96,  y: 74};            /* centre du soleil */
-  var LUN = {x: 764, y: 74};            /* centre de la lune */
-  var cran = 5, ecrire = null;
+  var HEURES = 24;
+  var ROM = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+  var heure = 12;                       /* midi par défaut */
+  var refH = null, pretH = false;
 
-  /* le dégradé de cire, de la braise au violet de nuit */
-  var CIRE = ['#8f2f10','#b4551a','#c9832a','#d9ab52','#e6cf8e','#efe4c4',
-              '#cfe0ea','#a8c2dd','#7f9ac8','#5b6bab','#4a4a8e','#2f2a58'];
+  function angle(h){ return -90 + (h / (HEURES - 1)) * 180; }
+  /* l'arc pend : l'aiguille pointe vers le bas et balaie de gauche à droite */
 
-  function cx(i){ return X0 + (X1 - X0) * i / (N - 1); }
-  function part(i){ return i / (N - 1); }
-
-  function ns(t){ return document.createElementNS('http://www.w3.org/2000/svg', t); }
-  function at(e, o){ for(var k in o) e.setAttribute(k, o[k]); return e; }
-
-  /* ---- Le soleil, tracé rayon par rayon ---------------------- */
-  function soleil(g){
-    var d = '';
-    for(var k = 0; k < 24; k++){
-      var a = k * Math.PI / 12;
-      var lg = (k % 2 ? 30 : 40);
-      var la = 0.085;
-      d += 'M ' + (SOL.x + 20 * Math.cos(a - la)) + ' ' + (SOL.y + 20 * Math.sin(a - la)) +
-           ' L ' + (SOL.x + lg * Math.cos(a)) + ' ' + (SOL.y + lg * Math.sin(a)) +
-           ' L ' + (SOL.x + 20 * Math.cos(a + la)) + ' ' + (SOL.y + 20 * Math.sin(a + la)) + ' Z ';
-    }
-    g.appendChild(at(ns('path'), {d: d, fill: 'url(#jRay)', stroke: '#4a3a1c', 'stroke-width': .6}));
-    g.appendChild(at(ns('circle'), {cx: SOL.x, cy: SOL.y, r: 21,
-      fill: 'url(#jSol)', stroke: '#4a3a1c', 'stroke-width': 1.2}));
-    /* le visage, sévère */
-    var f = ns('g'); at(f, {stroke: '#4a3a1c', 'stroke-width': 1.5, fill: 'none',
-      'stroke-linecap': 'round'});
-    f.appendChild(at(ns('path'), {d: 'M' + (SOL.x-12) + ' ' + (SOL.y-7) + ' q5 -4 10 -1'}));
-    f.appendChild(at(ns('path'), {d: 'M' + (SOL.x+2)  + ' ' + (SOL.y-8) + ' q5 -3 10 1'}));
-    f.appendChild(at(ns('circle'), {cx: SOL.x-7, cy: SOL.y-1, r: 1.9, fill: '#4a3a1c', stroke: 'none'}));
-    f.appendChild(at(ns('circle'), {cx: SOL.x+7, cy: SOL.y-1, r: 1.9, fill: '#4a3a1c', stroke: 'none'}));
-    f.appendChild(at(ns('path'), {d: 'M' + (SOL.x-6) + ' ' + (SOL.y+10) + ' q6 -3 12 0'}));
-    g.appendChild(f);
-  }
-
-  /* ---- La lune, croissant ouvert vers la barre --------------- */
-  function lune(g){
-    var d = 'M ' + (LUN.x + 6) + ' ' + (LUN.y - 34) +
-            ' A 34 34 0 1 0 ' + (LUN.x + 6) + ' ' + (LUN.y + 34) +
-            ' A 26 26 0 1 1 ' + (LUN.x + 6) + ' ' + (LUN.y - 34) + ' Z';
-    g.appendChild(at(ns('path'), {d: d, fill: 'url(#jLun)',
-      stroke: '#3d4468', 'stroke-width': 1.2}));
-    var f = ns('g'); at(f, {stroke: '#3d4468', 'stroke-width': 1.5, fill: 'none',
-      'stroke-linecap': 'round'});
-    f.appendChild(at(ns('path'), {d: 'M' + (LUN.x-16) + ' ' + (LUN.y-11) + ' q6 -4 11 -1'}));
-    f.appendChild(at(ns('circle'), {cx: LUN.x-9, cy: LUN.y-4, r: 2, fill: '#3d4468', stroke: 'none'}));
-    f.appendChild(at(ns('path'), {d: 'M' + (LUN.x-14) + ' ' + (LUN.y+4) + ' q7 3 4 9'}));
-    f.appendChild(at(ns('path'), {d: 'M' + (LUN.x-17) + ' ' + (LUN.y+16) + ' q7 -2 10 -5'}));
-    g.appendChild(f);
-    /* quelques étoiles gravées */
-    [[-26,-20],[-30,4],[-22,22],[-12,-26]].forEach(function(p){
-      var x = LUN.x + p[0], y = LUN.y + p[1];
-      g.appendChild(at(ns('path'), {fill: '#3d4468', d:
-        'M' + x + ' ' + (y-3.4) + ' L' + (x+1) + ' ' + (y-1) + ' L' + (x+3.4) + ' ' + y +
-        ' L' + (x+1) + ' ' + (y+1) + ' L' + x + ' ' + (y+3.4) + ' L' + (x-1) + ' ' + (y+1) +
-        ' L' + (x-3.4) + ' ' + y + ' L' + (x-1) + ' ' + (y-1) + ' Z'}));
-    });
-  }
-
-  function construire(){
-    var box = document.getElementById('jauge');
-    if(!box) return;
-    box.innerHTML = '';
-    var svg = at(ns('svg'), {viewBox: '0 0 ' + W + ' ' + H});
-
-    /* ---- dégradés et filtres ---- */
-    var defs = ns('defs');
-    function lin(id, a, b, vert){
-      var g = at(ns('linearGradient'), {id: id, x1: 0, y1: 0, x2: vert ? 0 : 1, y2: vert ? 1 : 0});
-      g.appendChild(at(ns('stop'), {offset: '0%',   'stop-color': a}));
-      g.appendChild(at(ns('stop'), {offset: '100%', 'stop-color': b}));
-      defs.appendChild(g);
-    }
-    lin('jPlaq', '#3a2f20', '#241d15', true);
-    lin('jBiseau', '#c9a25a', '#8a6d2f', true);
-    lin('jSol', '#f0c25a', '#a8641c', true);
-    lin('jRay', '#e0a63e', '#8a4d15', true);
-    lin('jLun', '#e9edf6', '#8f9bc4', true);
-    var f = at(ns('filter'), {id: 'jFlou', x: '-70%', y: '-70%', width: '240%', height: '240%'});
-    f.appendChild(at(ns('feGaussianBlur'), {stdDeviation: 5}));
-    defs.appendChild(f);
-    svg.appendChild(defs);
-
-    /* ---- la plaque ---- */
-    var pl = ns('g');
-    pl.appendChild(at(ns('rect'), {x: 176, y: 44, width: 508, height: 68, rx: 7,
-      fill: 'url(#jPlaq)', stroke: '#3a2f20', 'stroke-width': 2}));
-    pl.appendChild(at(ns('rect'), {x: 182, y: 50, width: 496, height: 56, rx: 4,
-      fill: 'none', stroke: '#8a6d2f', 'stroke-width': 1, 'stroke-opacity': .55}));
-    /* traverses rivetées aux deux bouts */
-    [188, 660].forEach(function(x){
-      pl.appendChild(at(ns('rect'), {x: x, y: 40, width: 14, height: 76, rx: 3,
-        fill: 'url(#jBiseau)', 'fill-opacity': .35, stroke: '#3a2f20', 'stroke-width': 1.4}));
-      [50, 78, 106].forEach(function(y){
-        pl.appendChild(at(ns('circle'), {cx: x + 7, cy: y, r: 2.4,
-          fill: '#c9a25a', 'fill-opacity': .8}));
-      });
-    });
-    /* graduation gravée */
-    for(var t = 0; t <= 44; t++){
-      var xx = 206 + t * 10;
-      pl.appendChild(at(ns('line'), {x1: xx, y1: 50, x2: xx, y2: (t % 4 ? 56 : 60),
-        stroke: '#8a6d2f', 'stroke-width': 1, 'stroke-opacity': .5}));
-    }
-    svg.appendChild(pl);
-
-    /* ---- les deux astres ---- */
-    var gs = at(ns('g'), {id: 'jauge-soleil'}); soleil(gs);
-    var gl = at(ns('g'), {id: 'jauge-lune'});   lune(gl);
-    var hs = at(ns('circle'), {id: 'jauge-hs', cx: SOL.x, cy: SOL.y, r: 34,
-      fill: 'url(#jSol)', filter: 'url(#jFlou)', opacity: 0, 'pointer-events': 'none'});
-    var hl = at(ns('circle'), {id: 'jauge-hl', cx: LUN.x, cy: LUN.y, r: 30,
-      fill: 'url(#jLun)', filter: 'url(#jFlou)', opacity: 0, 'pointer-events': 'none'});
-    svg.appendChild(hs); svg.appendChild(gs);
-    svg.appendChild(hl); svg.appendChild(gl);
-
-    /* ---- les douze creux ---- */
-    for(var i = 0; i < N; i++){
-      var g = at(ns('g'), {class: 'jauge-creux'}); g.dataset.i = i;
-      var r = (i === 5 ? RC : R);
-      g.appendChild(at(ns('circle'), {cx: cx(i), cy: YC, r: r + 4.5,
-        fill: '#1d1812', stroke: '#8a6d2f', 'stroke-width': 1.6}));
-      g.appendChild(at(ns('circle'), {cx: cx(i), cy: YC, r: r,
-        fill: CIRE[i], stroke: '#14110d', 'stroke-width': 1, 'stroke-opacity': .7}));
-      g.appendChild(at(ns('circle'), {class: 'jauge-halo-c', cx: cx(i), cy: YC, r: r + 8,
-        fill: CIRE[i], filter: 'url(#jFlou)', opacity: 0, 'pointer-events': 'none'}));
-      g.appendChild(at(ns('circle'), {class: 'jauge-actif', cx: cx(i), cy: YC, r: r + 2,
-        fill: 'none', stroke: '#f6ecd0', 'stroke-width': 2.4, opacity: 0,
-        'pointer-events': 'none'}));
-      g.appendChild(at(ns('circle'), {cx: cx(i), cy: YC, r: r + 9,
-        fill: 'transparent'}));
-      (function(k){
-        g.addEventListener('click', function(){
-          if(!document.body.classList.contains('jauge-mj')) return;
-          poser(k, true);
-        });
-      })(i);
-      svg.appendChild(g);
-    }
-    box.appendChild(svg);
+  /* L'arc se lit de gauche à droite : douze crans de jour côté soleil, douze
+     crans de nuit côté lune. La bascule est douce au milieu et les quatre
+     crans de chaque extrémité sont les plus tranchés. */
+  function jour(h){
+    var t = h / (HEURES - 1);                       /* 0 à gauche, 1 à droite */
+    return (1 + Math.cos(Math.PI * t)) / 2;         /* 1 plein jour, 0 pleine nuit */
   }
 
   function peindre(){
-    var t = part(cran), j = 1 - t, n = t;
-    var hs = document.getElementById('jauge-hs');
-    var hl = document.getElementById('jauge-hl');
-    var gs = document.getElementById('jauge-soleil');
-    var gl = document.getElementById('jauge-lune');
-    if(hs){ hs.setAttribute('opacity', (0.95 * Math.pow(j, 1.3)).toFixed(3));
-            hs.setAttribute('r', (26 + 26 * j).toFixed(1)); }
-    if(hl){ hl.setAttribute('opacity', (0.75 * Math.pow(n, 1.4)).toFixed(3));
-            hl.setAttribute('r', (24 + 18 * n).toFixed(1)); }
-    if(gs) gs.setAttribute('opacity', (0.34 + 0.66 * j).toFixed(3));
-    if(gl) gl.setAttribute('opacity', (0.34 + 0.66 * n).toFixed(3));
-    document.querySelectorAll('.jauge-creux').forEach(function(e){
+    var j = jour(heure), n = 1 - j;
+    var sol = document.getElementById('cadran-soleil');
+    var lun = document.getElementById('cadran-lune');
+    var aig = document.getElementById('cadran-aiguille');
+    var lab = document.getElementById('cadran-heure');
+    if(sol){
+      sol.style.opacity = (0.18 + 0.82 * j).toFixed(3);
+      sol.style.filter  = 'sepia(.55) saturate(' + (0.5 + 2.4 * j).toFixed(2) +
+                          ') hue-rotate(-18deg) brightness(' + (0.42 + 0.72 * j).toFixed(2) + ')';
+    }
+    if(lun){
+      lun.style.opacity = (0.18 + 0.82 * n).toFixed(3);
+      lun.style.filter  = 'grayscale(.5) sepia(.35) hue-rotate(178deg) saturate(' +
+                          (0.4 + 2.1 * n).toFixed(2) + ') brightness(' +
+                          (0.42 + 0.78 * n).toFixed(2) + ')';
+    }
+    if(aig) aig.style.transform = 'translateX(-50%) rotate(' + (180 - angle(heure)).toFixed(2) + 'deg)';
+    if(lab) lab.textContent = ROM[heure % 12] + (heure < 12 ? ' du jour' : ' de la nuit');
+    /* les crans franchis s'allument */
+    document.querySelectorAll('.cadran-cran').forEach(function(g){
+      var h = parseInt(g.dataset.h, 10);
+      var c = g.querySelector('circle');
+      if(!c) return;
+      var actif = (h === heure);
+      c.setAttribute('fill', actif ? '#c9a13a' : '#3a3226');
+      c.setAttribute('r', actif ? 5 : 3);
+    });
+  }
+
+  function poser(h, diffuser){
+    heure = ((h % HEURES) + HEURES) % HEURES;
+    peindre();
+    if(diffuser && refH){ try{ refH.set(heure); }catch(e){} }
+  }
+
+  function construireArc(){
+    var svg = document.getElementById('cadran-arc');
+    if(!svg) return;
+    var CX = 215, CY = 24, R = 76;
+    var d = 'M ' + (CX - R) + ' ' + CY + ' A ' + R + ' ' + R + ' 0 0 0 ' + (CX + R) + ' ' + CY;
+    var ns = 'http://www.w3.org/2000/svg';
+    svg.innerHTML = '';
+    /* la bande de bronze */
+    var arc = document.createElementNS(ns, 'path');
+    arc.setAttribute('d', d);
+    arc.setAttribute('fill', 'none');
+    arc.setAttribute('stroke', '#3a3226');
+    arc.setAttribute('stroke-width', '10');
+    arc.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(arc);
+    var arc2 = document.createElementNS(ns, 'path');
+    arc2.setAttribute('d', d);
+    arc2.setAttribute('fill', 'none');
+    arc2.setAttribute('stroke', '#8a7442');
+    arc2.setAttribute('stroke-width', '1.2');
+    svg.appendChild(arc2);
+    /* les crans */
+    for(var h = 0; h < HEURES; h++){
+      var a = (90 - angle(h)) * Math.PI / 180;
+      var x = CX + R * Math.cos(a), y = CY + R * Math.sin(a);
+      var g = document.createElementNS(ns, 'g');
+      g.setAttribute('class', 'cadran-cran');
+      g.dataset.h = h;
+      var zone = document.createElementNS(ns, 'circle');
+      zone.setAttribute('cx', x); zone.setAttribute('cy', y);
+      zone.setAttribute('r', 11); zone.setAttribute('fill', 'transparent');
+      var pt = document.createElementNS(ns, 'circle');
+      pt.setAttribute('cx', x); pt.setAttribute('cy', y);
+      pt.setAttribute('r', 3); pt.setAttribute('fill', '#3a3226');
+      /* un cran plus long toutes les six heures */
+      if(h % 6 === 0 || h === 11 || h === 12){
+        var t = document.createElementNS(ns, 'line');
+        t.setAttribute('x1', CX + (R - 10) * Math.cos(a));
+        t.setAttribute('y1', CY + (R - 10) * Math.sin(a));
+        t.setAttribute('x2', CX + (R + 8) * Math.cos(a));
+        t.setAttribute('y2', CY + (R + 8) * Math.sin(a));
+        t.setAttribute('stroke', '#6b5a33'); t.setAttribute('stroke-width', '1.6');
+        g.appendChild(t);
+      }
+      g.appendChild(zone); g.appendChild(pt);
+      (function(hh){
+        g.addEventListener('click', function(){
+          if(!document.body.classList.contains('cadran-mj')) return;
+          poser(hh, true);
+        });
+      })(h);
+      svg.appendChild(g);
+    }
+  }
+
+  /* La Table marque le meneur par la classe « est-mj » sur le corps de page.
+     On la surveille au lieu de deviner. */
+  function droitMJ(){
+    var mj = document.getElementById('mj');
+    var actif = document.body.classList.contains('est-mj') || (mj && mj.checked);
+    document.body.classList.toggle('cadran-mj', !!actif);
+    var c = document.getElementById('cadran');
+    if(c) c.title = actif ? 'Clique un cran pour changer l\'heure'
+                          : 'Heure de la table';
+  }
+
+  function init(){
+    if(!document.getElementById('cadran')) return;
+    construireArc();
+    peindre();
+    droitMJ();
+    var mj = document.getElementById('mj');
+    if(mj) mj.addEventListener('change', droitMJ);
+    /* la classe est-mj peut arriver bien après le chargement */
+    try{ new MutationObserver(droitMJ).observe(document.body,
+         {attributes:true, attributeFilter:['class']}); }catch(e){}
+    setInterval(droitMJ, 1500);
+    /* partage en ligne */
+    try{
+      if(typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length){
+        refH = firebase.database().ref('table/heure');
+        refH.on('value', function(snap){
+          var v = snap.val();
+          pretH = true;
+          if(typeof v === 'number') poser(v, false);
+        });
+      }
+    }catch(e){ console.warn('Cadran hors ligne :', e); }
+  }
+  if(document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', init);
+  else init();
+  window.cadranHeure = function(h){ poser(h, true); };
+})();
+
+</script>
+<script>
+/* ---- Jauge jour / nuit ------------------------------------------
+   Douze pastilles de cire, du soleil à la lune. Position relevée dans
+   l'image, en proportion de sa largeur. Seul le MJ change l'heure. */
+(function(){
+  /* centres des douze pastilles, mesurés un par un sur l'image */
+  var X = [0.1919,0.2504,0.3089,0.3674,0.4259,0.5009,0.5759,0.6344,0.6929,0.7514,0.8099,0.8684];
+  var Y = 0.5000, D = 0.0500;
+  var N = X.length;
+  var cran = 5, refH = null;
+
+  function peindre(){
+    var t = N === 1 ? 0.5 : cran / (N - 1);   /* 0 plein jour, 1 pleine nuit */
+    var j = 1 - t, n = t;
+    var so = document.getElementById('jauge-l-soleil');
+    var lu = document.getElementById('jauge-l-lune');
+    if(so){
+      so.style.opacity = (0.02 + 0.98 * Math.pow(j, 1.5)).toFixed(3);
+      so.style.filter = 'blur(' + (3 + 9 * j).toFixed(1) + 'px) brightness(' +
+        (1.2 + 1.5 * j).toFixed(2) + ') saturate(' + (1.1 + 1.4 * j).toFixed(2) + ')';
+    }
+    if(lu){
+      lu.style.opacity = (0.02 + 0.72 * Math.pow(n, 1.7)).toFixed(3);
+      lu.style.filter = 'blur(' + (4 + 9 * n).toFixed(1) + 'px) brightness(' +
+        (1.0 + 0.55 * n).toFixed(2) + ') saturate(' + (1.0 + 0.7 * n).toFixed(2) + ')';
+    }
+    var p = document.getElementById('jauge-piece');
+    if(p) p.style.filter =
+      'drop-shadow(0 2px 6px rgba(0,0,0,.85)) brightness(' + (0.86 + 0.30 * j).toFixed(2) +
+      ') saturate(' + (0.80 + 0.45 * j).toFixed(2) + ')';
+    document.querySelectorAll('.jauge-bouton').forEach(function(e){
       var i = parseInt(e.dataset.i, 10);
-      var a = e.querySelector('.jauge-actif');
-      var h = e.querySelector('.jauge-halo-c');
-      if(a) a.setAttribute('opacity', i === cran ? 1 : 0);
-      if(h) h.setAttribute('opacity', i === cran ? 0.85 : 0);
+      e.classList.toggle('actif', i === cran);
     });
   }
 
   function poser(i, diffuser){
     cran = Math.max(0, Math.min(N - 1, i));
     peindre();
-    if(diffuser && ecrire){ try{ ecrire(cran); }catch(e){} }
+    if(diffuser && refH){ try{ refH.set(cran); }catch(e){} }
+  }
+
+  function construire(){
+    var box = document.getElementById('jauge-boutons');
+    if(!box) return;
+    box.innerHTML = '';
+    for(var i = 0; i < N; i++){
+      var d = document.createElement('div');
+      d.className = 'jauge-bouton';
+      d.dataset.i = i;
+      d.style.left = (X[i] * 100).toFixed(3) + '%';
+      d.style.top  = (Y * 100).toFixed(3) + '%';
+      d.style.width = (D * 100).toFixed(3) + '%';
+      /* la pièce est bien plus large que haute : on ramène le cercle */
+      d.style.height = (D * 1600 / 428 * 100).toFixed(3) + '%';
+      (function(k){
+        d.addEventListener('click', function(){
+          if(!document.body.classList.contains('jauge-mj')) return;
+          poser(k, true);
+        });
+      })(i);
+      box.appendChild(d);
+    }
   }
 
   function droitMJ(){
@@ -4239,25 +4505,12 @@ $("#amb-activer").addEventListener("click", ()=>{
     var actif = document.body.classList.contains('est-mj') || (mj && mj.checked);
     document.body.classList.toggle('jauge-mj', !!actif);
     var j = document.getElementById('jauge');
-    if(j) j.title = actif ? 'Clique un creux pour changer l\'heure' : 'Heure de la table';
-  }
-
-  /* sur écran étroit, la jauge se pose sous la barre au lieu de la recouvrir */
-  function placer(){
-    var t = document.querySelector('header .titre');
-    var h = document.querySelector('header');
-    if(!t || !h) return;
-    if(window.innerWidth <= 760)
-      t.style.setProperty('top', (h.getBoundingClientRect().height + 4) + 'px', 'important');
-    else t.style.removeProperty('top');
+    if(j) j.title = actif ? 'Clique une pastille pour changer l\'heure' : 'Heure de la table';
   }
 
   function init(){
     if(!document.getElementById('jauge')) return;
     construire();
-    placer();
-    window.addEventListener('resize', placer);
-    setTimeout(placer, 500);
     peindre();
     droitMJ();
     var mj = document.getElementById('mj');
@@ -4265,18 +4518,15 @@ $("#amb-activer").addEventListener("click", ()=>{
     try{ new MutationObserver(droitMJ).observe(document.body,
          {attributes:true, attributeFilter:['class']}); }catch(e){}
     setInterval(droitMJ, 1500);
-    /* le module de la table pose le pont, parfois après nous */
-    var essais = 0;
-    (function brancher(){
-      if(window.jaugeSync){
-        try{
-          window.jaugeSync.lire(function(v){ if(typeof v === 'number') poser(v, false); });
-          ecrire = window.jaugeSync.ecrire;
-        }catch(e){ console.warn('Jauge hors ligne :', e); }
-        return;
+    try{
+      if(typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length){
+        refH = firebase.database().ref('table/heure');
+        refH.on('value', function(snap){
+          var v = snap.val();
+          if(typeof v === 'number') poser(v, false);
+        });
       }
-      if(++essais < 40) setTimeout(brancher, 250);
-    })();
+    }catch(e){ console.warn('Jauge hors ligne :', e); }
   }
   if(document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', init);
