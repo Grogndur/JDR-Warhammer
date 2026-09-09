@@ -754,9 +754,29 @@ header .titre{position:absolute !important;left:50% !important;right:auto !impor
 /* ---- Jauge jour / nuit ------------------------------------------
    Les douze boutons sont posés sur les pastilles de cire, dont la
    position a été relevée dans l'image. */
-header .titre{position:absolute !important;left:50% !important;right:auto !important;
-  top:4px !important;transform:translateX(-50%) !important;margin:0 !important;
-  display:flex !important;align-items:flex-start;gap:20px;pointer-events:none;}
+header .titre{position:static !important;left:auto !important;right:auto !important;
+  top:auto !important;transform:none !important;margin:0 0 0 auto !important;
+  display:flex !important;align-items:center;pointer-events:none;}
+
+/* ---- Bandeau du monde : l'heure et le temps, tout en largeur ----------
+   Les deux blocs tiennent sur une seule ligne et n'ajoutent pas un pixel
+   de hauteur à la barre : ils s'étalent vers la droite au lieu de
+   s'empiler. */
+.monde{display:flex;align-items:center;gap:30px;flex-wrap:wrap;
+  pointer-events:auto;user-select:none;}
+.cycle{display:flex;align-items:center;gap:9px;}
+.cycle-svg{display:block;height:30px;width:268px;overflow:visible;}
+.monde-mot{font-family:"Cinzel",serif;font-size:12px;font-weight:600;letter-spacing:.2em;
+  text-transform:uppercase;text-shadow:0 0 5px #000,0 0 12px rgba(0,0,0,.85);
+  white-space:nowrap;min-width:88px;transition:color .5s ease;}
+.cycle-cran{cursor:default;}
+body.jauge-mj .cycle-cran{cursor:pointer;}
+body.jauge-mj .cycle-cran:hover circle.pt{r:5.4;}
+@media(max-width:1100px){
+  .monde{gap:16px;}
+  .cycle-svg{width:212px;height:26px;}
+  .monde-mot{font-size:11px;letter-spacing:.12em;min-width:72px;}
+}
 .jauge{position:relative;display:block;height:96px;width:calc(96px * 1600 / 428);
   max-width:56vw;pointer-events:auto;user-select:none;}
 .jauge-piece{display:block;width:100%;height:100%;object-fit:contain;
@@ -806,25 +826,21 @@ body.jauge-mj .jauge-bouton:hover{background:rgba(255,244,214,.20);
 /* ---- Météo de la table -------------------------------------------
    Même principe que la jauge : une seule icône allumée, les autres en
    veilleuse, et un mot dessous. Le MJ seul peut changer le temps. */
-.meteo{display:flex;flex-direction:column;align-items:center;gap:3px;margin-top:4px;
-  pointer-events:auto;user-select:none;}
-.meteo-rangee{display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:center;
-  max-width:166px;}
-.meteo-b{width:34px;height:34px;padding:0;border:0;background:transparent;border-radius:8px;
+.meteo{display:flex;align-items:center;gap:9px;pointer-events:auto;user-select:none;}
+.meteo-rangee{display:flex;align-items:center;gap:3px;}
+.meteo-b{width:28px;height:28px;padding:0;border:0;background:transparent;border-radius:7px;
   display:flex;align-items:center;justify-content:center;opacity:.26;cursor:default;
   transition:opacity .35s ease, filter .35s ease, background .2s ease;}
-.meteo-b svg{width:26px;height:26px;display:block;}
+.meteo-b svg{width:22px;height:22px;display:block;}
 body.jauge-mj .meteo-b{cursor:pointer;}
 body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
 .meteo-b.actif{opacity:1;filter:drop-shadow(0 0 7px currentColor);}
 .meteo-mot{font-family:"Cinzel",serif;font-size:13px;font-weight:600;letter-spacing:.24em;
   text-transform:uppercase;text-shadow:0 0 5px #000,0 0 12px rgba(0,0,0,.85);
   pointer-events:none;transition:color .5s ease;}
-@media(max-width:760px){
-  .meteo-rangee{max-width:138px;gap:4px;}
-  .meteo-b{width:28px;height:28px;}
-  .meteo-b svg{width:22px;height:22px;}
-  .meteo-mot{font-size:11px;letter-spacing:.15em;}
+@media(max-width:1100px){
+  .meteo-b{width:24px;height:24px;}
+  .meteo-b svg{width:19px;height:19px;}
 }
   /* ---- Jetons posés sur la carte ---------------------------------- */
   #g-jetons{pointer-events:none}
@@ -929,16 +945,16 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
       </div>
     </div>
     <div class="titre">
-      <div class="jauge" id="jauge" title="Heure de la table">
-        <img class="jauge-piece" id="jauge-piece" src="gallerie/Jauge.png" alt="" />
-        <div class="jauge-halo jauge-h-soleil" id="jauge-l-soleil"></div>
-        <div class="jauge-halo jauge-h-lune" id="jauge-l-lune"></div>
-        <div class="jauge-boutons" id="jauge-boutons"></div>
-        <span class="jauge-phase" id="jauge-phase"></span>
-      </div>
-      <div class="meteo" id="meteo" title="Temps qu'il fait">
-        <div class="meteo-rangee" id="meteo-rangee"></div>
-        <span class="meteo-mot" id="meteo-mot"></span>
+      <div class="monde">
+        <div class="cycle" id="cycle" title="Heure de la table">
+          <svg class="cycle-svg" id="cycle-svg" viewBox="0 0 268 30"
+               xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
+          <span class="monde-mot" id="cycle-mot"></span>
+        </div>
+        <div class="meteo" id="meteo" title="Temps qu'il fait">
+          <div class="meteo-rangee" id="meteo-rangee"></div>
+          <span class="monde-mot" id="meteo-mot"></span>
+        </div>
       </div>
     </div>
       </div>
@@ -4512,60 +4528,123 @@ $("#amb-activer").addEventListener("click", ()=>{
 
 </script>
 <script>
-/* ---- Jauge jour / nuit ------------------------------------------
-   Douze pastilles de cire, du soleil à la lune. Position relevée dans
-   l'image, en proportion de sa largeur. Seul le MJ change l'heure. */
+/* ---- Cycle jour / nuit -------------------------------------------
+   Douze moments, du soleil à la lune, dessinés ici même : plus aucune
+   image à charger. Chaque cran porte la couleur de son moment, l'astre
+   correspondant s'allume, et le MJ seul déplace l'heure de la table. */
 (function(){
-  /* centres des douze pastilles, mesurés un par un sur l'image */
-  var X = [0.1919,0.2504,0.3089,0.3674,0.4259,0.5009,0.5759,0.6344,0.6929,0.7514,0.8099,0.8684];
-  var Y = 0.5000, D = 0.0500;
-  var N = X.length;
+  var N = 12;
   var cran = 5, refH = null;
+  var NS = 'http://www.w3.org/2000/svg';
 
-  /* Quatre moments sur les douze pastilles : l'aube ouvre la course côté
-     soleil, le crépuscule tient la bascule du milieu, la nuit occupe la fin. */
   function phase(i){
-    if(i === 0)            return 'aube';
-    if(i <= 4)             return 'jour';
-    if(i <= 6)             return 'crepuscule';
+    if(i === 0)  return 'aube';
+    if(i <= 4)   return 'jour';
+    if(i <= 6)   return 'crepuscule';
     return 'nuit';
   }
   var MOTS = {
-    aube:       { mot:'Aube',       coul:'#d5799f' },
-    jour:       { mot:'Jour',       coul:'#e2ba4e' },
-    crepuscule: { mot:'Crépuscule', coul:'#e28137' },
-    nuit:       { mot:'Nuit',       coul:'#71a1cf' }
+    aube:       { mot:'Aube',       coul:'#d5799f', off:'#6d3b4e' },
+    jour:       { mot:'Jour',       coul:'#e2ba4e', off:'#6a5a2b' },
+    crepuscule: { mot:'Crépuscule', coul:'#e28137', off:'#7c4620' },
+    nuit:       { mot:'Nuit',       coul:'#71a1cf', off:'#2e4358' }
   };
 
+  /* Géométrie : le soleil à gauche, la lune à droite, les douze crans
+     alignés entre les deux sur un rail de bronze. */
+  var X0 = 40, X1 = 228, CY = 15;
+  function px(i){ return X0 + (X1 - X0) * i / (N - 1); }
+
+  function el(nom, attrs){
+    var e = document.createElementNS(NS, nom);
+    for(var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  function construire(){
+    var svg = document.getElementById('cycle-svg');
+    if(!svg) return;
+    svg.innerHTML = '';
+
+    /* dégradé du rail : doré du côté du jour, braise au milieu, bleu la nuit */
+    var defs = el('defs', {});
+    var lg = el('linearGradient', { id:'cycle-rail', x1:'0', y1:'0', x2:'1', y2:'0' });
+    [['0%','#8a6f2c'],['38%','#a07b34'],['52%','#8a4a22'],['66%','#3c5670'],['100%','#2b3d52']]
+      .forEach(function(p){ lg.appendChild(el('stop', { offset:p[0], 'stop-color':p[1] })); });
+    defs.appendChild(lg);
+    svg.appendChild(defs);
+
+    svg.appendChild(el('line', { x1:X0, y1:CY, x2:X1, y2:CY, stroke:'url(#cycle-rail)',
+                                 'stroke-width':'3.2', 'stroke-linecap':'round', opacity:'.85' }));
+
+    /* le soleil, à gauche */
+    var so = el('g', { id:'cycle-soleil' });
+    so.appendChild(el('circle', { cx:16, cy:CY, r:5.2, fill:'#e2ba4e' }));
+    var ray = el('path', { d:'M16 4.4v2.6M16 23v2.6M4.4 15h2.6M25 15h2.6' +
+                              'M7.8 6.8l1.9 1.9M22.3 21.3l1.9 1.9M24.2 6.8l-1.9 1.9M9.7 21.3l-1.9 1.9',
+                            stroke:'#e2ba4e', 'stroke-width':'1.6', 'stroke-linecap':'round', fill:'none' });
+    so.appendChild(ray);
+    svg.appendChild(so);
+
+    /* la lune, à droite */
+    var lu = el('g', { id:'cycle-lune' });
+    lu.appendChild(el('path', { d:'M256 8.4a7.2 7.2 0 1 0 6.2 11.4A8 8 0 0 1 256 8.4z',
+                                fill:'#9fc4e6' }));
+    svg.appendChild(lu);
+
+    /* les douze crans */
+    for(var i = 0; i < N; i++){
+      var g = el('g', { 'class':'cycle-cran' });
+      g.dataset.i = i;
+      g.appendChild(el('circle', { cx:px(i), cy:CY, r:9, fill:'transparent' }));
+      g.appendChild(el('circle', { 'class':'halo', cx:px(i), cy:CY, r:0, fill:'none' }));
+      g.appendChild(el('circle', { 'class':'pt', cx:px(i), cy:CY, r:3.4,
+                                   fill:MOTS[phase(i)].off, stroke:'#0d0a06', 'stroke-width':'1' }));
+      (function(k){
+        g.addEventListener('click', function(){
+          if(!document.body.classList.contains('jauge-mj')) return;
+          poser(k, true);
+        });
+      })(i);
+      svg.appendChild(g);
+    }
+  }
+
   function peindre(){
-    var t = N === 1 ? 0.5 : cran / (N - 1);   /* 0 plein jour, 1 pleine nuit */
+    var t = cran / (N - 1);            /* 0 plein jour, 1 pleine nuit */
     var j = 1 - t, n = t;
-    var so = document.getElementById('jauge-l-soleil');
-    var lu = document.getElementById('jauge-l-lune');
+    var ph = MOTS[phase(cran)];
+
+    var so = document.getElementById('cycle-soleil');
+    var lu = document.getElementById('cycle-lune');
     if(so){
-      so.style.opacity = (0.02 + 0.98 * Math.pow(j, 1.5)).toFixed(3);
-      so.style.filter = 'blur(' + (3 + 9 * j).toFixed(1) + 'px) brightness(' +
-        (1.2 + 1.5 * j).toFixed(2) + ') saturate(' + (1.1 + 1.4 * j).toFixed(2) + ')';
+      so.setAttribute('opacity', (0.16 + 0.84 * Math.pow(j, 1.3)).toFixed(3));
+      so.style.filter = 'drop-shadow(0 0 ' + (1 + 6 * j).toFixed(1) + 'px rgba(226,186,78,.85))';
     }
     if(lu){
-      lu.style.opacity = (0.02 + 0.72 * Math.pow(n, 1.7)).toFixed(3);
-      lu.style.filter = 'blur(' + (4 + 9 * n).toFixed(1) + 'px) brightness(' +
-        (1.0 + 0.55 * n).toFixed(2) + ') saturate(' + (1.0 + 0.7 * n).toFixed(2) + ')';
+      lu.setAttribute('opacity', (0.16 + 0.84 * Math.pow(n, 1.3)).toFixed(3));
+      lu.style.filter = 'drop-shadow(0 0 ' + (1 + 5 * n).toFixed(1) + 'px rgba(159,196,230,.75))';
     }
-    var p = document.getElementById('jauge-piece');
-    if(p) p.style.filter =
-      'drop-shadow(0 2px 6px rgba(0,0,0,.85)) brightness(' + (0.86 + 0.30 * j).toFixed(2) +
-      ') saturate(' + (0.80 + 0.45 * j).toFixed(2) + ')';
-    document.querySelectorAll('.jauge-bouton').forEach(function(e){
-      var i = parseInt(e.dataset.i, 10);
-      e.classList.toggle('actif', i === cran);
+
+    document.querySelectorAll('.cycle-cran').forEach(function(g){
+      var i = parseInt(g.dataset.i, 10);
+      var p = MOTS[phase(i)];
+      var actif = (i === cran);
+      var pt = g.querySelector('circle.pt');
+      var halo = g.querySelector('circle.halo');
+      if(pt){
+        pt.setAttribute('fill', actif ? p.coul : p.off);
+        pt.setAttribute('r', actif ? 5 : 3.4);
+      }
+      if(halo){
+        halo.setAttribute('r', actif ? 8 : 0);
+        halo.setAttribute('fill', actif ? p.coul : 'none');
+        halo.setAttribute('opacity', actif ? '.22' : '0');
+      }
     });
-    var m = document.getElementById('jauge-phase');
-    if(m){
-      var ph = MOTS[phase(cran)];
-      m.textContent = ph.mot;
-      m.style.color = ph.coul;
-    }
+
+    var m = document.getElementById('cycle-mot');
+    if(m){ m.textContent = ph.mot; m.style.color = ph.coul; }
   }
 
   function poser(i, diffuser){
@@ -4574,39 +4653,18 @@ $("#amb-activer").addEventListener("click", ()=>{
     if(diffuser && refH){ try{ refH.set(cran); }catch(e){} }
   }
 
-  function construire(){
-    var box = document.getElementById('jauge-boutons');
-    if(!box) return;
-    box.innerHTML = '';
-    for(var i = 0; i < N; i++){
-      var d = document.createElement('div');
-      d.className = 'jauge-bouton ph-' + phase(i);
-      d.dataset.i = i;
-      d.style.left = (X[i] * 100).toFixed(3) + '%';
-      d.style.top  = (Y * 100).toFixed(3) + '%';
-      d.style.width = (D * 100).toFixed(3) + '%';
-      /* la pièce est bien plus large que haute : on ramène le cercle */
-      d.style.height = (D * 1600 / 428 * 100).toFixed(3) + '%';
-      (function(k){
-        d.addEventListener('click', function(){
-          if(!document.body.classList.contains('jauge-mj')) return;
-          poser(k, true);
-        });
-      })(i);
-      box.appendChild(d);
-    }
-  }
-
   function droitMJ(){
     var mj = document.getElementById('mj');
     var actif = document.body.classList.contains('est-mj') || (mj && mj.checked);
     document.body.classList.toggle('jauge-mj', !!actif);
-    var j = document.getElementById('jauge');
-    if(j) j.title = actif ? 'Clique une pastille pour changer l\'heure' : 'Heure de la table';
+    var c = document.getElementById('cycle');
+    if(c) c.title = actif ? 'Clique un cran pour changer l\'heure' : 'Heure de la table';
+    var w = document.getElementById('meteo');
+    if(w) w.title = actif ? 'Clique une icône pour changer le temps' : 'Temps qu\'il fait';
   }
 
   function init(){
-    if(!document.getElementById('jauge')) return;
+    if(!document.getElementById('cycle-svg')) return;
     construire();
     peindre();
     droitMJ();
@@ -4623,7 +4681,7 @@ $("#amb-activer").addEventListener("click", ()=>{
           if(typeof v === 'number') poser(v, false);
         });
       }
-    }catch(e){ console.warn('Jauge hors ligne :', e); }
+    }catch(e){ console.warn('Cycle hors ligne :', e); }
   }
   if(document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', init);
