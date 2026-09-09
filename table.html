@@ -2703,8 +2703,31 @@ $("#jetons-poses").addEventListener("click", e => {
     const sel = $("#jetons-img");
     const choix = sel && sel.value ? lienImageDirect(sel.value) : "";
     if(!choix){ alerte("Choisis d'abord une image dans la liste de la galerie."); return; }
-    // url l'emporte sur pf au rendu : on efface donc le portrait de fiche
-    // pour que le nouveau visuel s'applique vraiment.
+    // Le jeton vient du combat : le portrait remonte au combattant, pour que
+    // la liste d'initiative montre le même visage que la carte. Quand
+    // plusieurs combattants partagent le même portrait d'origine, comme une
+    // troupe issue d'un même modèle du bestiaire, ils changent tous ensemble.
+    const c = combattantDe(j);
+    if(c && db){
+      const camp = c.camp || "bds";
+      const pf = c.pf || ("jeton-" + c.id);
+      set(ref(db, `scenarios/${camp}/portraits/${pf}`), choix)
+        .then(() => {
+          portraitsVus[camp + "/" + pf] = choix;
+          let touche = false;
+          (initEtat.ordre||[]).forEach(x => {
+            if(x.id === c.id || (c.pf && x.pf === c.pf && (x.camp||"bds") === camp)){
+              x.pf = pf; x.camp = camp; touche = true;
+            }
+          });
+          if(touche && estMJ()) pousserInit();
+          rendreInit();
+          document.querySelectorAll(`.ini-pf[data-pf="${pf}"]`).forEach(el => { el.src = choix; });
+        })
+        .catch(e => alerte("Portrait non enregistré : " + e.message));
+    }
+    // url l'emporte sur pf au rendu du jeton : on nettoie pour que le
+    // nouveau visuel s'applique sans ambiguïté.
     const copie = Object.assign({}, j, { url: choix });
     delete copie.pf; delete copie.camp;
     ecrireJeton(copie);
