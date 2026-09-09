@@ -729,7 +729,10 @@
   .chat-m.moi{border-left-color:var(--laiton-sombre)}
   .chat-m img{max-width:100%;border-radius:6px;margin-top:4px;border:1px solid var(--bord);
     cursor:zoom-in;display:block}
+  .chat-img-ligne{display:flex;gap:5px;padding:0 8px 5px;align-items:center}
+  .chat-img-ligne select{flex:1;min-width:0}
   .chat-bas{display:flex;gap:5px;padding:0 8px 8px}
+  .chat-panel.survol{outline:2px dashed var(--laiton);outline-offset:-4px}
   .chat-bas input{flex:1;min-width:0}
   .chat-pastille{display:none;width:7px;height:7px;border-radius:50%;
     background:var(--oxblood-clair);margin-left:5px;vertical-align:middle}
@@ -1067,13 +1070,19 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
     <div class="pal-tete" id="chat-drag">
       <span class="pt">Chat</span>
       <span class="spacer"></span>
+      <button id="chat-detacher" class="mini" title="Ouvrir le chat dans une fenêtre à part">⧉</button>
       <button id="fermer-chat" class="mini" title="Masquer">×</button>
     </div>
     <div class="chat-onglets" id="chat-onglets"></div>
     <div class="chat-fil" id="chat-fil"></div>
+    <div class="chat-img-ligne">
+      <select id="chat-galerie" title="Une image de la galerie"></select>
+      <button id="chat-image" title="Envoyer l'image choisie">Envoyer l'image</button>
+      <button id="chat-fichier-btn" title="Envoyer une image de ton ordinateur">📁</button>
+      <input type="file" id="chat-fichier" accept="image/*" hidden />
+    </div>
     <div class="chat-bas">
-      <input type="text" id="chat-saisie" placeholder="Écrire…" maxlength="600" />
-      <button id="chat-image" title="Envoyer une image de la galerie au destinataire choisi">🖼</button>
+      <input type="text" id="chat-saisie" placeholder="Écrire…  (ou dépose une image ici)" maxlength="600" />
       <button class="primaire" id="chat-envoyer">Envoyer</button>
     </div>
   </aside>
@@ -1256,16 +1265,16 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <button id="secret-custom" class="secret-btn" title="Lancer en secret : seuls toi et le MJ voyez le résultat">Secret</button>
         <button id="vider-des" title="Retirer les dés de la table">🧹 Table</button>
       </div>
+      <div class="ligne gm-only">
+        <button id="jet-secret" title="Un d100 pour toi seul : rien n'est envoyé, rien n'apparaît nulle part. La table ignore même qu'un jet a eu lieu.">Jet invisible</button>
+        <span class="secret-res" id="secret-res">—</span>
+        <span class="secret-loc" id="secret-loc"></span>
+      </div>
       <div class="ligne gm-only forcer-grp">
         <label for="forcer-val">Forcer</label>
         <input type="number" id="forcer-val" min="1" max="100" placeholder="01"
                title="Résultat imposé au d100" />
-        <button id="forcer-lancer" title="Lancer un test avec ce résultat exact : journal, dés, son et vignetage comme un vrai jet (MJ)">Lancer ce résultat</button>
-      </div>
-      <div class="ligne gm-only">
-        <button id="jet-secret">Jet secret</button>
-        <span class="secret-res" id="secret-res">—</span>
-        <span class="secret-loc" id="secret-loc"></span>
+        <button id="forcer-lancer" title="Banc d'essai : rejoue un test avec ce résultat exact pour vérifier ce qu'il déclenche">Lancer ce résultat</button>
       </div>
     </div>
 
@@ -1372,10 +1381,18 @@ const salle = (params.get("salle") || "table-warhammer").replace(/[^a-zA-Z0-9_-]
 
 // ---------- Outils ----------
 const $ = (s)=>document.querySelector(s);
+let alerteTimer = null;
 function alerte(msg){
   const a = $("#alerte");
   a.textContent = msg; a.style.display = "block";
+  clearTimeout(alerteTimer);
+  alerteTimer = setTimeout(() => { a.style.display = "none"; }, 6000);
 }
+// Un clic ferme tout de suite, sans attendre.
+document.addEventListener("DOMContentLoaded", () => {
+  const a = $("#alerte");
+  if(a) a.addEventListener("click", () => { a.style.display = "none"; clearTimeout(alerteTimer); });
+});
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
 function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
 
@@ -2892,7 +2909,10 @@ function ouvrirChat(forcer){
   const p = $("#chat"); if(!p) return;
   const ouvrir = (typeof forcer === "boolean") ? forcer : p.classList.contains("replie");
   p.classList.toggle("replie", !ouvrir);
-  if(ouvrir){ filsNeufs[filActif] = false; vuJusqua = Date.now(); rendreChat(); $("#chat-saisie").focus(); }
+  if(ouvrir){
+    filsNeufs[filActif] = false; vuJusqua = Date.now();
+    garnirGalerieChat(); rendreChat(); $("#chat-saisie").focus();
+  }
 }
 
 $("#ouvrir-chat").addEventListener("click", () => ouvrirChat());
@@ -2926,12 +2946,86 @@ $("#chat-envoyer").addEventListener("click", () => {
 $("#chat-saisie").addEventListener("keydown", e => {
   if(e.key === "Enter"){ e.preventDefault(); $("#chat-envoyer").click(); }
 });
+// Le chat a sa propre liste d'images, recopiée du menu de la galerie à
+// chaque ouverture : ce qu'on envoie ici n'a rien à voir avec ce qui est
+// affiché sur le plateau.
+function garnirGalerieChat(){
+  const dest = $("#chat-galerie"), source = $("#img-choix");
+  if(!dest || !source) return;
+  const garde = dest.value;
+  dest.innerHTML = source.innerHTML;
+  dest.value = garde || "";
+}
+
 $("#chat-image").addEventListener("click", () => {
-  const sel = $("#img-choix");
+  const sel = $("#chat-galerie");
   const choix = (sel && sel.value) ? lienImageDirect(sel.value) : "";
-  if(!choix){ alerte("Choisis une image dans le menu Image, puis renvoie."); return; }
+  if(!choix){ alerte("Choisis une image dans la liste du chat."); return; }
   envoyerMessage($("#chat-saisie").value, choix);
   $("#chat-saisie").value = "";
+});
+
+// Depuis l'ordinateur : l'image est réduite puis envoyée telle quelle, sans
+// passer par le dépôt. On la ramène à 1400 pixels pour ne pas encombrer.
+function envoyerFichierImage(file){
+  if(!file || !/^image\//.test(file.type)){ alerte("Ce n'est pas une image."); return; }
+  const lecteur = new FileReader();
+  lecteur.onload = () => {
+    const im = new Image();
+    im.onload = () => {
+      const max = 1400;
+      const ech = Math.min(1, max / Math.max(im.width, im.height));
+      const c = document.createElement("canvas");
+      c.width  = Math.round(im.width  * ech);
+      c.height = Math.round(im.height * ech);
+      c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+      let url;
+      try{ url = c.toDataURL("image/jpeg", 0.82); }
+      catch(e){ alerte("Image illisible."); return; }
+      if(url.length > 900000){ alerte("Image trop lourde même réduite."); return; }
+      envoyerMessage($("#chat-saisie").value, url);
+      $("#chat-saisie").value = "";
+    };
+    im.onerror = () => alerte("Image illisible.");
+    im.src = lecteur.result;
+  };
+  lecteur.onerror = () => alerte("Lecture impossible.");
+  lecteur.readAsDataURL(file);
+}
+
+$("#chat-fichier-btn").addEventListener("click", () => $("#chat-fichier").click());
+$("#chat-fichier").addEventListener("change", e => {
+  if(e.target.files && e.target.files[0]) envoyerFichierImage(e.target.files[0]);
+  e.target.value = "";
+});
+
+// Glisser-déposer sur le panneau.
+["dragenter","dragover"].forEach(ev => {
+  $("#chat").addEventListener(ev, e => {
+    e.preventDefault(); $("#chat").classList.add("survol");
+  });
+});
+["dragleave","drop"].forEach(ev => {
+  $("#chat").addEventListener(ev, e => {
+    e.preventDefault(); $("#chat").classList.remove("survol");
+  });
+});
+$("#chat").addEventListener("drop", e => {
+  const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if(f) envoyerFichierImage(f);
+});
+
+// Le chat dans sa propre fenêtre, pour le poser sur un second écran.
+$("#chat-detacher").addEventListener("click", () => {
+  const p = new URLSearchParams();
+  p.set("salle", salle);
+  p.set("nom", nom());
+  if(estMJ()) p.set("mj", "1");
+  const f = window.open("chat.html?" + p.toString(), "chatWarhammer",
+    "width=460,height=760,menubar=no,toolbar=no,location=no,status=no");
+  if(!f){ alerte("Le navigateur a bloqué la fenêtre. Autorise les fenêtres surgissantes."); return; }
+  try{ f.focus(); }catch(e){}
+  ouvrirChat(false);
 });
 $("#chat-fil").addEventListener("click", e => {
   const img = e.target.closest("img"); if(!img) return;
@@ -3236,7 +3330,7 @@ function lancerTest(cible, secret, impose){
       (secret ? envoyerJetSecret : envoyerJet)({
         nom: nom(),
         res: `+${bonus}`,
-        detail: "Rage d'Ulric !",
+        detail: "Fureur d'Ulric !",
         classe: "succes",
         marque: "",
         des: { faces:10, vals:[bonus], ajout:true }
