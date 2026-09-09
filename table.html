@@ -708,6 +708,12 @@
     box-shadow:0 1px 3px rgba(0,0,0,.5)}
   .pastille.actif{outline:2px solid var(--laiton);outline-offset:2px}
   .palette .taille{width:34px;display:flex;align-items:center;justify-content:center}
+  /* La bascule du voile vit avec le cycle et la météo : c'est le même monde. */
+  .voile-bascule{pointer-events:auto;margin-left:14px;font-family:"Cinzel",serif;
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--parchemin-doux)}
+  .voile-bascule:hover{color:var(--laiton)}
+  .gm-only-l{display:none}
+  body.est-mj .gm-only-l{display:flex}
   .gm-only-in{display:none!important}
   body.est-mj .gm-only-in{display:inline-flex!important}
   /* Dessin fermé aux joueurs : le MJ garde tout, les joueurs gardent zoom et grille. */
@@ -867,11 +873,24 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
   body.jetons-libres #g-jetons > g.pris{cursor:grabbing}
   /* Le crayon et la gomme passent au-dessus des jetons : on peut dessiner
      par-dessus une figurine sans la déplacer par mégarde. */
-  #calque.t-dessin #g-jetons,#calque.t-gomme #g-jetons{pointer-events:none}
+  #calque.t-dessin #g-jetons,#calque.t-gomme #g-jetons,
+  #calque.t-brume #g-jetons{pointer-events:none}
+  #calque.t-brume{cursor:cell}
   .j-nom{font-family:"Cinzel",serif;fill:#f4ecd8;stroke:#0d0a06;stroke-linejoin:round;
     paint-order:stroke;text-anchor:middle;pointer-events:none;user-select:none}
   .j-vide{fill:#241c12}
   .j-mort{filter:grayscale(.72) brightness(.72)}
+  /* Brouillard : le MJ voit au travers, la table le subit. */
+  #brouillard{display:none;opacity:1;transition:opacity .3s ease}
+  body.brouillard-on #brouillard{display:block}
+  body.est-mj #brouillard{opacity:.45}
+  #voile{display:none;pointer-events:none;transition:fill .8s ease, opacity .8s ease}
+  body.voile-on #voile{display:block}
+  .j-etat{font-family:"Cinzel",serif;fill:#0d0a06;text-anchor:middle;font-weight:700;
+    pointer-events:none;user-select:none}
+  .j-actif{opacity:.9;animation:j-bat 1.9s ease-in-out infinite}
+  @keyframes j-bat{0%,100%{opacity:.35}50%{opacity:1}}
+  @media(prefers-reduced-motion:reduce){ .j-actif{animation:none;opacity:.85} }
   .j-init{font-family:"Cinzel",serif;fill:#e8dcc0;text-anchor:middle;pointer-events:none;user-select:none}
   .j-num{font-family:"Cinzel",serif;fill:#0d0a06;text-anchor:middle;pointer-events:none;user-select:none;font-weight:700}
   .j-l .etat{width:26px;height:6px;border-radius:3px;flex:none;box-shadow:0 0 0 1px #00000066}
@@ -946,10 +965,19 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
     <div class="plateau" id="plateau">
       <img id="image" alt="Image partagée" />
       <svg id="calque" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <mask id="msk-brouillard" maskUnits="userSpaceOnUse">
+            <rect id="msk-fond" x="0" y="0" width="0" height="0" fill="#fff"></rect>
+            <g id="msk-traits" fill="none" stroke-linecap="round" stroke-linejoin="round"></g>
+          </mask>
+        </defs>
+        <rect id="voile" x="0" y="0" width="0" height="0" pointer-events="none"></rect>
         <g id="grille"></g>
         <g id="g-strokes"></g>
         <path id="g-live" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
         <g id="g-jetons"></g>
+        <rect id="brouillard" x="0" y="0" width="0" height="0" fill="#04030a"
+              mask="url(#msk-brouillard)" pointer-events="none"></rect>
       </svg>
     </div>
   </section>
@@ -959,6 +987,10 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
   <header>
     <div class="entete-gauche">
       <a class="retour" href="index.html" title="Retour à l'accueil">← Accueil</a>
+      <label class="toggle voile-bascule gm-only-in"
+             title="Teinter le plateau selon l'heure et le temps qu'il fait">
+        <input type="checkbox" id="voile-chk" /> Voile
+      </label>
     </div>
     <div class="titre">
       <div class="monde">
@@ -994,6 +1026,20 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <span class="pal-sep pj-dessin"></span>
         <button id="annuler-trait" class="pj-dessin" title="Annuler mon dernier trait">↶</button>
         <button id="effacer-tout" class="gm-only-in" title="Effacer tous les traits (MJ)">🗑</button>
+      </div>
+      <div class="pal-ligne gm-only-l">
+        <button class="outil" data-outil="reveler" title="Révéler la carte au pinceau">👁</button>
+        <button class="outil" data-outil="voiler" title="Remettre du brouillard">🌫</button>
+        <span class="pal-lib">Pinceau</span>
+        <button class="brume-taille" data-t="0.05" title="Fin">•</button>
+        <button class="brume-taille actif" data-t="0.10" title="Moyen">●</button>
+        <button class="brume-taille" data-t="0.20" title="Large">⬤</button>
+        <span class="spacer"></span>
+        <button id="brouillard-rien" title="Tout révéler">☀</button>
+        <button id="brouillard-tout" title="Tout recouvrir">🌑</button>
+      </div>
+      <div class="pal-ligne gm-only-l">
+        <label class="toggle"><input type="checkbox" id="brouillard-chk" /> Brouillard</label>
       </div>
       <div class="pal-ligne pal-couleurs pj-dessin" id="pal-couleurs"></div>
       <div class="pal-ligne pj-dessin">
@@ -1205,6 +1251,15 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <button id="amb-stop" title="Couper">⏹</button>
         <input type="range" id="amb-vol" min="0" max="100" value="50" title="Volume" />
       </div>
+      <div class="ligne gm-only">
+        <label for="scene-liste">Scène</label>
+        <select id="scene-liste"></select>
+        <button class="primaire" id="scene-charger" title="Remettre la table dans cet état">Charger</button>
+        <input type="text" id="scene-nom" placeholder="Nom de la scène" maxlength="40" />
+        <button id="scene-enregistrer" title="Enregistrer l'état courant : image, jetons, brouillard, heure et temps">Enregistrer</button>
+        <button id="scene-supprimer" title="Supprimer la scène choisie">✕</button>
+        <span class="secret-loc" id="scene-msg"></span>
+      </div>
       <div class="galerie gm-only" id="galerie"></div>
       <div class="err gm-only" id="amb-err"></div>
     </div>
@@ -1288,6 +1343,7 @@ function caler(iw, ih, reinit){
   svg.setAttribute("viewBox", `0 0 ${iw} ${ih}`);
   if(reinit){ vue.z=1; vue.x=0; vue.y=0; }
   appliquerVue(); majGrille(); rendreStrokes(); rendreJetons();
+  rendreBrouillard(); rendreVoile();
 }
 
 function montrerVide(){
@@ -1322,6 +1378,7 @@ function montrerVierge(v){
 if(refImage){
   onValue(refImage, (snap)=>{
     const v = snap.val();
+    imageActuelle = v || null;
     if(v && v.blank) montrerVierge(v);
     else montrerImage(v && v.url ? v.url : null);
   });
@@ -1335,6 +1392,7 @@ function pousserImage(url){
   if(!refImage){ alerte("Firebase requis pour partager une image."); return; }
   if(refDessin) set(refDessin, null);
   viderJetons();
+  if(refBrouillard) set(refBrouillard, null); else { brumesLocales = {}; rendreBrouillard(); }
   mesTraits.length = 0;
   set(refImage, url ? { url, par: nom(), ts: Date.now() } : null);
 }
@@ -1602,7 +1660,8 @@ function effacerTout(){
 // --- Gestion des pointeurs (souris/stylet = outil courant ; doigts = navigation) ---
 const touches = new Map();
 let pan = false, panLast = null, touchLast = null, pinch = null;
-let dessine = false, gomme = false;
+let dessine = false, gomme = false, brouille = false;
+let imageActuelle = null;      // ce qui est affiché, pour l'enregistrement des scènes
 
 svg.addEventListener("contextmenu", e=> e.preventDefault());
 svg.addEventListener("pointerdown", e=>{
@@ -1610,12 +1669,17 @@ svg.addEventListener("pointerdown", e=>{
   try{ svg.setPointerCapture(e.pointerId); }catch(_){}
   if(e.pointerType === "touch"){ touches.set(e.pointerId, {x:e.clientX,y:e.clientY}); return; }
   if(e.button === 2 || outil === "nav"){ pan = true; panLast = {x:e.clientX,y:e.clientY}; svg.classList.add("glisse"); return; }
+  if(outil === "reveler" || outil === "voiler"){
+    if(!estMJ()) return;
+    brouille = true; debutBrouillard(e); return;
+  }
   if(outil === "dessin"){ if(!dessinAutorise()) return; dessine = true; debutTrait(e); return; }
   if(outil === "gomme"){ if(!dessinAutorise()) return; gomme = true; gommerEn(e); return; }
 });
 svg.addEventListener("pointermove", e=>{
   if(touches.has(e.pointerId)){ touches.set(e.pointerId, {x:e.clientX,y:e.clientY}); gererTouches(); return; }
   if(pan){ vue.x += e.clientX-panLast.x; vue.y += e.clientY-panLast.y; panLast={x:e.clientX,y:e.clientY}; appliquerVue(); return; }
+  if(brouille){ suiteBrouillard(e); return; }
   if(dessine){ suiteTrait(e); return; }
   if(gomme){ gommerEn(e); return; }
 });
@@ -1627,6 +1691,7 @@ function finPointeur(e){
     return;
   }
   if(pan){ pan = false; svg.classList.remove("glisse"); return; }
+  if(brouille){ brouille = false; finBrouillard(); return; }
   if(dessine){ dessine = false; finTrait(); return; }
   if(gomme){ gomme = false; return; }
 }
@@ -1677,6 +1742,7 @@ function choisirOutil(o){
   document.querySelectorAll(".palette .outil").forEach(b=> b.classList.toggle("actif", b.dataset.outil===o));
   svg.classList.toggle("t-dessin", o==="dessin");
   svg.classList.toggle("t-gomme",  o==="gomme");
+  svg.classList.toggle("t-brume",  o==="reveler" || o==="voiler");
 }
 document.querySelectorAll(".palette .outil").forEach(b=>
   b.addEventListener("click", ()=> choisirOutil(b.dataset.outil)));
@@ -1704,6 +1770,171 @@ function basculerPalette(forcer){
 $("#ouvrir-dessin").addEventListener("click", ()=> basculerPalette());
 $("#fermer-dessin").addEventListener("click", ()=> basculerPalette(false));
 
+// ============ Brouillard de guerre ============
+// Une nappe noire couvre la carte ; le MJ y perce des trous au pinceau et
+// peut les refermer. Lui la voit en transparence, la table la subit.
+const refBrouillard  = db ? ref(db, `salles/${salle}/brouillard`) : null;
+const refBrouillardOn = db ? ref(db, `salles/${salle}/options/brouillard`) : null;
+
+let brumes = {};              // traits partagés
+let brumesLocales = {};
+let brumeCourante = null;
+let mesBrumes = [];
+
+function brumesCourantes(){ return refBrouillard ? brumes : brumesLocales; }
+
+function cheminBrume(t){
+  const p = t.pts || [];
+  if(!p.length) return "";
+  if(p.length === 1){
+    const x = p[0][0]*base.iw, y = p[0][1]*base.ih;
+    return `M ${x.toFixed(1)} ${y.toFixed(1)} L ${(x+0.01).toFixed(2)} ${y.toFixed(1)}`;
+  }
+  return p.map((q,i) => (i ? "L " : "M ") + (q[0]*base.iw).toFixed(1) + " " + (q[1]*base.ih).toFixed(1)).join(" ");
+}
+
+function rendreBrouillard(){
+  const fond = document.getElementById("msk-fond");
+  const zone = document.getElementById("msk-traits");
+  const nappe = document.getElementById("brouillard");
+  if(!fond || !zone || !nappe) return;
+  if(!base.iw){ zone.innerHTML = ""; return; }
+  [["width", base.iw], ["height", base.ih]].forEach(a => {
+    fond.setAttribute(a[0], a[1]);
+    nappe.setAttribute(a[0], a[1]);
+  });
+  const liste = Object.keys(brumesCourantes()).map(k => brumesCourantes()[k]).filter(Boolean);
+  if(brumeCourante) liste.push(brumeCourante);
+  zone.innerHTML = liste.map(t =>
+    `<path d="${cheminBrume(t)}" stroke="${t.m === "v" ? "#fff" : "#000"}" ` +
+    `stroke-width="${(t.w || Math.min(base.iw, base.ih)/9).toFixed(1)}"></path>`
+  ).join("");
+}
+
+function debutBrouillard(e){
+  const p = ptCalque(e.clientX, e.clientY);
+  brumeCourante = {
+    m: (outil === "voiler") ? "v" : "r",
+    w: +(Math.min(base.iw, base.ih) * tailleBrume).toFixed(1),
+    pts: [[+(p.x/base.iw).toFixed(4), +(p.y/base.ih).toFixed(4)]]
+  };
+  rendreBrouillard();
+}
+function suiteBrouillard(e){
+  if(!brumeCourante) return;
+  const p = ptCalque(e.clientX, e.clientY);
+  const nx = p.x/base.iw, ny = p.y/base.ih;
+  const last = brumeCourante.pts[brumeCourante.pts.length-1];
+  if(Math.hypot((nx-last[0])*base.iw, (ny-last[1])*base.ih) < base.iw*0.004) return;
+  brumeCourante.pts.push([+nx.toFixed(4), +ny.toFixed(4)]);
+  rendreBrouillard();
+}
+function finBrouillard(){
+  if(brumeCourante && brumeCourante.pts.length){
+    if(refBrouillard){ const rr = push(refBrouillard); set(rr, brumeCourante); mesBrumes.push(rr.key); }
+    else { brumesLocales["b"+Date.now()+Math.random().toString(36).slice(2,5)] = brumeCourante; }
+  }
+  brumeCourante = null;
+  rendreBrouillard();
+}
+
+let tailleBrume = 0.10;       // rayon du pinceau, en part du petit côté
+
+function poserBrouillard(on){
+  document.body.classList.toggle("brouillard-on", !!on);
+  const b = $("#brouillard-chk"); if(b) b.checked = !!on;
+}
+if(refBrouillardOn){
+  onValue(refBrouillardOn, snap => poserBrouillard(snap.val() === true));
+}
+if(refBrouillard){
+  onValue(refBrouillard, snap => { brumes = snap.val() || {}; rendreBrouillard(); });
+}
+
+// ============ Voile d'ambiance ============
+// L'heure et le temps teintent doucement le plateau. Le MJ l'allume ou
+// l'éteint pour toute la table : en souterrain, il n'a rien à y faire.
+const refVoile = db ? ref(db, `salles/${salle}/options/voile`) : null;
+
+const TEINTE_PHASE = {
+  aube:       { c:"#6a4a6b", a:0.18 },
+  jour:       { c:"#f0d79a", a:0.05 },
+  crepuscule: { c:"#a8531f", a:0.20 },
+  nuit:       { c:"#101f3a", a:0.40 }
+};
+const TEINTE_TEMPS = {
+  0:{ c:"#ffe6a8", a:0.00 }, 1:{ c:"#d8cfae", a:0.04 }, 2:{ c:"#8a93a0", a:0.12 },
+  3:{ c:"#9fb3ab", a:0.08 }, 4:{ c:"#4a6d8f", a:0.18 }, 5:{ c:"#9fc6dd", a:0.16 },
+  6:{ c:"#5c4c78", a:0.24 }, 7:{ c:"#3a2a44", a:0.34 }, 8:{ c:"#9aa4ac", a:0.26 },
+  9:{ c:"#c6dced", a:0.20 }
+};
+
+function melange(a, b){
+  const h = x => [1,3,5].map(i => parseInt(x.substr(i,2),16));
+  const A = h(a.c), B = h(b.c);
+  const p = (a.a + b.a) ? b.a / (a.a + b.a) : 0.5;
+  const m = A.map((v,i) => Math.round(v*(1-p) + B[i]*p));
+  return { c:"#" + m.map(v => v.toString(16).padStart(2,"0")).join(""),
+           a: Math.min(0.62, a.a + b.a) };
+}
+
+function rendreVoile(){
+  const v = document.getElementById("voile");
+  if(!v || !base.iw) return;
+  v.setAttribute("width", base.iw);
+  v.setAttribute("height", base.ih);
+  const ph = (typeof window.phaseCycle === "function") ? window.phaseCycle() : "jour";
+  const tp = (typeof window.tempsTable === "function") ? window.tempsTable() : 0;
+  const m = melange(TEINTE_PHASE[ph] || TEINTE_PHASE.jour, TEINTE_TEMPS[tp] || TEINTE_TEMPS[0]);
+  v.setAttribute("fill", m.c);
+  v.setAttribute("opacity", m.a.toFixed(3));
+}
+window.rendreVoile = rendreVoile;
+
+function poserVoile(on){
+  document.body.classList.toggle("voile-on", !!on);
+  const c = $("#voile-chk"); if(c) c.checked = !!on;
+  if(on) rendreVoile();
+}
+if(refVoile){
+  onValue(refVoile, snap => poserVoile(snap.val() === true));
+}
+
+// --- Commandes, dans la palette de dessin ---
+(function brancherAmbiance(){
+  const chkB = $("#brouillard-chk"), chkV = $("#voile-chk");
+  if(chkB) chkB.addEventListener("change", e => {
+    if(!estMJ()){ e.target.checked = document.body.classList.contains("brouillard-on"); return; }
+    if(refBrouillardOn) set(refBrouillardOn, e.target.checked); else poserBrouillard(e.target.checked);
+  });
+  if(chkV) chkV.addEventListener("change", e => {
+    if(!estMJ()){ e.target.checked = document.body.classList.contains("voile-on"); return; }
+    if(refVoile) set(refVoile, e.target.checked); else poserVoile(e.target.checked);
+  });
+  const tout = $("#brouillard-tout");
+  if(tout) tout.addEventListener("click", () => {
+    if(!estMJ()) return;
+    if(refBrouillard) set(refBrouillard, null);
+    else { brumesLocales = {}; rendreBrouillard(); }
+  });
+  const rien = $("#brouillard-rien");
+  if(rien) rien.addEventListener("click", () => {
+    if(!estMJ() || !base.iw) return;
+    // Un trait unique, assez large pour tout découvrir d'un coup.
+    const t = { m:"r", w:+(Math.max(base.iw, base.ih)*2).toFixed(1),
+                pts:[[0.5,0.5]] };
+    if(refBrouillard) set(push(refBrouillard), t);
+    else { brumesLocales["tout"] = t; rendreBrouillard(); }
+  });
+  document.querySelectorAll(".brume-taille").forEach(b => {
+    b.addEventListener("click", () => {
+      tailleBrume = parseFloat(b.dataset.t);
+      document.querySelectorAll(".brume-taille").forEach(x => x.classList.toggle("actif", x === b));
+    });
+  });
+})();
+
+
 // ============ Jetons sur la carte ============
 // Un jeton est un rond posé sur le plateau : le portrait d'un combattant ou
 // une image de la galerie. Sa position vit dans Firebase, en coordonnées
@@ -1730,10 +1961,58 @@ const ETAT_MAX = ETAT_JETON.length - 1;
 const OR_JETON = "#c9a25a";
 const COULEUR_JETON = { pj: OR_JETON, pnj:"#c9a25a", crea:"#c1453f" };
 
+// Les états qui pèsent sur une décision de combat. Une lettre, une couleur,
+// rien de plus : le détail reste dans le panneau d'initiative.
+const ETATS_JETON = [
+  { c:"aterre",       l:"T", coul:"#b9752c" },
+  { c:"sonne",        l:"S", coul:"#c9a25a" },
+  { c:"aveugle",      l:"A", coul:"#8d949a" },
+  { c:"empetre",      l:"E", coul:"#5f7a35" },
+  { c:"enflammes",    l:"F", coul:"#d1571f" },
+  { c:"hemorragique", l:"H", coul:"#a8241c" },
+  { c:"empoisonne",   l:"P", coul:"#6f8f3a" },
+  { c:"brise",        l:"B", coul:"#8b6fbd" },
+  { c:"extenue",      l:"X", coul:"#7a6a55" },
+  { c:"inconscient",  l:"I", coul:"#5a5a66" },
+  { c:"surpris",      l:"?", coul:"#c98a3a" },
+  { c:"assourdi",     l:"D", coul:"#6f8899" }
+];
+
+function etatsJeton(c){
+  if(!c || !c.etats) return [];
+  const out = [];
+  ETATS_JETON.forEach(e => {
+    const v = c.etats[e.c];
+    if(v) out.push({ l: e.l, c: e.coul });
+  });
+  return out;
+}
+
+// Le combattant lié règle l'anneau tout seul : ses Blessures deviennent un
+// cran de couleur, jamais un chiffre. Sans lien, le MJ garde la main avec
+// le clic droit et les flèches du panneau.
+function combattantDe(j){
+  if(!j || !j.cid) return null;
+  return (initEtat.ordre||[]).find(x => x.id === j.cid) || null;
+}
+
+function cranEtat(j){
+  const c = combattantDe(j);
+  if(c && isFinite(c.b) && isFinite(c.bmax) && c.bmax > 0){
+    const part = Math.max(0, Math.min(1, c.b / c.bmax));
+    if(part <= 0)    return 0;              // à terre
+    if(part <= 0.2)  return 1;
+    if(part <= 0.4)  return 2;
+    if(part <= 0.6)  return 3;
+    if(part <= 0.85) return 4;
+    return ETAT_MAX;
+  }
+  return (j.pv == null) ? ETAT_MAX : Math.max(0, Math.min(ETAT_MAX, j.pv));
+}
+
 function couleurEtat(j){
   if(j.type === "pj") return OR_JETON;
-  const n = (j.pv == null) ? ETAT_MAX : Math.max(0, Math.min(ETAT_MAX, j.pv));
-  return ETAT_JETON[n];
+  return ETAT_JETON[cranEtat(j)];
 }
 
 function jetonsCourants(){ return refJetons ? jetonsDB : jetonsLocaux; }
@@ -1801,9 +2080,16 @@ function rendreJetons(){
     const coul = couleurEtat(j);
     const nom = nomAffiche(j);
     const idc = "clipj-" + j.id;
+    const cbt = combattantDe(j);
+    const actif = !!(cbt && initEtat.actif === cbt.id);
     let h = `<g data-id="${escape(j.id)}" transform="translate(${X.toFixed(1)},${Y.toFixed(1)})">`;
+    // C'est son tour : une couronne claire bat autour du jeton.
+    if(actif){
+      h += `<circle class="j-actif" r="${(R*1.24).toFixed(1)}" fill="none" ` +
+           `stroke="#f4ecd8" stroke-width="${Math.max(1, R*0.07).toFixed(2)}"></circle>`;
+    }
     h += `<clipPath id="${idc}"><circle r="${R.toFixed(1)}"></circle></clipPath>`;
-    const mort = (j.type !== "pj" && j.pv === 0);
+    const mort = (j.type !== "pj" && cranEtat(j) === 0);
     if(url){
       h += `<image class="${mort ? "j-mort" : ""}" href="${escape(url)}" ` +
            `x="${(-R).toFixed(1)}" y="${(-R).toFixed(1)}" ` +
@@ -1846,6 +2132,26 @@ function rendreJetons(){
     }
     if(mort){
       h += `<circle r="${R.toFixed(1)}" fill="#8e1f18" opacity="0.44"></circle>`;
+    }
+    // Les états qui changent une décision de combat, en pastilles au-dessus
+    // du rond : quatre au plus, la dernière comptant le reste.
+    const ets = etatsJeton(cbt);
+    if(ets.length){
+      const montre = ets.slice(0, 4);
+      const rp = R * 0.26, pas = rp * 2.25;
+      const depart = -((montre.length - 1) * pas) / 2;
+      montre.forEach((e, k) => {
+        const cx = depart + k * pas, cy = -R * 1.16;
+        h += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${rp.toFixed(1)}" ` +
+             `fill="${e.c}" stroke="#0d0a06" stroke-width="${(rp*0.28).toFixed(2)}"></circle>`;
+        h += `<text class="j-etat" x="${cx.toFixed(1)}" y="${(cy + rp*0.38).toFixed(1)}" ` +
+             `font-size="${(rp*1.15).toFixed(1)}">${e.l}</text>`;
+      });
+      if(ets.length > 4){
+        h += `<text class="j-etat" x="${(depart + 4*pas).toFixed(1)}" ` +
+             `y="${(-R*1.16 + rp*0.38).toFixed(1)}" font-size="${(rp*1.15).toFixed(1)}" ` +
+             `fill="#f4ecd8">+${ets.length - 4}</text>`;
+      }
     }
     if(nom){
       h += `<text class="j-nom" y="${(R*1.62).toFixed(1)}" font-size="${(R*0.62).toFixed(1)}" ` +
@@ -2010,7 +2316,7 @@ function fermerPortraitJeton(){
     e.preventDefault(); e.stopPropagation();
     if(!estMJ()) return;
     const j = jetonsCourants()[el.dataset.id]; if(!j || j.type === "pj") return;
-    const n = (j.pv == null) ? ETAT_MAX : j.pv;
+    const n = cranEtat(j);
     const suivant = Math.max(0, Math.min(ETAT_MAX, n + (e.shiftKey ? 1 : -1)));
     if(suivant === n) return;
     ecrireJeton(Object.assign({}, j, { pv: suivant }));
@@ -2180,7 +2486,7 @@ $("#jetons-poses").addEventListener("click", e => {
     return;
   }
   if(act === "blesser" || act === "soigner"){
-    const n = (j.pv == null) ? ETAT_MAX : j.pv;
+    const n = cranEtat(j);
     const suivant = Math.max(0, Math.min(ETAT_MAX, n + (act === "soigner" ? 1 : -1)));
     if(suivant !== n) ecrireJeton(Object.assign({}, j, { pv: suivant }));
     return;
@@ -2242,6 +2548,102 @@ $("#jetons-vider").addEventListener("click", () => {
   if(!Object.keys(jetonsCourants()).length) return;
   if(confirm("Retirer tous les jetons de la carte ?")) viderJetons();
 });
+
+
+
+// ============ Scènes préparées ============
+// Une scène est une photographie de la table : l'image affichée, les jetons
+// avec leurs positions et leur état, le brouillard, l'heure et le temps.
+// Le MJ prépare tranquillement, puis remonte tout d'un clic en séance.
+const refScenes = db ? ref(db, `salles/${salle}/scenes`) : null;
+let scenes = {};
+
+function motScene(t){
+  const el = $("#scene-msg"); if(!el) return;
+  el.textContent = t || "";
+  if(t) setTimeout(() => { if(el.textContent === t) el.textContent = ""; }, 4000);
+}
+
+function rendreScenes(){
+  const sel = $("#scene-liste"); if(!sel) return;
+  const garde = sel.value;
+  const liste = Object.keys(scenes).map(k => Object.assign({ id:k }, scenes[k]))
+    .filter(x => x && x.nom)
+    .sort((a,b) => a.nom.localeCompare(b.nom, "fr"));
+  sel.innerHTML = `<option value="">—</option>` +
+    liste.map(x => `<option value="${escape(x.id)}">${escape(x.nom)}</option>`).join("");
+  if(garde) sel.value = garde;
+}
+
+if(refScenes){
+  onValue(refScenes, snap => { scenes = snap.val() || {}; rendreScenes(); });
+}
+
+function enregistrerScene(){
+  if(!estMJ()){ motScene("Réservé au MJ."); return; }
+  const nom = ($("#scene-nom").value || "").trim();
+  if(!nom){ motScene("Donne un nom à la scène."); return; }
+  const scene = {
+    nom,
+    img: imageActuelle || null,
+    heure: (typeof window.heureTable === "function") ? window.heureTable() : null,
+    meteo: (typeof window.tempsTable === "function") ? window.tempsTable() : null,
+    jetons: jetonsCourants() || {},
+    brumes: brumesCourantes() || {},
+    brouillard: document.body.classList.contains("brouillard-on"),
+    voile: document.body.classList.contains("voile-on"),
+    ts: Date.now()
+  };
+  const sel = $("#scene-liste");
+  const dejaLa = Object.keys(scenes).find(k => scenes[k] && scenes[k].nom === nom);
+  if(refScenes){
+    const cle = dejaLa || push(refScenes).key;
+    set(ref(db, `salles/${salle}/scenes/${cle}`), scene)
+      .then(() => { motScene("Scène enregistrée."); if(sel) sel.value = cle; })
+      .catch(err => motScene("Échec : " + err.message));
+  } else {
+    scenes["l"+Date.now()] = scene; rendreScenes(); motScene("Scène enregistrée (locale).");
+  }
+  $("#scene-nom").value = "";
+}
+
+function chargerScene(){
+  if(!estMJ()){ motScene("Réservé au MJ."); return; }
+  const sel = $("#scene-liste");
+  const sc = sel && sel.value ? scenes[sel.value] : null;
+  if(!sc){ motScene("Choisis une scène."); return; }
+
+  // L'image d'abord : elle balaie jetons et brouillard, qu'on repose ensuite.
+  if(refImage) set(refImage, sc.img || null);
+  if(refJetons)     set(refJetons, sc.jetons || null);
+  else { jetonsLocaux = sc.jetons || {}; rendreJetons(); rendreListeJetons(); }
+  if(refBrouillard) set(refBrouillard, sc.brumes || null);
+  else { brumesLocales = sc.brumes || {}; rendreBrouillard(); }
+  if(refBrouillardOn) set(refBrouillardOn, !!sc.brouillard); else poserBrouillard(!!sc.brouillard);
+  if(refVoile)        set(refVoile, !!sc.voile);            else poserVoile(!!sc.voile);
+  if(typeof sc.heure === "number" && typeof window.jaugeHeure === "function") window.jaugeHeure(sc.heure);
+  if(typeof sc.meteo === "number" && typeof window.meteoTable === "function") window.meteoTable(sc.meteo);
+  motScene("Scène chargée : " + sc.nom);
+}
+
+function supprimerScene(){
+  if(!estMJ()) return;
+  const sel = $("#scene-liste");
+  const sc = sel && sel.value ? scenes[sel.value] : null;
+  if(!sc) return;
+  if(!confirm(`Supprimer la scène « ${sc.nom} » ?`)) return;
+  if(refScenes) set(ref(db, `salles/${salle}/scenes/${sel.value}`), null);
+  else { delete scenes[sel.value]; rendreScenes(); }
+  motScene("Scène supprimée.");
+}
+
+if($("#scene-enregistrer")) $("#scene-enregistrer").addEventListener("click", enregistrerScene);
+if($("#scene-charger"))     $("#scene-charger").addEventListener("click", chargerScene);
+if($("#scene-supprimer"))   $("#scene-supprimer").addEventListener("click", supprimerScene);
+if($("#scene-nom")) $("#scene-nom").addEventListener("keydown", e => {
+  if(e.key === "Enter") enregistrerScene();
+});
+
 
 $("#jetons-pj-chk").addEventListener("change", e => {
   if(!estMJ()){ e.target.checked = jetonsPJ; return; }
@@ -3532,6 +3934,7 @@ window.addEventListener("resize", bornerInitiative);
 
 function rendreInit(){
   if(typeof panneauJetonsOuvert === "function" && panneauJetonsOuvert()) rendreCombatJetons();
+  if(typeof rendreJetons === "function") rendreJetons();
   const liste = $("#init-liste"); if(!liste) return;
   const roundEl = $("#init-round");
   const mj = estMJ();
@@ -4748,7 +5151,10 @@ $("#amb-activer").addEventListener("click", ()=>{
 
     var m = document.getElementById('cycle-mot');
     if(m){ m.textContent = ph.mot; m.style.color = ph.coul; }
+    if(typeof window.rendreVoile === 'function') window.rendreVoile();
   }
+  window.phaseCycle = function(){ return phase(cran); };
+  window.heureTable = function(){ return cran; };
 
   function poser(i, diffuser){
     cran = Math.max(0, Math.min(N - 1, i));
@@ -4862,7 +5268,9 @@ $("#amb-activer").addEventListener("click", ()=>{
     });
     var m = document.getElementById('meteo-mot');
     if(m){ m.textContent = t.mot; m.style.color = t.coul; }
+    if(typeof window.rendreVoile === 'function') window.rendreVoile();
   }
+  window.tempsTable = function(){ return temps; };
 
   function poser(i, diffuser){
     temps = Math.max(0, Math.min(T.length - 1, i));
