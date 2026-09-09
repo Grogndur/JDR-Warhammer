@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Chat — La Table de Warhammer</title>
+
+<script>
+  // Même config que la Table : c'est la même base, le même salon.
+  window.FIREBASE_CONFIG = {
+    apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+    authDomain: "warhammer-table-jdr.firebaseapp.com",
+    databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "warhammer-table-jdr",
+    storageBucket: "warhammer-table-jdr.firebasestorage.app",
+    messagingSenderId: "347804803970",
+    appId: "1:347804803970:web:43e062299c53e59d20e59b"
+  };
+  window.DOSSIER_IMAGES = "gallerie/";
+  window.DEPOT_GITHUB = { user: "Grogndur", repo: "JDR-Warhammer", branche: "main" };
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    --noir:#0b0906; --noir-2:#12100c; --surface:#1a1610; --surface-2:#221c14;
+    --bord:#3a3226; --laiton:#c9a25a; --laiton-sombre:#8a7442;
+    --parchemin:#f4ecd8; --parchemin-doux:#cbbfa4; --oxblood-clair:#c1453f;
+    --ombre:0 10px 30px rgba(0,0,0,.6);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--noir);color:var(--parchemin);font-family:"Crimson Text",serif;
+    height:100vh;display:flex;flex-direction:column;overflow:hidden}
+  header{display:flex;align-items:center;gap:8px;padding:8px 10px;
+    border-bottom:1px solid var(--bord);background:linear-gradient(180deg,var(--surface-2),var(--surface))}
+  header .t{font-family:"Cinzel",serif;font-size:13px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--laiton)}
+  header .spacer{flex:1}
+  input,select,button{font-family:inherit;color:var(--parchemin);background:var(--noir-2);
+    border:1px solid var(--bord);border-radius:7px;padding:5px 8px;font-size:13px}
+  input:focus,select:focus{outline:none;border-color:var(--laiton)}
+  button{cursor:pointer;transition:background .15s ease,border-color .15s ease}
+  button:hover{border-color:var(--laiton-sombre);background:var(--surface)}
+  button.primaire{border-color:var(--laiton-sombre);color:var(--laiton)}
+  #nom{width:140px}
+
+  .onglets{display:flex;gap:3px;flex-wrap:wrap;padding:7px 10px 0}
+  .onglets button{font-size:11px;padding:2px 7px;border-radius:6px 6px 0 0;letter-spacing:.04em;
+    max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .onglets button.actif{color:var(--laiton);border-color:var(--laiton)}
+  .onglets button.neuf{box-shadow:0 0 0 1px var(--oxblood-clair) inset}
+
+  .fil{flex:1;overflow:auto;display:flex;flex-direction:column-reverse;gap:6px;padding:10px}
+  .m{border-left:2px solid var(--bord);padding:2px 0 2px 8px;font-size:14px;line-height:1.45}
+  .m .qui{font-family:"Cinzel",serif;font-size:11px;letter-spacing:.06em;color:var(--laiton)}
+  .m .h{font-size:10px;opacity:.45;margin-left:6px}
+  .m.prive{border-left-color:#8b76c9}
+  .m.moi{border-left-color:var(--laiton-sombre)}
+  .m img{max-width:100%;border-radius:6px;margin-top:5px;border:1px solid var(--bord);
+    cursor:zoom-in;display:block}
+  .vide{opacity:.55;font-style:italic;font-size:13px;padding:4px 2px}
+
+  .img-ligne{display:flex;gap:5px;padding:0 10px 6px;align-items:center}
+  .img-ligne select{flex:1;min-width:0}
+  .bas{display:flex;gap:5px;padding:0 10px 10px}
+  .bas input{flex:1;min-width:0}
+  body.survol{outline:2px dashed var(--laiton);outline-offset:-6px}
+
+  .grand{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;
+    background:rgba(6,5,3,.9);cursor:zoom-out;padding:20px}
+  .grand.on{display:flex}
+  .grand img{max-width:94vw;max-height:92vh;border:1px solid var(--laiton);border-radius:8px}
+  .err{color:var(--oxblood-clair);font-size:12px;padding:0 10px 6px;min-height:16px}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="t">Chat</span>
+  <input type="text" id="nom" placeholder="Ton nom" maxlength="24" />
+  <span class="spacer"></span>
+  <span class="t" id="salle-nom"></span>
+</header>
+
+<div class="onglets" id="onglets"></div>
+<div class="fil" id="fil"></div>
+<div class="err" id="err"></div>
+
+<div class="img-ligne">
+  <select id="galerie" title="Une image de la galerie"></select>
+  <button id="envoyer-image">Envoyer l'image</button>
+  <button id="parcourir" title="Envoyer une image de ton ordinateur">📁</button>
+  <input type="file" id="fichier" accept="image/*" hidden />
+</div>
+<div class="bas">
+  <input type="text" id="saisie" placeholder="Écrire…  (ou dépose une image ici)" maxlength="600" />
+  <button class="primaire" id="envoyer">Envoyer</button>
+</div>
+
+<div class="grand" id="grand"><img id="grand-img" alt="" /></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, push, onValue }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const $ = s => document.querySelector(s);
+const params = new URLSearchParams(location.search);
+const salle = (params.get("salle") || "table-warhammer").replace(/[^a-zA-Z0-9_-]/g, "");
+$("#salle-nom").textContent = salle;
+
+// Le nom vient de la Table, mais reste modifiable ici.
+const nomInit = params.get("nom") || localStorage.getItem("chat_nom") || "";
+$("#nom").value = nomInit;
+$("#nom").addEventListener("change", () => {
+  try{ localStorage.setItem("chat_nom", nom()); }catch(e){}
+  rendre();
+});
+function nom(){ return ($("#nom").value.trim() || "Aventurier").slice(0, 24); }
+
+function erreur(t){
+  $("#err").textContent = t || "";
+  if(t) setTimeout(() => { if($("#err").textContent === t) $("#err").textContent = ""; }, 6000);
+}
+
+function sansAccent(t){
+  return String(t || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+}
+function cleFil(a, b){ return [sansAccent(a), sansAccent(b)].sort().join("|"); }
+function heureCourte(ts){
+  const d = new Date(ts || Date.now());
+  return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+}
+function echapper(t){
+  return String(t).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+}
+
+let db = null, refChat = null;
+try{
+  const app = initializeApp(window.FIREBASE_CONFIG);
+  db = getDatabase(app);
+  refChat = ref(db, `salles/${salle}/chat`);
+}catch(e){ erreur("Connexion impossible : " + e.message); }
+
+let messages = {}, filActif = "tous", neufs = {}, attenteDest = null;
+
+function messagesDuFil(f){
+  return Object.values(messages).filter(Boolean).filter(m => {
+    if(f === "tous") return !m.a;
+    return m.a && cleFil(m.de, m.a) === f;
+  }).sort((x, y) => (y.ts || 0) - (x.ts || 0)).slice(0, 150);
+}
+
+function filsPrives(){
+  const moi = sansAccent(nom());
+  const vus = {};
+  Object.values(messages).filter(Boolean).forEach(m => {
+    if(!m.a) return;
+    const de = sansAccent(m.de), a = sansAccent(m.a);
+    if(de !== moi && a !== moi) return;
+    const autre = (de === moi) ? m.a : m.de;
+    const c = cleFil(m.de, m.a);
+    if(!vus[c] || vus[c].ts < (m.ts || 0)) vus[c] = { cle:c, nom:autre, ts:m.ts || 0 };
+  });
+  return Object.values(vus).sort((x, y) => y.ts - x.ts);
+}
+
+function rendre(){
+  const moi = sansAccent(nom());
+  let h = `<button data-f="tous" class="${filActif === "tous" ? "actif" : ""}${neufs["tous"] ? " neuf" : ""}">Table</button>`;
+  filsPrives().forEach(p => {
+    h += `<button data-f="${echapper(p.cle)}" data-nom="${echapper(p.nom)}" ` +
+         `class="${filActif === p.cle ? "actif" : ""}${neufs[p.cle] ? " neuf" : ""}">${echapper(p.nom)}</button>`;
+  });
+  if(attenteDest && !filsPrives().some(p => p.cle === attenteDest.cle)){
+    h += `<button data-f="${echapper(attenteDest.cle)}" data-nom="${echapper(attenteDest.nom)}" ` +
+         `class="${filActif === attenteDest.cle ? "actif" : ""}">${echapper(attenteDest.nom)}</button>`;
+  }
+  h += `<button data-f="nouveau" title="Écrire à quelqu'un">+</button>`;
+  $("#onglets").innerHTML = h;
+
+  const liste = messagesDuFil(filActif);
+  $("#fil").innerHTML = liste.map(m => {
+    const mien = sansAccent(m.de) === moi;
+    const img = m.img ? `<img src="${echapper(m.img)}" alt="">` : "";
+    const txt = m.t ? echapper(m.t) : "";
+    return `<div class="m${m.a ? " prive" : ""}${mien ? " moi" : ""}">` +
+           `<span class="qui">${echapper(m.de || "?")}</span>` +
+           `<span class="h">${heureCourte(m.ts)}</span>` +
+           (txt ? `<div>${txt}</div>` : "") + img + `</div>`;
+  }).join("") || `<div class="vide">Rien pour l'instant.</div>`;
+}
+
+let vuJusqua = Date.now();
+if(refChat){
+  onValue(refChat, snap => {
+    messages = snap.val() || {};
+    const moi = sansAccent(nom());
+    Object.values(messages).forEach(m => {
+      if(!m || (m.ts || 0) <= vuJusqua || sansAccent(m.de) === moi) return;
+      if(m.a && sansAccent(m.a) !== moi && sansAccent(m.de) !== moi) return;
+      const f = m.a ? cleFil(m.de, m.a) : "tous";
+      if(f !== filActif) neufs[f] = true;
+    });
+    rendre();
+  });
+}
+
+function envoyer(texte, image){
+  const t = (texte || "").trim();
+  if(!t && !image) return;
+  const m = { de: nom(), t: t || null, ts: Date.now() };
+  if(image) m.img = image;
+  if(filActif !== "tous"){
+    const b = $(`#onglets button[data-f="${filActif}"]`);
+    const dest = b ? b.dataset.nom : (attenteDest ? attenteDest.nom : null);
+    if(!dest){ erreur("Choisis d'abord un destinataire."); return; }
+    m.a = dest;
+  }
+  if(!refChat){ erreur("Hors ligne."); return; }
+  push(refChat, m);
+  attenteDest = null;
+}
+
+$("#onglets").addEventListener("click", e => {
+  const b = e.target.closest("button[data-f]"); if(!b) return;
+  if(b.dataset.f === "nouveau"){
+    const qui = prompt("Écrire en privé à qui ? (son nom exact)");
+    if(!qui) return;
+    attenteDest = { cle: cleFil(nom(), qui.trim()), nom: qui.trim() };
+    filActif = attenteDest.cle;
+    rendre();
+    return;
+  }
+  filActif = b.dataset.f;
+  neufs[filActif] = false;
+  vuJusqua = Date.now();
+  rendre();
+});
+
+$("#envoyer").addEventListener("click", () => { envoyer($("#saisie").value); $("#saisie").value = ""; });
+$("#saisie").addEventListener("keydown", e => {
+  if(e.key === "Enter"){ e.preventDefault(); $("#envoyer").click(); }
+});
+
+// --- Images de la galerie : la liste se remplit toute seule depuis GitHub ---
+const D = window.DEPOT_GITHUB || {};
+function joliNom(f){
+  return f.replace(/\.[^.]+$/, "").replace(/_/g, "'").replace(/-/g, " ").trim();
+}
+function urlImage(f){ return (window.DOSSIER_IMAGES || "gallerie/") + encodeURIComponent(f); }
+
+if(D.user && D.repo){
+  fetch(`https://api.github.com/repos/${D.user}/${D.repo}/contents/${(window.DOSSIER_IMAGES||"gallerie/").replace(/\/$/,"")}?ref=${D.branche || "main"}`)
+    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(lot => {
+      const imgs = lot.filter(x => x.type === "file" && /\.(png|jpe?g|webp|gif)$/i.test(x.name))
+                      .map(x => x.name).sort((a, b) => a.localeCompare(b, "fr"));
+      $("#galerie").innerHTML = `<option value="">— galerie —</option>` +
+        imgs.map(f => `<option value="${echapper(f)}">${echapper(joliNom(f))}</option>`).join("");
+    })
+    .catch(() => { $("#galerie").innerHTML = `<option value="">galerie indisponible</option>`; });
+}
+
+$("#envoyer-image").addEventListener("click", () => {
+  const f = $("#galerie").value;
+  if(!f){ erreur("Choisis une image dans la liste."); return; }
+  envoyer($("#saisie").value, urlImage(f));
+  $("#saisie").value = "";
+});
+
+// --- Depuis l'ordinateur, par le bouton ou par glisser-déposer ---
+function envoyerFichier(file){
+  if(!file || !/^image\//.test(file.type)){ erreur("Ce n'est pas une image."); return; }
+  const lecteur = new FileReader();
+  lecteur.onload = () => {
+    const im = new Image();
+    im.onload = () => {
+      const max = 1400;
+      const ech = Math.min(1, max / Math.max(im.width, im.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(im.width * ech);
+      c.height = Math.round(im.height * ech);
+      c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+      let url;
+      try{ url = c.toDataURL("image/jpeg", 0.82); }
+      catch(e){ erreur("Image illisible."); return; }
+      if(url.length > 900000){ erreur("Image trop lourde même réduite."); return; }
+      envoyer($("#saisie").value, url);
+      $("#saisie").value = "";
+    };
+    im.onerror = () => erreur("Image illisible.");
+    im.src = lecteur.result;
+  };
+  lecteur.onerror = () => erreur("Lecture impossible.");
+  lecteur.readAsDataURL(file);
+}
+
+$("#parcourir").addEventListener("click", () => $("#fichier").click());
+$("#fichier").addEventListener("change", e => {
+  if(e.target.files && e.target.files[0]) envoyerFichier(e.target.files[0]);
+  e.target.value = "";
+});
+["dragenter", "dragover"].forEach(ev => document.addEventListener(ev, e => {
+  e.preventDefault(); document.body.classList.add("survol");
+}));
+["dragleave", "drop"].forEach(ev => document.addEventListener(ev, e => {
+  e.preventDefault(); document.body.classList.remove("survol");
+}));
+document.addEventListener("drop", e => {
+  const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if(f) envoyerFichier(f);
+});
+
+// --- Une image au clic s'ouvre en grand ---
+$("#fil").addEventListener("click", e => {
+  const img = e.target.closest("img"); if(!img) return;
+  $("#grand-img").src = img.src;
+  $("#grand").classList.add("on");
+});
+$("#grand").addEventListener("click", () => {
+  $("#grand").classList.remove("on");
+  $("#grand-img").removeAttribute("src");
+});
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape") $("#grand").classList.remove("on");
+});
+
+rendre();
+</script>
+</body>
+</html>
