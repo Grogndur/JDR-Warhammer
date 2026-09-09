@@ -1093,6 +1093,16 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <button id="annuler-trait" class="pj-dessin" title="Annuler mon dernier trait">↶</button>
         <button id="effacer-tout" class="gm-only-in" title="Effacer tous les traits (MJ)">🗑</button>
       </div>
+      <div class="pal-ligne pal-couleurs pj-dessin" id="pal-couleurs"></div>
+      <div class="pal-ligne pj-dessin">
+        <span class="pal-lib">Taille</span>
+        <button class="taille" data-taille="1">•</button>
+        <button class="taille actif" data-taille="2">●</button>
+        <button class="taille" data-taille="3">⬤</button>
+      </div>
+      <div class="pal-ligne gm-only-l">
+        <label class="toggle"><input type="checkbox" id="brouillard-chk" /> Brouillard de guerre</label>
+      </div>
       <div class="pal-ligne gm-only-l">
         <button class="outil" data-outil="reveler" title="Révéler la carte au pinceau">👁</button>
         <button class="outil" data-outil="voiler" title="Remettre du brouillard">🌫</button>
@@ -1103,16 +1113,6 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <span class="spacer"></span>
         <button id="brouillard-rien" title="Tout révéler">☀</button>
         <button id="brouillard-tout" title="Tout recouvrir">🌑</button>
-      </div>
-      <div class="pal-ligne gm-only-l">
-        <label class="toggle"><input type="checkbox" id="brouillard-chk" /> Brouillard</label>
-      </div>
-      <div class="pal-ligne pal-couleurs pj-dessin" id="pal-couleurs"></div>
-      <div class="pal-ligne pj-dessin">
-        <span class="pal-lib">Taille</span>
-        <button class="taille" data-taille="1">•</button>
-        <button class="taille actif" data-taille="2">●</button>
-        <button class="taille" data-taille="3">⬤</button>
       </div>
       <div class="pal-ligne">
         <span class="pal-lib">Zoom</span>
@@ -1275,15 +1275,6 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <button id="init-crea-ajout" class="primaire" title="Ajouter au combat">+</button>
         <button id="init-recharger" title="Relire le bestiaire">⟳</button>
         <button id="ouvrir-jetons" title="Poser des jetons sur la carte">◉ Jetons</button>
-        <span class="pal-sep"></span>
-        <input type="text" id="mint-nom" placeholder="Effet" maxlength="26"
-               title="Un effet qui dure : sort, état, poursuite" />
-        <span class="nb-pas"><button type="button" id="mint-moins">−</button><input type="text" inputmode="numeric" id="mint-nb" value="3" title="Combien de rounds"><button type="button" id="mint-plus">+</button></span>
-        <button id="mint-ajout" title="Décompte à chaque fin de round">+ Minuteur</button>
-        <span class="pal-sep"></span>
-        <button id="chrono-30" title="Compte à rebours de 30 secondes, pour toute la table">⏱ 30s</button>
-        <button id="chrono-60" title="Compte à rebours d'une minute">⏱ 1min</button>
-        <button id="chrono-stop" title="Arrêter le compte à rebours">✕</button>
       </div>
       <div class="ligne">
         <input type="text" id="init-add" placeholder="Nom de PJ 42" title="Ajouter un personnage joueur : son nom puis son initiative" />
@@ -1295,6 +1286,18 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <button id="init-annuler" title="Annuler le dernier décompte" disabled>↶</button>
         <button id="init-vider" title="Vider l'initiative">✕</button>
         <span class="secret-loc" id="init-msg"></span>
+      </div>
+      <div class="ligne">
+        <label for="mint-nom">Effet</label>
+        <input type="text" id="mint-nom" placeholder="Sort, poison, poursuite…" maxlength="26"
+               title="Un effet qui dure un certain nombre de rounds" />
+        <span class="nb-pas"><button type="button" id="mint-moins">−</button><input type="text" inputmode="numeric" id="mint-nb" value="3" title="Combien de rounds"><button type="button" id="mint-plus">+</button></span>
+        <button id="mint-ajout" title="Décompte à chaque fin de round">+ Minuteur</button>
+        <span class="pal-sep"></span>
+        <button id="chrono-15" title="Compte à rebours de 15 secondes, pour toute la table">⏱ 15s</button>
+        <button id="chrono-30" title="Compte à rebours de 30 secondes">⏱ 30s</button>
+        <button id="chrono-60" title="Compte à rebours d'une minute">⏱ 1min</button>
+        <button id="chrono-stop" title="Arrêter le compte à rebours">✕</button>
       </div>
     </div>
 
@@ -3000,28 +3003,30 @@ if($("#minuteurs")) $("#minuteurs").addEventListener("click", e => {
 const refChrono = db ? ref(db, `salles/${salle}/chrono`) : null;
 let chronoFin = 0, chronoTimer = null, chronoDernier = -1;
 
-function sonTic(reste, total){
+// Trois coups sourds, et rien avant : le silence pèse plus lourd qu'un
+// tic-tac. Chacun descend un peu plus bas que le précédent.
+function sonTic(reste){
   const c = ctxAudio(); if(!c) return;
   const t = c.currentTime + 0.01;
-  const part = 1 - Math.max(0, Math.min(1, reste / Math.max(1, total)));  // 0 au début, 1 à la fin
+  const rang = Math.max(0, Math.min(2, 3 - reste));      // 0, 1, puis 2
+  const dep = 92 - rang * 14;
   const o = c.createOscillator(), g = c.createGain();
-  const filtre = c.createBiquadFilter();
-  filtre.type = "bandpass";
-  filtre.frequency.value = 900 + 900 * part;
-  o.type = "square";
-  o.frequency.setValueAtTime(420 + 260 * part, t);
+  const pb = c.createBiquadFilter();
+  pb.type = "lowpass"; pb.frequency.value = 260;
+  o.type = "sine";
+  o.frequency.setValueAtTime(dep * 1.5, t);
+  o.frequency.exponentialRampToValueAtTime(dep, t + 0.16);
   g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(0.05 + 0.42 * part, t + 0.008);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.10 + 0.22 * part);
-  o.connect(filtre); filtre.connect(g);
-  // Sur la fin, le tic traîne dans une salle de plus en plus grande.
-  if(part > 0.55 && c.__reverbSombre){
+  g.gain.exponentialRampToValueAtTime(0.42 + 0.16 * rang, t + 0.014);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.5 + 0.15 * rang);
+  o.connect(pb); pb.connect(g);
+  if(c.__reverbSombre){
     const rv = c.createConvolver(); rv.buffer = c.__reverbSombre;
-    const envoi = c.createGain(); envoi.gain.value = (part - 0.55) * 1.6;
+    const envoi = c.createGain(); envoi.gain.value = 0.25 + 0.2 * rang;
     g.connect(envoi); envoi.connect(rv); rv.connect(c.destination);
   }
   g.connect(c.destination);
-  o.start(t); o.stop(t + 0.42);
+  o.start(t); o.stop(t + 0.9);
 }
 
 function sonFinChrono(){
@@ -3031,17 +3036,28 @@ function sonFinChrono(){
   const lim = c.createDynamicsCompressor();
   lim.threshold.value = -6; lim.ratio.value = 18; lim.attack.value = 0.003;
   sortie.connect(lim); lim.connect(c.destination);
-  [[38, 1.0, 2.6], [27, 0.85, 3.2], [55, 0.5, 1.6]].forEach(n => {
+  // Le coup final : plus bas, plus long, et sans le moindre éclat.
+  const pb = c.createBiquadFilter();
+  pb.type = "lowpass"; pb.frequency.setValueAtTime(220, t);
+  pb.frequency.exponentialRampToValueAtTime(70, t + 4.5);
+  pb.connect(sortie);
+  [[30, 1.0, 5.2], [21, 0.9, 6.0], [44, 0.42, 3.4]].forEach(n => {
     const o = c.createOscillator(), g = c.createGain();
     o.type = "sine";
-    o.frequency.setValueAtTime(n[0] * 1.6, t);
-    o.frequency.exponentialRampToValueAtTime(n[0], t + 0.5);
+    o.frequency.setValueAtTime(n[0] * 1.9, t);
+    o.frequency.exponentialRampToValueAtTime(n[0], t + 0.9);
     g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(n[1], t + 0.02);
+    g.gain.exponentialRampToValueAtTime(n[1], t + 0.03);
+    g.gain.setValueAtTime(n[1], t + n[2] * 0.3);
     g.gain.exponentialRampToValueAtTime(0.0001, t + n[2]);
-    o.connect(g); g.connect(sortie);
-    o.start(t); o.stop(t + n[2] + 0.1);
+    o.connect(g); g.connect(pb);
+    o.start(t); o.stop(t + n[2] + 0.2);
   });
+  if(c.__reverbSombre){
+    const rv = c.createConvolver(); rv.buffer = c.__reverbSombre;
+    const envoi = c.createGain(); envoi.gain.value = 0.5;
+    pb.connect(envoi); envoi.connect(rv); rv.connect(sortie);
+  }
 }
 
 function peindreChrono(){
@@ -3055,7 +3071,7 @@ function peindreChrono(){
   val.textContent = reste;
   if(reste !== chronoDernier){
     chronoDernier = reste;
-    if(reste > 0) { try{ sonTic(reste, total); }catch(e){} }
+    if(reste > 0 && reste <= 3) { try{ sonTic(reste); }catch(e){} }
     else {
       try{ sonFinChrono(); }catch(e){}
       setTimeout(() => { boite.classList.remove("on", "presse"); }, 1600);
@@ -3086,6 +3102,7 @@ function appliquerChrono(v){
 }
 if(refChrono){ onValue(refChrono, snap => appliquerChrono(snap.val())); }
 
+if($("#chrono-15")) $("#chrono-15").addEventListener("click", () => lancerChrono(15));
 if($("#chrono-30")) $("#chrono-30").addEventListener("click", () => lancerChrono(30));
 if($("#chrono-60")) $("#chrono-60").addEventListener("click", () => lancerChrono(60));
 if($("#chrono-stop")) $("#chrono-stop").addEventListener("click", () => {
@@ -5280,10 +5297,12 @@ function fondreVers(cible, duree, apres){
 function appliquerAmb(a){
   if(!audioAmb || !a) return;
   if(a.etat === "stop"){
-    audioAmb.pause();
-    try{ audioAmb.currentTime = 0; }catch(e){}
-    audioAmb.removeAttribute("src"); audioAmb.dataset.url = "";
-    montrerRappelSon(false);
+    fondreVers(0, 3000, () => {
+      audioAmb.pause();
+      try{ audioAmb.currentTime = 0; }catch(e){}
+      audioAmb.removeAttribute("src"); audioAmb.dataset.url = "";
+      montrerRappelSon(false);
+    });
     return;
   }
   const cible = (typeof a.volume === "number")
