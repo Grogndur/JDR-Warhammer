@@ -922,7 +922,10 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
   #calque.t-brume #g-jetons{pointer-events:none}
   #calque.t-brume{cursor:cell}
   .j-nom{font-family:"Cinzel",serif;fill:#f4ecd8;stroke:#0d0a06;stroke-linejoin:round;
-    paint-order:stroke;text-anchor:middle;pointer-events:none;user-select:none}
+    paint-order:stroke;text-anchor:middle;pointer-events:none;user-select:none;
+    opacity:0;transition:opacity .16s ease}
+  #g-jetons > g:hover .j-nom{opacity:1}
+  #g-jetons > g.choisi .j-nom{opacity:1}
   .j-vide{fill:#241c12}
   .j-mort{filter:grayscale(.72) brightness(.72)}
   /* Brouillard : le MJ voit au travers, la table le subit. */
@@ -1742,6 +1745,8 @@ svg.addEventListener("pointerdown", e=>{
   if((!paletteOuverte() && !panneauJetonsOuvert()) || !base.iw) return;
   try{ svg.setPointerCapture(e.pointerId); }catch(_){}
   if(e.pointerType === "touch"){ touches.set(e.pointerId, {x:e.clientX,y:e.clientY}); return; }
+  if(typeof choisirJeton === "function" && jetonChoisi){ jetonChoisi = null;
+    document.querySelectorAll("#g-jetons > g.choisi").forEach(g => g.classList.remove("choisi")); }
   if(e.button === 2 || outil === "nav"){ pan = true; panLast = {x:e.clientX,y:e.clientY}; svg.classList.add("glisse"); return; }
   if(outil === "reveler" || outil === "voiler"){
     if(!estMJ()) return;
@@ -2165,7 +2170,8 @@ function rendreJetons(){
     const idc = "clipj-" + j.id;
     const cbt = combattantDe(j);
     const actif = !!(cbt && initEtat.actif === cbt.id);
-    let h = `<g data-id="${escape(j.id)}" transform="translate(${X.toFixed(1)},${Y.toFixed(1)})">`;
+    let h = `<g data-id="${escape(j.id)}" class="${jetonChoisi === j.id ? "choisi" : ""}" ` +
+            `transform="translate(${X.toFixed(1)},${Y.toFixed(1)})">`;
     // C'est son tour : une couronne claire bat autour du jeton.
     if(actif){
       h += `<circle class="j-actif" r="${(R*1.24).toFixed(1)}" fill="none" ` +
@@ -2319,6 +2325,16 @@ function envoyerPosition(m, fin){
   else { jetonsLocaux[m.id] = copie; if(fin){ rendreJetons(); } }
 }
 
+// Le jeton choisi garde son nom affiché, jusqu'à ce qu'on en choisisse un
+// autre ou qu'on clique le fond de la carte.
+let jetonChoisi = null;
+function choisirJeton(id){
+  jetonChoisi = (jetonChoisi === id) ? null : id;
+  document.querySelectorAll("#g-jetons > g").forEach(g => {
+    g.classList.toggle("choisi", g.dataset.id === jetonChoisi);
+  });
+}
+
 function ouvrirPortraitJeton(id){
   const j = jetonsCourants()[id]; if(!j) return;
   // Deux visuels par jeton : le rond, petit et recadré, qui vit sur la carte,
@@ -2377,7 +2393,7 @@ function fermerPortraitJeton(){
     const m = enMain; enMain = null;
     if(m.el) m.el.classList.remove("pris");
     if(m.bouge && m.libre) envoyerPosition(m, true);
-    else ouvrirPortraitJeton(m.id);
+    else { choisirJeton(m.id); ouvrirPortraitJeton(m.id); }
     if(rendreEnAttente){ rendreEnAttente = false; rendreJetons(); rendreListeJetons(); }
   }
   g.addEventListener("pointerup", finJeton);
