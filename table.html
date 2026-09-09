@@ -946,8 +946,6 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
   .j-num{font-family:"Cinzel",serif;fill:#0d0a06;text-anchor:middle;pointer-events:none;user-select:none;font-weight:700}
   .j-l .etat{width:26px;height:6px;border-radius:3px;flex:none;box-shadow:0 0 0 1px #00000066}
   .j-l input.num{width:26px;padding:1px 2px;font-size:12px;text-align:center;flex:none}
-  /* Rond du jeton et illustration au clic : deux boutons voisins, jamais
-     confondus. Le premier est un disque, le second un cadre portrait. */
   .j-l .b-rond{font-size:13px;line-height:1;color:var(--parchemin-doux)}
   /* Trois disques de tailles croissantes : la taille du bouton dit ce qu'il fait. */
   .jetons-panel .j-taille{line-height:1;color:var(--parchemin-doux);padding:3px 6px}
@@ -955,9 +953,6 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
   .jetons-panel .j-taille:nth-of-type(2){font-size:13px}
   .jetons-panel .j-taille:nth-of-type(3){font-size:18px}
   .jetons-panel .j-taille.actif{color:var(--laiton)}
-  .j-l .b-illus{font-size:14px;line-height:1;letter-spacing:0;
-    transform:scaleY(1.25);color:var(--parchemin-doux)}
-  .j-l .b-illus.mis{color:var(--laiton);border-color:var(--laiton)}
   .j-l .b-reveler{font-size:13px;line-height:1;color:var(--laiton)}
 
   /* Panneau Jetons (MJ) : reprend l'habillage de la palette de dessin. */
@@ -1070,6 +1065,7 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
     <div class="pal-tete" id="chat-drag">
       <span class="pt">Chat</span>
       <span class="spacer"></span>
+      <button id="chat-vider" class="mini gm-only-in" title="Effacer tout le chat, pour tout le monde (MJ)">🗑</button>
       <button id="chat-detacher" class="mini" title="Ouvrir le chat dans une fenêtre à part">⧉</button>
       <button id="fermer-chat" class="mini" title="Masquer">×</button>
     </div>
@@ -2371,10 +2367,7 @@ function choisirJeton(id){
 
 function ouvrirPortraitJeton(id){
   const j = jetonsCourants()[id]; if(!j) return;
-  // Deux visuels par jeton : le rond, petit et recadré, qui vit sur la carte,
-  // et l'illustration en pied qu'on ouvre d'un clic. À défaut d'illustration,
-  // c'est le rond qu'on agrandit.
-  const url = j.illus || imageJeton(j);
+  const url = imageJeton(j);
   const vue = $("#jeton-vue"), img = $("#jeton-vue-img"), leg = $("#jeton-vue-nom");
   if(!vue || !img) return;
   if(!url){ alerte("Ce jeton n'a pas de portrait à montrer."); return; }
@@ -2506,9 +2499,7 @@ function rendreListeJetons(){
       h += `<button data-act="soigner" title="Un cran d'état en plus">▲</button>`;
     }
     h += `<input class="num" data-act="num" value="${escape(j.num||"")}" maxlength="2" title="Numéro de troupe" />`;
-    h += `<button data-act="image" class="b-rond" title="Rond du jeton : applique l'image choisie dans la galerie">●</button>`;
-    h += `<button data-act="illus" class="b-illus${j.illus ? " mis" : ""}" ` +
-         `title="Illustration au clic : applique l'image choisie dans la galerie. Clic droit pour la retirer.">▯</button>`;
+    h += `<button data-act="image" class="b-rond" title="Applique au jeton l'image choisie dans la galerie">●</button>`;
     const cache = nomReel(j) && nomReel(j) !== j.nom;
     if(cache){
       h += `<button data-act="reveler" class="b-reveler" title="Afficher le vrai nom sur la carte, pour toute la table">◇</button>`;
@@ -2606,11 +2597,10 @@ $("#jetons-poses").addEventListener("click", e => {
     if(vrai) ecrireJeton(Object.assign({}, j, { nom: vrai }));
     return;
   }
-  if(act === "image" || act === "illus"){
+  if(act === "image"){
     const sel = $("#jetons-img");
     const choix = sel && sel.value ? lienImageDirect(sel.value) : "";
     if(!choix){ alerte("Choisis d'abord une image dans la liste de la galerie."); return; }
-    if(act === "illus"){ ecrireJeton(Object.assign({}, j, { illus: choix })); return; }
     // url l'emporte sur pf au rendu : on efface donc le portrait de fiche
     // pour que le nouveau visuel s'applique vraiment.
     const copie = Object.assign({}, j, { url: choix });
@@ -2626,16 +2616,6 @@ $("#jetons-poses").addEventListener("click", e => {
   }
   const pas = act === "grand" ? 1.25 : 1/1.25;
   const copie = Object.assign({}, j, { r: Math.max(0.015, Math.min(0.18, (j.r||0.05) * pas)) });
-  ecrireJeton(copie);
-});
-
-$("#jetons-poses").addEventListener("contextmenu", e => {
-  const b = e.target.closest("button[data-act='illus']"); if(!b) return;
-  e.preventDefault();
-  const id = b.closest("[data-id]").dataset.id;
-  const j = jetonsCourants()[id]; if(!j || !j.illus) return;
-  const copie = Object.assign({}, j);
-  delete copie.illus;
   ecrireJeton(copie);
 });
 
@@ -3016,6 +2996,15 @@ $("#chat").addEventListener("drop", e => {
 });
 
 // Le chat dans sa propre fenêtre, pour le poser sur un second écran.
+// Table rase : les fils publics comme les privés. À faire entre deux
+// séances, pour qu'un nouveau venu ne remonte pas le temps.
+$("#chat-vider").addEventListener("click", () => {
+  if(!estMJ()) return;
+  if(!confirm("Effacer tout le chat, pour toute la table ? Les messages privés partent aussi.")) return;
+  if(refChat) set(refChat, null).then(() => alerte("Chat vidé."));
+  else { messages = {}; rendreChat(); }
+});
+
 $("#chat-detacher").addEventListener("click", () => {
   const p = new URLSearchParams();
   p.set("salle", salle);
