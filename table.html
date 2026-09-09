@@ -693,7 +693,7 @@
   .palette button{padding:5px 8px;font-size:13px;line-height:1}
   .palette .outil.actif,.palette .taille.actif{border-color:var(--laiton);color:#f6e7c8;
     background:linear-gradient(180deg,#3a2c12,#2a2012);box-shadow:0 0 0 1px var(--laiton) inset}
-  .pal-couleurs{gap:6px}
+  .pal-couleurs{gap:6px;flex-wrap:wrap}
   .pastille{width:22px;height:22px;padding:0;border-radius:50%;border:2px solid #00000055;cursor:pointer;
     box-shadow:0 1px 3px rgba(0,0,0,.5)}
   .pastille.actif{outline:2px solid var(--laiton);outline-offset:2px}
@@ -1408,10 +1408,22 @@ selImg.addEventListener("change", ()=>{
 
 // ============ Zoom + déplacement + dessin sur le plateau ============
 let outil = "nav";                       // "nav" | "dessin" | "gomme"
-let couleur = "#c1453f";
+let couleur = "#7e2b22";
 let niveau = 2;                          // 1 / 2 / 3
+// Palette tirée des illustrations plutôt que d'un nuancier d'écran : rien de
+// saturé, rien qui hurle par-dessus une carte peinte. Les deux premières sont
+// les valeurs extrêmes, dont on a besoin pour tracer lisiblement.
 const COULEURS = [
-  "#16110b","#f4ecd8","#c1453f","#9b2226","#3b6fd2","#5a9e3f","#e8c33a","#c9a25a"
+  ["#14100c","Noir de suie"],
+  ["#ded3ba","Os"],
+  ["#7e2b22","Sang séché"],
+  ["#a3542c","Rouille"],
+  ["#b8933f","Herbe sèche"],
+  ["#5f7a35","Herbe"],
+  ["#334d33","Vert pin"],
+  ["#2c4a63","Eau profonde"],
+  ["#5b3a5c","Prune"],
+  ["#c9a25a","Laiton"]
 ];
 
 function paletteOuverte(){ return !$("#palette").classList.contains("replie"); }
@@ -1553,10 +1565,10 @@ scene.addEventListener("wheel", e=>{
 
 // --- Câblage de la palette ---
 const palCoul = $("#pal-couleurs");
-COULEURS.forEach((c, i)=>{
+COULEURS.forEach(([c, nomCoul])=>{
   const b = document.createElement("button");
   b.className = "pastille" + (c===couleur ? " actif" : "");
-  b.style.background = c; b.dataset.coul = c; b.title = "Couleur";
+  b.style.background = c; b.dataset.coul = c; b.title = nomCoul;
   b.addEventListener("click", ()=>{
     couleur = c;
     palCoul.querySelectorAll(".pastille").forEach(x=> x.classList.toggle("actif", x.dataset.coul===c));
