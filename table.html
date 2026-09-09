@@ -400,6 +400,11 @@
   .dock .prefixe-img{font-size:10px}
   .dock #init-msg{max-width:132px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .dock #jet-secret-loc{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* Banc d'essai du MJ : imposer un résultat pour vérifier ce qu'il déclenche. */
+  .forcer-grp{align-items:center;gap:4px;margin-left:6px;
+    padding-left:8px;border-left:1px solid var(--bord)}
+  .forcer-grp input{width:52px}
+  .forcer-grp button{border-color:rgba(201,162,90,.5);color:var(--laiton)}
 
   @media(max-width:1500px){ header .titre{display:flex;position:absolute;top:2px;left:50%;transform:translateX(-50%);pointer-events:none;align-items:flex-start} }
   @media(max-width:1700px){
@@ -602,6 +607,11 @@
 
   .gm-only{display:none}
   body.est-mj .gm-only{display:flex}
+  /* Les commandes de session vivent maintenant dans la barre du bas. Chez le
+     MJ elles ouvrent le bloc image et ambiance ; chez les joueurs, elles
+     forment à elles seules ce bloc. */
+  .ligne-outils{padding-bottom:2px}
+  body.est-mj .ligne-outils{border-bottom:1px solid var(--bord);padding-bottom:6px;margin-bottom:2px}
 
   /* Journal des jets (panneau vertical, à droite) */
   .journal-panel{position:fixed;top:76px;bottom:104px;right:0;width:236px;z-index:24;
@@ -754,15 +764,15 @@ header .titre{position:absolute !important;left:50% !important;right:auto !impor
 /* ---- Jauge jour / nuit ------------------------------------------
    Les douze boutons sont posés sur les pastilles de cire, dont la
    position a été relevée dans l'image. */
-header .titre{position:static !important;left:auto !important;right:auto !important;
-  top:auto !important;transform:none !important;margin:0 0 0 auto !important;
+header .titre{position:absolute !important;left:50% !important;right:auto !important;
+  top:50% !important;transform:translate(-50%,-50%) !important;margin:0 !important;
   display:flex !important;align-items:center;pointer-events:none;}
 
 /* ---- Bandeau du monde : l'heure et le temps, tout en largeur ----------
    Les deux blocs tiennent sur une seule ligne et n'ajoutent pas un pixel
    de hauteur à la barre : ils s'étalent vers la droite au lieu de
    s'empiler. */
-.monde{display:flex;align-items:center;gap:58px;flex-wrap:wrap;padding-right:16px;
+.monde{position:relative;display:flex;align-items:center;
   pointer-events:auto;user-select:none;}
 .cycle{display:flex;align-items:center;gap:9px;}
 .cycle-svg{display:block;height:30px;width:268px;overflow:visible;}
@@ -777,7 +787,7 @@ header .titre{position:static !important;left:auto !important;right:auto !import
 body.jauge-mj .cycle-cran{cursor:pointer;}
 body.jauge-mj .cycle-cran:hover circle.pt{r:5.4;}
 @media(max-width:1100px){
-  .monde{gap:26px;padding-right:10px;}
+  .meteo{margin-left:26px;}
   .cycle-svg{width:212px;height:26px;}
   .monde-mot{font-size:11px;letter-spacing:.12em;}
   .cycle .monde-mot{width:98px;}
@@ -832,7 +842,8 @@ body.jauge-mj .jauge-bouton:hover{background:rgba(255,244,214,.20);
 /* ---- Météo de la table -------------------------------------------
    Même principe que la jauge : une seule icône allumée, les autres en
    veilleuse, et un mot dessous. Le MJ seul peut changer le temps. */
-.meteo{display:flex;align-items:center;gap:9px;pointer-events:auto;user-select:none;}
+.meteo{position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:58px;
+  display:flex;align-items:center;gap:9px;pointer-events:auto;user-select:none;}
 .meteo-rangee{display:flex;align-items:center;gap:3px;}
 .meteo-b{width:28px;height:28px;padding:0;border:0;background:transparent;border-radius:7px;
   display:flex;align-items:center;justify-content:center;opacity:.26;cursor:default;
@@ -946,18 +957,6 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
   <header>
     <div class="entete-gauche">
       <a class="retour" href="index.html" title="Retour à l'accueil">← Accueil</a>
-      <div class="grp entete-grp">
-        <div class="ligne">
-          <input type="text" id="nom" placeholder="Ton nom" maxlength="24" />
-          <label class="toggle"><input type="checkbox" id="mj" /> MJ</label>
-          <button id="ouvrir-cams" title="Afficher ou masquer les caméras">📹 Caméras</button>
-          <button id="ouvrir-journal" title="Afficher ou masquer le journal">📜 Journal</button>
-          <button id="ouvrir-init" title="Afficher ou masquer l'initiative">⚔ Initiative</button>
-          <button id="ouvrir-dessin" title="Zoom et dessin sur la carte">🖌 Dessin</button>
-          <button id="ouvrir-jetons" class="gm-only-in" title="Poser des jetons sur la carte (MJ)">◉ Jetons</button>
-          <button id="ouvrir-grimoire" class="gm-only-in" title="Ouvrir le Grimoire dans une fenêtre séparée (MJ)">📖 Grimoire</button>
-        </div>
-      </div>
     </div>
     <div class="titre">
       <div class="monde">
@@ -1135,6 +1134,11 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <button data-de="4">d4</button>
         <button class="primaire" id="lancer-test">Lancer</button>
         <button id="secret-test" class="secret-btn" title="Lancer en secret : seuls toi et le MJ voyez le résultat">Secret</button>
+        <span class="gm-only-in forcer-grp">
+          <input type="number" id="forcer-val" min="1" max="100" placeholder="01"
+                 title="Résultat imposé au d100" />
+          <button id="forcer-lancer" title="Lancer un test avec ce résultat exact : journal, dés, son et vignetage comme un vrai jet (MJ)">Forcer</button>
+        </span>
       </div>
       <div class="ligne">
         <label for="custom">Dés</label>
@@ -1170,8 +1174,18 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
       </div>
     </div>
 
-    <div class="grp gm-only grp-scene">
-      <div class="ligne">
+    <div class="grp grp-scene">
+      <div class="ligne ligne-outils">
+        <input type="text" id="nom" placeholder="Ton nom" maxlength="24" />
+        <label class="toggle"><input type="checkbox" id="mj" /> MJ</label>
+        <button id="ouvrir-cams" title="Afficher ou masquer les caméras">📹 Caméras</button>
+        <button id="ouvrir-journal" title="Afficher ou masquer le journal">📜 Journal</button>
+        <button id="ouvrir-init" title="Afficher ou masquer l'initiative">⚔ Initiative</button>
+        <button id="ouvrir-dessin" title="Zoom et dessin sur la carte">🖌 Dessin</button>
+        <button id="ouvrir-jetons" class="gm-only-in" title="Poser des jetons sur la carte (MJ)">◉ Jetons</button>
+        <button id="ouvrir-grimoire" class="gm-only-in" title="Ouvrir le Grimoire dans une fenêtre séparée (MJ)">📖 Grimoire</button>
+      </div>
+      <div class="ligne gm-only">
         <label for="img-choix">Image</label>
         <select id="img-choix"></select>
         <span class="prefixe-img" id="prefixe-img">gallerie/</span>
@@ -1179,7 +1193,7 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <button class="primaire" id="afficher-img" title="Afficher l'image pour toute la table">Afficher</button>
         <button id="vider-img" title="Retirer l'image">✕</button>
       </div>
-      <div class="ligne">
+      <div class="ligne gm-only">
         <label for="amb-choix">Ambiance</label>
         <select id="amb-choix"></select>
         <span class="prefixe-img" id="prefixe-son">gallerie/</span>
@@ -1189,8 +1203,8 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <button id="amb-stop" title="Couper">⏹</button>
         <input type="range" id="amb-vol" min="0" max="100" value="50" title="Volume" />
       </div>
-      <div class="galerie" id="galerie"></div>
-      <div class="err" id="amb-err"></div>
+      <div class="galerie gm-only" id="galerie"></div>
+      <div class="err gm-only" id="amb-err"></div>
     </div>
 
   </section>
@@ -1868,11 +1882,9 @@ function placeLibre(){
   return { x: 0.30 + col*pas, y: 0.34 + rang*pas + (col%2 ? pas/2 : 0) };
 }
 
-// Le jeton posé depuis le combat est le plus petit des trois : il accompagne
-// une troupe, souvent nombreuse. Celui de la galerie, plus souvent seul,
-// tient un cran au-dessus. La taille choisie dans le panneau reste la
-// référence des deux.
-const FACTEUR_POSE = { galerie: 0.8, combat: 0.64 };
+// Le jeton de galerie sort un cran sous celui du combat. La taille choisie
+// dans le panneau reste la référence des deux.
+const FACTEUR_POSE = { combat: 0.8, galerie: 0.64 };
 
 function poserJeton(o){
   if(!base.iw){ alerte("Affiche d'abord une carte ou une image."); return; }
@@ -2192,6 +2204,21 @@ $("#jetons-poses").addEventListener("change", e => {
   ecrireJeton(Object.assign({}, j, { num: v }));
 });
 
+const forcerLancer = $("#forcer-lancer");
+if(forcerLancer){
+  forcerLancer.addEventListener("click", () => {
+    if(!estMJ()) return;
+    const champ = $("#forcer-val");
+    const v = parseInt(champ.value, 10);
+    if(isNaN(v) || v < 1 || v > 100){ alerte("Donne un résultat entre 1 et 100."); return; }
+    const cible = parseInt($("#cible").value, 10);
+    lancerTest(isNaN(cible) ? 50 : cible, false, v);
+  });
+  $("#forcer-val").addEventListener("keydown", e => {
+    if(e.key === "Enter") forcerLancer.click();
+  });
+}
+
 $("#jetons-poser").addEventListener("click", () => {
   const sel = $("#jetons-img");
   const url = sel && sel.value ? lienImageDirect(sel.value) : "";
@@ -2284,8 +2311,11 @@ function envoyerJetSecret(jet){
   else afficherJet(j);                       // hors-ligne
 }
 
-function lancerTest(cible, secret){
-  const r = Math.floor(Math.random()*100)+1;       // 1..100
+function lancerTest(cible, secret, impose){
+  // impose : le MJ vérifie ce que déclenche un résultat précis. Le jet suit
+  // ensuite exactement le même chemin qu'un jet ordinaire, dés compris.
+  const r = impose ? Math.max(1, Math.min(100, impose))
+                   : Math.floor(Math.random()*100)+1;       // 1..100
   const dizR = (r===100) ? 0 : Math.floor(r/10);
   const uniR = (r===100) ? 0 : r%10;
   const dizC = Math.floor(cible/10);
@@ -4669,11 +4699,15 @@ $("#amb-activer").addEventListener("click", ()=>{
     var lu = document.getElementById('cycle-lune');
     if(so){
       so.setAttribute('opacity', (0.16 + 0.84 * Math.pow(j, 1.3)).toFixed(3));
-      so.style.filter = 'drop-shadow(0 0 ' + (1 + 6 * j).toFixed(1) + 'px rgba(226,186,78,.85))';
+      so.style.filter = 'drop-shadow(0 0 ' + (1.5 + 7 * j).toFixed(1) + 'px rgba(255,214,110,.95))' +
+                        ' drop-shadow(0 0 ' + (2 + 15 * j).toFixed(1) + 'px rgba(226,150,40,' +
+                        (0.30 + 0.45 * j).toFixed(2) + '))';
     }
     if(lu){
       lu.setAttribute('opacity', (0.16 + 0.84 * Math.pow(n, 1.3)).toFixed(3));
-      lu.style.filter = 'drop-shadow(0 0 ' + (1 + 5 * n).toFixed(1) + 'px rgba(159,196,230,.75))';
+      lu.style.filter = 'drop-shadow(0 0 ' + (1.2 + 4.5 * n).toFixed(1) + 'px rgba(198,224,248,.80))' +
+                        ' drop-shadow(0 0 ' + (2 + 9 * n).toFixed(1) + 'px rgba(120,168,215,' +
+                        (0.18 + 0.28 * n).toFixed(2) + '))';
     }
 
     document.querySelectorAll('.cycle-cran').forEach(function(g){
