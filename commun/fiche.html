@@ -132,6 +132,29 @@ window.ACCES = window.ACCES || (function () {
   .card-title.red { color:#c0392b; }
   .full { grid-column:1/-1; }
 
+  /* ── LANCERS VERS LA TABLE ──
+     Chaque bloc a son bouton. Armé, un clic sur un total lance un d100 visible
+     de toute la table. Désarmé, les nombres ne réagissent à rien. */
+  .jet-arme { font-family:'Cinzel',serif; font-size:0.56rem; letter-spacing:0.12em;
+    text-transform:uppercase; padding:0.16rem 0.5rem; border-radius:2px; cursor:pointer;
+    border:1px solid rgba(255,255,255,0.14); background:transparent; color:var(--SUB);
+    transition:color 0.15s, border-color 0.15s, background 0.15s; }
+  .jet-arme:hover { color:var(--parchment); border-color:rgba(255,255,255,0.3); }
+  .jet-arme.on { background:var(--GLD); border-color:var(--GLD); color:#14110d; font-weight:700; }
+  .jet-diff { font-family:'Cinzel',serif; font-size:0.55rem; letter-spacing:0.08em;
+    color:var(--acc2); white-space:nowrap; }
+  .jet-actif .stat-total, .jet-actif .skill-total {
+    cursor:pointer; border-radius:2px; box-shadow:inset 0 -2px 0 rgba(184,146,42,0.45); }
+  .jet-actif .stat-total:hover, .jet-actif .skill-total:hover {
+    background:rgba(184,146,42,0.18); box-shadow:inset 0 -2px 0 var(--GLD); }
+  .jet-actif .stat-total:active, .jet-actif .skill-total:active { opacity:0.6; }
+  .jet-mot { position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
+    z-index:9998; padding:0.5rem 0.9rem; border-radius:3px; font-size:0.8rem;
+    background:rgba(10,10,15,0.96); border:1px solid var(--GLD); color:var(--parchment);
+    box-shadow:0 4px 18px rgba(0,0,0,0.6); display:none; }
+  .jet-mot.on { display:block; }
+  @media print { .jet-arme, .jet-diff, .jet-mot { display:none !important; } }
+
   /* ── EDITABLE ── */
   .editable-num {
     background:transparent; border:none; border-bottom:1px solid rgba(255,255,255,0.08);
@@ -522,6 +545,8 @@ window.ACCES = window.ACCES || (function () {
 <!-- Firebase : sauvegarde en ligne, partagee entre tous les appareils -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<!-- Moteur de test WFRP, le meme que celui de la Table -->
+<script src="jet-wfrp.js"></script>
 <style>
   .pdf-btn {
     position:fixed; bottom:14px; right:14px; z-index:9999;
@@ -805,7 +830,7 @@ window.ACCES = window.ACCES || (function () {
 
   <!-- CARACTÉRISTIQUES -->
   <div class="card acc full">
-    <div class="card-title acc">Caractéristiques</div>
+    <div class="card-title acc">Caractéristiques<button type="button" class="jet-arme" data-jet-bloc="stats-grid" title="Armer les lancers : un clic sur un total envoie un test à la Table">⚄ Jets</button></div>
     <div class="stats-grid" id="stats-grid"></div>
     <div style="font-size:0.7rem;color:var(--SUB);margin-top:0.6rem;font-style:italic;">Natif = 20 + 2d10 (ou valeur choisie) · Bonus = natif + bonus racial et talents · Augm. = points d'expérience dépensés · Total et bonus de caractéristique se calculent seuls</div>
   </div>
@@ -906,14 +931,14 @@ window.ACCES = window.ACCES || (function () {
 
   <!-- COMPÉTENCES DE BASE -->
   <div class="card">
-    <div class="card-title gld">Compétences de base</div>
+    <div class="card-title gld">Compétences de base<button type="button" class="jet-arme" data-jet-bloc="skills-base-list" title="Armer les lancers : un clic sur un total envoie un test à la Table">⚄ Jets</button></div>
     <ul class="skill-list" id="skills-base-list"></ul>
   </div>
 
 
   <!-- COMPÉTENCES AVANCÉES -->
   <div class="card">
-    <div class="card-title vio">Compétences avancées</div>
+    <div class="card-title vio">Compétences avancées<button type="button" class="jet-arme" data-jet-bloc="skills-adv-list" title="Armer les lancers : un clic sur un total envoie un test à la Table">⚄ Jets</button></div>
     <ul class="skill-list" id="skills-adv-list"></ul>
     <div style="margin-top:0.5rem;">
       <button class="btn-add btn-acc" onclick="toggleForm('adv-form')">+ Ajouter</button>
@@ -3403,6 +3428,193 @@ load();
     document.addEventListener('DOMContentLoaded', brancher);
   else brancher();
   window.brancherFiletsFiche = brancher;
+})();
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════
+     LANCERS VERS LA TABLE
+     Chaque bloc de nombres a son bouton. Quand le bouton est armé,
+     cliquer sur un total envoie un test de d100 sur la Table, visible
+     de tout le monde, avec les dés qui tombent sur le plateau. Quand
+     il ne l'est pas, les nombres ne réagissent à rien.
+
+     La difficulté posée par le MJ sur la Table est lue en direct et
+     s'ajoute à la valeur testée. Le calcul du test lui-même vient de
+     jet-wfrp.js, le même fichier que celui de la Table : un clic ici
+     et un lancer là-bas donnent exactement le même résultat.
+     ══════════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  'use strict';
+  if (!window.JET_WFRP) return;
+
+  var CONFIG = {
+    apiKey: "AIzaSyAA-5S_PcynTh59da7s8fIZjBLDYQuq6-c",
+    authDomain: "warhammer-table-jdr.firebaseapp.com",
+    databaseURL: "https://warhammer-table-jdr-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "warhammer-table-jdr",
+    storageBucket: "warhammer-table-jdr.firebasestorage.app",
+    messagingSenderId: "347804803970",
+    appId: "1:347804803970:web:43e062299c53e59d20e59b"
+  };
+
+  /* Même salle que la Table, et même valeur par défaut. */
+  var params = new URLSearchParams(location.search);
+  var salle = (params.get('salle') || 'table-warhammer').replace(/[^a-zA-Z0-9_-]/g, '');
+
+  var refJets = null, refDiff = null;
+  try {
+    if (typeof firebase !== 'undefined' && firebase.database) {
+      if (!firebase.apps.length) firebase.initializeApp(CONFIG);
+      refJets = firebase.database().ref('salles/' + salle + '/jets');
+      refDiff = firebase.database().ref('salles/' + salle + '/difficulte');
+    }
+  } catch (e) { refJets = null; refDiff = null; }
+
+  /* ── Difficulté courante, posée par le MJ ── */
+  var modDiff = 0;
+  if (refDiff) refDiff.on('value', function (snap) {
+    var v = snap.val();
+    modDiff = (typeof v === 'number') ? v : 0;
+    ecrireDifficulte();
+  });
+
+  function ecrireDifficulte() {
+    var d = window.JET_WFRP.parMod(modDiff);
+    var texte = modDiff ? (d.nom + ' ' + (modDiff > 0 ? '+' : '') + modDiff) : '';
+    Array.prototype.forEach.call(document.querySelectorAll('.jet-diff'), function (el) {
+      el.textContent = texte;
+    });
+  }
+
+  /* ── Message bref, en bas de l'écran ── */
+  var mot = document.createElement('div');
+  mot.className = 'jet-mot';
+  document.body.appendChild(mot);
+  var motTimer = null;
+  function dire(texte) {
+    mot.textContent = texte;
+    mot.classList.add('on');
+    clearTimeout(motTimer);
+    motTimer = setTimeout(function () { mot.classList.remove('on'); }, 2600);
+  }
+
+  /* ── Armement, un bouton par bloc, retenu d'une visite à l'autre ── */
+  var CLE = 'fiche_jets_' + (window.PERSO_ID || 'nouveau-perso');
+  var armes = {};
+  try { armes = JSON.parse(localStorage.getItem(CLE) || '{}') || {}; } catch (e) { armes = {}; }
+
+  var boutons = Array.prototype.slice.call(document.querySelectorAll('.jet-arme'));
+  boutons.forEach(function (b) {
+    /* Le rappel de difficulté se pose à côté du bouton, et reste vide
+       tant que le MJ n'a rien changé. */
+    var rappel = document.createElement('span');
+    rappel.className = 'jet-diff';
+    b.insertAdjacentElement('afterend', rappel);
+
+    b.addEventListener('click', function () {
+      var id = b.dataset.jetBloc;
+      armes[id] = !armes[id];
+      try { localStorage.setItem(CLE, JSON.stringify(armes)); } catch (e) {}
+      peindre();
+    });
+  });
+
+  function peindre() {
+    boutons.forEach(function (b) {
+      var id = b.dataset.jetBloc;
+      var on = !!armes[id];
+      b.classList.toggle('on', on);
+      b.title = on
+        ? "Lancers armés : un clic sur un total envoie un test à la Table"
+        : "Armer les lancers : un clic sur un total envoie un test à la Table";
+      var hote = document.getElementById(id);
+      if (hote) hote.classList.toggle('jet-actif', on);
+    });
+  }
+  peindre();
+  ecrireDifficulte();
+
+  /* ── Le nom qui s'affichera dans le journal de la Table ── */
+  function nomPerso() {
+    var champ = document.getElementById('ident-nom');
+    var n = champ ? (champ.value || '').trim() : '';
+    return (n || window.PERSO_ID || 'Personnage').slice(0, 24);
+  }
+
+  /* ── Le libellé du test, tiré de la ligne cliquée ── */
+  function libelleDe(el) {
+    var boite = el.closest('.stat-box');
+    if (boite) {
+      var lab = boite.querySelector('.stat-label');
+      return lab ? lab.textContent.trim() : 'Caractéristique';
+    }
+    var ligne = el.closest('.skill-sub') || el.closest('.skill-row') || el.closest('li');
+    var nom = ligne ? ligne.querySelector('.skill-name') : null;
+    if (!nom) return 'Test';
+    var titre = nom.getAttribute('title');
+    if (titre) return titre.trim();
+    /* On garde le nom seul, sans la caractéristique entre parenthèses. */
+    var texte = '';
+    Array.prototype.forEach.call(nom.childNodes, function (n) {
+      if (n.nodeType === 3) texte += n.textContent;
+    });
+    return texte.trim() || nom.textContent.trim();
+  }
+
+  function envoyer(jet) {
+    if (!refJets) { dire("Pas de connexion à la Table : le jet n'est parti nulle part."); return false; }
+    refJets.push(jet).catch(function () {
+      dire("Le jet n'a pas pu partir : vérifie la connexion.");
+    });
+    return true;
+  }
+
+  function lancer(libelle, valeur) {
+    var J = window.JET_WFRP;
+    var t = J.resoudre(J.cibleFinale(valeur, modDiff));
+    var parti = envoyer({
+      nom: nomPerso(),
+      res: t.aff + '  (' + J.libelleCible(valeur, modDiff) + ')',
+      detail: libelle + ' · ' + t.detail,
+      classe: t.classe,
+      marque: t.marque,
+      des: t.des,
+      ts: Date.now()
+    });
+    if (!parti) return;
+    dire(libelle + ' : ' + t.aff + ' · ' + (t.succes ? 'Réussite' : 'Échec') + ' · ' + t.marque);
+
+    /* Le 01 naturel appelle son dé de fortune, comme sur la Table. */
+    if (t.parfait) {
+      var bonus = Math.floor(Math.random() * 10) + 1;
+      setTimeout(function () {
+        envoyer({
+          nom: nomPerso(),
+          res: '+' + bonus,
+          detail: "Fureur d'Ulric !",
+          classe: 'succes',
+          marque: '',
+          des: { faces: 10, vals: [bonus], ajout: true },
+          ts: Date.now()
+        });
+      }, 1500);
+    }
+  }
+
+  /* ── Un seul écouteur pour toute la page : les blocs se redessinent
+       sans arrêt, la délégation survit à tous les redessins. ── */
+  document.addEventListener('click', function (ev) {
+    var cible = ev.target.closest ? ev.target.closest('.stat-total, .skill-total') : null;
+    if (!cible) return;
+    var hote = cible.closest('.jet-actif');
+    if (!hote) return;                      /* bloc désarmé : on ne fait rien */
+    var valeur = parseInt(cible.textContent, 10);
+    if (isNaN(valeur)) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    lancer(libelleDe(cible), valeur);
+  });
 })();
 </script>
 </body>
