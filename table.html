@@ -1051,7 +1051,7 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
       <div class="pal-ligne">
         <label class="toggle"><input type="checkbox" id="jetons-pj-chk" /> Les joueurs peuvent déplacer les jetons</label>
       </div>
-      <div class="j-sect">Poser depuis le combat</div>
+      <div class="j-sect">Poser depuis l'initiative</div>
       <div class="j-liste" id="jetons-combat"></div>
       <div class="j-sect">Poser depuis la galerie</div>
       <div class="pal-ligne" id="jetons-img-hote"></div>
@@ -3532,6 +3532,7 @@ function bornerInitiative(){
 window.addEventListener("resize", bornerInitiative);
 
 function rendreInit(){
+  if(typeof panneauJetonsOuvert === "function" && panneauJetonsOuvert()) rendreCombatJetons();
   const liste = $("#init-liste"); if(!liste) return;
   const roundEl = $("#init-round");
   const mj = estMJ();
