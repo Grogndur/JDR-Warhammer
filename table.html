@@ -712,6 +712,51 @@
   .voile-bascule{pointer-events:auto;margin-left:14px;font-family:"Cinzel",serif;
     font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--parchemin-doux)}
   .voile-bascule:hover{color:var(--laiton)}
+  /* ---- Chat de table et messages privés ---- */
+  .chat-panel{width:330px;left:auto;right:14px;top:54px;margin-left:0;
+    max-height:calc(100vh - 130px);display:flex;flex-direction:column}
+  .chat-onglets{display:flex;gap:3px;flex-wrap:wrap;padding:6px 8px 0}
+  .chat-onglets button{font-size:11px;padding:2px 7px;border-radius:6px 6px 0 0;
+    letter-spacing:.04em;max-width:104px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .chat-onglets button.actif{color:var(--laiton);border-color:var(--laiton)}
+  .chat-onglets button.neuf{box-shadow:0 0 0 1px var(--oxblood-clair) inset}
+  .chat-fil{flex:1;min-height:170px;max-height:46vh;overflow:auto;
+    display:flex;flex-direction:column-reverse;gap:5px;padding:8px}
+  .chat-m{border-left:2px solid var(--bord);padding:2px 0 2px 7px;font-size:13px;line-height:1.42}
+  .chat-m .qui{font-family:"Cinzel",serif;font-size:11px;letter-spacing:.06em;color:var(--laiton)}
+  .chat-m .h{font-size:10px;opacity:.45;margin-left:5px}
+  .chat-m.prive{border-left-color:#8b76c9}
+  .chat-m.moi{border-left-color:var(--laiton-sombre)}
+  .chat-m img{max-width:100%;border-radius:6px;margin-top:4px;border:1px solid var(--bord);
+    cursor:zoom-in;display:block}
+  .chat-bas{display:flex;gap:5px;padding:0 8px 8px}
+  .chat-bas input{flex:1;min-width:0}
+  .chat-pastille{display:none;width:7px;height:7px;border-radius:50%;
+    background:var(--oxblood-clair);margin-left:5px;vertical-align:middle}
+  .chat-pastille.on{display:inline-block}
+  @media(max-width:760px){ .chat-panel{right:8px;left:8px;width:auto;top:auto;bottom:118px} }
+  /* ---- Minuteurs de round, à gauche de l'écran ---- */
+  .minuteurs{position:absolute;left:12px;top:76px;z-index:24;display:flex;flex-direction:column;
+    gap:4px;pointer-events:none;max-width:210px}
+  .mint{display:flex;align-items:center;gap:6px;padding:3px 8px;border:1px solid var(--bord);
+    border-radius:7px;background:rgba(12,9,6,.82);font-size:12px;color:var(--parchemin-doux);
+    pointer-events:auto}
+  .mint .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mint .t{font-family:"Cinzel",serif;color:var(--laiton);font-size:13px}
+  .mint.court .t{color:var(--oxblood-clair)}
+  .mint button{padding:1px 5px;font-size:11px;line-height:1}
+  body:not(.est-mj) .mint button{display:none}
+
+  /* ---- Compte à rebours plein écran ---- */
+  .chrono{position:fixed;inset:0;z-index:65;display:none;align-items:center;justify-content:center;
+    pointer-events:none;background:radial-gradient(ellipse at center,transparent 42%,rgba(60,0,0,.32) 100%)}
+  .chrono.on{display:flex}
+  .chrono span{font-family:"Cinzel",serif;font-size:min(28vw,220px);font-weight:700;
+    color:#f4ecd8;text-shadow:0 0 24px rgba(0,0,0,.95),0 0 60px rgba(160,30,20,.6);
+    animation:chr-bat 1s ease-out infinite}
+  .chrono.presse span{color:#e8a08a}
+  @keyframes chr-bat{0%{transform:scale(1.14);opacity:1}60%{transform:scale(1);opacity:.92}100%{transform:scale(1);opacity:.85}}
+  @media(prefers-reduced-motion:reduce){ .chrono span{animation:none} }
   .gm-only-l{display:none}
   body.est-mj .gm-only-l{display:flex}
   .gm-only-in{display:none!important}
@@ -1012,6 +1057,24 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
 
   <div class="alerte" id="alerte" style="display:none"></div>
 
+  <div class="minuteurs" id="minuteurs"></div>
+  <div class="chrono" id="chrono" aria-hidden="true"><span id="chrono-val">0</span></div>
+
+  <aside class="palette chat-panel replie" id="chat">
+    <div class="pal-tete" id="chat-drag">
+      <span class="pt">Chat</span>
+      <span class="spacer"></span>
+      <button id="fermer-chat" class="mini" title="Masquer">×</button>
+    </div>
+    <div class="chat-onglets" id="chat-onglets"></div>
+    <div class="chat-fil" id="chat-fil"></div>
+    <div class="chat-bas">
+      <input type="text" id="chat-saisie" placeholder="Écrire…" maxlength="600" />
+      <button id="chat-image" title="Envoyer une image de la galerie au destinataire choisi">🖼</button>
+      <button class="primaire" id="chat-envoyer">Envoyer</button>
+    </div>
+  </aside>
+
   <aside class="palette replie" id="palette">
     <div class="pal-tete" id="pal-drag">
       <span class="pt">Dessin & zoom</span>
@@ -1209,6 +1272,15 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <button id="init-crea-ajout" class="primaire" title="Ajouter au combat">+</button>
         <button id="init-recharger" title="Relire le bestiaire">⟳</button>
         <button id="ouvrir-jetons" title="Poser des jetons sur la carte">◉ Jetons</button>
+        <span class="pal-sep"></span>
+        <input type="text" id="mint-nom" placeholder="Effet" maxlength="26"
+               title="Un effet qui dure : sort, état, poursuite" />
+        <span class="nb-pas"><button type="button" id="mint-moins">−</button><input type="text" inputmode="numeric" id="mint-nb" value="3" title="Combien de rounds"><button type="button" id="mint-plus">+</button></span>
+        <button id="mint-ajout" title="Décompte à chaque fin de round">+ Minuteur</button>
+        <span class="pal-sep"></span>
+        <button id="chrono-30" title="Compte à rebours de 30 secondes, pour toute la table">⏱ 30s</button>
+        <button id="chrono-60" title="Compte à rebours d'une minute">⏱ 1min</button>
+        <button id="chrono-stop" title="Arrêter le compte à rebours">✕</button>
       </div>
       <div class="ligne">
         <input type="text" id="init-add" placeholder="Nom de PJ 42" title="Ajouter un personnage joueur : son nom puis son initiative" />
@@ -1229,6 +1301,7 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <label class="toggle"><input type="checkbox" id="mj" /> MJ</label>
         <button id="ouvrir-cams" title="Afficher ou masquer les caméras">📹 Caméras</button>
         <button id="ouvrir-journal" title="Afficher ou masquer le journal">📜 Journal</button>
+        <button id="ouvrir-chat" title="Parler à la table ou en privé">💬 Chat<span class="chat-pastille" id="chat-pastille"></span></button>
         <button id="ouvrir-init" title="Afficher ou masquer l'initiative">⚔ Initiative</button>
         <button id="ouvrir-dessin" title="Zoom et dessin sur la carte">🖌 Dessin</button>
         <button id="ouvrir-grimoire" class="gm-only-in" title="Ouvrir le Grimoire dans une fenêtre séparée (MJ)">📖 Grimoire</button>
@@ -1258,6 +1331,7 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <input type="text" id="scene-nom" placeholder="Nom de la scène" maxlength="40" />
         <button id="scene-enregistrer" title="Enregistrer l'état courant : image, jetons, brouillard, heure et temps">Enregistrer</button>
         <button id="scene-supprimer" title="Supprimer la scène choisie">✕</button>
+        <button id="salle-export" title="Télécharger toute la salle en fichier JSON : scènes, initiative, réglages">⤓ Sauvegarde</button>
         <span class="secret-loc" id="scene-msg"></span>
       </div>
       <div class="galerie gm-only" id="galerie"></div>
@@ -2016,7 +2090,16 @@ function couleurEtat(j){
 }
 
 function jetonsCourants(){ return refJetons ? jetonsDB : jetonsLocaux; }
+// Le pseudo saisi en haut de page vaut permis de déplacement : un joueur
+// bouge toujours le jeton qui porte son nom, même quand le MJ a fermé le
+// plateau au reste de la table.
 function jetonsDeplacables(){ return estMJ() || jetonsPJ; }
+function jetonDeplacable(j){
+  if(jetonsDeplacables()) return true;
+  const moi = sansAccent(nom());
+  if(!moi) return false;
+  return sansAccent(nomReel(j)) === moi || sansAccent(j.nom) === moi;
+}
 
 // Le nom du MJ ne part jamais dans Firebase : le jeton porte le nom public,
 // et le MJ retrouve le vrai nom localement, par l'identifiant du combattant.
@@ -2270,7 +2353,7 @@ function fermerPortraitJeton(){
       x: j.x||0.5, y: j.y||0.5,
       depX: e.clientX, depY: e.clientY,
       bouge: false,
-      libre: jetonsDeplacables()
+      libre: jetonDeplacable(j)
     };
     if(enMain.libre){
       el.classList.add("pris");
@@ -2590,6 +2673,7 @@ function enregistrerScene(){
     meteo: (typeof window.tempsTable === "function") ? window.tempsTable() : null,
     jetons: jetonsCourants() || {},
     brumes: brumesCourantes() || {},
+    traits: (refDessin ? strokesDB : strokesLocal) || {},
     brouillard: document.body.classList.contains("brouillard-on"),
     voile: document.body.classList.contains("voile-on"),
     ts: Date.now()
@@ -2619,6 +2703,8 @@ function chargerScene(){
   else { jetonsLocaux = sc.jetons || {}; rendreJetons(); rendreListeJetons(); }
   if(refBrouillard) set(refBrouillard, sc.brumes || null);
   else { brumesLocales = sc.brumes || {}; rendreBrouillard(); }
+  if(refDessin) set(refDessin, sc.traits || null);
+  else { strokesLocal = sc.traits || {}; rendreStrokes(); }
   if(refBrouillardOn) set(refBrouillardOn, !!sc.brouillard); else poserBrouillard(!!sc.brouillard);
   if(refVoile)        set(refVoile, !!sc.voile);            else poserVoile(!!sc.voile);
   if(typeof sc.heure === "number" && typeof window.jaugeHeure === "function") window.jaugeHeure(sc.heure);
@@ -2642,6 +2728,352 @@ if($("#scene-charger"))     $("#scene-charger").addEventListener("click", charge
 if($("#scene-supprimer"))   $("#scene-supprimer").addEventListener("click", supprimerScene);
 if($("#scene-nom")) $("#scene-nom").addEventListener("keydown", e => {
   if(e.key === "Enter") enregistrerScene();
+});
+
+// Sauvegarde complète : tout ce que Firebase tient pour cette salle part
+// dans un fichier, scènes comprises. À garder avant toute grosse séance.
+if($("#salle-export")) $("#salle-export").addEventListener("click", () => {
+  if(!db){ motScene("Firebase indisponible."); return; }
+  motScene("Lecture de la salle…");
+  get(ref(db, `salles/${salle}`)).then(snap => {
+    const data = { salle, exporte: new Date().toISOString(), contenu: snap.val() || {} };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type:"application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `table-${salle}-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    motScene("Sauvegarde téléchargée.");
+  }).catch(err => motScene("Échec : " + err.message));
+});
+
+
+
+
+// ============ Chat de table et messages privés ============
+// Un fil public que tout le monde lit, et un fil par personne pour ce qui
+// ne regarde que deux joueurs. Les images viennent de la galerie : on
+// n'envoie qu'un lien, jamais un fichier.
+const refChat = db ? ref(db, `salles/${salle}/chat`) : null;
+let messages = {};
+let filActif = "tous";
+let filsNeufs = {};
+let vuJusqua = Date.now();
+
+function cleFil(a, b){ return [sansAccent(a), sansAccent(b)].sort().join("|"); }
+
+function messagesDuFil(f){
+  const moi = sansAccent(nom());
+  return Object.keys(messages).map(k => messages[k]).filter(Boolean).filter(m => {
+    if(f === "tous") return !m.a;
+    return m.a && cleFil(m.de, m.a) === f;
+  }).sort((x,y) => (y.ts||0) - (x.ts||0)).slice(0, 120);
+}
+
+function filsPrives(){
+  const moi = sansAccent(nom());
+  const vus = {};
+  Object.keys(messages).map(k => messages[k]).filter(Boolean).forEach(m => {
+    if(!m.a) return;
+    const de = sansAccent(m.de), a = sansAccent(m.a);
+    if(de !== moi && a !== moi) return;                 // pas mon affaire
+    const autre = (de === moi) ? m.a : m.de;
+    const c = cleFil(m.de, m.a);
+    if(!vus[c] || vus[c].ts < (m.ts||0)) vus[c] = { cle:c, nom:autre, ts:m.ts||0 };
+  });
+  return Object.values(vus).sort((x,y) => y.ts - x.ts);
+}
+
+function heureCourte(ts){
+  const d = new Date(ts || Date.now());
+  return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+}
+
+function rendreChat(){
+  const onglets = $("#chat-onglets"), fil = $("#chat-fil");
+  if(!onglets || !fil) return;
+  const moi = sansAccent(nom());
+
+  // Les interlocuteurs possibles : ceux qui ont déjà parlé, plus le MJ.
+  const gens = new Set();
+  Object.keys(messages).map(k => messages[k]).filter(Boolean).forEach(m => {
+    if(m.de && sansAccent(m.de) !== moi) gens.add(m.de);
+  });
+  (initEtat.ordre||[]).forEach(c => { if(c.pub && sansAccent(c.pub) !== moi) gens.add(c.pub); });
+
+  let h = `<button data-f="tous" class="${filActif==="tous"?"actif":""}${filsNeufs["tous"]?" neuf":""}">Table</button>`;
+  filsPrives().forEach(p => {
+    h += `<button data-f="${escape(p.cle)}" data-nom="${escape(p.nom)}" ` +
+         `class="${filActif===p.cle?"actif":""}${filsNeufs[p.cle]?" neuf":""}">${escape(p.nom)}</button>`;
+  });
+  h += `<button data-f="nouveau" title="Écrire à quelqu'un">+</button>`;
+  onglets.innerHTML = h;
+
+  fil.innerHTML = messagesDuFil(filActif).map(m => {
+    const mien = sansAccent(m.de) === moi;
+    const img = m.img ? `<img src="${escape(m.img)}" alt="">` : "";
+    const txt = m.t ? escape(m.t) : "";
+    return `<div class="chat-m${m.a?" prive":""}${mien?" moi":""}">` +
+           `<span class="qui">${escape(m.de || "?")}</span>` +
+           `<span class="h">${heureCourte(m.ts)}</span>` +
+           (txt ? `<div>${txt}</div>` : "") + img + `</div>`;
+  }).join("") || `<div class="j-vide-note">Rien pour l'instant.</div>`;
+
+  const past = $("#chat-pastille");
+  const reste = Object.keys(filsNeufs).some(k => filsNeufs[k] && k !== filActif);
+  if(past) past.classList.toggle("on", reste);
+}
+
+function envoyerMessage(texte, image){
+  const t = (texte || "").trim();
+  if(!t && !image) return;
+  const m = { de: nom(), t: t || null, ts: Date.now() };
+  if(image) m.img = image;
+  if(filActif !== "tous"){
+    const b = $(`#chat-onglets button[data-f="${filActif}"]`);
+    const dest = b ? b.dataset.nom : null;
+    if(!dest){ alerte("Choisis d'abord un destinataire."); return; }
+    m.a = dest;
+  }
+  if(refChat){ push(refChat, m); }
+  else { messages["l"+Date.now()] = m; rendreChat(); }
+}
+
+if(refChat){
+  onValue(refChat, snap => {
+    messages = snap.val() || {};
+    const moi = sansAccent(nom());
+    Object.keys(messages).forEach(k => {
+      const m = messages[k];
+      if(!m || (m.ts||0) <= vuJusqua) return;
+      if(sansAccent(m.de) === moi) return;
+      const f = m.a ? cleFil(m.de, m.a) : "tous";
+      if(m.a && sansAccent(m.a) !== moi && sansAccent(m.de) !== moi) return;
+      if(f !== filActif || $("#chat").classList.contains("replie")) filsNeufs[f] = true;
+    });
+    rendreChat();
+  });
+}
+
+function ouvrirChat(forcer){
+  const p = $("#chat"); if(!p) return;
+  const ouvrir = (typeof forcer === "boolean") ? forcer : p.classList.contains("replie");
+  p.classList.toggle("replie", !ouvrir);
+  if(ouvrir){ filsNeufs[filActif] = false; vuJusqua = Date.now(); rendreChat(); $("#chat-saisie").focus(); }
+}
+
+$("#ouvrir-chat").addEventListener("click", () => ouvrirChat());
+$("#fermer-chat").addEventListener("click", () => ouvrirChat(false));
+rendreDeplacable($("#chat"), $("#chat-drag"));
+
+$("#chat-onglets").addEventListener("click", e => {
+  const b = e.target.closest("button[data-f]"); if(!b) return;
+  if(b.dataset.f === "nouveau"){
+    const qui = prompt("Écrire en privé à qui ? (son nom exact)");
+    if(!qui) return;
+    filActif = cleFil(nom(), qui.trim());
+    // L'onglet n'existera qu'une fois le premier message parti : on retient
+    // le destinataire en attendant.
+    const tmp = document.createElement("button");
+    tmp.dataset.f = filActif; tmp.dataset.nom = qui.trim();
+    tmp.className = "actif"; tmp.textContent = qui.trim();
+    $("#chat-onglets").insertBefore(tmp, $("#chat-onglets").lastChild);
+    $("#chat-fil").innerHTML = `<div class="j-vide-note">Message privé à ${escape(qui.trim())}.</div>`;
+    return;
+  }
+  filActif = b.dataset.f;
+  filsNeufs[filActif] = false;
+  rendreChat();
+});
+
+$("#chat-envoyer").addEventListener("click", () => {
+  envoyerMessage($("#chat-saisie").value);
+  $("#chat-saisie").value = "";
+});
+$("#chat-saisie").addEventListener("keydown", e => {
+  if(e.key === "Enter"){ e.preventDefault(); $("#chat-envoyer").click(); }
+});
+$("#chat-image").addEventListener("click", () => {
+  const sel = $("#img-choix");
+  const choix = (sel && sel.value) ? lienImageDirect(sel.value) : "";
+  if(!choix){ alerte("Choisis une image dans le menu Image, puis renvoie."); return; }
+  envoyerMessage($("#chat-saisie").value, choix);
+  $("#chat-saisie").value = "";
+});
+$("#chat-fil").addEventListener("click", e => {
+  const img = e.target.closest("img"); if(!img) return;
+  const vue = $("#jeton-vue"), grand = $("#jeton-vue-img"), leg = $("#jeton-vue-nom");
+  if(!vue || !grand) return;
+  grand.src = img.src; if(leg) leg.textContent = "";
+  vue.classList.add("on");
+});
+
+
+
+
+// ============ Minuteurs de round ============
+// Un effet qui dure trois rounds, et personne ne s'en souvient au round
+// suivant. Le décompte se fait tout seul au passage de round, pour tous.
+const refMint = db ? ref(db, `salles/${salle}/minuteurs`) : null;
+let minuteurs = {};
+
+function rendreMinuteurs(){
+  const boite = $("#minuteurs"); if(!boite) return;
+  const liste = Object.keys(minuteurs).map(k => Object.assign({ id:k }, minuteurs[k]))
+    .filter(x => x && x.nom).sort((a,b) => (a.ts||0) - (b.ts||0));
+  boite.innerHTML = liste.map(x =>
+    `<div class="mint${x.r <= 1 ? " court" : ""}" data-id="${escape(x.id)}">` +
+    `<span class="n">${escape(x.nom)}</span>` +
+    `<span class="t">${x.r}</span>` +
+    `<button data-act="m">−</button><button data-act="p">+</button>` +
+    `<button data-act="x" title="Retirer">✕</button></div>`
+  ).join("");
+}
+
+function ecrireMint(id, v){
+  if(refMint) set(ref(db, `salles/${salle}/minuteurs/${id}`), v);
+  else { if(v) minuteurs[id] = v; else delete minuteurs[id]; rendreMinuteurs(); }
+}
+
+function ajouterMinuteur(){
+  const n = ($("#mint-nom").value || "").trim();
+  const r = Math.max(1, Math.min(99, parseInt($("#mint-nb").value, 10) || 1));
+  if(!n){ alerte("Donne un nom à l'effet."); return; }
+  const v = { nom:n, r, ts:Date.now() };
+  if(refMint) set(push(refMint), v);
+  else { minuteurs["l"+Date.now()] = v; rendreMinuteurs(); }
+  $("#mint-nom").value = "";
+}
+
+// Appelé quand l'initiative repart pour un tour complet.
+function egrenerMinuteurs(){
+  if(!estMJ()) return;
+  Object.keys(minuteurs).forEach(id => {
+    const m = minuteurs[id]; if(!m) return;
+    const r = (m.r || 1) - 1;
+    ecrireMint(id, r > 0 ? Object.assign({}, m, { r }) : null);
+  });
+}
+
+if(refMint){
+  onValue(refMint, snap => { minuteurs = snap.val() || {}; rendreMinuteurs(); });
+}
+
+if($("#mint-ajout")) $("#mint-ajout").addEventListener("click", ajouterMinuteur);
+if($("#mint-nom")) $("#mint-nom").addEventListener("keydown", e => {
+  if(e.key === "Enter") ajouterMinuteur();
+});
+if($("#mint-moins")) $("#mint-moins").addEventListener("click", () => {
+  const c = $("#mint-nb"); c.value = Math.max(1, (parseInt(c.value,10)||1) - 1);
+});
+if($("#mint-plus")) $("#mint-plus").addEventListener("click", () => {
+  const c = $("#mint-nb"); c.value = Math.min(99, (parseInt(c.value,10)||1) + 1);
+});
+if($("#minuteurs")) $("#minuteurs").addEventListener("click", e => {
+  const b = e.target.closest("button[data-act]"); if(!b || !estMJ()) return;
+  const id = b.closest("[data-id]").dataset.id;
+  const m = minuteurs[id]; if(!m) return;
+  if(b.dataset.act === "x"){ ecrireMint(id, null); return; }
+  const r = Math.max(0, Math.min(99, (m.r||1) + (b.dataset.act === "p" ? 1 : -1)));
+  ecrireMint(id, r > 0 ? Object.assign({}, m, { r }) : null);
+});
+
+// ============ Compte à rebours ============
+// Pour les moments où le temps manque vraiment. Le décompte est partagé,
+// le son monte, et la dernière seconde tombe comme une pierre.
+const refChrono = db ? ref(db, `salles/${salle}/chrono`) : null;
+let chronoFin = 0, chronoTimer = null, chronoDernier = -1;
+
+function sonTic(reste, total){
+  const c = ctxAudio(); if(!c) return;
+  const t = c.currentTime + 0.01;
+  const part = 1 - Math.max(0, Math.min(1, reste / Math.max(1, total)));  // 0 au début, 1 à la fin
+  const o = c.createOscillator(), g = c.createGain();
+  const filtre = c.createBiquadFilter();
+  filtre.type = "bandpass";
+  filtre.frequency.value = 900 + 900 * part;
+  o.type = "square";
+  o.frequency.setValueAtTime(420 + 260 * part, t);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(0.05 + 0.42 * part, t + 0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.10 + 0.22 * part);
+  o.connect(filtre); filtre.connect(g);
+  // Sur la fin, le tic traîne dans une salle de plus en plus grande.
+  if(part > 0.55 && c.__reverbSombre){
+    const rv = c.createConvolver(); rv.buffer = c.__reverbSombre;
+    const envoi = c.createGain(); envoi.gain.value = (part - 0.55) * 1.6;
+    g.connect(envoi); envoi.connect(rv); rv.connect(c.destination);
+  }
+  g.connect(c.destination);
+  o.start(t); o.stop(t + 0.42);
+}
+
+function sonFinChrono(){
+  const c = ctxAudio(); if(!c) return;
+  const t = c.currentTime + 0.01;
+  const sortie = c.createGain(); sortie.gain.value = 1.0;
+  const lim = c.createDynamicsCompressor();
+  lim.threshold.value = -6; lim.ratio.value = 18; lim.attack.value = 0.003;
+  sortie.connect(lim); lim.connect(c.destination);
+  [[38, 1.0, 2.6], [27, 0.85, 3.2], [55, 0.5, 1.6]].forEach(n => {
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(n[0] * 1.6, t);
+    o.frequency.exponentialRampToValueAtTime(n[0], t + 0.5);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(n[1], t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + n[2]);
+    o.connect(g); g.connect(sortie);
+    o.start(t); o.stop(t + n[2] + 0.1);
+  });
+}
+
+function peindreChrono(){
+  const boite = $("#chrono"), val = $("#chrono-val");
+  if(!boite || !val) return;
+  if(!chronoFin){ boite.classList.remove("on", "presse"); chronoDernier = -1; return; }
+  const reste = Math.max(0, Math.ceil((chronoFin - Date.now()) / 1000));
+  const total = parseInt(boite.dataset.total, 10) || 30;
+  boite.classList.add("on");
+  boite.classList.toggle("presse", reste <= 5);
+  val.textContent = reste;
+  if(reste !== chronoDernier){
+    chronoDernier = reste;
+    if(reste > 0) { try{ sonTic(reste, total); }catch(e){} }
+    else {
+      try{ sonFinChrono(); }catch(e){}
+      setTimeout(() => { boite.classList.remove("on", "presse"); }, 1600);
+      chronoFin = 0;
+      clearInterval(chronoTimer); chronoTimer = null;
+    }
+  }
+}
+
+function lancerChrono(sec){
+  const v = { fin: Date.now() + sec*1000, total: sec };
+  if(refChrono) set(refChrono, v); else appliquerChrono(v);
+}
+function appliquerChrono(v){
+  const boite = $("#chrono");
+  clearInterval(chronoTimer); chronoTimer = null; chronoDernier = -1;
+  if(!v || !v.fin || v.fin < Date.now()){
+    chronoFin = 0;
+    if(boite) boite.classList.remove("on", "presse");
+    return;
+  }
+  chronoFin = v.fin;
+  if(boite) boite.dataset.total = v.total || 30;
+  const ctx = ctxAudio();
+  if(ctx && ctx.state === "suspended") ctx.resume().catch(()=>{});
+  peindreChrono();
+  chronoTimer = setInterval(peindreChrono, 120);
+}
+if(refChrono){ onValue(refChrono, snap => appliquerChrono(snap.val())); }
+
+if($("#chrono-30")) $("#chrono-30").addEventListener("click", () => lancerChrono(30));
+if($("#chrono-60")) $("#chrono-60").addEventListener("click", () => lancerChrono(60));
+if($("#chrono-stop")) $("#chrono-stop").addEventListener("click", () => {
+  if(refChrono) set(refChrono, null); else appliquerChrono(null);
 });
 
 
@@ -3810,6 +4242,7 @@ function iniSuivant(){
     const n = i + 1;
     if(n >= list.length){
       finDeRound(true);
+      egrenerMinuteurs();
       initEtat.round = (initEtat.round||1) + 1;
       initEtat.actif = list[0].id;
     }
@@ -3932,7 +4365,37 @@ function bornerInitiative(){
 }
 window.addEventListener("resize", bornerInitiative);
 
+// ---------- Les fiches commandent les Blessures ----------
+// Dès qu'un joueur ou le MJ modifie une fiche, le combattant correspondant
+// et son jeton suivent, sans que personne ait à ressaisir quoi que ce soit.
+const abosFiches = {};
+function suivreFiches(){
+  if(!db) return;
+  const voulus = new Set((initEtat.ordre||[]).map(c => c.fid).filter(Boolean));
+  Object.keys(abosFiches).forEach(fid => {
+    if(!voulus.has(fid)){ try{ abosFiches[fid](); }catch(e){} delete abosFiches[fid]; }
+  });
+  voulus.forEach(fid => {
+    if(abosFiches[fid]) return;
+    try{
+      abosFiches[fid] = onValue(ref(db, `fiches/${fid}`), snap => {
+        const f = snap.val(); if(!f) return;
+        const b  = parseInt(f.wounds, 10);
+        const bm = parseInt(f.woundsMax, 10);
+        let change = false;
+        (initEtat.ordre||[]).forEach(c => {
+          if(c.fid !== fid) return;
+          if(isFinite(b)  && c.b    !== b ){ c.b    = b;  change = true; }
+          if(isFinite(bm) && c.bmax !== bm){ c.bmax = bm; change = true; }
+        });
+        if(change){ rendreInit(); rendreJetons(); }
+      });
+    }catch(e){ console.warn("Fiche non suivie :", fid, e); }
+  });
+}
+
 function rendreInit(){
+  suivreFiches();
   if(typeof panneauJetonsOuvert === "function" && panneauJetonsOuvert()) rendreCombatJetons();
   if(typeof rendreJetons === "function") rendreJetons();
   const liste = $("#init-liste"); if(!liste) return;
@@ -4782,6 +5245,22 @@ function urlSon(f){
   return u.includes("%") ? u : encodeURI(u);
 }
 
+// Un fondu par petits pas : rien de plus fiable en travers des navigateurs.
+let fonduTimer = null;
+function fondreVers(cible, duree, apres){
+  if(!audioAmb) { if(apres) apres(); return; }
+  clearInterval(fonduTimer);
+  const depart = audioAmb.volume;
+  const pas = 40, n = Math.max(1, Math.round(duree / pas));
+  let i = 0;
+  fonduTimer = setInterval(() => {
+    i++;
+    const t = Math.min(1, i / n);
+    audioAmb.volume = Math.max(0, Math.min(1, depart + (cible - depart) * t));
+    if(t >= 1){ clearInterval(fonduTimer); fonduTimer = null; if(apres) apres(); }
+  }, pas);
+}
+
 function appliquerAmb(a){
   if(!audioAmb || !a) return;
   if(a.etat === "stop"){
@@ -4791,20 +5270,35 @@ function appliquerAmb(a){
     montrerRappelSon(false);
     return;
   }
+  const cible = (typeof a.volume === "number")
+    ? Math.max(0, Math.min(1, a.volume/100))
+    : (audioAmb.volume || 0.5);
   if(a.url && audioAmb.dataset.url !== a.url){
-    audioAmb.dataset.url = a.url;
-    audioAmb.src = a.url;
+    // Enchaînement en trois secondes : la piste en place s'efface pendant
+    // que la nouvelle monte, au lieu d'un couperet.
+    const change = () => {
+      audioAmb.dataset.url = a.url;
+      audioAmb.src = a.url;
+      audioAmb.volume = 0;
+      const p = audioAmb.play();
+      if(p && p.then) p.then(()=> montrerRappelSon(false)).catch(()=> montrerRappelSon(true));
+      fondreVers(cible, 3000);
+    };
+    if(audioAmb.dataset.url && !audioAmb.paused) fondreVers(0, 3000, change);
+    else change();
+    return;
   }
-  if(typeof a.volume === "number") audioAmb.volume = Math.max(0, Math.min(1, a.volume/100));
   if(a.etat === "play"){
     const p = audioAmb.play();
     if(p && p.then){
       p.then(()=> montrerRappelSon(false))
        .catch(()=> montrerRappelSon(true));   // le navigateur exige un geste
     }
+    fondreVers(cible, 900);
   } else if(a.etat === "pause"){
-    audioAmb.pause();
-    montrerRappelSon(false);
+    fondreVers(0, 900, () => { audioAmb.pause(); montrerRappelSon(false); });
+  } else {
+    audioAmb.volume = cible;
   }
 }
 function pousserAmb(maj){
