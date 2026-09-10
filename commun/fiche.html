@@ -569,6 +569,8 @@ window.ACCES = window.ACCES || (function () {
     .card, .stat-box, .sort-item, .mg-item, .skill-list li, .talent-list li { break-inside:avoid; }
   }
 </style>
+<link rel="stylesheet" href="../assets/fiches/wymond.css">
+<script defer src="../assets/fiches/wymond.js"></script>
 </head>
 <body>
 
@@ -666,6 +668,7 @@ window.ACCES = window.ACCES || (function () {
 
   function habiller(p) {
     p = p || {};
+    document.documentElement.classList.toggle("fiche-wymond", String(p.groupe) === "2" || String(p.groupe) === "3");
     var nom = (p.nom || "").trim() || id;
     document.title = nom + " — Fiche de personnage";
     var nc = document.getElementById("nav-current");

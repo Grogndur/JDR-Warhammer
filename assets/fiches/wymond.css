@@ -1,0 +1,186 @@
+/* Habillage Wymond : activation par groupe, jamais par l'URL seule. */
+@font-face{font-family:Cinzel;src:url('../accueil/cinzel-400.ttf');font-weight:400;font-display:swap}
+@font-face{font-family:Cinzel;src:url('../accueil/cinzel-700.ttf');font-weight:700;font-display:swap}
+@font-face{font-family:'Crimson Text';src:url('../accueil/crimson-text-400.ttf');font-weight:400;font-display:swap}
+@font-face{font-family:'Crimson Text';src:url('../accueil/crimson-text-600.ttf');font-weight:600;font-display:swap}
+.fiche-wymond{--ink:#111312;--parchment:#f0e6d4;--parchment-dark:#d7cbbb;--GLD:#d0ae70;--SUB:#b4a792;--acc:#a88049;--acc2:#e0bd80;--acc-border:#66533b;--acc-border-s:#ad8b56;--VIO:#b2a1cf;--GRN:#a8b98b;scroll-padding-top:110px}
+.fiche-wymond body{font-size:17px;background:#111312 url('../accueil/grain.svg')}
+.fiche-wymond body::before{background:radial-gradient(ellipse at 50% 0,#8e57221f,transparent 65%)}
+.fiche-wymond body>nav{position:relative;background:#101210;border-color:#655037;padding:16px max(20px,calc((100vw - 1240px)/2));gap:12px}
+.fiche-wymond nav a{font-size:14px;color:#c5b89f}
+.fiche-wymond .layout{max-width:1280px;padding:24px;gap:22px;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.fiche-wymond .perso-header{position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:14px 36px;align-items:center;padding:34px 36px 22px;min-height:370px;border:1px solid #9f7f4d;background:linear-gradient(90deg,#101311f5 15%,#161814c9 60%,#46301977),url('../accueil/empire-hero.webp') center 42%/cover;box-shadow:inset 0 0 0 5px #151814,inset 0 0 0 6px #cfb27a40,0 18px 60px #0005}
+.fiche-wymond .perso-info{grid-column:1;grid-row:1;min-width:0}
+.fiche-wymond .fiche-surtitre{font-family:Cinzel,serif;letter-spacing:.24em;font-size:12px;text-transform:uppercase;color:#dcbd88;margin-bottom:18px}
+.fiche-wymond .fiche-nom-affiche{font-size:clamp(2rem,4vw,3.75rem);line-height:1.13;letter-spacing:.01em;color:#f2e9d8;text-wrap:balance;overflow-wrap:anywhere;text-shadow:0 4px 16px #000;margin-bottom:16px}
+.fiche-wymond .ident-nom{font-size:1rem;color:#bfb09a;border-bottom:1px solid #9e835455;width:100%;margin-bottom:12px}
+.fiche-wymond .fiche-edition-nom{margin:0 0 14px;color:#b4a183;font-size:13px}
+.fiche-wymond .fiche-edition-nom summary{cursor:pointer;width:fit-content}
+.fiche-wymond .fiche-edition-nom[open] summary{margin-bottom:10px}
+.fiche-wymond .career-line{border-top:1px solid #bd955755;border-bottom:1px solid #bd955755;padding:13px 0;margin:0 0 12px;gap:8px;flex-wrap:wrap}
+.fiche-wymond .career-input{font-size:1.15rem;color:#e4c594;min-width:0}
+.fiche-wymond .career-carriere{flex:1 1 170px}
+.fiche-wymond .ident-input{font-size:1rem;color:#e2d7c4;min-width:0}
+.fiche-wymond .ident-line{flex-wrap:wrap;gap:10px}
+.fiche-wymond .perso-portrait{grid-column:2;grid-row:1/3;width:100%;align-self:stretch}
+.fiche-wymond .portrait-frame{width:100%;height:310px;background:#0c0f0d;border:1px solid #ba9559;outline:1px solid #a67e4444;outline-offset:5px;box-shadow:0 12px 35px #0009}
+.fiche-wymond .portrait-frame img{object-fit:contain;background:#101210}
+.fiche-wymond .portrait-empty{font-family:Cinzel,serif;font-size:1.15rem;letter-spacing:.15em}
+.fiche-wymond .portrait-btns{margin-top:14px;gap:8px}
+.fiche-wymond .portrait-btns label,.fiche-wymond .portrait-btns button{font-size:12px;padding:8px;background:#171b16;color:#d6bd8e;border-color:#806641}
+.fiche-wymond .perso-meta{grid-column:1;grid-row:2;align-items:flex-start;margin:0;width:100%}
+.fiche-wymond .ident-meta{font-size:1rem;color:#c1b49e;max-width:100%;text-align:left}
+.fiche-wymond .fiche-raccourcis{grid-column:1/-1;position:sticky;top:0;z-index:90;display:flex;flex-wrap:wrap;justify-content:space-between;gap:0;padding:0;border:1px solid #927247;background:#131613f5;backdrop-filter:blur(10px)}
+.fiche-wymond .fiche-raccourcis a{flex:1;text-align:center;padding:15px 10px;font:14px Cinzel,serif;color:#dfcbb0;border-right:1px solid #655136;white-space:normal}
+.fiche-wymond .fiche-raccourcis a:last-child{border-right:0}
+.fiche-wymond .fiche-raccourcis a:hover,.fiche-wymond .fiche-raccourcis a:focus-visible{background:#673331;color:#fff0d8}
+.fiche-wymond .card{min-width:0;position:relative;padding:23px;background:linear-gradient(145deg,#1b201cf5,#101412f5);border:1px solid #79623f;border-radius:0;box-shadow:inset 0 0 0 4px #111512,inset 0 0 0 5px #9a7b4230,0 10px 25px #0003;scroll-margin-top:90px}
+.fiche-wymond .card>.card-title,.fiche-wymond .prof-head .card-title{font-size:14px;letter-spacing:.15em;color:#e2c89b;padding-bottom:14px;border-bottom:1px solid #84683e77;margin-bottom:18px;line-height:1.5;flex-wrap:wrap}
+.fiche-wymond .card-title::after{background:linear-gradient(90deg,#ae875966,transparent)}
+.fiche-wymond .card-title.red{color:#e2a394}
+.fiche-wymond .card-title.vio{color:#c6b5df}
+.fiche-wymond .stats-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.fiche-wymond .stat-box{padding:18px 10px 12px;border:1px solid #8d734a;background:linear-gradient(145deg,#34332488,#111713);box-shadow:inset 0 2px #ccb17844;border-radius:0}
+.fiche-wymond .stat-label{font-family:Cinzel,serif;color:#d4c1a0;font-size:14px;letter-spacing:.1em;min-height:21px}
+.fiche-wymond .stat-total{font-size:2.65rem;line-height:1.2;color:#f2e5c8;text-shadow:0 2px 8px #000}
+.fiche-wymond .stat-bonus{font-size:14px;color:#b9aa8b}
+.fiche-wymond .stat-nba{border-top:1px solid #9a805040;margin-top:12px;padding-top:8px}
+.fiche-wymond .stat-nba-lbl{font-size:12px;color:#c4b294}
+.fiche-wymond .stat-nba .editable-num{font-size:14px;color:#e1d5c0}
+.fiche-wymond .res-grid{gap:14px}
+.fiche-wymond .res-box{background:linear-gradient(135deg,#402b25aa,#171c16);border:1px solid #8c684d;padding:20px 12px}
+.fiche-wymond .res-label{font:14px Cinzel,serif;letter-spacing:.1em}
+.fiche-wymond .res-val{font-size:2.5rem;line-height:1.2}
+.fiche-wymond .res-sub{font-size:14px}
+.fiche-wymond .btn-small{width:36px;height:36px;font-size:20px}
+.fiche-wymond .skill-list{column-gap:24px}
+.fiche-wymond .skill-list li{font-size:16px;padding:9px 0;border-bottom:1px solid #a3855233}
+.fiche-wymond .skill-field-lbl{font-size:10px;opacity:1}
+.fiche-wymond .skill-total{font-size:20px;min-width:32px}
+.fiche-wymond .skill-field .editable-num{font-size:15px;width:32px}
+.fiche-wymond .skill-group .skill-sub .skill-name{font-size:14px}
+.fiche-wymond .skill-group .skill-sub .skill-total{font-size:17px}
+.fiche-wymond input,.fiche-wymond textarea,.fiche-wymond select{color:var(--parchment)}
+.fiche-wymond .form-input,.fiche-wymond .form-textarea,.fiche-wymond .free-area,.fiche-wymond .notes-area{font-size:17px;line-height:1.55;background:#0f1512a8;border-color:#83673e77;padding:10px}
+.fiche-wymond input::placeholder,.fiche-wymond textarea::placeholder{color:#a99a83;opacity:1}
+.fiche-wymond .btn-add,.fiche-wymond .btn-cancel,.fiche-wymond .jet-arme{font-size:12px;padding:8px 12px;min-height:34px}
+.fiche-wymond .btn-add{background:#513128;border-color:#b58a58;color:#f0d9b0}
+.fiche-wymond button:focus-visible,.fiche-wymond input:focus-visible,.fiche-wymond textarea:focus-visible,.fiche-wymond a:focus-visible{outline:2px solid #e5c387;outline-offset:3px}
+.fiche-wymond .fiche-graphe{background:#141a16}
+.fiche-wymond .prof-head .card-title{padding-bottom:0;margin-bottom:0;border:0}
+.fiche-wymond .money-label,.fiche-wymond .money-btn{font-size:12px}
+.fiche-wymond .money-btn{width:28px;height:28px}
+@media(max-width:900px){.fiche-wymond .layout{padding:14px;gap:16px}.fiche-wymond .perso-header{grid-template-columns:minmax(0,1fr) 230px;padding:24px;gap:20px}.fiche-wymond .portrait-frame{height:270px}.fiche-wymond .skill-list{column-count:1}.fiche-wymond .fiche-raccourcis a{font-size:12px;padding:12px 8px}}
+@media(max-width:650px){.fiche-wymond .layout{grid-template-columns:minmax(0,1fr);padding:10px}.fiche-wymond .perso-header{grid-template-columns:minmax(0,1fr);padding:23px;gap:20px}.fiche-wymond .perso-info{grid-column:1;grid-row:2}.fiche-wymond .perso-portrait{grid-column:1;grid-row:1;width:min(100%,260px);justify-self:center}.fiche-wymond .portrait-frame{height:260px}.fiche-wymond .perso-meta{grid-column:1;grid-row:3}.fiche-wymond .fiche-nom-affiche{font-size:2rem}.fiche-wymond .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fiche-wymond .card{padding:18px}.fiche-wymond .fiche-raccourcis a{flex:1 1 33.333%;padding:10px 4px}.fiche-wymond .ident-line input{max-width:100%}.fiche-wymond .career-input{max-width:100%}.fiche-wymond .fiche-surtitre{font-size:11px}}
+@media print{.fiche-wymond .fiche-raccourcis{display:none}.fiche-wymond .perso-header{min-height:0}.fiche-wymond .card{break-inside:avoid;box-shadow:none}}
+
+/* Deuxième passe : matières peintes, emblèmes et portrait dans le décor. */
+.fiche-wymond{--fiche-panneau:url('panel-v2.png')}
+.fiche-wymond .layout{gap:16px}
+.fiche-wymond .perso-header{min-height:420px;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);padding:40px 42px 26px;border:0;border-bottom:1px solid #b9955d;box-shadow:none;background:linear-gradient(90deg,#090b09b8,#090b0960 50%,#090b0910),url('header-v2.png') center/cover}
+.fiche-wymond .perso-info{position:relative;z-index:2;padding-left:30px}
+.fiche-wymond .fiche-surtitre{font-size:11px;margin-bottom:13px;letter-spacing:.24em}
+.fiche-wymond .fiche-nom-affiche{font-size:clamp(2.4rem,4.8vw,4.4rem);font-weight:700;text-transform:uppercase;line-height:1.07;letter-spacing:.025em;color:#f3e7cf;text-shadow:1px 2px 0 #131610,0 5px 20px #000}
+.fiche-wymond .fiche-surnom{display:block;font-size:.48em;line-height:1.3;color:#cc6656;letter-spacing:.09em;margin-top:8px}
+.fiche-wymond .career-input{font-size:1.35rem;color:#e8ddc7}
+.fiche-wymond .career-line{border-top:0;border-bottom:1px solid #b18d5688;margin-bottom:14px;padding-top:2px}
+.fiche-wymond .perso-portrait{position:absolute;right:0;top:0;bottom:0;width:49%;grid-column:auto;grid-row:auto;z-index:1;overflow:hidden}
+.fiche-wymond .portrait-frame{width:100%;height:100%;border:0;outline:0;box-shadow:none;background:transparent;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 23%),linear-gradient(0deg,transparent,#000 10%);mask-composite:intersect}
+.fiche-wymond .portrait-frame img{width:100%;height:100%;object-fit:cover;object-position:center 28%;background:transparent;filter:contrast(1.06) saturate(.83)}
+.fiche-wymond .portrait-empty{align-self:center;background:#0f120da8;padding:20px;color:#ccba96}
+.fiche-wymond .portrait-btns{position:absolute;right:18px;bottom:12px;width:170px;z-index:3;margin:0;opacity:.82}
+.fiche-wymond .portrait-btns label,.fiche-wymond .portrait-btns button{font-size:10px;padding:5px;background:#0d120dd9;border-color:#b2925366}
+.fiche-wymond .portrait-btns:hover,.fiche-wymond .portrait-btns:focus-within{opacity:1}
+.fiche-wymond .perso-meta{position:relative;z-index:2;padding-left:30px;align-self:end}
+.fiche-wymond .fiche-edition-nom{margin-bottom:12px;font-size:12px;color:#c3ac84}
+.fiche-wymond .fiche-raccourcis{border-image:var(--fiche-panneau) 135 / 10px / 0 stretch;background:#11140f}
+.fiche-wymond .fiche-raccourcis a{display:flex;align-items:center;justify-content:center;gap:7px;padding:10px 8px;border-color:#8c744777}
+.fiche-wymond .fiche-raccourcis .fiche-icone{width:29px;height:29px;flex:none}
+.fiche-wymond .fiche-icone{display:inline-block;vertical-align:middle;width:38px;height:38px;background-image:url('icons-v2.png');background-size:400% 400%;background-position:var(--ix) var(--iy);background-repeat:no-repeat;mix-blend-mode:screen;pointer-events:none;flex-shrink:0}
+.fiche-wymond .card:not(.fiche-ressources),.fiche-wymond .ressource-illustree{border:12px solid transparent;border-image:var(--fiche-panneau) 135 fill / 16px / 0 stretch;background:#10130f;box-shadow:0 8px 25px #0004;padding:9px 12px 14px;border-radius:0}
+.fiche-wymond .card>.card-title{padding-bottom:9px;margin-bottom:12px;font-size:14px;gap:10px;letter-spacing:.17em}
+.fiche-wymond .card-title>.fiche-icone{width:33px;height:33px}
+.fiche-wymond .stats-grid{gap:11px}
+.fiche-wymond .stat-box.stat-illustree{position:relative;min-height:165px;isolation:isolate;display:flex;flex-direction:column;justify-content:center;align-items:stretch;padding:12px 8px 7px 45%;border:7px solid transparent;border-image:var(--fiche-panneau) 135 fill / 9px / 0 stretch;background:#11150f;box-shadow:none}
+.fiche-wymond .stat-illustree>.fiche-icone{position:absolute;width:clamp(72px,8vw,105px);height:clamp(72px,8vw,105px);left:-7px;top:20px;z-index:0;opacity:.94}
+.fiche-wymond .stat-illustree>.stat-label,.fiche-wymond .stat-nom-long,.fiche-wymond .stat-illustree>.stat-total,.fiche-wymond .stat-illustree>.stat-bonus{position:relative;z-index:1;text-shadow:0 2px 6px #000}
+.fiche-wymond .stat-illustree>.stat-label{font-size:17px;color:#eadbc0;margin:0;min-height:0}
+.fiche-wymond .stat-nom-long{display:block;font-size:12px;line-height:1.2;font-style:italic;color:#c7b997;min-height:28px}
+.fiche-wymond .stat-illustree>.stat-total{font-size:2.55rem;line-height:1.1;margin:0;color:#f0e5cf}
+.fiche-wymond .stat-illustree>.stat-bonus{font-size:11px;margin-top:2px;color:#b9aa8a}
+.fiche-wymond .stat-edition{font-size:12px;margin-top:8px;color:#c4af86;text-align:center;position:relative;z-index:2}
+.fiche-wymond .stat-edition summary{cursor:pointer;padding:3px 0}
+.fiche-wymond .stat-edition[open]{margin-left:-68%;padding:5px;background:#10140ff5;border-top:1px solid #9d7d45;z-index:3}
+.fiche-wymond .stat-edition .stat-nba{margin-top:0;padding-top:0;border-top:0}
+.fiche-wymond .stat-edition .stat-nba-lbl{font-size:12px}
+.fiche-wymond .stat-edition .editable-num{font-size:15px}
+.fiche-wymond .fiche-ressources{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;padding:0;border:0;background:none;box-shadow:none}
+.fiche-wymond .fiche-ressources>.card-title{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);padding:0;margin:0;border:0}
+.fiche-wymond .ressource-illustree{margin:0!important;min-width:0;text-align:center}
+.fiche-wymond .ressource-illustree>.res-label,.fiche-wymond .ressource-illustree>.card-title{display:flex;align-items:center;justify-content:center;gap:8px;font:13px Cinzel,serif!important;letter-spacing:.1em;min-height:39px;color:#e4d2ac!important;border-bottom:1px solid #95713f77;padding-bottom:10px;margin-bottom:14px!important}
+.fiche-wymond .ressource-illustree>.res-label .fiche-icone{width:33px;height:33px}
+.fiche-wymond .fiche-vitalite{display:block;width:100%;height:20px;margin:0 auto 9px;accent-color:#7d9e51}
+.fiche-wymond .fiche-vitalite::-webkit-meter-bar{background:#0b0e09;border:1px solid #807049;border-radius:2px}
+.fiche-wymond .fiche-vitalite::-webkit-meter-optimum-value{background:linear-gradient(0deg,#355b2f,#90b46b)}
+.fiche-wymond .fiche-vitalite::-webkit-meter-suboptimum-value{background:#a3823f}
+.fiche-wymond .fiche-vitalite::-webkit-meter-even-less-good-value{background:#9e4537}
+.fiche-wymond .ressource-illustree>.res-val{display:inline-block;font-size:2rem;vertical-align:middle}
+.fiche-wymond .ressource-illustree>.res-sub{display:inline-block;vertical-align:middle;font-size:15px;margin-left:6px}
+.fiche-wymond .wounds-ctrl{margin-top:7px;justify-content:space-between}
+.fiche-wymond .fortune-row{justify-content:space-evenly;padding-top:7px}
+.fiche-wymond .fortune-input{font-size:1.8rem;width:60px;color:#efdfbd}
+.fiche-wymond .fortune-plus-in{font-size:1rem;width:30px}
+.fiche-wymond .fortune-lbl{font-size:14px}
+.fiche-wymond .fortune-hint{font-size:12px}
+.fiche-wymond .ressource-mouvement{grid-column:1}
+.fiche-wymond .ressource-monnaie{grid-column:2/4}
+.fiche-wymond .ressource-monnaie .money-row{justify-content:space-evenly;margin:16px 0}
+.fiche-wymond #m-convert-msg{grid-column:1/-1;margin:0!important;min-height:0!important}
+.fiche-wymond .fiche-graphe .prof-head{min-height:28px}
+.fiche-wymond .card-title .fiche-icone{opacity:.9}
+.fiche-wymond .skill-total{color:#e3c085}
+.fiche-wymond .btn-add,.fiche-wymond .btn-small{box-shadow:inset 0 1px #d0ae6655;background-image:linear-gradient(155deg,#89713d20,transparent)}
+@media(max-width:1000px){.fiche-wymond .perso-header{padding:30px 20px;min-height:385px}.fiche-wymond .perso-info,.fiche-wymond .perso-meta{padding-left:12px}.fiche-wymond .stat-box.stat-illustree{padding-left:38%}.fiche-wymond .stat-illustree>.fiche-icone{width:80px;height:80px;left:-13px}.fiche-wymond .stat-illustree>.stat-label{font-size:15px}.fiche-wymond .stat-illustree>.stat-total{font-size:2rem}.fiche-wymond .ressource-illustree>.card-title{font-size:11px!important;letter-spacing:.04em}}
+@media(max-width:650px){.fiche-wymond .perso-header{display:flex;flex-direction:column;align-items:stretch;padding:255px 20px 24px;min-height:0;gap:8px}.fiche-wymond .perso-portrait{width:100%;height:300px;right:0;top:0;bottom:auto}.fiche-wymond .portrait-frame{mask-image:linear-gradient(0deg,transparent,#000 27%);mask-composite:add}.fiche-wymond .portrait-frame img{object-position:center 27%}.fiche-wymond .portrait-btns{bottom:47px;right:12px;width:150px}.fiche-wymond .perso-info,.fiche-wymond .perso-meta{padding:0}.fiche-wymond .fiche-nom-affiche{font-size:2.5rem}.fiche-wymond .fiche-surtitre{font-size:10px;margin-bottom:8px}.fiche-wymond .career-input{font-size:1.1rem}.fiche-wymond .fiche-raccourcis a{gap:3px;font-size:11px}.fiche-wymond .fiche-raccourcis .fiche-icone{width:22px;height:22px}.fiche-wymond .stats-grid{gap:8px}.fiche-wymond .stat-box.stat-illustree{min-height:160px;padding-left:43%;padding-right:4px}.fiche-wymond .stat-illustree>.fiche-icone{width:80px;height:80px;top:27px;left:-10px}.fiche-wymond .stat-illustree>.stat-label{font-size:15px}.fiche-wymond .stat-illustree>.stat-total{font-size:2.2rem}.fiche-wymond .stat-nom-long{font-size:11px;min-height:29px}.fiche-wymond .fiche-ressources{grid-template-columns:minmax(0,1fr)}.fiche-wymond .ressource-mouvement,.fiche-wymond .ressource-monnaie{grid-column:1}.fiche-wymond .card:not(.fiche-ressources){padding:6px 5px 10px}.fiche-wymond .ressource-illustree>.card-title{font-size:13px!important}.fiche-wymond .card>.card-title{font-size:13px;letter-spacing:.08em}}
+@media(prefers-reduced-motion:reduce){.fiche-wymond{scroll-behavior:auto}}
+@media print{.fiche-wymond .fiche-icone{print-color-adjust:exact}.fiche-wymond .perso-header{min-height:300px}.fiche-wymond .stat-edition{display:block}.fiche-wymond .stat-edition>summary{display:none}.fiche-wymond .stat-edition::details-content{content-visibility:visible;height:auto}}
+/* Chaque portrait garde tout son cadrage et se fond dans l'illustration. */
+.fiche-wymond .portrait-frame{mask-image:none}
+.fiche-wymond .portrait-frame img{position:absolute;right:0;bottom:0;width:auto;height:100%;max-width:100%;object-fit:contain;mask-image:linear-gradient(90deg,transparent,#000 22%),linear-gradient(0deg,transparent,#000 10%);mask-composite:intersect}
+.fiche-wymond .fiche-icone[data-motif="8"],.fiche-wymond .fiche-icone[data-motif="9"]{clip-path:inset(0 0 12% 0)}
+.fiche-wymond .career-echelon{flex:1 1 170px;max-width:100%;width:170px}
+.fiche-wymond .career-num{flex:0 0 32px;width:32px}
+@media(max-width:650px){.fiche-wymond .portrait-frame img{right:50%;transform:translateX(50%);mask-image:linear-gradient(0deg,transparent,#000 22%);mask-composite:add}}
+.fiche-wymond .stat-edition .xp-badge{white-space:normal;flex-wrap:wrap;max-width:100%}
+@media(max-width:360px){.fiche-wymond .stat-box.stat-illustree{padding-left:48%}.fiche-wymond .stat-illustree>.fiche-icone{width:64px;height:64px;left:-12px;top:34px}.fiche-wymond .stat-illustree>.stat-total{font-size:2rem}.fiche-wymond .stat-illustree>.stat-label{font-size:14px}}
+
+/* Rééquilibrage demandé : priorité aux compétences et à la lecture. */
+.fiche-wymond .fiche-competences .skill-list{column-count:1}
+.fiche-wymond .fiche-competences .skill-list li{font-size:18px;padding:10px 0}
+.fiche-wymond .skill-name{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.35}
+.fiche-wymond .skill-group .skill-sub .skill-name{font-size:16px}
+.fiche-wymond .skill-field-lbl{font-size:12px;line-height:1.2;color:#c8b99c}
+.fiche-wymond .skill-field .editable-num{font-size:17px;width:38px}
+.fiche-wymond .skill-total{font-size:23px}
+.fiche-wymond .fiche-etats-compacts{align-self:start}
+.fiche-wymond .fiche-etats-compacts .cet-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.fiche-wymond .fiche-etats-compacts .cet-input{height:90px;min-height:90px;resize:vertical;font-size:17px;line-height:1.45;padding:9px}
+.fiche-wymond .cet-label{font-size:13px;line-height:1.4;min-height:36px;color:#d2bda1}
+.fiche-wymond .stat-nom-long{font-size:14px;min-height:34px}
+.fiche-wymond .stat-illustree>.stat-bonus{font-size:13px}
+.fiche-wymond .stat-edition,.fiche-wymond .fiche-edition-nom{font-size:14px}
+.fiche-wymond .stat-edition .stat-nba-lbl{font-size:14px}
+.fiche-wymond .stat-illustree>.fiche-icone[data-motif="9"]{left:5px;width:90px;height:90px;top:27px}
+.fiche-wymond .xp-badge,.fiche-wymond .xp-label,.fiche-wymond .grp-hint,.fiche-wymond .jet-diff,.fiche-wymond .fortune-hint,.fiche-wymond .fortune-lbl-sub,.fiche-wymond .money-label,.fiche-wymond .statut-label,.fiche-wymond .qua-tag,.fiche-wymond .dur-v{font-size:13px;line-height:1.4}
+.fiche-wymond .xp-badge{white-space:normal;flex-wrap:wrap;max-width:100%}
+.fiche-wymond .inv-desc,.fiche-wymond .inv-detail,.fiche-wymond .prop-rule,.fiche-wymond .sp-rule,.fiche-wymond .wstat,.fiche-wymond .mg-rap,.fiche-wymond .mg-src,.fiche-wymond .gauge-note,.fiche-wymond .amb-label{font-size:15px;line-height:1.5}
+.fiche-wymond .armor-table th,.fiche-wymond .mg-lbl,.fiche-wymond .mg-tog,.fiche-wymond .mg-chip,.fiche-wymond .mg-b,.fiche-wymond .mg-x,.fiche-wymond .btn-add,.fiche-wymond .btn-cancel,.fiche-wymond .jet-arme{font-size:13px}
+.fiche-wymond .portrait-btns{width:190px}
+.fiche-wymond .portrait-btns label,.fiche-wymond .portrait-btns button{font-size:12px;padding:7px}
+.fiche-wymond .ressource-illustree>div[style*="font-size:0.6rem"]{font-size:13px!important;line-height:1.45!important}
+.fiche-wymond .card>div[style*="font-size:0.6rem"],.fiche-wymond .card>div[style*="font-size:0.65rem"]{font-size:13px!important;line-height:1.45!important}
+@media(max-width:900px){.fiche-wymond .fiche-etats-compacts .cet-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fiche-wymond .stat-illustree>.fiche-icone[data-motif="9"]{left:1px;width:70px;height:70px;top:30px}}
+@media(max-width:650px){.fiche-wymond .stat-nom-long{font-size:13px}.fiche-wymond .fiche-competences .skill-list li{font-size:17px}.fiche-wymond .skill-field .editable-num{width:32px;font-size:16px}.fiche-wymond .stat-illustree>.fiche-icone[data-motif="9"]{left:3px;width:64px;height:64px;top:35px}}
+@media(max-width:360px){.fiche-wymond .stat-illustree>.fiche-icone[data-motif="9"]{left:3px;width:52px;height:52px;top:40px}.fiche-wymond .fiche-etats-compacts .cet-grid{grid-template-columns:1fr}.fiche-wymond .cet-label{min-height:0}}
+/* Garder une matière naturelle même lorsque la liste devient très longue. */
+.fiche-wymond .fiche-competences{border-image-slice:135;background:linear-gradient(#0d110db8,#0d110db8),url('panel-v2.png') center/cover}
