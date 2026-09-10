@@ -345,3 +345,25 @@
  .fiche-wymond body,.fiche-wymond .card:not(.fiche-ressources),.fiche-wymond .card.fiche-competences,.fiche-wymond .ressource-illustree,.fiche-wymond .stat-box.stat-illustree{background:none;box-shadow:none}
  .fiche-wymond .card:not(.fiche-ressources)::before,.fiche-wymond .card:not(.fiche-ressources)::after,.fiche-wymond .ressource-illustree::before,.fiche-wymond .ressource-illustree::after{display:none}
 }
+
+/* Une seule matière, indépendante du contenu et sans raccord de répétition. */
+.fiche-wymond body{background:#100f0c}
+.fiche-wymond body::before{
+ content:'';display:block;position:fixed;inset:0 0 auto;
+ width:100%;height:100vh;height:100lvh;
+ background:linear-gradient(#090b0945,#090b0945),url('cuir-ancien.png') left top/cover no-repeat;
+ pointer-events:none;z-index:0;
+}
+.fiche-wymond .layout{background:#080b081c}
+.fiche-wymond .card:not(.fiche-ressources),
+.fiche-wymond .card.fiche-competences,
+.fiche-wymond .ressource-illustree,
+.fiche-wymond .stat-box.stat-illustree{
+ background:#090d0938;
+}
+.fiche-wymond body>nav{background:#11120eeb;z-index:2}
+@media print{
+ .fiche-wymond body{background:#fff}
+ .fiche-wymond body::before{display:none}
+ .fiche-wymond .layout,.fiche-wymond .card:not(.fiche-ressources),.fiche-wymond .card.fiche-competences,.fiche-wymond .ressource-illustree,.fiche-wymond .stat-box.stat-illustree{background:none}
+}
