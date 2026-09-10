@@ -9,6 +9,7 @@
   <link rel="icon" href="assets/accueil/comet.svg" type="image/svg+xml">
   <link rel="preload" href="assets/accueil/empire-hero.webp" as="image" fetchpriority="high">
   <link rel="stylesheet" href="assets/accueil/home.css">
+  <link rel="stylesheet" href="assets/accueil/relief.css?v=20260910-1">
   <script src="assets/accueil/home.js" defer></script>
 </head>
 <body>
@@ -40,7 +41,7 @@
       <div class="hero-shade"></div>
       <div class="hero-copy">
         <h1 id="site-title">Warhammer<span>Fantasy Roleplay</span></h1>
-        <div class="hero-rule" aria-hidden="true"><span></span><svg><use href="#i-star"/></svg><span></span></div>
+        <div class="hero-rule" aria-hidden="true"><span></span><i class="home-icon"></i><span></span></div>
         <p>Partez à l'aventure, enrichissez-vous, montez les échelons du pouvoir... Mmmh, ou tentez simplement de survivre.</p>
       </div>
     </section>
@@ -51,7 +52,7 @@
         <a class="campaign eclipse" href="eclipse/index-eclipse.html" data-destination aria-labelledby="eclipse-title">
           <img class="campaign-art" src="assets/accueil/eclipse.webp" alt="" width="1600" height="900" decoding="async">
           <span class="campaign-shade"></span>
-          <span class="campaign-mark" aria-hidden="true"><svg><use href="#i-moon"/></svg></span>
+          <span class="campaign-mark" aria-hidden="true"><img src="assets/accueil/sceau-eclipse.png" alt="" width="94" height="94"></span>
           <span class="corner top-left"></span><span class="corner top-right"></span><span class="corner bottom-left"></span><span class="corner bottom-right"></span>
           <div class="campaign-copy">
             <h3 id="eclipse-title">L’Éclipse</h3>
@@ -62,7 +63,7 @@
         <a class="campaign blood" href="bds/index-bds.html" data-destination aria-labelledby="blood-title">
           <img class="campaign-art" src="assets/accueil/boue-et-sang.webp" alt="" width="1600" height="900" decoding="async">
           <span class="campaign-shade"></span>
-          <span class="campaign-mark" aria-hidden="true"><svg><use href="#i-star"/></svg></span>
+          <span class="campaign-mark" aria-hidden="true"><img src="assets/accueil/sceau-boue-sang.png" alt="" width="94" height="94"></span>
           <span class="corner top-left"></span><span class="corner top-right"></span><span class="corner bottom-left"></span><span class="corner bottom-right"></span>
           <div class="campaign-copy">
             <h3 id="blood-title">De Boue et de Sang</h3>
@@ -73,12 +74,12 @@
       </div>
       <div class="utility-grid" aria-label="Les outils de la table">
         <a class="utility" href="table.html" data-destination>
-          <svg class="utility-icon dice-icon" aria-hidden="true"><use href="#i-dice"/></svg>
+          <span class="home-icon" aria-hidden="true"></span>
           <div><h3>La Table virtuelle</h3><p>Visio · Dés · Maps · Illustrations · Ambiances</p></div>
           <svg class="utility-arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
         </a>
         <a class="utility" href="mj/index-mj.html" data-destination data-mj id="lien-mj">
-          <svg class="utility-icon" aria-hidden="true"><use href="#i-book"/></svg>
+          <span class="home-icon" aria-hidden="true"></span>
           <div><h3>Maître du Jeu</h3><p>Règles · Carrières · Bestiaire · Catalogue</p></div>
           <svg class="lock" aria-hidden="true"><use href="#i-lock"/></svg>
           <svg class="utility-arrow" aria-hidden="true"><use href="#i-arrow"/></svg>
@@ -89,3 +90,4 @@
   <footer><span></span><p>Campagnes privées <b aria-hidden="true">·</b> Warhammer Fantasy Roleplay</p><span></span></footer>
 </body>
 </html>
+
