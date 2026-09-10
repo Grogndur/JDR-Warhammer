@@ -112,3 +112,11 @@ body.livre-mj{--sidebar-w:285px;--BG:#0d100d;--CARD:#171a13;--SUB:#c3b89f;--TXT:
  .livre-mj .topbar button{font-size:14px;padding:6px}
  .livre-mj .search-input{width:90px;max-width:22vw}
 }
+
+/* Introduction centrée ; sommaire accessible en tiroir. */
+.livre-mj.livre-accueil:not(.editing) .main{margin-left:0;margin-right:0}
+.livre-mj.livre-accueil:not(.editing) .sidebar{transform:translateX(-100%)}
+.livre-mj.livre-accueil:not(.editing) .sidebar.open{transform:translateX(0)}
+.livre-mj.livre-accueil:not(.editing) .btn-menu{display:inline-flex;align-items:center;justify-content:center}
+.livre-mj .welcome .arc-tile:last-child:nth-child(odd){grid-column:1 / -1;width:calc((100% - 16px) / 2);justify-self:center}
+@media(max-width:750px){.livre-mj .welcome .arc-tile:last-child:nth-child(odd){width:100%;grid-column:auto}}
