@@ -240,3 +240,6 @@
 .fiche-wymond .fiche-raccourcis::after{
  content:'';position:absolute;inset:-1px;pointer-events:none;background:url('cadre-ancre-10.svg') 0 0/100% 100% no-repeat;z-index:3;
 }
+
+/* Le décor d’origine contient déjà sa bordure : suppression du cadre superposé. */
+.fiche-wymond body::after{display:none;content:none}
