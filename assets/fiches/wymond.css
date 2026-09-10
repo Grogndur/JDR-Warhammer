@@ -214,3 +214,35 @@
  .fiche-wymond body{background:#fff}
  .fiche-wymond .layout{background:none;box-shadow:none}
 }
+
+/* Matière indépendante des dimensions et de la hauteur des encadrés. */
+.fiche-wymond body{
+ background:#10130f;
+ background-image:linear-gradient(#0b100b65,#0b100b65),url('cuir-stable.png');
+ background-size:auto,620px 620px;
+ background-position:0 0,0 0;
+ background-repeat:repeat;
+ background-attachment:scroll;
+}
+.fiche-wymond .card:not(.fiche-ressources),
+.fiche-wymond .card.fiche-competences,
+.fiche-wymond .ressource-illustree,
+.fiche-wymond .stat-box.stat-illustree{
+ border-image-slice:135;
+ border-image-repeat:repeat;
+ background-color:#10130f;
+ background-image:linear-gradient(#0d110d9c,#0d110d9c),url('cuir-stable.png');
+ background-size:auto,620px 620px;
+ background-position:0 0,0 0;
+ background-repeat:repeat;
+ background-attachment:scroll;
+ background-origin:padding-box;
+}
+.fiche-wymond .fiche-raccourcis{border-image-repeat:repeat}
+.fiche-wymond body>nav{
+ background:linear-gradient(#10130fc9,#10130fc9),url('cuir-stable.png') 0 0/620px 620px repeat;
+}
+@media print{
+ .fiche-wymond body{background:#fff}
+ .fiche-wymond .card:not(.fiche-ressources),.fiche-wymond .card.fiche-competences,.fiche-wymond .ressource-illustree,.fiche-wymond .stat-box.stat-illustree{background:none}
+}
