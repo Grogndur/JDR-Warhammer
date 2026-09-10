@@ -398,3 +398,27 @@
  .fiche-wymond body::after{display:none}
  .fiche-wymond .card:not(.fiche-ressources),.fiche-wymond .card.fiche-competences,.fiche-wymond .ressource-illustree,.fiche-wymond .stat-box.stat-illustree{background:#fff}
 }
+
+/* Grain fin : changement de matière, pas de réduction en tuiles. */
+.fiche-wymond body::before{
+ background:linear-gradient(#090b0955,#090b0955),url('cuir-fin.png') left top/cover no-repeat;
+}
+.fiche-wymond .card:not(.fiche-ressources),
+.fiche-wymond .card.fiche-competences,
+.fiche-wymond .ressource-illustree,
+.fiche-wymond .stat-box.stat-illustree{
+ border-color:transparent;
+ background-color:#14140f;
+ background-image:linear-gradient(#0c0e0bd4,#0c0e0bd4),url('cuir-fin.png'),url('cuir-ancien.png');
+ background-size:auto,cover,400px auto;
+ background-position:0 0,left top,0 0;
+ background-repeat:no-repeat,no-repeat,repeat;
+ background-attachment:scroll,fixed,scroll;
+ background-origin:padding-box,padding-box,border-box;
+ background-clip:padding-box,padding-box,border-box;
+ outline-color:#80683b77;
+ box-shadow:inset 0 0 0 1px #bfa36a40,inset 0 0 14px #0006,0 6px 20px #0006;
+}
+@media print{
+ .fiche-wymond .card:not(.fiche-ressources),.fiche-wymond .card.fiche-competences,.fiche-wymond .ressource-illustree,.fiche-wymond .stat-box.stat-illustree{background:#fff;box-shadow:none}
+}
