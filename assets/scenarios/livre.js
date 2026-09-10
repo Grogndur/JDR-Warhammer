@@ -35,8 +35,15 @@
    if(profiles.length){heading('Personnages & profils',4);for(const node of profiles){jump(node,node.textContent.trim());}}
    const notes=[...panel.querySelectorAll('.mj-box')];
    if(notes.length){heading('Repères du meneur',12);for(const [i,node] of notes.entries()){
-     const name=node.querySelector('.mj-label')?.textContent.trim()||`Rappel ${i+1}`;
-     jump(node,name);
+     const clean=text=>text.replace(/\s+/g,' ').trim();
+     const name=clean(node.querySelector('.mj-label')?.textContent||'MJ');
+     const detail=clean(node.querySelector('.mj-text strong')?.textContent || node.querySelector('.mj-text')?.textContent || '');
+     // Extrait du contenu réel : aucun titre de scène ni renseignement inventé.
+     const short=detail.length>95?detail.slice(0,92).replace(/\s+\S*$/,'')+'…':detail;
+     const b=jump(node,'');
+     const type=document.createElement('span');type.className='livre-repere-type';type.textContent=name;
+     const text=document.createElement('span');text.className='livre-repere-detail';text.textContent=short||`Rappel ${i+1}`;
+     b.append(type,text);b.title=detail;
    }}
    const mediaButton=panel.querySelector('.btn-illu');
    if(mediaButton){
