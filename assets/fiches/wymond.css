@@ -295,3 +295,53 @@
 @media print{
  .fiche-wymond .card:not(.fiche-ressources),.fiche-wymond .card.fiche-competences,.fiche-wymond .ressource-illustree,.fiche-wymond .stat-box.stat-illustree{background:none;box-shadow:none}
 }
+
+/* Reliure : coins autonomes et raccords de matière fondus à taille constante. */
+.fiche-wymond body,
+.fiche-wymond .card:not(.fiche-ressources),
+.fiche-wymond .card.fiche-competences,
+.fiche-wymond .ressource-illustree,
+.fiche-wymond .stat-box.stat-illustree{
+ background-color:#10130f;
+ background-image:
+  radial-gradient(ellipse 240px 280px at 310px 380px,var(--patine,#88603620),transparent),
+  linear-gradient(90deg,#10130f 0px,#10130f00 75px,#10130f00 545px,#10130f 620px),
+  linear-gradient(180deg,#10130f 0px,#10130f00 75px,#10130f00 545px,#10130f 620px),
+  linear-gradient(#0d110d70,#0d110d70),url('cuir-stable.png');
+ background-size:620px 860px,620px 620px,620px 620px,auto,620px 620px;
+ background-position:0 0;
+ background-repeat:repeat;
+ background-attachment:scroll;
+}
+.fiche-wymond .card:not(.fiche-ressources),
+.fiche-wymond .card.fiche-competences,
+.fiche-wymond .ressource-illustree{
+ border-image:none;
+ border-color:#191b13;
+ outline-color:#8b7248;
+ box-shadow:inset 0 0 0 1px #bc995a66,inset 3px 0 0 #050a0670,inset 5px 0 0 #a0814130,inset 0 0 20px #0005,0 6px 20px #0006;
+}
+.fiche-wymond .card:not(.fiche-ressources)::before,
+.fiche-wymond .ressource-illustree::before,
+.fiche-wymond .card:not(.fiche-ressources)::after,
+.fiche-wymond .ressource-illustree::after{
+ content:'';position:absolute;width:64px;height:64px;pointer-events:none;
+ background:url('coin-reliure.png') center/contain no-repeat;
+ z-index:1;
+}
+.fiche-wymond .card:not(.fiche-ressources)::before,
+.fiche-wymond .ressource-illustree::before{inset:-13px auto auto -13px;transform:none}
+.fiche-wymond .card:not(.fiche-ressources)::after,
+.fiche-wymond .ressource-illustree::after{inset:auto -13px -13px auto;transform:rotate(180deg)}
+.fiche-wymond .card>.card-title{
+ background:linear-gradient(90deg,#aa85441c,transparent 290px);
+ box-shadow:0 1px #090d08;
+}
+@media(max-width:650px){
+ .fiche-wymond .card:not(.fiche-ressources)::before,.fiche-wymond .card:not(.fiche-ressources)::after,
+ .fiche-wymond .ressource-illustree::before,.fiche-wymond .ressource-illustree::after{width:52px;height:52px}
+}
+@media print{
+ .fiche-wymond body,.fiche-wymond .card:not(.fiche-ressources),.fiche-wymond .card.fiche-competences,.fiche-wymond .ressource-illustree,.fiche-wymond .stat-box.stat-illustree{background:none;box-shadow:none}
+ .fiche-wymond .card:not(.fiche-ressources)::before,.fiche-wymond .card:not(.fiche-ressources)::after,.fiche-wymond .ressource-illustree::before,.fiche-wymond .ressource-illustree::after{display:none}
+}
