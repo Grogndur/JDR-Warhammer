@@ -367,3 +367,34 @@
  .fiche-wymond body::before{display:none}
  .fiche-wymond .layout,.fiche-wymond .card:not(.fiche-ressources),.fiche-wymond .card.fiche-competences,.fiche-wymond .ressource-illustree,.fiche-wymond .stat-box.stat-illustree{background:none}
 }
+
+/* Retour aux panneaux de cuir opaques, distincts du décor extérieur. */
+.fiche-wymond .card:not(.fiche-ressources),
+.fiche-wymond .card.fiche-competences,
+.fiche-wymond .ressource-illustree,
+.fiche-wymond .stat-box.stat-illustree{
+ background-color:#10110e;
+ background-image:linear-gradient(#0c0e0bd9,#0c0e0bd9),url('cuir-ancien.png');
+ background-position:0 0,left top;
+ background-size:auto,cover;
+ background-repeat:no-repeat;
+ background-attachment:scroll,fixed;
+ background-clip:padding-box;
+}
+/* Le cuir couvre le viewport en conservant son ratio, jamais la hauteur du bloc.
+   Sa base opaque masque intégralement le fond de page, même pendant le chargement. */
+.fiche-wymond body::before{
+ background:linear-gradient(#090b0926,#090b0926),url('cuir-ancien.png') left top/cover no-repeat;
+}
+.fiche-wymond body::after{
+ content:'';position:fixed;inset:10px 22px;z-index:0;pointer-events:none;
+ border:0 solid transparent;
+ border-image:url('panel-v2.png') 135 / 28px / 0 repeat;
+}
+.fiche-wymond .layout{background:#090d0966}
+@media(max-width:1350px){.fiche-wymond body::after{inset:8px 3px;border-image-width:15px}}
+@media(max-width:650px){.fiche-wymond body::after{display:none}}
+@media print{
+ .fiche-wymond body::after{display:none}
+ .fiche-wymond .card:not(.fiche-ressources),.fiche-wymond .card.fiche-competences,.fiche-wymond .ressource-illustree,.fiche-wymond .stat-box.stat-illustree{background:#fff}
+}
