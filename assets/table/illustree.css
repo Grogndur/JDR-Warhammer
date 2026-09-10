@@ -1,0 +1,78 @@
+/* La Table : cuir noir, laiton patiné, emblèmes peints. */
+@font-face{font-family:TableCinzel;src:url('cinzel-400.ttf');font-weight:400;font-display:swap}
+@font-face{font-family:TableCrimson;src:url('crimson-text-400.ttf');font-weight:400;font-display:swap}
+:root{--table-dock-height:145px}
+body.table-illustree{--noir:#0c0e0d;--noir-2:#111310;--surface:#191b16;--surface-2:#25271e;--laiton:#cfb17a;--laiton-sombre:#82683e;--parchemin:#f0e6d2;--parchemin-doux:#d1c3a9;--bord:#655335;--oxblood:#8f3435;--oxblood-clair:#d08072;font-family:TableCrimson,Georgia,serif;font-size:18px;background:#10120f}
+.table-illustree header,.table-illustree .dock,.table-illustree .palette,.table-illustree .initiative,.table-illustree .journal-panel,.table-illustree .cams,.table-illustree .table-tiroir-contenu,.table-illustree .table-rail,.table-illustree .gate .carte{background:#12130f url('panel.png') center/100% 100%;border:7px solid transparent;border-image:url('panel.png') 135 / 10px / 0 stretch;box-shadow:0 8px 30px #0009,inset 0 0 12px #0008;border-radius:2px}
+.table-illustree header{min-height:62px;padding:5px 15px;gap:14px}
+.table-illustree header .retour{display:flex;align-items:center;gap:10px;font:24px TableCinzel,serif;letter-spacing:.08em;color:#ead3a3}
+.table-illustree header .retour .table-icone{width:39px;height:39px}
+.table-illustree button,.table-illustree summary{font-family:TableCrimson,Georgia,serif;letter-spacing:0;font-size:16px}
+.table-illustree button:not(.pastille){border-radius:3px;background:linear-gradient(#15150c40,#0008),url('panel.png') center/350px;border-color:#826e49;box-shadow:inset 0 0 0 1px #c4a96914;min-height:32px}
+.table-illustree button:not(.pastille):hover,.table-illustree summary:hover{border-color:#d8b576;filter:brightness(1.15)}
+.table-illustree button.primaire{background:linear-gradient(#711e22bd,#3b1014eb),url('panel.png') center/300px;color:#fff0dd;border-color:#ab6759}
+.table-illustree button.de-sel,.table-illustree .outil.actif,.table-illustree .table-rail button.actif{background:linear-gradient(#66512c80,#362b18ae),url('panel.png') center/250px;border-color:#dfb568;color:#ffe5b1}
+.table-illustree :is(button,input,select,textarea,summary,a):focus-visible{outline:2px solid #f1cc87;outline-offset:3px}
+.table-illustree input,.table-illustree select,.table-illustree textarea{font-family:inherit;font-size:16px;background-color:#0b0f0d;color:#eee2cc;accent-color:#c3a169}
+.table-illustree input::placeholder,.table-illustree textarea::placeholder{color:#b8ac97;opacity:1}
+.table-icone{display:inline-block;width:30px;height:30px;flex:none;vertical-align:middle;background:url('icons.png') var(--ix) var(--iy)/400% 400% no-repeat;mix-blend-mode:screen;pointer-events:none}
+.table-bouton-icone{align-items:center;gap:5px}
+.table-bouton-icone .table-icone{width:24px;height:24px;margin-right:4px}
+.table-illustree .pal-tete,.table-illustree .ini-tete,.table-illustree .cams-tete,.table-illustree .jp-tete{background:linear-gradient(90deg,#a78a4620,transparent);border-bottom:1px solid #806b44;padding:8px 10px}
+.table-illustree :is(.pal-tete,.ini-tete,.cams-tete,.jp-tete) .pt{display:flex;align-items:center;gap:8px;font-size:20px;letter-spacing:.02em;text-transform:none;color:#ead4a8}
+.table-illustree .chat-fil{background:#0001;padding:10px;font-size:18px}
+.table-illustree .chat-m{padding:12px 10px;border:1px solid #76644861;border-left:2px solid #9f824e;background:#0a0c0970;margin-bottom:8px}
+.table-illustree .chat-m .heure{font-size:13px;opacity:.75}
+.table-illustree .chat-onglets button{font-size:16px;min-height:38px}
+.table-illustree .chat-compose{gap:8px}
+.table-illustree .ini-chip{background:#101510a8;border-color:#64573e;padding:10px}
+.table-illustree .ini-chip.actif{background:linear-gradient(90deg,#b7994538,#13191199);border-color:#c4a064;box-shadow:inset 3px 0 #c4a064}
+.table-illustree .ini-chip.abattu{background:#482124b8}
+.table-illustree .ini-val{color:#ebd29b;font-size:25px}
+.table-illustree .ini-nom{font-size:19px}
+.table-illustree .ini-et,.table-illustree .pal-lib,.table-illustree .ini-pub{font-size:14px}
+.table-illustree .palette{top:78px;left:110px;margin-left:0;width:280px;max-height:calc(100dvh - var(--table-dock-height) - 105px);overflow:auto}
+.table-illustree .chat-panel{left:auto;right:10px;top:78px;width:350px;max-width:calc(100vw - 20px)}
+.table-illustree .journal-panel{top:78px;right:10px;width:340px}
+.table-illustree .initiative{left:110px;top:78px}
+.table-illustree .cams:not(.dans-entete){top:auto;bottom:calc(var(--table-dock-height) + 15px);left:10px;width:430px;height:200px}
+.table-illustree .cams.dans-entete{border-width:3px;background-size:100% 100%}
+.table-illustree .cams.dans-entete .pt{font-size:14px}
+.table-rail{position:fixed;left:8px;top:78px;z-index:23;width:88px;display:flex;flex-direction:column;gap:3px;padding:6px 2px;max-height:calc(100dvh - var(--table-dock-height) - 100px);overflow:auto}
+.table-rail button{width:100%;padding:8px 2px;font-size:14px;line-height:1.3;text-align:center;border-color:transparent!important;background:none!important;box-shadow:none!important}
+.table-rail .table-icone{display:block;width:40px;height:40px;margin:0 auto 5px}
+.table-rail button.actif{box-shadow:inset 0 0 0 1px #b9955b!important}
+/* Les groupes originaux restent à l'intérieur du dock ; les volets déplacent
+   les nœuds existants, jamais leurs valeurs ou leurs événements. */
+.table-illustree .dock{display:flex;align-items:center;flex-wrap:wrap;justify-content:center;gap:8px;padding:9px 10px 12px}
+.table-illustree .dock>.grp{justify-self:auto;min-width:0;padding:0;border:0;background:none;border-radius:0;gap:7px}
+.table-illustree .dock>.grp-des{order:1;flex-direction:row;flex-wrap:wrap;align-items:center}
+.table-illustree .dock>.grp-scene{order:2;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center}
+.table-illustree .dock>.grp-combat{order:3}
+.table-illustree .dock .ligne{gap:7px;max-width:100%}
+.table-illustree .dock .ligne-outils{border:0;margin:0;padding:0}
+.table-illustree .dock button{padding:7px 10px;font-size:16px}
+.table-illustree .dock :is(select,input[type=text],input[type=number]){font-size:16px;padding:7px;max-width:100%}
+.table-illustree .dock label{font-size:14px;letter-spacing:.025em}
+.table-illustree .dock label .table-icone{width:38px;height:38px;margin-right:7px}
+.table-illustree .dock #cible{width:60px}
+.table-illustree .dock #custom{width:105px}
+.table-illustree .dock .prefixe-img{font-size:13px}
+.table-illustree .dock .table-tiroir-contenu :is(#img-choix,#amb-choix){max-width:260px;flex:1}
+.table-tiroir>summary{list-style:none;display:flex;align-items:center;justify-content:center;gap:6px;min-height:42px;padding:6px 10px;color:#e8d2a7;border:1px solid #7c6642;cursor:pointer;border-radius:2px}
+.table-tiroir>summary::-webkit-details-marker{display:none}
+.table-tiroir[open]>summary{background:#af8e3d25;border-color:#d3ac69}
+.table-tiroir-contenu{position:absolute;bottom:calc(100% + 8px);right:12px;width:min(700px,calc(100vw - 24px));padding:14px;max-height:min(65dvh,650px);overflow:auto;display:flex;flex-direction:column;gap:14px;box-sizing:border-box}
+.table-tiroir-tete{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #7b633d;padding-bottom:8px;color:#ead4ac;font-size:22px}
+.table-tiroir-tete button{min-width:36px}
+.table-illustree .table-tiroir-contenu .ligne{padding-bottom:9px;border-bottom:1px solid #b2975825}
+.table-illustree .table-tiroir-contenu .galerie{max-height:260px;overflow:auto}
+.table-illustree .dock-poignee,.table-illustree .entete-poignee{font-size:14px;min-height:23px}
+.table-illustree .gate .carte{padding:36px;max-width:min(500px,94vw)}
+.table-illustree .gate{background:radial-gradient(ellipse at 50% 25%,#29291f,#080b09 70%)}
+@media(min-width:1700px){.table-illustree .dock{justify-content:space-between}.table-illustree .dock button{padding:8px 11px}}
+@media(max-width:1050px){.table-illustree header .retour{font-size:19px}.table-illustree .table-bouton-icone .table-icone{width:21px;height:21px}.table-illustree .dock button{padding:5px 7px}.table-rail{width:72px}.table-rail button{font-size:13px}.table-illustree .palette,.table-illustree .initiative{left:90px}.table-illustree .chat-panel{left:auto;width:310px}}
+@media(max-width:760px){.table-illustree header{min-height:50px;padding:3px 7px}.table-illustree header .retour{font-size:16px}.table-illustree header .retour .table-icone{width:26px;height:26px}.table-rail{display:none}.table-illustree .dock{gap:5px;padding:5px 5px 9px;max-height:42dvh;overflow-y:auto}.table-illustree .dock button{font-size:14px;padding:5px 6px}.table-illustree .dock .ligne{gap:4px}.table-illustree .dock .table-icone{width:22px;height:22px}.table-illustree .dock>.grp-des,.table-illustree .dock>.grp-scene{justify-content:center;width:100%}.table-illustree .table-tiroir-contenu{position:fixed;bottom:calc(var(--table-dock-height) + 8px);right:8px;width:calc(100vw - 16px);max-height:calc(100dvh - var(--table-dock-height) - 75px)}.table-illustree .palette,.table-illustree .chat-panel,.table-illustree .initiative,.table-illustree .journal-panel{left:8px;right:8px;top:68px;width:auto!important;bottom:auto;max-height:calc(100dvh - var(--table-dock-height) - 85px)}.table-illustree .cams:not(.dans-entete){width:240px;height:160px;max-width:calc(100vw - 20px)}.table-tiroir>summary{font-size:14px;min-height:32px;padding:4px 6px}.table-illustree .ligne-outils{justify-content:center}.table-illustree .table-tiroir-contenu .ligne{row-gap:8px}}
+@media(prefers-reduced-motion:reduce){.table-illustree *{transition:none!important;scroll-behavior:auto!important}}
+.table-illustree.est-mj .table-rail .gm-only-in{flex-direction:column;align-items:center}
+.table-illustree .palette .outil .table-icone{width:28px;height:28px}

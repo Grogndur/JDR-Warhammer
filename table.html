@@ -397,7 +397,6 @@
   .dock select,.dock input[type=text],.dock input[type=number]{padding:4px 6px;font-size:12px}
   .dock #cible{width:52px}
   .dock #custom{width:76px}
-  .dock #init-add{width:112px}
   .dock #img-url,.dock #amb-fichier{width:94px}
   .dock #img-choix,.dock #amb-choix{max-width:126px}
   .dock #amb-vol{width:64px}
@@ -436,14 +435,11 @@
     .dock #img-choix,.dock #amb-choix{max-width:98px}
     .dock #amb-vol{width:52px}
     .dock #init-crea{max-width:150px}
-    .dock #init-add{width:96px}
     .dock #img-url,.dock #amb-fichier{width:82px}
     .dock #init-round-fin{font-size:0;padding:4px 9px}
     .dock #init-round-fin::after{content:"⏱";font-size:12px}
     .dock #init-jets{font-size:0;padding:4px 9px}
     .dock #init-jets::after{content:"⚄";font-size:13px}
-    .dock #init-ajout{font-size:0;padding:4px 9px}
-    .dock #init-ajout::after{content:"+ PJ";font-size:11px}
   }
 
   /* ---- Vignetage des critiques et des maladresses ---- */
@@ -913,11 +909,6 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
   .j-l input.num{width:26px;padding:1px 2px;font-size:12px;text-align:center;flex:none}
   .j-l .b-rond{font-size:13px;line-height:1;color:var(--parchemin-doux)}
   /* Trois disques de tailles croissantes : la taille du bouton dit ce qu'il fait. */
-  .jetons-panel .j-taille{line-height:1;color:var(--parchemin-doux);padding:3px 6px}
-  .jetons-panel .j-taille:nth-of-type(1){font-size:9px}
-  .jetons-panel .j-taille:nth-of-type(2){font-size:13px}
-  .jetons-panel .j-taille:nth-of-type(3){font-size:18px}
-  .jetons-panel .j-taille.actif{color:var(--laiton)}
   .j-l .b-reveler{font-size:13px;line-height:1;color:var(--laiton)}
 
   /* Panneau Jetons (MJ) : reprend l'habillage de la palette de dessin. */
@@ -951,6 +942,9 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
     .jetons-panel{right:8px;left:8px;width:auto;top:auto;bottom:118px;max-height:60vh}
   }
 </style>
+<link rel="stylesheet" href="assets/table/illustree.css?v=20260910-2">
+<script defer src="assets/table/combat-jetons.js?v=20260910-2"></script>
+<script defer src="assets/table/illustree.js?v=20260910-2"></script>
 </head>
 <body>
 
@@ -1124,24 +1118,14 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
     </div>
     <div class="pal-corps">
       <div class="pal-ligne">
-        <span class="pal-lib">Taille des jetons posés</span>
-        <button class="j-taille" data-taille="0.032" title="Petits jetons">●</button>
-        <button class="j-taille actif" data-taille="0.05" title="Jetons moyens">●</button>
-        <button class="j-taille" data-taille="0.075" title="Grands jetons">●</button>
+        <span class="pal-lib">Gérer les jetons</span>
         <span class="spacer"></span>
         <button id="jetons-vider" title="Retirer tous les jetons de la carte">Tout retirer</button>
       </div>
       <div class="pal-ligne">
         <label class="toggle"><input type="checkbox" id="jetons-pj-chk" /> Les joueurs peuvent déplacer les jetons</label>
       </div>
-      <div class="j-sect">Poser depuis l'initiative</div>
-      <div class="j-liste" id="jetons-combat"></div>
-      <div class="j-sect">Poser depuis la galerie</div>
-      <div class="pal-ligne" id="jetons-img-hote"></div>
-      <div class="pal-ligne">
-        <input type="text" id="jetons-nom" placeholder="Nom visible (facultatif)" maxlength="24" />
-        <button id="jetons-poser">Poser</button>
-      </div>
+      <p class="j-vide-note">La pose se fait depuis Combat. Ici : noms publics, taille et retrait des jetons.</p>
       <div class="j-sect">Sur la carte</div>
       <div class="j-liste" id="jetons-poses"></div>
     </div>
@@ -1255,9 +1239,7 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <button id="init-recharger" title="Relire le bestiaire">⟳</button>
       </div>
       <div class="ligne">
-        <input type="text" id="init-add" placeholder="Nom de PJ 42" title="Ajouter un personnage joueur : son nom puis son initiative" />
-        <button id="init-ajout" title="Ajouter ce personnage joueur au combat">+ PJ</button>
-        <button id="init-pj-fiches" title="Ajouter des personnages depuis leurs fiches, avec leurs Blessures">☩ Fiches</button>
+        <button id="init-pj-fiches" title="Ajouter des personnages depuis leurs fiches, avec leurs Blessures">Ajouter des PJ</button>
       </div>
       <div class="ligne">
         <button id="init-jets" title="Lancer l'initiative des créatures : 1d10 + Initiative, un jet par groupe">⚄ Init.</button>
@@ -1266,7 +1248,9 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
         <button id="init-annuler" title="Annuler le dernier décompte" disabled>↶</button>
         <button id="init-vider" title="Vider l'initiative">✕</button>
         <span class="pal-sep"></span>
-        <button id="ouvrir-jetons" title="Poser des jetons sur la carte">◉ Jetons</button>
+        <button class="primaire" id="init-poser-jetons" title="Poser les combattants qui n’ont pas encore de jeton">Poser les jetons</button>
+        <button id="ouvrir-jetons" title="Gérer les jetons déjà sur la carte">Gérer les jetons</button>
+        <span id="jetons-combat" class="j-vide-note" role="status"></span>
         <span class="secret-loc" id="init-msg"></span>
       </div>
       <div class="ligne">
@@ -2099,8 +2083,8 @@ if(refVoile){
 
 
 // ============ Jetons sur la carte ============
-// Un jeton est un rond posé sur le plateau : le portrait d'un combattant ou
-// une image de la galerie. Sa position vit dans Firebase, en coordonnées
+// Un nouveau jeton est toujours lié à un combattant. Les anciens jetons
+// sans lien restent lisibles et gérables. Sa position vit dans Firebase, en coordonnées
 // 0..1 calées sur l'image, exactement comme les traits de dessin. Tout le
 // monde voit donc la même chose, et le zoom de chacun reste indépendant.
 const refJetons   = db ? ref(db, `salles/${salle}/jetons`) : null;
@@ -2212,6 +2196,9 @@ function nomReel(j){
 
 const portraitsDemandes = {};
 function imageJeton(j){
+  const c = combattantDe(j);
+  const direct = window.TableCombat.portraitDirect(c && c.pf) || window.TableCombat.portraitDirect(j.pf);
+  if(direct) return direct;
   if(j.url) return j.url;
   if(!j.pf) return "";
   const camp = j.camp || "bds";
@@ -2376,12 +2363,12 @@ function placeLibre(){
   return { x: 0.30 + col*pas, y: 0.34 + rang*pas + (col%2 ? pas/2 : 0) };
 }
 
-// Les deux façons de poser donnent exactement le même diamètre. La taille
-// choisie dans le panneau reste la référence, et les boutons + et − de la
-// liste rattrapent au cas par cas.
-const FACTEUR_POSE = { combat: 0.512, galerie: 0.512 };
+// Taille initiale des combattants. Le panneau permet ensuite de la régler
+// individuellement pour les jetons déjà posés.
+const FACTEUR_POSE = { combat: 0.512 };
 
 function poserJeton(o){
+  if(!estMJ() || !o.cid) return Promise.reject(new Error("Pose depuis le combat réservée au MJ."));
   if(!base.iw){ alerte("Affiche d'abord une carte ou une image."); return; }
   const p = placeLibre();
   const j = {
@@ -2410,7 +2397,7 @@ function poserJeton(o){
     const premier = memes.find(x => !x.num);
     if(premier && memes.length === 1) ecrireJeton(Object.assign({}, premier, { num:"1" }), true);
   }
-  ecrireJeton(j);
+  return ecrireJeton(j);
 }
 
 // ---------- Déplacement au doigt ou à la souris ----------
@@ -2516,7 +2503,7 @@ function fermerPortraitJeton(){
     const el = e.target.closest("g[data-id]"); if(!el) return;
     e.preventDefault(); e.stopPropagation();
     if(!estMJ()) return;
-    const j = jetonsCourants()[el.dataset.id]; if(!j || j.type === "pj") return;
+    const j = jetonsCourants()[el.dataset.id]; if(!j || j.type === "pj" || combattantDe(j)) return;
     const n = cranEtat(j);
     const suivant = Math.max(0, Math.min(ETAT_MAX, n + (e.shiftKey ? 1 : -1)));
     if(suivant === n) return;
@@ -2551,6 +2538,7 @@ majAutorisationJetons();
 
 // ---------- Panneau du MJ ----------
 function rendreListeJetons(){
+  rendreCombatJetons();
   const boite = $("#jetons-poses"); if(!boite) return;
   const liste = Object.keys(jetonsCourants())
     .map(k => jetonsCourants()[k]).filter(Boolean)
@@ -2568,13 +2556,12 @@ function rendreListeJetons(){
             `<input class="n" data-act="nom" value="${escape(j.nom||"")}" ` +
             `placeholder="${escape(nom)}" maxlength="24" ` +
             `title="Nom affiché sur la carte, vu de tous. Vide : le jeton reste anonyme.">`;
-    if(!pj){
+    if(!pj && !combattantDe(j)){
       h += `<span class="etat" style="background:${coul}" title="État, du vert au rouge"></span>`;
       h += `<button data-act="blesser" title="Un cran d'état en moins">▼</button>`;
       h += `<button data-act="soigner" title="Un cran d'état en plus">▲</button>`;
     }
     h += `<input class="num" data-act="num" value="${escape(j.num||"")}" maxlength="2" title="Numéro de troupe" />`;
-    h += `<button data-act="image" class="b-rond" title="Applique au jeton l'image choisie dans la galerie">●</button>`;
     const cache = nomReel(j) && nomReel(j) !== j.nom;
     if(cache){
       h += `<button data-act="reveler" class="b-reveler" title="Afficher le vrai nom sur la carte, pour toute la table">◇</button>`;
@@ -2590,21 +2577,9 @@ function rendreListeJetons(){
 function rendreCombatJetons(){
   const boite = $("#jetons-combat"); if(!boite) return;
   const ordre = (initEtat && initEtat.ordre) || [];
-  if(!ordre.length){
-    boite.innerHTML = `<div class="j-vide-note">Aucun combattant dans l'initiative.</div>`;
-    return;
-  }
-  const poses = new Set(Object.keys(jetonsCourants())
-    .map(k => jetonsCourants()[k]).filter(Boolean).map(j => j.cid).filter(Boolean));
-  boite.innerHTML = ordre.map(c => {
-    const type = c.fid ? "pj" : "crea";
-    const coul = COULEUR_JETON[type];
-    return `<div class="j-l" data-cid="${escape(c.id)}">` +
-           `<span class="pastel" style="background:${coul}"></span>` +
-           `<span class="n">${escape(c.nom || c.pub || "Combattant")}</span>` +
-           `<button data-act="poser">${poses.has(c.id) ? "encore" : "poser"}</button>` +
-           `</div>`;
-  }).join("");
+  const reste = window.TableCombat.manquants(ordre, jetonsCourants()).length;
+  boite.textContent = !ordre.length ? "Ajoute des profils au combat." :
+    reste ? reste + " à poser" : "Tous les combattants ont un jeton.";
 }
 
 function panneauJetonsOuvert(){
@@ -2621,16 +2596,6 @@ function ouvrirPanneauJetons(forcer){
   svgInteractif(ouvrir || paletteOuverte());
   if(ouvrir) choisirOutil("nav");
   if(!ouvrir) return;
-  // La liste d'images est celle du menu Image, recopiée à chaque ouverture
-  // pour rester à jour quand de nouveaux fichiers arrivent sur GitHub.
-  const hote = $("#jetons-img-hote"), source = $("#img-choix");
-  if(hote && source){
-    const copie = source.cloneNode(true);
-    copie.id = "jetons-img";
-    copie.value = "";
-    hote.innerHTML = "";
-    hote.appendChild(copie);
-  }
   rendreCombatJetons();
   rendreListeJetons();
 }
@@ -2639,26 +2604,24 @@ $("#ouvrir-jetons").addEventListener("click", () => ouvrirPanneauJetons());
 $("#fermer-jetons").addEventListener("click", () => ouvrirPanneauJetons(false));
 rendreDeplacable($("#jetons"), $("#jetons-drag"));
 
-document.querySelectorAll(".jetons-panel .j-taille").forEach(b => {
-  b.addEventListener("click", () => {
-    tailleJeton = parseFloat(b.dataset.taille);
-    document.querySelectorAll(".jetons-panel .j-taille")
-      .forEach(x => x.classList.toggle("actif", x === b));
-  });
-});
-
-$("#jetons-combat").addEventListener("click", e => {
-  const b = e.target.closest("button[data-act='poser']"); if(!b) return;
-  const cid = b.closest("[data-cid]").dataset.cid;
-  const c = ((initEtat && initEtat.ordre) || []).find(x => x.id === cid); if(!c) return;
-  poserJeton({
-    nom: c.pub || "",
-    type: c.fid ? "pj" : "crea",
-    pf: c.pf || "", camp: c.camp || "",
-    cid: c.id,
-    source: "combat"
-  });
-  setTimeout(rendreCombatJetons, 120);
+let poseJetonsEnCours = false;
+$("#init-poser-jetons").addEventListener("click", async () => {
+  if(poseJetonsEnCours || !estMJ()) return;
+  poseJetonsEnCours = true;
+  const bouton = $("#init-poser-jetons"); bouton.disabled = true;
+  try {
+    const resultat = await window.TableCombat.poserManquants({
+      estMJ, cartePresente: () => !!base.iw,
+      ordre: () => (initEtat.ordre || []), jetons: jetonsCourants, poser: poserJeton
+    });
+    if(resultat.raison === "carte") alerte("Affiche d'abord une carte ou une image.");
+    else if(resultat.raison === "ecriture") alerte("Pose interrompue : " + resultat.poses + " jeton(s) posés. Tu peux réessayer pour les autres.");
+    else if(resultat.raison === "mj") alerte("La pose est réservée au MJ.");
+    else initMsg(resultat.poses ? resultat.poses + " jeton(s) posés." : "Les combattants ont déjà leurs jetons.");
+    if(resultat.poses) ouvrirPanneauJetons(true);
+  } finally {
+    poseJetonsEnCours = false; bouton.disabled = false; rendreCombatJetons();
+  }
 });
 
 $("#jetons-poses").addEventListener("click", e => {
@@ -2672,41 +2635,8 @@ $("#jetons-poses").addEventListener("click", e => {
     if(vrai) ecrireJeton(Object.assign({}, j, { nom: vrai }));
     return;
   }
-  if(act === "image"){
-    const sel = $("#jetons-img");
-    const choix = sel && sel.value ? lienImageDirect(sel.value) : "";
-    if(!choix){ alerte("Choisis d'abord une image dans la liste de la galerie."); return; }
-    // Le jeton vient du combat : le portrait remonte au combattant, pour que
-    // la liste d'initiative montre le même visage que la carte. Quand
-    // plusieurs combattants partagent le même portrait d'origine, comme une
-    // troupe issue d'un même modèle du bestiaire, ils changent tous ensemble.
-    const c = combattantDe(j);
-    if(c && db){
-      const camp = c.camp || "bds";
-      const pf = c.pf || ("jeton-" + c.id);
-      set(ref(db, `scenarios/${camp}/portraits/${pf}`), choix)
-        .then(() => {
-          portraitsVus[camp + "/" + pf] = choix;
-          let touche = false;
-          (initEtat.ordre||[]).forEach(x => {
-            if(x.id === c.id || (c.pf && x.pf === c.pf && (x.camp||"bds") === camp)){
-              x.pf = pf; x.camp = camp; touche = true;
-            }
-          });
-          if(touche && estMJ()) pousserInit();
-          rendreInit();
-          document.querySelectorAll(`.ini-pf[data-pf="${pf}"]`).forEach(el => { el.src = choix; });
-        })
-        .catch(e => alerte("Portrait non enregistré : " + e.message));
-    }
-    // url l'emporte sur pf au rendu du jeton : on nettoie pour que le
-    // nouveau visuel s'applique sans ambiguïté.
-    const copie = Object.assign({}, j, { url: choix });
-    delete copie.pf; delete copie.camp;
-    ecrireJeton(copie);
-    return;
-  }
   if(act === "blesser" || act === "soigner"){
+    if(combattantDe(j)) return; // Les Blessures se règlent dans le combat.
     const n = cranEtat(j);
     const suivant = Math.max(0, Math.min(ETAT_MAX, n + (act === "soigner" ? 1 : -1)));
     if(suivant !== n) ecrireJeton(Object.assign({}, j, { pv: suivant }));
@@ -2743,17 +2673,6 @@ if(forcerLancer){
     if(e.key === "Enter") forcerLancer.click();
   });
 }
-
-$("#jetons-poser").addEventListener("click", () => {
-  const sel = $("#jetons-img");
-  const url = sel && sel.value ? lienImageDirect(sel.value) : "";
-  const saisi = ($("#jetons-nom").value || "").trim();
-  if(!url){ alerte("Choisis une image dans la liste avant de poser un jeton."); return; }
-  // Le nom du fichier ne devient jamais le nom du jeton : il trahirait la
-  // créature avant qu'elle se montre. Sans saisie, le jeton reste muet.
-  poserJeton({ url, nom: saisi, vrai: joliNomImage(sel.value), type: "pnj", source: "galerie" });
-  $("#jetons-nom").value = "";
-});
 
 $("#jetons-vider").addEventListener("click", () => {
   if(!Object.keys(jetonsCourants()).length) return;
@@ -4378,20 +4297,6 @@ function iniJets(){
   }).catch(() => initMsg("Bestiaire illisible : jets impossibles.", true));
 }
 
-function iniAdd(){
-  const champ = $("#init-add");
-  const v = (champ.value||"").trim(); if(!v) return;
-  const m = v.match(/^(.*?)[\s,]+(-?\d+)\s*$/);          // "Nom 42"
-  const nom = (m ? (m[1].trim()||"Combattant") : v).slice(0,24);
-  const init = m ? parseInt(m[2],10) : 0;
-  // Un personnage joueur ajouté à la main porte le même nom des deux côtés :
-  // le MJ voit son nom, la table aussi. Rien à ressaisir.
-  initEtat.ordre = [...(initEtat.ordre||[]), initCombattant({ id: nouvelId(), nom, pub: nom, init, av:0 })];
-  champ.value = "";
-  $("#initiative").classList.remove("replie");
-  pousserInit();
-}
-
 function iniDup(id){
   const src = (initEtat.ordre||[]).find(x => x.id === id); if(!src) return;
   const copie = initCombattant(JSON.parse(JSON.stringify(src)));
@@ -4736,7 +4641,7 @@ function suivreFiches(){
 
 function rendreInit(){
   suivreFiches();
-  if(typeof panneauJetonsOuvert === "function" && panneauJetonsOuvert()) rendreCombatJetons();
+  if(typeof rendreCombatJetons === "function") rendreCombatJetons();
   if(typeof rendreJetons === "function") rendreJetons();
   const liste = $("#init-liste"); if(!liste) return;
   const roundEl = $("#init-round");
@@ -4803,6 +4708,8 @@ function chargerPortraitsInit(){
   document.querySelectorAll(".ini-pf[data-pf]").forEach(img => {
     const pf = img.getAttribute("data-pf");
     if(!pf){ img.removeAttribute("data-pf"); return; }
+    const direct = window.TableCombat.portraitDirect(pf);
+    if(direct){ img.src = direct; return; }
     const camp = img.getAttribute("data-camp") || "bds";
     const cle = camp + "/" + pf;
     if(portraitsVus[cle]){ img.src = portraitsVus[cle]; return; }
@@ -4952,7 +4859,6 @@ function rendreDeplacable(panel, poignee){
 $("#ouvrir-init").addEventListener("click", ()=>{
   $("#initiative").classList.toggle("replie"); zoneDes(); bornerInitiative();
 });
-$("#init-ajout").addEventListener("click", iniAdd);
 $("#init-pj-fiches").addEventListener("click", ()=>{
   const m = $("#pj-menu");
   if(m.classList.contains("on")) m.classList.remove("on"); else ouvrirMenuPJ();
@@ -5020,7 +4926,6 @@ $("#pj-grp-suppr").addEventListener("click", ()=>{
     initMsg("Groupe supprimé.");
   });
 });
-$("#init-add").addEventListener("keydown", e=>{ if(e.key==="Enter") iniAdd(); });
 $("#init-jets").addEventListener("click", iniJets);
 $("#init-suivant").addEventListener("click", iniSuivant);
 $("#init-vider").addEventListener("click", iniVider);
@@ -6154,3 +6059,4 @@ $("#amb-activer").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
