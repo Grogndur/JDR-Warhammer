@@ -224,3 +224,19 @@
  .fiche-wymond .layout{background:none;box-shadow:none}
  .fiche-wymond .card:not(.fiche-ressources),.fiche-wymond .card.fiche-competences,.fiche-wymond .ressource-illustree,.fiche-wymond .stat-box.stat-illustree{background:#fff;box-shadow:none}
 }
+
+/* Neuf zones de l'image originale, répétition ancrée, sans recentrage. */
+.fiche-wymond .card:not(.fiche-ressources),.fiche-wymond .card.fiche-competences,
+.fiche-wymond .ressource-illustree,.fiche-wymond .stat-box.stat-illustree,.fiche-wymond .fiche-raccourcis{
+ border-image:none;position:relative;
+}
+.fiche-wymond .fiche-raccourcis{position:sticky}
+.fiche-wymond .card:not(.fiche-ressources)::after,.fiche-wymond .ressource-illustree::after{
+ content:'';position:absolute;inset:-12px;pointer-events:none;background:url('cadre-ancre-16.svg') 0 0/100% 100% no-repeat;z-index:3;
+}
+.fiche-wymond .stat-box.stat-illustree::after{
+ content:'';position:absolute;inset:-7px;pointer-events:none;background:url('cadre-ancre-9.svg') 0 0/100% 100% no-repeat;z-index:3;
+}
+.fiche-wymond .fiche-raccourcis::after{
+ content:'';position:absolute;inset:-1px;pointer-events:none;background:url('cadre-ancre-10.svg') 0 0/100% 100% no-repeat;z-index:3;
+}
