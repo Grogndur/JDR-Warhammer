@@ -350,6 +350,8 @@ body.gloss-off.editing .gloss{display:inline;}
 @media(max-width:700px){.illu-vig img{max-width:100%;}}
 </style>
 <script defer="" src="../commun/bestiaire-pont.js"></script>
+<link rel="stylesheet" href="../assets/scenarios/livre.css?v=20260910">
+<script defer src="../assets/scenarios/livre.js?v=20260910"></script>
 </head>
 <body class="">
 <div class="pwd-overlay" id="pwd-overlay">
@@ -5170,7 +5172,7 @@ function exportHTML(){
 
   /* les illustrations sont une pièce d'interface, jamais du document */
   try{
-    doc.querySelectorAll('.btn-illu,.illu-zone,.illu-plein').forEach(function(e){ e.remove(); });
+    doc.querySelectorAll('.btn-illu,.illu-zone,.illu-plein,.livre-ui').forEach(function(e){ e.remove(); });
   }catch(e){}
   doc.querySelector('body').classList.remove('editing');
   doc.querySelectorAll('[contenteditable]').forEach(function(e){ e.removeAttribute('contenteditable'); });
