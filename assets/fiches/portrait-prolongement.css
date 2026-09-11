@@ -1,0 +1,14 @@
+/* Le visage et le costume restent intégralement opaques. */
+.fiche-wymond .portrait-frame img{-webkit-mask:none;mask:none;filter:none;opacity:1}
+.fiche-wymond .perso-header{isolation:isolate}
+.portrait-prolongement{display:none;pointer-events:none}
+.fiche-wymond .portrait-prolongement:not([hidden]){
+ display:block;position:absolute;z-index:0;
+ /* Seuls les premiers 5 % du fond du portrait nourrissent le raccord. */
+ background-repeat:no-repeat;background-size:2000% 100%;background-position:left top;
+ filter:blur(14px);
+ -webkit-mask:linear-gradient(90deg,transparent 0%,#0001 12%,#0004 28%,#0009 48%,#000d 68%,#000 88%);
+ mask:linear-gradient(90deg,transparent 0%,#0001 12%,#0004 28%,#0009 48%,#000d 68%,#000 88%);
+}
+@media(max-width:650px){.fiche-wymond .portrait-prolongement:not([hidden]){filter:blur(10px)}}
+@media print{.portrait-prolongement{display:none!important}}
