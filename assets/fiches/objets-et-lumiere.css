@@ -2,18 +2,19 @@
 @media screen and (min-width:1700px){
  .fiche-wymond .bureau-marges{
   --bureau-largeur:min(420px,calc((100vw - 1280px)/2 - 14px),calc((100svh - 86px)*.3908));
-  position:fixed;inset:0;z-index:0;pointer-events:none;isolation:isolate;
+  display:block;position:fixed;inset:0;z-index:1;pointer-events:none;isolation:isolate;
  }
  .fiche-wymond .bureau-marges>div{
   width:var(--bureau-largeur);height:calc(var(--bureau-largeur)*2.559);
-  max-height:none;top:70px;z-index:1;
+  position:absolute;max-height:none;top:70px;z-index:1;
   background-size:454.545455% auto;background-repeat:no-repeat;
-  -webkit-mask-image:none;mask-image:none;
+  -webkit-mask:none!important;mask:none!important;
+  -webkit-mask-composite:source-over!important;mask-composite:add!important;
   opacity:1;filter:drop-shadow(0 3px 5px #0007);
  }
- .fiche-wymond .bureau-marges[data-theme=scribe]>div{background-image:url('objets-scribe.webp')}
- .fiche-wymond .bureau-marges[data-theme=campagne]>div{background-image:url('objets-campagne.webp')}
- .fiche-wymond .bureau-marges[data-theme=enqueteur]>div{background-image:url('objets-enqueteur.webp')}
+ .fiche-wymond .bureau-marges[data-theme=scribe]>div{background-image:url('objets-scribe.webp?v=20260911-3')}
+ .fiche-wymond .bureau-marges[data-theme=campagne]>div{background-image:url('objets-campagne.webp?v=20260911-3')}
+ .fiche-wymond .bureau-marges[data-theme=enqueteur]>div{background-image:url('objets-enqueteur.webp?v=20260911-3')}
  /* Centre lumineux calé sur la bougie en haut à droite.
     Le halo est sous les objets : aucun rectangle ni masque appliqué aux accessoires. */
  .fiche-wymond .bureau-marges::before{

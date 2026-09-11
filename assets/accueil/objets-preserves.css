@@ -1,0 +1,18 @@
+/* L'image originale reste proportionnelle. Le fondu commence après les objets :
+   le bois dépasse au plus 330/1024 de la hauteur, la transition débute à 350/1024. */
+@media screen and (min-width:1100px){
+ .decor-chaines>div{width:46vh;width:46svh;background-size:auto 100%;filter:none;-webkit-mask:none;mask:none}
+ .decor-chaines .decor-chaines-gauche{
+  -webkit-mask:linear-gradient(90deg,#000 0 74%,#000e 80%,#0008 89%,transparent 100%);
+  mask:linear-gradient(90deg,#000 0 74%,#000e 80%,#0008 89%,transparent 100%);
+ }
+ .decor-chaines .decor-chaines-droite{
+  -webkit-mask:linear-gradient(270deg,#000 0 74%,#000e 80%,#0008 89%,transparent 100%);
+  mask:linear-gradient(270deg,#000 0 74%,#000e 80%,#0008 89%,transparent 100%);
+ }
+ .decor-chaines::before{
+  content:'';position:absolute;left:-15svh;top:15%;width:85svh;height:100%;pointer-events:none;
+  background:radial-gradient(ellipse at 12% 53%,#d9933730 0%,#bc70251a 27%,#9a552b08 53%,transparent 76%);
+  mix-blend-mode:screen;
+ }
+}
