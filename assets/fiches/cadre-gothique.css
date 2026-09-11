@@ -97,3 +97,9 @@
  color:#8c7048;align-self:center;
 }
 
+
+/* Seule la bordure extérieure de la bannière reçoit les nouvelles moulures. */
+.fiche-wymond .perso-header::after{
+ border-width:28px;
+ border-image:url('banniere-bronze.webp') 180 / 28px / 0 stretch;
+}
