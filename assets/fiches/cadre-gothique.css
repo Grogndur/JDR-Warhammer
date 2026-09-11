@@ -126,3 +126,17 @@
  border-image-source:url('banniere-bronze-ajouree.svg');
 }
 
+
+/* Le panneau de cadrage doit dépasser les raccourcis sticky (z-index:90).
+   Relever son parent isolé uniquement pendant l'édition. */
+.fiche-wymond .perso-header:has(#portrait-position-outils:not([hidden])){
+ z-index:95;
+}
+.fiche-wymond #portrait-position-outils{
+ max-height:60dvh;overflow-y:auto;overscroll-behavior:contain;
+}
+/* Patine du seul cadre extérieur : or moins vif, proche du bronze du portrait. */
+.fiche-wymond .perso-header::after{
+ filter:brightness(.84) saturate(.78);
+}
+
