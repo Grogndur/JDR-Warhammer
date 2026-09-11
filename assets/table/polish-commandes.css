@@ -144,3 +144,16 @@
  .table-observatoire header{padding:12px 64px 84px;min-height:132px}
  .table-illustree #dock{padding:12px 58px;max-height:55dvh;overflow-y:auto}
 }
+
+/* Deux rangées compactes : outils à gauche, difficulté sous les jets. */
+@media(min-width:1251px){
+ .table-illustree #dock{padding-block:8px;row-gap:6px}
+ .table-illustree #dock>.diff-grp{grid-column:2;grid-row:2}
+ .table-illustree #dock>.table-rail{grid-column:1;grid-row:2;align-self:center}
+}
+@media(min-width:761px) and (max-width:1250px){
+ .table-illustree #dock{padding-block:8px;row-gap:6px}
+ .table-illustree #dock>.diff-grp{grid-row:2}
+ .table-illustree #dock>.table-rail{grid-row:3}
+}
+

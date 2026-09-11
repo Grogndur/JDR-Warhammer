@@ -949,7 +949,7 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
 <script defer src="assets/table/observatoire.js?v=20260911-ordre"></script>
 <link rel="stylesheet" href="assets/table/cuir-et-bandeaux.css?v=20260911-1">
 <link rel="stylesheet" href="assets/table/observatoire-fidele.css?v=20260911-5">
-<link rel="stylesheet" href="assets/table/polish-commandes.css?v=20260911-difficulte">
+<link rel="stylesheet" href="assets/table/polish-commandes.css?v=20260911-compact">
 </head>
 <body>
 
@@ -4588,14 +4588,19 @@ function bornerJournal(){
 window.addEventListener("resize", bornerJournal);
 
 function bornerInitiative(){
-  const panel = $("#initiative"); if(!panel) return;
-  const dock = $("#dock");
-  const haut = panel.getBoundingClientRect().top;
+  const panel = $("#initiative"); if(!panel || panel.classList.contains("replie")) return;
+  const dock = $("#dock"), header = document.querySelector("header");
   let plancher = window.innerHeight - 12;
-  if(dock && !dock.classList.contains("replie")){
-    plancher = Math.min(plancher, dock.getBoundingClientRect().top - 10);
+  if(dock && !dock.classList.contains("replie")) plancher = Math.min(plancher, dock.getBoundingClientRect().top - 10);
+  const plafond = header && !header.classList.contains("replie") ? header.getBoundingClientRect().bottom + 10 : 12;
+  if(panel.dataset.positionLibre === "true"){
+    panel.style.maxHeight = Math.max(80, plancher - panel.getBoundingClientRect().top) + "px";
+    return;
   }
-  panel.style.maxHeight = Math.max(170, plancher - haut) + "px";
+  const centre = window.innerHeight / 2;
+  const place = Math.max(80, 2 * Math.min(centre - plafond, plancher - centre));
+  panel.style.maxHeight = place + "px";
+  panel.style.top = Math.max(plafond, centre - panel.getBoundingClientRect().height / 2) + "px";
 }
 window.addEventListener("resize", bornerInitiative);
 
@@ -5043,6 +5048,7 @@ $("#initiative").addEventListener("focusout", e=>{
 });
 $("#fermer-init").addEventListener("click", ()=> $("#initiative").classList.add("replie"));
 rendreDeplacable($("#initiative"), $("#init-drag"));
+$("#init-drag").addEventListener("pointerdown", () => { $("#initiative").dataset.positionLibre = "true"; });
 setTimeout(rangerCams, 0);
 setTimeout(bornerJournal, 0);
 
@@ -5057,6 +5063,7 @@ if(refInit){
     if(initPremier){
       initPremier = false;
       $("#initiative").classList.toggle("replie", initEtat.ordre.length === 0);
+      requestAnimationFrame(bornerInitiative);
     }
   });
 } else {
@@ -6054,6 +6061,7 @@ $("#amb-activer").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
