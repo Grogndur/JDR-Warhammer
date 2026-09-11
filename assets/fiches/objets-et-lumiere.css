@@ -1,35 +1,16 @@
-/* Les images ne contiennent plus de cuir : seuls les objets et leurs contours restent. */
+/* Composition d'origine : objets, ombres de contact, cuir et éclairage ensemble.
+   Une seule image proportionnelle couvre le fond, sans raccord entre bandes. */
 @media screen and (min-width:1700px){
  .fiche-wymond .bureau-marges{
-  --bureau-largeur:min(420px,calc((100vw - 1280px)/2 - 14px),calc((100svh - 86px)*.3908));
-  display:block;position:fixed;inset:0;z-index:1;pointer-events:none;isolation:isolate;
- }
- .fiche-wymond .bureau-marges>div{
-  width:var(--bureau-largeur);height:calc(var(--bureau-largeur)*2.559);
-  position:absolute;max-height:none;top:70px;z-index:1;
-  background-size:454.545455% auto;background-repeat:no-repeat;
+  display:block;position:fixed;inset:70px 0 0;z-index:0;
+  pointer-events:none;user-select:none;
+  background-image:var(--bureau-image);
+  background-position:center top;background-size:cover;background-repeat:no-repeat;
+  filter:brightness(.82) saturate(.86);
   -webkit-mask:none!important;mask:none!important;
   -webkit-mask-composite:source-over!important;mask-composite:add!important;
-  opacity:1;filter:drop-shadow(0 3px 5px #0007);
  }
- .fiche-wymond .bureau-marges[data-theme=scribe]>div{background-image:url('objets-scribe.webp?v=20260911-3')}
- .fiche-wymond .bureau-marges[data-theme=campagne]>div{background-image:url('objets-campagne.webp?v=20260911-3')}
- .fiche-wymond .bureau-marges[data-theme=enqueteur]>div{background-image:url('objets-enqueteur.webp?v=20260911-3')}
- /* Centre lumineux calé sur la bougie en haut à droite.
-    Le halo est sous les objets : aucun rectangle ni masque appliqué aux accessoires. */
- .fiche-wymond .bureau-marges::before{
-  content:'';position:fixed;pointer-events:none;z-index:0;
-  width:calc(var(--bureau-largeur)*2.8);height:calc(var(--bureau-largeur)*2.8);
-  right:calc(var(--bureau-largeur)*-1.23);top:calc(70px - var(--bureau-largeur)*1.3);
-  background:radial-gradient(ellipse at center,#ffd39248 0%,#dfa25032 12%,#bb702222 27%,#94501b12 45%,#713b1306 63%,transparent 78%);
-  mix-blend-mode:screen;
- }
- .fiche-wymond .bureau-marges[data-theme=scribe]::after{
-  content:'';position:fixed;pointer-events:none;z-index:0;
-  width:calc(var(--bureau-largeur)*2);height:calc(var(--bureau-largeur)*2);
-  right:calc(var(--bureau-largeur)*-.94);top:calc(70px - var(--bureau-largeur)*.58);
-  background:radial-gradient(ellipse at center,#ffc87928,#c37d3020 18%,#9548170c 43%,transparent 74%);
-  mix-blend-mode:screen;
- }
+ .fiche-wymond .bureau-marges>div{display:none!important}
+ .fiche-wymond .bureau-marges::before,.fiche-wymond .bureau-marges::after{content:none!important}
 }
 @media print{.fiche-wymond .bureau-marges{display:none!important}}
