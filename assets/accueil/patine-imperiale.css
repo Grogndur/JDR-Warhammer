@@ -1,0 +1,118 @@
+/* Accueil — ferrures et matières de la même famille que les fiches.
+   Décors superposés : aucun lien ni mécanisme d'accès modifié. */
+:root{--acc-metal:url('cadre-imperial.svg');--acc-cuir:url('cuir-patine.webp');--acc-texte:#e4cda0;--acc-reflet:#eed8aa}
+.masthead{
+ isolation:isolate;min-height:80px;padding-block:15px;
+ background:linear-gradient(90deg,#17150f33,#090b0966),var(--acc-cuir) center/720px auto;
+ border:1px solid transparent;box-shadow:0 6px 18px #0008;
+}
+.masthead::after{
+ content:'';position:absolute;inset:-1px;pointer-events:none;z-index:3;
+ border:18px solid transparent;border-image:var(--acc-metal) 180 / 18px / 0 stretch;
+ filter:brightness(.84) saturate(.78);
+}
+.brand{gap:12px;text-shadow:0 1px 2px #000,0 0 16px #c5a06120}
+.brand span{font-size:21px;font-weight:600;color:#d7bc84;letter-spacing:.065em}
+.brand img{filter:drop-shadow(0 2px 2px #000)}
+.masthead nav{gap:12px;flex-wrap:wrap;justify-content:flex-end}
+.masthead nav a{
+ display:inline-flex;align-items:center;justify-content:center;gap:7px;
+ min-height:43px;padding:7px 11px;
+ border:1px solid #8f74484d;
+ background:linear-gradient(#b79c5710,#0002);
+ box-shadow:inset 0 0 0 2px #06070540;
+ font-family:var(--display);font-style:normal;font-size:14px;letter-spacing:.025em;
+ color:var(--acc-texte);text-shadow:0 1px 2px #000;
+}
+.masthead nav a::before{
+ content:'';width:25px;height:25px;flex:0 0 25px;
+ background:url('insignes.png') var(--ix,0%) var(--iy,0%)/400% 400% no-repeat;
+ mix-blend-mode:screen;
+}
+.masthead .nav-campaigns{--ix:0%;--iy:0%}
+.masthead nav a[href='table.html']{--ix:100%;--iy:33.333%}
+.masthead nav a[data-mj]{--ix:66.667%;--iy:100%}
+.masthead nav a:hover{color:var(--acc-reflet);border-color:#b39a626e;text-shadow:0 0 8px #ba8f4745}
+.hero{border:1px solid transparent;box-shadow:0 8px 25px #0007}
+.hero::after,.campaign::after{
+ content:'';position:absolute;inset:0;z-index:4;pointer-events:none;
+ border:30px solid transparent;border-image:var(--acc-metal) 180 / 30px / 0 stretch;
+ filter:brightness(.84) saturate(.78);
+}
+.hero-art{inset:8px;width:calc(100% - 16px);height:calc(100% - 16px)}
+.hero h1{text-shadow:0 2px 1px #3a2c19,0 4px 18px #000}
+.hero h1 span{color:#d2b783}
+.hero-copy{position:relative;z-index:1}
+.section-heading{margin-block:28px 24px;color:#d9bd87;text-shadow:0 2px 3px #000;letter-spacing:.16em}
+.section-heading>span{
+ padding:9px 23px;position:relative;
+ background:linear-gradient(#14161044,#080a0844),var(--acc-cuir) 18% 20%/620px auto;
+ border:10px solid transparent;border-image:url('cuir.png') 135 / 12px / 0 stretch;
+}
+.section-heading::before,.section-heading::after{height:4px;border-top-color:#b59a6260}
+.campaign{border:1px solid transparent;box-shadow:0 7px 22px #0008}
+.campaign .corner{display:none}
+.campaign-art{inset:8px;width:calc(100% - 16px);height:calc(100% - 16px)}
+.campaign-copy{position:relative;isolation:isolate;padding-bottom:30px}
+.campaign-copy::before{
+ content:'';position:absolute;inset:0 8px 8px;z-index:-1;pointer-events:none;
+ background:linear-gradient(90deg,#17160e44,#080b0944),var(--acc-cuir) center/680px auto;
+ -webkit-mask-image:linear-gradient(0deg,#000 0%,#000e 25%,#0007 55%,transparent 86%);
+ mask-image:linear-gradient(0deg,#000 0%,#000e 25%,#0007 55%,transparent 86%);
+}
+.campaign h3{color:#efdfba;text-shadow:0 2px 2px #181208,0 4px 14px #000}
+.campaign p{font-size:19px;line-height:1.4;letter-spacing:.018em;color:#dbceb5}
+.campaign-mark,.blood .campaign-mark{top:24px;filter:drop-shadow(0 3px 6px #000b)}
+.enter{color:#d9bd87;border-top-color:#ad8b5055;font-size:18px;min-height:43px;text-shadow:0 1px 2px #000}
+.campaign:hover{border-color:transparent;box-shadow:0 7px 24px #0008}
+.campaign:hover .campaign-art{transform:none;filter:none}
+.campaign:hover .enter{color:#f0d7a5;text-shadow:0 0 8px #be944448}
+.utility{
+ isolation:isolate;min-height:122px;padding:25px 28px;gap:18px;
+ background:linear-gradient(110deg,#1b191233,#090b0955),var(--acc-cuir) center/640px auto;
+ border:1px solid transparent;box-shadow:0 6px 19px #0007;
+}
+.utility::before{
+ content:'';position:absolute;inset:0;z-index:3;pointer-events:none;
+ border:24px solid transparent;border-image:var(--acc-metal) 180 / 24px / 0 stretch;
+ filter:brightness(.84) saturate(.78);
+}
+.utility:hover{border-color:transparent;background:linear-gradient(110deg,#9b7b3714,#090b0955),var(--acc-cuir) center/640px auto}
+.utility h3{font-family:var(--display);font-size:22px;font-weight:400;line-height:1.35;color:#e4cda0;text-shadow:0 1px 2px #000}
+.utility p{font-size:17px;line-height:1.45;letter-spacing:.01em;color:#c9bca2}
+.utility .home-icon{width:58px;height:58px}
+.utility:hover h3{color:#eed8aa;text-shadow:0 0 8px #b48c3933}
+footer{color:#b7a78a}footer p{font-size:15px}
+/* Les éléments restent dans leurs panneaux lorsque le texte se replie. */
+@media(min-width:1100px) and (max-width:1400px){
+ .masthead{flex-wrap:wrap;justify-content:center;gap:10px 22px}
+ .masthead nav{justify-content:center}
+ .utility{gap:12px;padding-inline:22px}
+ .utility h3{font-size:19px}
+ .utility .home-icon{width:44px;height:44px}
+ .utility p{font-size:16px}
+}
+@media(max-width:700px){
+ .masthead{padding:17px 20px;gap:12px}
+ .masthead nav{justify-content:center;gap:8px}
+ .masthead nav a{font-size:12px;padding:7px 9px}
+ .masthead .nav-campaigns{display:none}
+ .brand span{font-size:20px}
+ .hero::after,.campaign::after{border-width:25px;border-image-width:25px}
+ .section-heading{margin-block:22px 18px;gap:10px;font-size:13px;letter-spacing:.1em}
+ .section-heading>span{padding:6px 12px;white-space:nowrap}
+ .section-heading::before,.section-heading::after{min-width:10px;flex:1}
+ .campaign-copy{padding-inline:24px;padding-bottom:28px}
+ .campaign p{font-size:18px}
+ .utility{padding:24px;gap:12px}
+ .utility h3{font-size:19px}
+ .utility p{font-size:16px}
+ .utility .home-icon{width:44px;height:44px}
+ .utility-arrow{width:22px}
+}
+@media(max-width:360px){
+ .utility{padding:22px 20px;gap:9px}
+ .utility h3{font-size:17px}
+ .utility .home-icon{width:35px;height:35px}
+ .masthead nav a::before{width:21px;height:21px;flex-basis:21px}
+}
