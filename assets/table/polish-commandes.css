@@ -32,3 +32,28 @@
  .table-illustree .palette,.table-illustree .initiative{left:8px}
 }
 @media(prefers-reduced-motion:reduce){.table-illustree #voile,.table-illustree #voile-meteo{transition:none}}
+
+/* Rangée haute commune, commandes de carte sur la seconde ligne à gauche. */
+.table-illustree #dock{left:56px;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;align-items:start;padding-bottom:10px}
+.table-illustree #dock>.grp-scene{grid-column:1;grid-row:1;align-items:flex-start;align-self:start}
+.table-illustree #dock>.grp-des{grid-column:2;grid-row:1;align-items:center;align-self:start;justify-content:center;width:auto}
+.table-illustree #dock>.grp-combat{grid-column:3;grid-row:1;align-self:start}
+.table-illustree #dock>.table-rail{grid-column:1;grid-row:2}
+.table-illustree #dock>.grp-des>.ligne{flex-wrap:wrap;justify-content:center}
+.table-illustree #dock label{white-space:nowrap}
+/* Bande de 56 px réservée aux deux poignées ; aucun panneau n'y entre. */
+.table-illustree::after{content:'';position:fixed;inset:0 auto 0 0;width:56px;z-index:27;background:#11120f url('cuir-use.webp') left top/480px;pointer-events:none;border-right:1px solid #78613c55}
+.table-illustree .entete-poignee,.table-illustree .dock-poignee{left:8px;right:auto;margin-left:0;width:40px;min-width:0;box-sizing:border-box}
+.table-illustree header{left:56px;padding-right:15px}
+.table-illustree :is(.palette,.initiative,.minuteurs,.cams:not(.dans-entete)){left:64px;margin-left:0;max-width:calc(100vw - 80px)}
+.table-illustree :is(.chat-panel,.journal-panel){max-width:calc(100vw - 80px)}
+.table-illustree .table-tiroir-contenu{max-width:calc(100vw - 80px)}
+.table-observatoire .obs-panneau{left:calc(50% + 28px);width:min(1536px,calc(100vw - 80px))}
+@media(max-width:760px){
+ .table-illustree #dock{grid-template-columns:minmax(0,1fr) auto;padding-bottom:8px}
+ .table-illustree #dock>.grp-scene{grid-column:1/-1;grid-row:1}
+ .table-illustree #dock>.grp-des{grid-column:1;grid-row:2}
+ .table-illustree #dock>.grp-combat{grid-column:2;grid-row:2}
+ .table-illustree #dock>.table-rail{grid-column:1/-1;grid-row:3}
+}
+
