@@ -945,6 +945,8 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
 <link rel="stylesheet" href="assets/table/illustree.css?v=20260910-2">
 <script defer src="assets/table/combat-jetons.js?v=20260910-2"></script>
 <script defer src="assets/table/illustree.js?v=20260910-2"></script>
+<link rel="stylesheet" href="assets/table/observatoire.css?v=20260911-1">
+<script defer src="assets/table/observatoire.js?v=20260911-1"></script>
 </head>
 <body>
 
@@ -5893,12 +5895,15 @@ $("#amb-activer").addEventListener("click", ()=>{
     var m = document.getElementById('cycle-mot');
     if(m){ m.textContent = ph.mot; m.style.color = ph.coul; }
     if(typeof window.rendreVoile === 'function') window.rendreVoile();
+    document.dispatchEvent(new Event('observatoire-change'));
   }
   window.phaseCycle = function(){ return phase(cran); };
   window.heureTable = function(){ return cran; };
 
   function poser(i, diffuser){
-    cran = Math.max(0, Math.min(N - 1, i));
+    if(diffuser && !document.body.classList.contains("est-mj")) return;
+    if(typeof i !== "number" || !Number.isFinite(i)) return;
+    cran = Math.max(0, Math.min(N - 1, Math.trunc(i)));
     peindre();
     if(diffuser && refH){ try{ refH.set(cran); }catch(e){} }
   }
@@ -6010,11 +6015,14 @@ $("#amb-activer").addEventListener("click", ()=>{
     var m = document.getElementById('meteo-mot');
     if(m){ m.textContent = t.mot; m.style.color = t.coul; }
     if(typeof window.rendreVoile === 'function') window.rendreVoile();
+    document.dispatchEvent(new Event('observatoire-change'));
   }
   window.tempsTable = function(){ return temps; };
 
   function poser(i, diffuser){
-    temps = Math.max(0, Math.min(T.length - 1, i));
+    if(diffuser && !document.body.classList.contains("est-mj")) return;
+    if(typeof i !== "number" || !Number.isFinite(i)) return;
+    temps = Math.max(0, Math.min(T.length - 1, Math.trunc(i)));
     peindre();
     if(diffuser && refM){ try{ refM.set(temps); }catch(e){} }
   }
@@ -6059,4 +6067,5 @@ $("#amb-activer").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
