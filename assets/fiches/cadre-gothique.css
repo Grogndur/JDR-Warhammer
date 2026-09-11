@@ -142,11 +142,7 @@
 
 
 
-/* Aligner les moulures, et non les pieds saillants des piliers.
-   Portrait : ligne basse y=654 sur 677.
-   Bannière : ligne basse y=1203 sur 1254, bordure 28px / tranche 180.
-   Le pourcentage suit la hauteur réelle du portrait, y compris sur mobile. */
-.fiche-wymond .perso-portrait{
- translate:0 calc(3.397341211% - 7.933333333px);
-}
+
+/* Remonter légèrement le cadre du portrait par rapport à sa position initiale. */
+.fiche-wymond .perso-portrait{translate:0 -6px}
 
