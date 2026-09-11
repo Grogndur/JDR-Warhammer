@@ -34,3 +34,20 @@
  .obs-option .obs-legende{font-size:14px!important}
  .obs-phases{font-size:14px}
 }
+
+/* Cycle seul : fermeture prélevée dans le bas du même décor, sans étirement.
+   La zone ajoutée laisse les légendes au-dessus de la traverse. */
+.table-observatoire .obs-panneau[data-view="cycle"] .obs-artboard{aspect-ratio:2048/430}
+.table-observatoire .obs-panneau[data-view="cycle"] .obs-artboard::after{
+ content:"";position:absolute;left:0;right:0;bottom:0;height:16.27906977%;
+ background:url('observatoire-instrument.webp') center bottom/100% auto no-repeat;
+ pointer-events:none;z-index:2;
+}
+
+/* Météo seule : une traverse haute au-dessus du titre, issue du même décor. */
+.table-observatoire .obs-panneau[data-view="meteo"] .obs-artboard{aspect-ratio:2048/383}
+.table-observatoire .obs-panneau[data-view="meteo"] .obs-artboard::after{
+ content:"";position:absolute;left:0;right:0;top:0;height:13.05483029%;
+ background:url('observatoire-instrument.webp') center top/100% auto no-repeat;
+ pointer-events:none;z-index:2;
+}
