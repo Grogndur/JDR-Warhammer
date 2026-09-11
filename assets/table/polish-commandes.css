@@ -157,3 +157,30 @@
  .table-illustree #dock>.table-rail{grid-row:3}
 }
 
+
+/* Libellés cohérents : même beige que les menus Session / Combat. */
+.table-illustree #dock :is(button,summary),
+.table-illustree header :is(button,.retour){
+ color:#e8d2a7!important;
+}
+/* Le jet invisible reste un cas explicite, réservé au MJ. */
+.table-illustree #dock #jet-secret{color:#f0e6d2!important}
+
+/* Les commandes de navigation partagent la géométrie des menus dépliants.
+   Les contenus des tiroirs, les dés et les outils gardent leurs dimensions. */
+.table-illustree #dock :is(
+ #ouvrir-cams,#ouvrir-journal,#ouvrir-chat,#ouvrir-grimoire,#ouvrir-dessin),
+.table-illustree #dock .table-tiroir>summary{
+ display:flex;align-items:center;justify-content:center;
+ box-sizing:border-box;min-height:55.2px;
+ padding:8.4px 12px;gap:6px;
+ font-family:TableCrimson,Georgia,serif;
+ font-size:19.2px;font-weight:400;line-height:1.2;
+ letter-spacing:0;
+}
+.table-illustree #dock :is(
+ #ouvrir-cams,#ouvrir-journal,#ouvrir-chat,#ouvrir-grimoire,#ouvrir-dessin)>.table-icone,
+.table-illustree #dock .table-tiroir>summary>.table-icone{
+ width:36px;height:36px;margin:0;flex:0 0 36px;
+}
+
