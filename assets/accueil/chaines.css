@@ -1,0 +1,31 @@
+/* Matières décoratives indépendantes de la hauteur du contenu. */
+.decor-chaines{display:none;pointer-events:none}
+@media(min-width:1100px){
+  body{--marge-decor:clamp(115px,12.5vw,280px);isolation:isolate}
+  .decor-chaines{display:block;position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .decor-chaines>div{position:absolute;top:0;bottom:0;width:var(--marge-decor);background-image:url('chaines-atmosphere.webp');background-repeat:no-repeat;background-size:auto 100%;pointer-events:none}
+  .decor-chaines-gauche{left:0;background-position:left center;mask-image:linear-gradient(to right,#000 86%,transparent);-webkit-mask-image:linear-gradient(to right,#000 86%,transparent)}
+  .decor-chaines-droite{right:0;background-position:right center;mask-image:linear-gradient(to left,#000 86%,transparent);-webkit-mask-image:linear-gradient(to left,#000 86%,transparent)}
+  .masthead,main,footer{width:calc(100% - var(--marge-decor) * 2);max-width:1440px;margin-inline:auto;z-index:1}
+  .masthead{padding-inline:22px;gap:16px;border:1px solid #87704780;border-bottom:3px double #877047}
+  .masthead nav{gap:clamp(16px,2vw,34px)}
+  .hero{height:clamp(350px,24vw,420px);border:1px solid #9a7d4990;border-bottom:4px double #9a7d49}
+  .hero-copy{width:58%;padding:20px 3%}
+  .hero h1{font-size:clamp(42px,4.7vw,84px)}
+  .hero-copy p{font-size:clamp(18px,1.3vw,21px);letter-spacing:.015em}
+  .campaign-section{width:100%}
+  .campaign-grid,.utility-grid{gap:clamp(18px,1.7vw,26px)}
+  .campaign{aspect-ratio:auto;min-height:365px}
+  .campaign h3{font-size:clamp(32px,2.6vw,46px)}
+  .campaign-copy{padding-inline:24px}
+  .utility{padding-inline:20px;gap:14px}
+  .utility h3{font-size:clamp(23px,1.8vw,27px)}
+  footer{padding-inline:8px}
+}
+@media(min-width:1100px) and (max-width:1250px){
+  .masthead{flex-wrap:wrap;justify-content:center;gap:6px 20px}
+  .utility .home-icon{width:40px;height:40px}
+  .utility-arrow{width:22px}
+  .lock+.utility-arrow{display:none}
+}
+@media print{.decor-chaines{display:none!important}}
