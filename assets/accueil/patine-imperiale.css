@@ -65,7 +65,7 @@
 .campaign-mark,.blood .campaign-mark{top:24px;filter:drop-shadow(0 3px 6px #000b)}
 .enter{color:#d9bd87;border-top-color:#ad8b5055;font-size:18px;min-height:43px;text-shadow:0 1px 2px #000}
 .campaign:hover{border-color:transparent;box-shadow:0 7px 24px #0008}
-.campaign:hover .campaign-art{transform:none;filter:none}
+.campaign:hover .campaign-art{transform:scale(1.025);filter:brightness(1.06)}
 .campaign:hover .enter{color:#f0d7a5;text-shadow:0 0 8px #be944448}
 .utility{
  isolation:isolate;min-height:122px;padding:25px 28px;gap:18px;
@@ -119,16 +119,21 @@ footer{color:#b7a78a}footer p{font-size:15px}
 
 /* Faire descendre la transition cuir / illustration sur les deux campagnes. */
 .campaign-copy::before{
- inset:30% 8px 8px;opacity:.88;
- -webkit-mask-image:linear-gradient(0deg,#000 0%,#000e 20%,#0006 42%,transparent 72%);
- mask-image:linear-gradient(0deg,#000 0%,#000e 20%,#0006 42%,transparent 72%);
+ inset:48% 8px 8px;opacity:.82;
+ -webkit-mask-image:linear-gradient(0deg,#000 0%,#000d 16%,#0005 35%,transparent 65%);
+ mask-image:linear-gradient(0deg,#000 0%,#000d 16%,#0005 35%,transparent 65%);
 }
 .campaign-shade{
- background:linear-gradient(0deg,#080b09e8 0%,#080b0980 18%,#080b0926 38%,transparent 62%);
+ background:linear-gradient(0deg,#080b09df 0%,#080b0970 12%,#080b0920 28%,transparent 48%);
 }
 .campaign-copy p{text-shadow:0 1px 3px #000,0 2px 8px #000b}
 /* Seul le décor de droite utilise la version au fanion rouge allongé. */
 @media(min-width:1100px){
  .decor-chaines .decor-chaines-droite{background-image:url('drape-crane-long.webp')}
 }
+
+
+/* Retrouver le zoom doux de l'accueil, sous les couches fixes. */
+.campaign-art{transition:transform .7s ease,filter .5s ease}
+@media(prefers-reduced-motion:reduce){.campaign:hover .campaign-art{transform:none}}
 
