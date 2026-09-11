@@ -198,3 +198,7 @@
 .table-illustree #initiative .ini-tete>.spacer{display:none}
 .table-illustree #initiative #fermer-init{align-self:center;flex-shrink:0}
 
+
+/* Un peu d'air à droite du round, sans déplacer la croix. */
+.table-illustree #initiative #init-round{margin-right:14px}
+

@@ -98,8 +98,20 @@
 }
 
 
-/* Seule la bordure extérieure de la bannière reçoit les nouvelles moulures. */
-.fiche-wymond .perso-header::after{
- border-width:28px;
- border-image:url('banniere-bronze.webp') 180 / 28px / 0 stretch;
-}
+/* Cadrage MJ : l'ouverture et le métal restent fixes. */
+.fiche-wymond .portrait-btns{left:12%;right:12%;gap:3px;flex-wrap:nowrap}
+.fiche-wymond .portrait-btns :is(label,button){min-width:0;flex:1 1 0;padding:5px 2px;font-size:9px;letter-spacing:0;white-space:nowrap}
+#portrait-modifier[hidden],#portrait-position-outils[hidden]{display:none!important}
+.fiche-wymond #portrait-frame .portrait-pan{position:absolute;inset:0;z-index:1;background-repeat:no-repeat;pointer-events:none;-webkit-mask:url('cadre-gothique-ouverture.svg') center/100% 100% no-repeat;mask:url('cadre-gothique-ouverture.svg') center/100% 100% no-repeat}
+.fiche-wymond #portrait-frame.portrait-position-actif #portrait-img{visibility:hidden}
+.fiche-wymond #portrait-frame.portrait-en-edition{cursor:grab;touch-action:none}
+.fiche-wymond #portrait-frame.portrait-en-edition:active{cursor:grabbing}
+#portrait-position-outils{position:absolute;top:100%;left:0;right:0;z-index:10;background:#171811;border:1px solid #a18450;padding:10px;color:#e8d2a7;font-size:13px;box-shadow:0 6px 16px #0008}
+#portrait-position-outils label{display:flex;align-items:center;gap:6px;margin:5px 0}
+#portrait-position-outils input{min-width:0;width:100%;accent-color:#b89b61}
+#portrait-position-outils .position-actions{display:flex;gap:6px}
+#portrait-position-outils button{flex:1;padding:5px;font-size:12px;color:#e8d2a7;background:#282419;border:1px solid #8a7145}
+@media print{#portrait-position-outils{display:none!important}}
+
+
+.fiche-wymond .perso-header::after{border-width:28px;border-image:url('banniere-bronze.webp') 180 / 28px / 0 stretch}

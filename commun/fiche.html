@@ -578,6 +578,7 @@ window.ACCES = window.ACCES || (function () {
 <link rel="stylesheet" href="../assets/fiches/polish-pj.css?v=20260911-1">
 <script defer src="../assets/fiches/polish-pj.js?v=20260911-1"></script>
 <link rel="stylesheet" href="../assets/fiches/cadre-gothique.css?v=20260911-1">
+<script defer src="../assets/fiches/portrait-position.js?v=20260911-1"></script>
 </head>
 <body>
 
@@ -1988,7 +1989,7 @@ function load() {
   const raw = localStorage.getItem('template_v1');
   if (raw) try {
     const saved = JSON.parse(raw);
-    ['portrait','wounds','woundsMax','marche','destin','chance','resil','determ','chancePlus','determPlus','notes'].forEach(k => { if (saved[k]!==undefined) state[k]=saved[k]; });
+    ['portrait','portraitPosition','wounds','woundsMax','marche','destin','chance','resil','determ','chancePlus','determPlus','notes'].forEach(k => { if (saved[k]!==undefined) state[k]=saved[k]; });
     if (saved.profOpen)  Object.assign(state.profOpen, saved.profOpen);
     if (saved.money)     Object.assign(state.money, saved.money);
     if (saved.cet)       Object.assign(state.cet, saved.cet);
@@ -3012,7 +3013,7 @@ function importJSON(input) {
   reader.onload = e => {
     try {
       const saved = JSON.parse(e.target.result);
-      ['portrait','wounds','woundsMax','marche','destin','chance','resil','determ','chancePlus','determPlus','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
+      ['portrait','portraitPosition','wounds','woundsMax','marche','destin','chance','resil','determ','chancePlus','determPlus','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
       if(saved.profOpen) Object.assign(state.profOpen, saved.profOpen);
       if(saved.money) Object.assign(state.money, saved.money);
       if(saved.cet) Object.assign(state.cet, saved.cet);
@@ -3294,6 +3295,7 @@ function renderPortrait() {
   if (!img || !vide) return;
   if (state.portrait) { img.src = state.portrait; img.style.display = 'block'; vide.style.display = 'none'; }
   else { img.removeAttribute('src'); img.style.display = 'none'; vide.style.display = 'block'; }
+  document.dispatchEvent(new Event('portrait-render'));
 }
 
 (function(){
@@ -3320,6 +3322,7 @@ function renderPortrait() {
         if (data.length > 400000) data = cv.toDataURL('image/jpeg', 0.6);
         if (data.length > 400000) data = cv.toDataURL('image/jpeg', 0.42);
         state.portrait = data;
+        state.portraitPosition = {x:50,y:20,zoom:1};
         renderPortrait();
         save();
       };
@@ -3331,6 +3334,7 @@ function renderPortrait() {
 
   btnDel.addEventListener('click', function(){
     state.portrait = '';
+    state.portraitPosition = {x:50,y:20,zoom:1};
     renderPortrait();
     save();
   });
@@ -3639,6 +3643,7 @@ load();
 </script>
 </body>
 </html>
+
 
 
 
