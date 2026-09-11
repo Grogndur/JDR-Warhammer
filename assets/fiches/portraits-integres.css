@@ -1,22 +1,21 @@
-/* Un seul fondu sur l'image : le cadre ne multiplie plus sa transparence. */
-.fiche-wymond .portrait-frame{
- -webkit-mask:none;mask:none;background:transparent;
+/* Le décor s'efface ; le personnage conserve ses couleurs et ses détails. */
+.fiche-wymond .perso-header{
+ background-image:linear-gradient(90deg,#090b09ba 0%,#090b0980 32%,#0c11156b 48%,#0c1115c9 70%,#0c1115f2 90%,#0c1115 100%),url('header-v2.png');
+ background-position:center;background-size:cover;
 }
+.fiche-wymond .portrait-frame{-webkit-mask:none;mask:none;background:transparent}
+.fiche-wymond .portrait-frame::after{content:none}
 .fiche-wymond .portrait-frame img{
- --portrait-fondu:radial-gradient(ellipse 100% 100% at 95% 38%,#000 0 51%,#000f 60%,#000d 70%,#0008 81%,#0003 92%,transparent 100%),linear-gradient(0deg,transparent 0%,#0008 7%,#000 17%);
- -webkit-mask-image:var(--portrait-fondu);mask-image:var(--portrait-fondu);
- -webkit-mask-composite:source-in;mask-composite:intersect;
- filter:saturate(.87) contrast(.97);
-}
-/* Lumière ambiante discrète sur la jonction, sous les contrôles du portrait. */
-.fiche-wymond .portrait-frame::after{
- content:'';position:absolute;inset:0;pointer-events:none;
- background:radial-gradient(ellipse at 16% 24%,#d2a36c3b 0%,#b18b5620 25%,#93734a09 48%,transparent 68%);
- mix-blend-mode:soft-light;
+ filter:none;opacity:1;
+ -webkit-mask:linear-gradient(90deg,transparent 0%,#0007 3%,#000d 6%,#000 10%);
+ mask:linear-gradient(90deg,transparent 0%,#0007 3%,#000d 6%,#000 10%);
+ -webkit-mask-composite:source-over;mask-composite:add;
 }
 @media(max-width:650px){
+ .fiche-wymond .perso-header{background-image:linear-gradient(0deg,#090b09c9 0%,#0c111594 45%,#0c1115e8 77%,#0c1115 100%),url('header-v2.png')}
  .fiche-wymond .portrait-frame img{
-  --portrait-fondu:linear-gradient(0deg,transparent 0%,#0005 9%,#000c 19%,#000 30%);
-  -webkit-mask-composite:source-over;mask-composite:add;
+  -webkit-mask:linear-gradient(0deg,transparent 0%,#000b 3%,#000 7%);
+  mask:linear-gradient(0deg,transparent 0%,#000b 3%,#000 7%);
  }
 }
+

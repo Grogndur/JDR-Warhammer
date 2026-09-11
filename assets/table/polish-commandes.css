@@ -93,3 +93,11 @@
 .table-illustree .journal-panel .jet .marque{font-size:18px}
 .table-illustree .journal-panel .jet .cachet{font-size:13px;letter-spacing:.04em}
 
+
+/* Centrage sur le viewport, indépendant des commandes latérales. */
+.table-observatoire header .obs-commandes{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin:0;width:max-content;max-width:calc(100vw - 110px)}
+@media(max-width:760px){
+ .table-observatoire header{padding-bottom:62px}
+ .table-observatoire header .obs-commandes{top:auto;bottom:7px;transform:translateX(-50%)}
+}
+
