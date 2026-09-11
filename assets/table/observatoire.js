@@ -24,6 +24,9 @@
     heading.append(close);panel.append(heading);
     const status=node('p','obs-statut');panel.append(status);
     const groups=[];
+    const artboard=node('div','obs-artboard');
+    const canvas=node('div','obs-canvas');artboard.append(canvas);
+    function layout(){panel.dataset.view=groups.filter(g=>!g.content.hidden).map(g=>g.kind).join('-')||'cycle';}
     function section(kind,title,labels,start,method) {
       const trigger=node('button','obs-ouvrir');trigger.type='button';trigger.id='obs-ouvrir-'+kind;
       const picture=motif(kind==='cycle'?22:12);const label=node('span');
@@ -51,11 +54,22 @@
       const group={trigger,content,current,picture,buttons,kind};groups.push(group);
       trigger.addEventListener('click',()=>{
         content.hidden=!content.hidden;trigger.setAttribute('aria-expanded',String(!content.hidden));
-        panel.hidden=groups.every(g=>g.content.hidden);
+        panel.hidden=groups.every(g=>g.content.hidden);layout();
       });nav.append(trigger);panel.append(content);return group;
     }
     section('cycle','Cycle jour / nuit',phases,0,'jaugeHeure');
     section('meteo','Météo',weather,12,'meteoTable');
+    for(const g of groups)canvas.append(g.content);
+    panel.append(artboard);layout();
+    const tx=[460,562,665,768,871,974,1078,1182,1286,1389,1492,1595];
+    const ty=[227,211,199,190,184,182,184,189,198,206,217,230];
+    const wx=[270,433,598,762,927,1092,1257,1422,1587,1752];
+    for(const g of groups)g.buttons.forEach((b,i)=>{
+      const time=g.kind==='cycle',size=time?100:164;
+      b.style.setProperty('--left',`${((time?tx[i]:wx[i])-size/2)/2048*100}%`);
+      b.style.setProperty('--top',`${((time?ty[i]:503)-size/2)/683*100}%`);
+      b.style.setProperty('--size',`${size/2048*100}%`);
+    });
     function shut(restore=false){
       const active=groups.find(g=>!g.content.hidden);
       for(const g of groups){g.content.hidden=true;g.trigger.setAttribute('aria-expanded','false')}
@@ -92,3 +106,4 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
+

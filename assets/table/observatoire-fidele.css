@@ -1,0 +1,36 @@
+/* La composition de l'instrument garde ses proportions ; les commandes sont du vrai HTML. */
+.table-observatoire .obs-panneau{width:min(1536px,calc(100vw - 24px));padding:0;border:0;outline:0;border-radius:0;background:#10120f;container-type:inline-size;box-shadow:0 16px 36px #000b;overflow:auto}
+.table-observatoire .obs-panneau::before,.table-observatoire .obs-panneau::after{display:none}
+.obs-artboard{position:relative;width:100%;min-width:900px;aspect-ratio:2048/365;overflow:hidden}
+.obs-canvas{position:absolute;left:0;top:0;width:100%;aspect-ratio:2048/683;background:url('observatoire-instrument.webp') center/100% 100% no-repeat}
+.obs-panneau[data-view=cycle-meteo] .obs-artboard{aspect-ratio:2048/683}
+.obs-panneau[data-view=meteo] .obs-artboard{aspect-ratio:2048/333}
+.obs-panneau[data-view=meteo] .obs-canvas{top:auto;bottom:0}
+.table-observatoire .obs-entete{position:absolute;z-index:4;left:9%;right:9%;top:2.1cqw;border:0;padding:0;display:block;text-align:center;pointer-events:none}
+.obs-entete h2{font-family:TableCrimson,Georgia,serif!important;font-size:clamp(20px,2.25cqw,34px)!important;font-variant:small-caps;line-height:1.1;color:#e5d5b4!important;font-weight:400;letter-spacing:.035em}
+.table-observatoire .obs-fermer{position:fixed;right:12px;top:8px;pointer-events:auto;z-index:5;background:#10120fd9!important;border-color:#a98b4a80;width:30px;height:30px;min-height:30px;font-size:22px}
+.obs-panneau[data-view=meteo] .obs-entete h2{visibility:hidden}
+.obs-statut{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.table-observatoire .obs-section{position:absolute;inset:0;margin:0!important;padding:0!important;border:0!important;pointer-events:none}
+.obs-cycle h3{display:none}
+.obs-meteo h3{position:absolute;left:42%;width:16%;top:52.9%;margin:0!important;background:#10120f;font-family:TableCrimson,Georgia,serif!important;font-size:clamp(16px,1.85cqw,28px);line-height:1.25;letter-spacing:.02em;color:#e3cda2}
+.obs-arc,.obs-choix{display:contents!important}
+.obs-arc>.obs-astre{display:none!important}
+.table-observatoire .obs-option:nth-child(n){position:absolute;left:var(--left);top:var(--top);width:var(--size);padding:0;gap:0;transform:none;pointer-events:auto;display:flex;align-items:center;background:none!important;box-shadow:none!important}
+.obs-option .obs-medaille{width:100%;aspect-ratio:1;filter:saturate(.8) brightness(.88)}
+.obs-option:disabled .obs-medaille{filter:saturate(.8) brightness(.88)}
+.table-observatoire .obs-option::after{display:none!important}
+.table-observatoire .obs-option[aria-pressed=true] .obs-medaille{box-shadow:0 0 0 1px #e3c882,0 0 10px #b7964845;filter:saturate(.95) brightness(1.1)}
+.table-observatoire .obs-option:not(:disabled):hover .obs-medaille{filter:brightness(1.16)}
+.table-observatoire .obs-option .obs-legende{font-size:clamp(13px,1.2cqw,19px);font-family:TableCrimson,Georgia,serif;line-height:1.2;white-space:nowrap;overflow:visible;color:#e3cfaa;padding-top:2px}
+.table-observatoire .obs-option[aria-pressed=true] .obs-legende{text-decoration:none;color:#ffe6a3}
+.obs-cycle .obs-legende{font-size:clamp(12px,.95cqw,15px)!important}
+.obs-phases{display:grid!important;position:absolute;left:20%;right:20%;top:46%;margin:0;grid-template-columns:repeat(12,minmax(0,1fr));font-family:TableCrimson,Georgia,serif;font-size:clamp(13px,1.3cqw,20px);color:#dfcba5}
+/* Le défilement reste interne au panneau sur téléphone, sans déformer l'instrument. */
+@media(max-width:900px){
+ .table-observatoire .obs-entete{left:280px;right:auto;width:340px;top:20px}
+ .obs-entete h2{font-size:23px!important}
+ .obs-meteo h3{font-size:19px}
+ .obs-option .obs-legende{font-size:14px!important}
+ .obs-phases{font-size:14px}
+}

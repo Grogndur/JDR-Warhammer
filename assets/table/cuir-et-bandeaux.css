@@ -1,0 +1,37 @@
+/* Cuir sans cadre imprimé : la matière et les ferrures restent indépendantes. */
+body.table-observatoire{background:#141410 url('cuir-use.webp') center/900px 900px repeat}
+.table-observatoire .scene{background-color:#141410;background-image:linear-gradient(#11120f30,#11120f30),url('cuir-use.webp');background-size:auto,900px 900px;background-position:center,center;background-repeat:no-repeat,repeat}
+.table-observatoire :is(header,.dock,.palette,.initiative,.journal-panel,.cams,.table-tiroir-contenu,.table-rail){
+ background-color:#161611;
+ background-image:url('observatoire-cadre.svg'),linear-gradient(#10120e25,#10120e25),url('cuir-use.webp');
+ background-size:100% 100%,auto,640px 640px;
+ background-position:center,center,left top;
+ background-repeat:no-repeat,no-repeat,repeat;
+ background-attachment:scroll,scroll,scroll;
+ background-origin:border-box,padding-box,padding-box;
+ border-image:none;
+}
+/* Bandeaux continus ; les filets ne sont plus contenus dans une image répétée. */
+.table-observatoire header,.table-observatoire .dock{
+ border:7px solid transparent;
+ border-radius:0;
+ background-image:url('observatoire-cadre.svg'),linear-gradient(90deg,#9d78471c,transparent 25%,#06090622 75%,#76553410),url('cuir-use.webp');
+ box-shadow:inset 0 0 0 1px #2d291f,inset 0 0 0 3px #15150f;
+}
+.table-observatoire header{border-bottom:8px solid transparent;box-shadow:inset 0 0 0 1px #4b3c27,0 2px 0 #0b0d09,0 6px 14px #0006}
+.table-observatoire .dock{border-top:8px solid transparent;box-shadow:inset 0 0 0 1px #4b3c27,0 -2px 0 #0b0d09,0 -6px 14px #0006}
+.table-observatoire .obs-panneau::before{background-image:linear-gradient(#11130f40,#11130f40),url('cuir-use.webp');background-size:auto,640px 640px;background-position:center,left top;background-attachment:scroll}
+.table-observatoire header .obs-ouvrir,
+.table-observatoire .dock button:not(.primaire):not(.actif):not(.de-sel),
+.table-observatoire .table-tiroir>summary{
+ background-image:linear-gradient(#80704b12,#080b093b),url('cuir-use.webp');
+ background-size:auto,480px 480px;background-position:center;
+ border-color:#8c734955;border-radius:2px;
+ box-shadow:inset 0 0 0 1px #b79a5620;
+}
+.table-observatoire header .obs-ouvrir:hover,
+.table-observatoire .table-tiroir>summary:hover{border-color:#bea16a;color:#f3deb4}
+.table-observatoire .obs-ouvrir[aria-expanded=true],
+.table-observatoire .table-tiroir[open]>summary{border-color:#c4a363;box-shadow:inset 0 -2px #ac89565c}
+/* Petites poignées intégrées au même cuir, sans élargir l'emprise sur la carte. */
+.table-observatoire :is(.dock-poignee,.entete-poignee){background:#1a1a13 url('cuir-use.webp') left top/480px 480px;border-color:#8c7349;color:#dac293;border-radius:0;box-shadow:inset 0 0 0 1px #baa06c20}
