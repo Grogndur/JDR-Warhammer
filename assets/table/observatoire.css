@@ -67,3 +67,8 @@
  .obs-cycle .obs-choix{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 @media(prefers-reduced-motion:reduce){.obs-medaille{transition:none}}
+
+/* Les commandes de l’Observatoire ne doivent pas hériter du passage des clics du bandeau. */
+.table-observatoire header .obs-commandes{pointer-events:auto}
+.table-observatoire header.replie .obs-commandes{pointer-events:none}
+
