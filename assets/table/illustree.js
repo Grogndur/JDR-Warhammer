@@ -43,7 +43,9 @@
       const rows = [...dice.children];
       const label = dice.querySelector('label[for="cible"]');
       if (label) label.prepend(icon(7));
-      drawer(dice, 'Autres jets', 7, rows.slice(1));
+      const difficulty = dice.querySelector('.diff-grp');
+      if (difficulty) dock.append(difficulty);
+      drawer(dice, 'Autres jets', 7, rows.slice(1).filter(row => row !== difficulty));
     }
     const combat = dock.querySelector('.grp-combat');
     if (combat) {
@@ -147,5 +149,6 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true});
   else init();
 })();
+
 
 

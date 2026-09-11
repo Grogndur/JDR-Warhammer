@@ -101,3 +101,46 @@
  .table-observatoire header .obs-commandes{top:auto;bottom:7px;transform:translateX(-50%)}
 }
 
+
+/* Difficulté persistante sous les jets ; les contrôles et permissions d'origine restent actifs. */
+.table-illustree #dock>.diff-grp{grid-column:1/-1;grid-row:2;justify-self:center;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;width:max-content;max-width:100%;margin:0;padding:0;border:0}
+.table-illustree:not(.est-mj) #dock>.diff-grp{display:none}
+.table-illustree #dock #diff-boutons{justify-content:center;gap:5px!important}
+.table-illustree #dock>.table-rail{grid-row:3}
+/* Dimensions des commandes des bandeaux : +20 %, sans étirer les textures. */
+.table-illustree header{min-height:74.4px;gap:7.2px 16.8px}
+.table-illustree header .retour{font-size:28.8px}
+.table-illustree header .retour .table-icone{width:46.8px;height:46.8px}
+.table-illustree header .toggle{font-size:16.8px}
+.table-observatoire header .obs-ouvrir{font-size:19.2px;min-height:55.2px;padding:2.4px 14.4px 2.4px 3.6px;gap:9.6px}
+.table-observatoire header .obs-ouvrir small{font-size:14.4px}
+.table-observatoire header .obs-ouvrir strong{font-size:21.6px}
+.table-observatoire header .obs-ouvrir .obs-medaille{width:52.8px}
+.table-illustree #dock button,.table-illustree #dock summary{font-size:19.2px;min-height:38.4px;padding:8.4px 12px}
+.table-illustree #dock .table-tiroir>summary,.table-illustree #dock .grp-actions>#ouvrir-dessin{min-height:50.4px}
+.table-illustree #dock label{font-size:16.8px}
+.table-illustree #dock .diff-lbl{font-size:14.4px}
+.table-illustree #dock input,.table-illustree #dock select{font-size:19.2px;padding:8.4px}
+.table-illustree #dock #cible{width:72px}
+.table-illustree #dock #custom{width:126px}
+.table-illustree #dock .table-icone{width:36px;height:36px}
+.table-illustree #dock .table-bouton-icone .table-icone{width:28.8px;height:28.8px}
+.table-illustree #dock label .table-icone{width:45.6px;height:45.6px}
+.table-illustree #dock>.table-rail button{font-size:16.8px;padding:6px 8.4px}
+.table-illustree #dock>.table-rail .table-icone{width:28.8px;height:28.8px}
+.table-illustree .entete-poignee,.table-illustree .dock-poignee{width:45.6px;height:38.4px;min-height:38.4px;font-size:30px}
+@media(max-width:760px){
+ .table-observatoire header{padding-bottom:74.4px}
+ .table-illustree #dock>.diff-grp{grid-row:3}
+ .table-illustree #dock>.grp-actions{grid-row:4}
+ .table-illustree #dock>.table-rail{grid-row:5}
+}
+
+/* Les bandeaux grandissent avec leurs commandes, avec de vraies marges. */
+.table-illustree #dock{height:auto;min-height:0;padding:14px 64px;row-gap:12px;box-sizing:border-box}
+.table-observatoire header{height:auto;min-height:94px;padding:12px 64px;box-sizing:border-box}
+.table-illustree :is(.palette,.initiative,.journal-panel){top:var(--obs-top,104px)}
+@media(max-width:760px){
+ .table-observatoire header{padding:12px 64px 84px;min-height:132px}
+ .table-illustree #dock{padding:12px 58px;max-height:55dvh;overflow-y:auto}
+}
