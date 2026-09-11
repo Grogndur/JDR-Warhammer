@@ -232,14 +232,32 @@
 }
 .fiche-wymond .fiche-raccourcis{position:sticky}
 .fiche-wymond .card:not(.fiche-ressources)::after,.fiche-wymond .ressource-illustree::after{
- content:'';position:absolute;inset:-12px;pointer-events:none;background:url('cadre-ancre-16.svg') 0 0/100% 100% no-repeat;z-index:3;
+ content:'';position:absolute;inset:-12px;pointer-events:none;background:url('cadre-fondu-16.svg') 0 0/100% 100% no-repeat;z-index:3;
 }
 .fiche-wymond .stat-box.stat-illustree::after{
- content:'';position:absolute;inset:-7px;pointer-events:none;background:url('cadre-ancre-9.svg') 0 0/100% 100% no-repeat;z-index:3;
+ content:'';position:absolute;inset:-7px;pointer-events:none;background:url('cadre-fondu-9.svg') 0 0/100% 100% no-repeat;z-index:3;
 }
 .fiche-wymond .fiche-raccourcis::after{
- content:'';position:absolute;inset:-1px;pointer-events:none;background:url('cadre-ancre-10.svg') 0 0/100% 100% no-repeat;z-index:3;
+ content:'';position:absolute;inset:-1px;pointer-events:none;background:url('cadre-fondu-10.svg') 0 0/100% 100% no-repeat;z-index:3;
 }
 
 /* Le décor d’origine contient déjà sa bordure : suppression du cadre superposé. */
 .fiche-wymond body::after{display:none;content:none}
+
+/* Fond opaque à contraste réduit, sans le voile noir qui découpait les cases. */
+.fiche-wymond .card:not(.fiche-ressources),
+.fiche-wymond .card.fiche-competences,
+.fiche-wymond .ressource-illustree,
+.fiche-wymond .stat-box.stat-illustree{
+ background-color:#141510;
+ background-image:linear-gradient(#14151066,#14151066),url('panel-v2.png');
+ background-size:auto,cover;
+ background-position:0 0,center;
+ background-repeat:no-repeat;
+ background-attachment:scroll,fixed;
+ background-clip:border-box;
+ box-shadow:none;
+}
+@media print{
+ .fiche-wymond .card:not(.fiche-ressources),.fiche-wymond .card.fiche-competences,.fiche-wymond .ressource-illustree,.fiche-wymond .stat-box.stat-illustree{background:#fff}
+}
