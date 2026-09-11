@@ -231,3 +231,38 @@ body.livre-mj{--sidebar-w:285px;--BG:#0d100d;--CARD:#171a13;--SUB:#c3b89f;--TXT:
  .livre-mj :is(.mj-box,.fil-box,.xp-box,.indice-box,.jet-roll){padding:15px}
  .livre-mj .pnj-head,.livre-mj .pnj-body{padding:14px}
 }
+
+/* Décor de l'accueil général, exclusivement sur les introductions des scénarios. */
+@media screen{
+ body.livre-mj.livre-accueil:not(.editing){
+  background:#10120f url('../accueil/cuir.png') center top/1600px auto;
+ }
+ .livre-mj.livre-accueil:not(.editing) .main{
+  position:relative;z-index:1;
+  background:linear-gradient(#0d110d88,#0d110d88);
+ }
+}
+@media screen and (min-width:1100px){
+ body.livre-mj.livre-accueil:not(.editing)::before,
+ body.livre-mj.livre-accueil:not(.editing)::after{
+  content:'';position:fixed;top:0;bottom:0;width:46vh;width:46svh;
+  z-index:0;pointer-events:none;
+  background-size:auto 100%;background-repeat:no-repeat;
+ }
+ body.livre-mj.livre-accueil:not(.editing)::before{
+  left:0;right:auto;
+  background-image:url('../accueil/chaines-atmosphere.webp');
+  background-position:left center;
+  -webkit-mask:linear-gradient(90deg,#000 0 74%,#000e 80%,#0008 89%,transparent 100%);
+  mask:linear-gradient(90deg,#000 0 74%,#000e 80%,#0008 89%,transparent 100%);
+ }
+ body.livre-mj.livre-accueil:not(.editing)::after{
+  right:0;left:auto;
+  background-image:url('../accueil/drape-crane-long.webp');
+  background-position:right center;
+  -webkit-mask:linear-gradient(270deg,#000 0 74%,#000e 80%,#0008 89%,transparent 100%);
+  mask:linear-gradient(270deg,#000 0 74%,#000e 80%,#0008 89%,transparent 100%);
+ }
+ .livre-mj.livre-accueil:not(.editing) .main{background:transparent}
+}
+
