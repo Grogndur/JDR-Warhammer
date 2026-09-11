@@ -1,0 +1,18 @@
+/* Retour aux deux sources d'origine : aucun ruban étiré, aucun voile sur le visage. */
+.fiche-wymond .perso-header{
+ background-image:linear-gradient(90deg,#090b09b8 0%,#090b094d 50%,#090b0910 100%),url('header-v2.png');
+ background-size:cover;background-position:center;
+}
+.fiche-wymond .portrait-prolongement{display:none!important}
+.fiche-wymond #portrait-frame{-webkit-mask:none;mask:none;background:transparent;filter:none}
+.fiche-wymond #portrait-frame::before,.fiche-wymond #portrait-frame::after{content:none}
+.fiche-wymond #portrait-img{
+ -webkit-mask:none;mask:none;filter:none;opacity:1;
+ object-fit:contain;object-position:center;
+}
+.fiche-wymond #portrait-img[data-portrait-protege]{
+ -webkit-mask-image:var(--portrait-masque);mask-image:var(--portrait-masque);
+ -webkit-mask-size:100% 100%;mask-size:100% 100%;
+ -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+ -webkit-mask-composite:source-over;mask-composite:add;
+}
