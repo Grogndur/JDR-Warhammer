@@ -944,11 +944,12 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
 </style>
 <link rel="stylesheet" href="assets/table/illustree.css?v=20260910-2">
 <script defer src="assets/table/combat-jetons.js?v=20260910-2"></script>
-<script defer src="assets/table/illustree.js?v=20260910-2"></script>
+<script defer src="assets/table/illustree.js?v=20260911-2"></script>
 <link rel="stylesheet" href="assets/table/observatoire.css?v=20260911-2">
 <script defer src="assets/table/observatoire.js?v=20260911-3"></script>
 <link rel="stylesheet" href="assets/table/cuir-et-bandeaux.css?v=20260911-1">
 <link rel="stylesheet" href="assets/table/observatoire-fidele.css?v=20260911-5">
+<link rel="stylesheet" href="assets/table/polish-commandes.css?v=20260911-1">
 </head>
 <body>
 
@@ -973,6 +974,8 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
     </div>
     <div class="plateau" id="plateau">
       <img id="image" alt="Image partagée" />
+      <div id="voile" aria-hidden="true"></div>
+      <div id="voile-meteo" aria-hidden="true"></div>
       <svg id="calque" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <mask id="msk-brouillard" maskUnits="userSpaceOnUse">
@@ -980,7 +983,6 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
             <g id="msk-traits" fill="none" stroke-linecap="round" stroke-linejoin="round"></g>
           </mask>
         </defs>
-        <rect id="voile" x="0" y="0" width="0" height="0" pointer-events="none"></rect>
         <g id="grille"></g>
         <g id="g-strokes"></g>
         <path id="g-live" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -1988,44 +1990,34 @@ if(refBrouillard){
 // l'éteint pour toute la table : en souterrain, il n'a rien à y faire.
 const refVoile = db ? ref(db, `salles/${salle}/options/voile`) : null;
 
+// Deux fusions indépendantes sur l'image, sous le calque des jetons et tracés.
 const TEINTE_PHASE = {
-  aube:       { c:"#6a4a6b", a:0.18 },
-  jour:       { c:"#f0d79a", a:0.00 },
-  crepuscule: { c:"#a8531f", a:0.20 },
-  nuit:       { c:"#101f3a", a:0.40 }
+  aube:       { c:"#d5a086", a:0.30, mode:"soft-light" },
+  jour:       { c:"#ffffff", a:0, mode:"soft-light" },
+  crepuscule: { c:"#c98050", a:0.38, mode:"soft-light" },
+  nuit:       { c:"#526887", a:0.65, mode:"multiply" }
 };
 const TEINTE_TEMPS = {
-  0:{ c:"#ffe6a8", a:0.00 }, 1:{ c:"#d8cfae", a:0.04 }, 2:{ c:"#8a93a0", a:0.12 },
-  3:{ c:"#9fb3ab", a:0.08 }, 4:{ c:"#4a6d8f", a:0.18 }, 5:{ c:"#9fc6dd", a:0.16 },
-  6:{ c:"#5c4c78", a:0.24 }, 7:{ c:"#3a2a44", a:0.34 }, 8:{ c:"#9aa4ac", a:0.26 },
-  9:{ c:"#c6dced", a:0.20 }
+  0:{ c:"#ffffff", a:0 }, 1:{ c:"#d5d1c5", a:0.12 },
+  2:{ c:"#a6afb9", a:0.27 }, 3:{ c:"#b4c1ba", a:0.15 },
+  4:{ c:"#819cb2", a:0.30 }, 5:{ c:"#a6beca", a:0.25 },
+  6:{ c:"#858297", a:0.37 }, 7:{ c:"#6b7184", a:0.45 },
+  8:{ c:"#bdc6ca", a:0.22 }, 9:{ c:"#c4d6df", a:0.18 }
 };
-
-function melange(a, b){
-  const h = x => [1,3,5].map(i => parseInt(x.substr(i,2),16));
-  const A = h(a.c), B = h(b.c);
-  const p = (a.a + b.a) ? b.a / (a.a + b.a) : 0.5;
-  const m = A.map((v,i) => Math.round(v*(1-p) + B[i]*p));
-  return { c:"#" + m.map(v => v.toString(16).padStart(2,"0")).join(""),
-           a: Math.min(0.62, a.a + b.a) };
-}
 
 function rendreVoile(){
   const v = document.getElementById("voile");
-  if(!v || !base.iw) return;
-  v.setAttribute("width", base.iw);
-  v.setAttribute("height", base.ih);
-  const ph = (typeof window.phaseCycle === "function") ? window.phaseCycle() : "jour";
-  const tp = (typeof window.tempsTable === "function") ? window.tempsTable() : 0;
+  const meteo = document.getElementById("voile-meteo");
+  if(!v || !meteo || !base.iw) return;
+  const ph = typeof window.phaseCycle === "function" ? window.phaseCycle() : "jour";
+  const tp = typeof window.tempsTable === "function" ? window.tempsTable() : 0;
   const a = TEINTE_PHASE[ph] || TEINTE_PHASE.jour;
   const b = TEINTE_TEMPS[tp] || TEINTE_TEMPS[0];
-  if(a.a <= 0 && b.a <= 0){          // plein jour, ciel clair : rien à teinter
-    v.setAttribute("opacity", "0");
-    return;
-  }
-  const m = melange(a, b);
-  v.setAttribute("fill", m.c);
-  v.setAttribute("opacity", m.a.toFixed(3));
+  v.style.backgroundColor = a.c;
+  v.style.opacity = String(a.a);
+  v.style.mixBlendMode = a.mode;
+  meteo.style.backgroundColor = b.c;
+  meteo.style.opacity = String(b.a);
 }
 window.rendreVoile = rendreVoile;
 
@@ -3300,14 +3292,7 @@ if($("#salle-fichier")) $("#salle-fichier").addEventListener("change", e => {
   e.target.value = "";
 });
 
-// Rappel : sans copie récente, une bêtise coûte tout.
-setTimeout(() => {
-  if(!estMJ() || !db) return;
-  const der = parseInt(lsGet("wh_sauvegarde"), 10) || 0;
-  const jours = der ? Math.floor((Date.now() - der) / 86400000) : null;
-  if(jours === null) alerte("Aucune sauvegarde sur cet ordinateur. Un clic sur ⤓ Sauvegarde et c'est réglé.");
-  else if(jours >= 7) alerte(`Dernière sauvegarde il y a ${jours} jours.`);
-}, 6000);
+// La sauvegarde reste disponible à la demande dans Session.
 
 
 $("#jetons-pj-chk").addEventListener("change", e => {
@@ -6069,6 +6054,7 @@ $("#amb-activer").addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 

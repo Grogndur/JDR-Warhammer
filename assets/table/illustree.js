@@ -55,7 +55,7 @@
       const rows = [...scene.children];
       const session = scene.querySelector('.ligne-session');
       const tools = scene.querySelector('.ligne-outils');
-      if (session) drawer(scene, 'Session', 4, [session]);
+      if (session) scene.prepend(drawer(scene, 'Session', 4, [session]));
       const ambience = rows.filter(n => n.querySelector?.('#amb-choix') || n.id === 'amb-err');
       const scenes = rows.filter(n => n !== session && n !== tools && !ambience.includes(n));
       drawer(scene, 'Scènes', 8, scenes, true);
@@ -112,7 +112,7 @@
       new MutationObserver(sync).observe(target,{attributes:true,attributeFilter:['class','disabled']}); sync();
       rail.append(button);
     }
-    document.getElementById('app').append(rail);
+    dock.append(rail);
     document.addEventListener('keydown', e => {
       if (e.key !== 'Escape') return;
       for (const d of drawers) if (d.open) { d.open = false; d.querySelector('summary').focus(); }
@@ -137,3 +137,4 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true});
   else init();
 })();
+
