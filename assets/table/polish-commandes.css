@@ -84,3 +84,12 @@
  .table-illustree #dock>.table-rail{grid-column:1;grid-row:4}
 }
 
+
+/* Journal lisible en partie, sans modifier les autres panneaux. */
+.table-illustree .journal-panel .journal{gap:9px;padding:10px}
+.table-illustree .journal-panel .jet{font-size:18px;line-height:1.5;padding:9px 11px;overflow-wrap:anywhere}
+.table-illustree .journal-panel .jet .qui{font-size:16px;line-height:1.4;letter-spacing:.02em}
+.table-illustree .journal-panel .jet .res{font-size:20px;line-height:1.45}
+.table-illustree .journal-panel .jet .marque{font-size:18px}
+.table-illustree .journal-panel .jet .cachet{font-size:13px;letter-spacing:.04em}
+
