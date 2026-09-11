@@ -571,6 +571,8 @@ window.ACCES = window.ACCES || (function () {
 </style>
 <link rel="stylesheet" href="../assets/fiches/wymond.css?v=20260911-fondu">
 <script defer src="../assets/fiches/wymond.js"></script>
+<link rel="stylesheet" href="../assets/fiches/bureau.css?v=20260911">
+<script defer src="../assets/fiches/bureau.js?v=20260911"></script>
 </head>
 <body>
 
@@ -1637,6 +1639,7 @@ function renderCareer() {
     var el=document.getElementById('career-'+k);
     if(el && state.career[k]!==undefined) el.value=state.career[k];
   });
+  document.dispatchEvent(new Event('fiche-carriere-affichee'));
 }
 
 // ══ AFFICHAGE PALIERS D'AUGMENTATION (XP) ══

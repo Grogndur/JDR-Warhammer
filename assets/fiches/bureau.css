@@ -1,0 +1,16 @@
+/* Les accessoires sont strictement limités aux marges extérieures de la fiche. */
+.bureau-marges{display:none;pointer-events:none;user-select:none}
+@media(min-width:1700px){
+ .fiche-wymond .bureau-marges{display:block;--bureau-largeur:min(420px,calc((100vw - 1280px)/2 - 14px))}
+ .bureau-marges>div{
+  position:fixed;top:70px;height:calc(var(--bureau-largeur)*3.127);max-height:calc(100svh - 70px);width:var(--bureau-largeur);
+  z-index:0;pointer-events:none;overflow:hidden;
+  background-image:var(--bureau-image);
+  background-size:calc(var(--bureau-largeur)*5.555556) auto;
+  background-repeat:no-repeat;
+  filter:brightness(.78) saturate(.86);
+ }
+ .bureau-gauche{left:0;background-position:left top;mask-image:linear-gradient(to right,#000 92%,transparent),linear-gradient(to bottom,#000 calc(100% - 45px),transparent);mask-composite:intersect}
+ .bureau-droite{right:0;background-position:right top;mask-image:linear-gradient(to left,#000 92%,transparent),linear-gradient(to bottom,#000 calc(100% - 45px),transparent);mask-composite:intersect}
+}
+@media print{.bureau-marges{display:none!important}}
