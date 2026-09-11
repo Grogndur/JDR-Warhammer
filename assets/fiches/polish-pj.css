@@ -1,0 +1,24 @@
+/* Survol des nombres : lumière uniquement, sans plaque ni creux. */
+.fiche-wymond .jet-actif :is(.stat-total,.skill-total){background:transparent;box-shadow:none;transition:color .12s ease,text-shadow .12s ease}
+.fiche-wymond .jet-actif :is(.stat-total,.skill-total):hover{background:transparent;box-shadow:none;color:#fff0c8;text-shadow:0 0 6px #efc67570,0 0 12px #d39c3935}
+.fiche-wymond .jet-actif :is(.stat-total,.skill-total):active{opacity:1}
+.fiche-wymond .jet-actif .jet-eclat{animation:pj-jet-eclair 160ms ease-out}
+@keyframes pj-jet-eclair{0%,20%{color:#fffdf0;text-shadow:0 0 4px #fff4d7,0 0 12px #ffd179dd,0 0 22px #edab5480}100%{color:#fff0c8;text-shadow:0 0 6px #efc67570,0 0 12px #d39c3935}}
+/* Le décor couvre désormais tout le viewport : plus de marche horizontale à 70 px. */
+@media screen and (min-width:1700px){.fiche-wymond .bureau-marges{inset:0;background-size:cover;background-position:center top}}
+html:not(.fiche-wymond) .fiche-talents-suite{display:none}
+.fiche-wymond #fiche-talents-principal,.fiche-wymond #fiche-talents-suite{min-width:0}
+.fiche-wymond .card-title .icone-protection{background-image:url('protection-icones.webp');background-size:200% 100%;background-repeat:no-repeat;width:38px;height:38px;flex:0 0 38px;clip-path:none;mix-blend-mode:screen}
+.fiche-wymond .card-title .icone-protection.plastron{background-position:left center}
+.fiche-wymond .card-title .icone-protection.pantin{background-position:right center}
+.fiche-wymond .pj-ajuster{flex:0 0 100%;width:100%;min-width:0;margin-top:4px}
+.fiche-wymond .pj-ajuster>summary{width:max-content;margin-left:auto;cursor:pointer;color:#c4af86;font-size:12px;line-height:1.4}
+.fiche-wymond .pj-ajuster[open]{padding:7px 0;border-top:1px solid #9d7d4544}
+.fiche-wymond .pj-ajuster-champs{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding-top:7px}
+.fiche-wymond .pj-ajuster-champs>.skill-name{flex:0 0 100%}
+.fiche-wymond .skill-name-lecture{flex:1;min-width:0}
+.fiche-wymond .talent-list li{flex-wrap:wrap}
+.fiche-wymond .talent-lecture{flex:1 1 100%;min-width:0}
+.fiche-wymond .talent-name-lecture{color:var(--acc2);font-weight:600}
+.fiche-wymond .talent-desc-lecture{display:block;color:var(--SUB);font-size:.8rem;font-style:italic;margin-top:.1rem}
+@media(prefers-reduced-motion:reduce){.fiche-wymond .jet-actif .jet-eclat{animation-duration:60ms}.fiche-wymond .jet-actif :is(.stat-total,.skill-total){transition:none}}

@@ -575,8 +575,11 @@ window.ACCES = window.ACCES || (function () {
 <script defer src="../assets/fiches/bureau.js?v=20260911"></script>
 <link rel="stylesheet" href="../assets/commun/fusions.css?v=20260911-1">
 <link rel="stylesheet" href="../assets/fiches/objets-et-lumiere.css?v=20260911-5">
-<link rel="stylesheet" href="../assets/fiches/portraits-proteges.css?v=20260911-1">
-<script defer src="../assets/fiches/portraits-proteges.js?v=20260911-1"></script>
+<link rel="stylesheet" href="../assets/fiches/portraits-integres.css?v=20260911-2">
+<link rel="stylesheet" href="../assets/fiches/portrait-prolongement.css?v=20260911-1">
+<script defer src="../assets/fiches/portrait-prolongement.js?v=20260911-1"></script>
+<link rel="stylesheet" href="../assets/fiches/polish-pj.css?v=20260911-1">
+<script defer src="../assets/fiches/polish-pj.js?v=20260911-1"></script>
 </head>
 <body>
 
@@ -965,7 +968,7 @@ window.ACCES = window.ACCES || (function () {
 
 
   <!-- TALENTS -->
-  <div class="card">
+  <div class="card" id="fiche-talents-principal">
     <div class="card-title acc">Talents & Capacités</div>
     <ul class="talent-list" id="talent-list"></ul>
     <div style="margin-top:0.5rem;">
@@ -985,6 +988,11 @@ window.ACCES = window.ACCES || (function () {
     </div>
   </div>
 
+
+  <div class="card fiche-talents-suite" id="fiche-talents-suite">
+    <div class="card-title acc">Talents &amp; Capacités — suite</div>
+    <ul class="talent-list" id="talent-list-suite"></ul>
+  </div>
 
   <!-- MAGIE ET FOI -->
   <div class="card vio full">
@@ -2522,13 +2530,17 @@ function addAdvSkill() {
 // ══════ TALENTS ══════
 function renderTalents() {
   const ul=document.getElementById('talent-list'); ul.innerHTML='';
+  const suite=document.getElementById('talent-list-suite');
+  if(suite) suite.innerHTML='';
+  const deux = suite && document.documentElement.classList.contains('fiche-wymond');
+  const coupure = deux ? Math.ceil(state.talents.length/2) : state.talents.length;
   state.talents.forEach((t,i)=>{
     const li=document.createElement('li');
     li.innerHTML=`
       <div class="talent-content"><span class="talent-name">${t.name}</span><span class="talent-desc">${t.desc}</span></div>
       <span class="del-btn" onclick="deleteTalent(${i})">✕</span>
     `;
-    ul.appendChild(li);
+    (i < coupure ? ul : suite).appendChild(li);
   });
 }
 function deleteTalent(idx) { if(confirm('Supprimer ce talent ?')){ state.talents.splice(idx,1); renderTalents(); save(); } }
