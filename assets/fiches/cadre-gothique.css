@@ -1,0 +1,62 @@
+/* Cadre issu du JPG approuvé : ses pixels sont conservés dans le SVG.
+   Le décor, l'ouverture et les portraits sont trois couches indépendantes. */
+.fiche-wymond .perso-header{
+ --cadre-hauteur:460px;
+ position:relative;isolation:isolate;overflow:visible;
+ min-height:430px;margin-top:38px;
+ display:grid;grid-template-columns:minmax(0,1fr) 330px;
+ padding:36px 42px 24px;gap:18px 28px;
+ border:1px solid #a18552;
+ background-image:linear-gradient(90deg,#090b09b8 0%,#090b094d 50%,#090b0910 100%),url('header-v2.png');
+ background-size:cover;background-position:center;
+}
+.fiche-wymond .perso-info,.fiche-wymond .perso-meta{grid-column:1;min-width:0}
+.fiche-wymond .perso-portrait{
+ position:absolute;top:auto;bottom:-1px;right:6%;
+ height:calc(100% + 32px);width:auto;aspect-ratio:440/677;
+ overflow:visible;z-index:3;grid-column:auto;grid-row:auto;
+}
+.fiche-wymond #portrait-frame{
+ position:relative;display:block;width:100%;height:100%;
+ border:0;outline:0;box-shadow:none;border-radius:0;
+ overflow:visible;background:none;filter:none;-webkit-mask:none;mask:none;
+}
+.fiche-wymond #portrait-frame::before{
+ content:"";position:absolute;inset:0;background:#171a15;
+ -webkit-mask:url('cadre-gothique-ouverture.svg') center/100% 100% no-repeat;
+ mask:url('cadre-gothique-ouverture.svg') center/100% 100% no-repeat;
+}
+.fiche-wymond #portrait-frame::after{
+ content:"";position:absolute;inset:0;z-index:3;
+ background:url('cadre-gothique.svg') center/100% 100% no-repeat;
+ pointer-events:none;
+}
+.fiche-wymond #portrait-frame #portrait-img{
+ position:absolute;inset:0;width:100%;height:100%;max-width:none;
+ box-sizing:border-box;padding:20% 12.5% 6.5%;
+ object-fit:cover;object-position:center 20%;
+ transform:none;filter:none;opacity:1;background:transparent;
+ -webkit-mask:url('cadre-gothique-ouverture.svg') center/100% 100% no-repeat;
+ mask:url('cadre-gothique-ouverture.svg') center/100% 100% no-repeat;
+}
+.fiche-wymond #portrait-empty{position:absolute;inset:40% 15% 20%;display:flex;align-items:center;justify-content:center;background:none}
+.fiche-wymond .portrait-prolongement{display:none!important}
+.fiche-wymond .portrait-btns{
+ position:absolute;top:auto;bottom:8%;left:16%;right:16%;width:auto;
+ z-index:5;display:flex;gap:5px;margin:0;
+}
+@media(max-width:1000px) and (min-width:651px){
+ .fiche-wymond .perso-header{grid-template-columns:minmax(0,1fr) 260px;padding:30px 20px;min-height:400px}
+ .fiche-wymond .perso-portrait{right:2%}
+}
+@media(max-width:650px){
+ .fiche-wymond .perso-header{display:flex;flex-direction:column;min-height:0;padding:24px 20px 0;gap:18px;margin-top:12px}
+ .fiche-wymond .perso-info{order:0}
+ .fiche-wymond .perso-meta{order:1}
+ .fiche-wymond .perso-portrait{order:2;position:relative;right:auto;top:auto;bottom:-1px;width:min(100%,286px);height:auto;aspect-ratio:440/677;align-self:center;margin-top:8px}
+ .fiche-wymond .perso-info,.fiche-wymond .perso-meta{padding:0}
+}
+@media print{
+ .fiche-wymond .perso-header{min-height:380px;break-inside:avoid}
+ .fiche-wymond .portrait-btns{display:none!important}
+}
