@@ -2,6 +2,7 @@
 (() => {
   'use strict';
   const weather = ['Clair','Voilé','Couvert','Vent','Pluie','Grêle','Orage','Tempête','Brume','Neige'];
+  const weatherOrder = [0,3,1,2,8,4,9,5,6,7];
   const phases = ['Aube','Jour','Jour','Jour','Jour','Crépuscule','Crépuscule','Nuit','Nuit','Nuit','Nuit','Nuit'];
   const isGM = () => document.body.classList.contains('est-mj');
   function node(tag, cls, text) {
@@ -45,6 +46,7 @@
           window[method](i);sync();
         });rail.append(b);return b;
       });
+      if(kind==='meteo') for(const value of weatherOrder) rail.append(buttons[value]);
       if(kind==='cycle'){
         const arc=node('div','obs-arc');arc.append(motif(22,'obs-astre'),rail,motif(23,'obs-astre'));content.append(arc);
         const captions=node('div','obs-phases');
@@ -66,7 +68,7 @@
     const wx=[270,433,598,762,927,1092,1257,1422,1587,1752];
     for(const g of groups)g.buttons.forEach((b,i)=>{
       const time=g.kind==='cycle',size=time?100:164;
-      b.style.setProperty('--left',`${((time?tx[i]:wx[i])-size/2)/2048*100}%`);
+      b.style.setProperty('--left',`${((time?tx[i]:wx[weatherOrder.indexOf(i)])-size/2)/2048*100}%`);
       b.style.setProperty('--top',`${((time?ty[i]:503)-size/2)/683*100}%`);
       b.style.setProperty('--size',`${size/2048*100}%`);
     });
@@ -106,4 +108,5 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
+
 
