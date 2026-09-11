@@ -266,3 +266,65 @@ body.livre-mj{--sidebar-w:285px;--BG:#0d100d;--CARD:#171a13;--SUB:#c3b89f;--TXT:
  .livre-mj.livre-accueil:not(.editing) .main{background:transparent}
 }
 
+
+/* Bannières des introductions : illustrations exactes de l'accueil principal.
+   La grille encadre les titres existants, sans déplacer le contenu dans le DOM. */
+@media screen{
+ .livre-mj .welcome{
+  --welcome-art:url('../accueil/eclipse.webp');--banniere-fin:5;
+  display:grid;grid-template-columns:minmax(0,1fr);position:relative;isolation:isolate;
+  padding-top:0;
+ }
+ .livre-mj .welcome:has(.eclipse-emblem[src*='boue-sang']){
+  --welcome-art:url('../accueil/boue-et-sang.webp');
+ }
+ .livre-mj .welcome:has(h1 + .welcome-sub){--banniere-fin:6}
+ .livre-mj .welcome>*{grid-column:1;min-width:0}
+ .livre-mj .welcome>.eclipse-emblem{
+  grid-row:1;justify-self:center;margin:30px auto 12px;
+ }
+ .livre-mj .welcome>.welcome-sub{grid-row:2;padding-inline:25px;text-shadow:0 1px 4px #000}
+ .livre-mj .welcome>h1{grid-row:3;padding-inline:25px;margin:8px 0}
+ .livre-mj .welcome>h1 + .welcome-sub{grid-row:4}
+ .livre-mj .welcome>.welcome-divider{grid-row:4;margin:12px auto 24px;visibility:hidden}
+ .livre-mj .welcome:has(h1 + .welcome-sub)>.welcome-divider{grid-row:5}
+ .livre-mj .welcome>p{margin-top:22px}
+ .livre-mj .welcome::before{
+  content:'';position:relative;inset:auto;grid-column:1;grid-row:1 / var(--banniere-fin);
+  width:auto;height:auto;align-self:stretch;z-index:-1;pointer-events:none;
+  margin:7px;
+  background:linear-gradient(0deg,#090d0ce8 0%,#090d0c88 32%,#090d0c24 78%),var(--welcome-art) center 43%/cover;
+  -webkit-mask:none;mask:none;
+ }
+ .livre-mj .welcome::after{
+  content:'';position:relative;inset:auto;grid-column:1;grid-row:1 / var(--banniere-fin);
+  align-self:stretch;z-index:1;pointer-events:none;
+  border:28px solid transparent;border-image:var(--livre-cadre) 180 / 28px / 0 stretch;
+ }
+ .livre-mj .welcome>.arc-tiles{min-width:0}
+}
+@media screen and (max-width:750px){
+ .livre-mj .welcome>.eclipse-emblem{width:125px;margin-top:25px}
+ .livre-mj .welcome>h1{padding-inline:22px;font-size:clamp(26px,6vw,38px)}
+ .livre-mj .welcome>.welcome-sub{padding-inline:22px;font-size:12px}
+ .livre-mj .welcome::after{border-width:24px;border-image-width:24px}
+}
+
+
+@media screen{
+ .livre-mj .welcome[style*="display: block"],.livre-mj .welcome[style*="display:block"]{display:grid!important}
+}
+/* Accroches de l'accueil principal, à l'intérieur de chaque bannière. */
+@media screen{
+ .livre-mj .welcome{--banniere-fin:6}
+ .livre-mj .welcome:has(h1 + .welcome-sub){--banniere-fin:7}
+ .livre-mj .welcome>.welcome-accroche{
+  grid-row:4;padding:9px 32px 0;margin:0 auto;max-width:650px;
+  font:italic 20px/1.5 LivreCrimson,Georgia,serif;color:#e4d5b7;
+  text-shadow:0 1px 4px #000,0 3px 10px #000; text-wrap:pretty;
+ }
+ .livre-mj .welcome:has(h1 + .welcome-sub)>.welcome-accroche{grid-row:5}
+ .livre-mj .welcome>.welcome-divider{grid-row:5}
+ .livre-mj .welcome:has(h1 + .welcome-sub)>.welcome-divider{grid-row:6}
+}
+@media screen and (max-width:750px){.livre-mj .welcome>.welcome-accroche{padding-inline:24px;font-size:18px}}

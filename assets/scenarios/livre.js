@@ -24,6 +24,13 @@
   let frame=0;
   function schedule(){cancelAnimationFrame(frame);frame=requestAnimationFrame(render);}
   function render(){
+   const welcome=document.querySelector('.welcome');
+   if(welcome&&!welcome.querySelector('.welcome-accroche')){
+    const phrase=document.createElement('div');phrase.className='welcome-accroche';
+    phrase.textContent=location.pathname.includes('/bds/')?"Les vastes étendues d’Averland ne sont peut-être pas si paisibles finalement…":"En Sylvanie, la lune vous éclairera davantage que le soleil.";
+    const divider=welcome.querySelector('.welcome-divider');
+    if(divider)divider.before(phrase);
+   }
    const editing=document.body.classList.contains('editing');
    mode.textContent=editing?'Édition':'En séance';
    if(editing){aside.replaceChildren();return;}
@@ -66,3 +73,4 @@
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
+
