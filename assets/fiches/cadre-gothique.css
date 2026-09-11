@@ -60,3 +60,40 @@
  .fiche-wymond .perso-header{min-height:380px;break-inside:avoid}
  .fiche-wymond .portrait-btns{display:none!important}
 }
+
+/* Bordure de bannière et navigation uniquement : mêmes matériaux que les fiches.
+   Le cadre du portrait reste au-dessus de la bordure, sans changer sa position. */
+.fiche-wymond .perso-header{border-color:transparent}
+.fiche-wymond .perso-header::after{
+ content:"";position:absolute;inset:-1px;z-index:2;
+ pointer-events:none;box-sizing:border-box;
+ border:20px solid transparent;
+ border-image:url('panel-v2.png') 135 / 20px / 0 stretch;
+}
+:is(html.fiche-wymond body,body.fiche-wymond)>nav{
+ isolation:isolate;
+ background:#13130f url('../table/cuir-use.webp') center/640px auto repeat;
+ border-bottom-color:transparent;
+ backdrop-filter:none;
+ box-shadow:0 5px 14px #0006;
+}
+:is(html.fiche-wymond body,body.fiche-wymond)>nav::before{
+ content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+ box-sizing:border-box;border:12px solid transparent;
+ border-image:url('panel-v2.png') 135 / 12px / 0 stretch;
+}
+:is(html.fiche-wymond body,body.fiche-wymond)>nav :is(a,.nav-current){
+ font-family:Cinzel,Georgia,serif;font-style:normal;
+ font-size:14px;font-weight:400;line-height:1.5;letter-spacing:.025em;
+ color:#d4bd91!important;text-shadow:0 1px 2px #000;
+}
+:is(html.fiche-wymond body,body.fiche-wymond)>nav a:hover{
+ color:#ecd5a6!important;text-shadow:0 0 6px #b18d5655;
+}
+:is(html.fiche-wymond body,body.fiche-wymond)>nav .nav-current{
+ color:#e5c68b!important;
+}
+:is(html.fiche-wymond body,body.fiche-wymond)>nav .nav-sep{
+ color:#8c7048;align-self:center;
+}
+
