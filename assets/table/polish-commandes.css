@@ -62,3 +62,25 @@
 .table-illustree #dock>.table-rail button:hover{background:none!important;box-shadow:none!important;color:#f5dba7;outline:1px solid #b89a5860;outline-offset:-1px;transform:none}
 .table-illustree #dock>.table-rail button.actif{outline:1px solid #d6b675;outline-offset:-1px}
 
+
+/* Colonnes latérales égales : les jets restent centrés sur l'écran. */
+.table-illustree #dock{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);padding-inline:58px}
+.table-illustree #dock>.grp-scene{grid-column:1;grid-row:1;justify-content:flex-start}
+.table-illustree #dock>.grp-des{grid-column:2;grid-row:1;justify-self:center}
+.table-illustree #dock>.grp-actions{grid-column:3;grid-row:1;display:flex;flex-direction:row;align-items:flex-start;justify-content:flex-end;flex-wrap:wrap;gap:7px;justify-self:stretch}
+.table-illustree #dock .grp-actions>.grp-combat{padding:0;border:0;background:none;min-width:0}
+.table-illustree #dock .grp-actions>#ouvrir-dessin{min-height:42px}
+.table-illustree #dock>.table-rail{grid-column:1;grid-row:2}
+.table-illustree .entete-poignee,.table-illustree .dock-poignee{display:flex;align-items:center;justify-content:center;width:38px;height:32px;min-height:32px;padding:0;font-family:Arial,sans-serif;font-size:25px;font-weight:700;line-height:1;letter-spacing:0;text-indent:0}
+@media(max-width:1250px){
+ .table-illustree #dock{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);padding-right:58px}
+ .table-illustree #dock>.grp-des{min-width:0}
+}
+@media(max-width:760px){
+ .table-illustree #dock{grid-template-columns:minmax(0,1fr);padding-inline:48px}
+ .table-illustree #dock>.grp-scene{grid-column:1;grid-row:1}
+ .table-illustree #dock>.grp-des{grid-column:1;grid-row:2}
+ .table-illustree #dock>.grp-actions{grid-column:1;grid-row:3;justify-content:flex-end}
+ .table-illustree #dock>.table-rail{grid-column:1;grid-row:4}
+}
+

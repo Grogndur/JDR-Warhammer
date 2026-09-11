@@ -18,6 +18,7 @@
     function drawer(parent, title, motif, nodes, gm = false) {
       const details = document.createElement('details');
       details.className = 'table-tiroir' + (gm ? ' gm-only' : '');
+      details.dataset.drawer = title;
       const summary = document.createElement('summary');
       summary.append(icon(motif), document.createTextNode(title));
       const content = document.createElement('div');
@@ -61,6 +62,15 @@
       drawer(scene, 'Scènes', 8, scenes, true);
       drawer(scene, 'Ambiances', 9, ambience, true);
     }
+    const actions = document.createElement('div');
+    actions.className = 'grp grp-actions';
+    const scenesDrawer = scene?.querySelector('[data-drawer="Scènes"]');
+    const ambienceDrawer = scene?.querySelector('[data-drawer="Ambiances"]');
+    const drawing = document.getElementById('ouvrir-dessin');
+    for (const control of [combat, scenesDrawer, drawing, ambienceDrawer]) {
+      if (control) actions.append(control);
+    }
+    dock.append(actions);
     const labels = {
       'ouvrir-cams':[10,'Caméras'], 'ouvrir-journal':[6,'Journal'],
       'ouvrir-chat':[11,'Chat'], 'ouvrir-init':[5,'Initiative'],
@@ -137,4 +147,5 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true});
   else init();
 })();
+
 
