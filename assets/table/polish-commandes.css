@@ -184,3 +184,17 @@
  width:36px;height:36px;margin:0;flex:0 0 36px;
 }
 
+
+/* Round : agrandi, rouge sang, aligné sur le texte Initiative. */
+.table-illustree #initiative .ini-tete{align-items:baseline}
+.table-illustree #initiative .ini-tete>.pt{display:block;white-space:nowrap}
+.table-illustree #initiative .ini-tete>.pt>.table-icone{vertical-align:middle;margin-right:8px}
+.table-illustree #initiative #init-round{
+ margin-left:auto;font-size:18px;font-weight:700;line-height:1.2;
+ letter-spacing:.025em;color:#c45a50;
+ text-shadow:0 1px 2px #210605;
+ font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.table-illustree #initiative .ini-tete>.spacer{display:none}
+.table-illustree #initiative #fermer-init{align-self:center;flex-shrink:0}
+
