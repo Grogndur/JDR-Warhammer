@@ -115,3 +115,14 @@
 
 
 .fiche-wymond .perso-header::after{border-width:28px;border-image:url('banniere-bronze.webp') 180 / 28px / 0 stretch}
+
+/* L'illustration passe sous les moulures ; le fond du sprite ne la masque plus. */
+.fiche-wymond .perso-header{background:none}
+.fiche-wymond .perso-header::before{
+ content:"";position:absolute;inset:8px;z-index:0;pointer-events:none;
+ background:linear-gradient(90deg,#090b09b8 0%,#090b094d 50%,#090b0910 100%),url('header-v2.png') center/cover;
+}
+.fiche-wymond .perso-header::after{
+ border-image-source:url('banniere-bronze-ajouree.svg');
+}
+
