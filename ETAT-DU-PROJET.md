@@ -5,6 +5,7 @@
 
 ## Référence de travail
 
+- Dernière livraison préparée : `Espace-MJ-seconde-passe-visuelle-20260914.zip`, depuis le dépôt au commit `0834eed`. Elle reprend l'accueil MJ avec les matières, la bannière impériale et les deux décors latéraux de l'accueil principal, puis remplace les cadres internes sobres par les ferrures patinées déjà validées dans l'accueil et les scénarios. Non publiée.
 - Dernière livraison préparée : `Espace-MJ-harmonise-20260914.zip`, depuis le dépôt au commit `441b8ed774fe08e4954859ed5d89a6eb53cb448b`. Elle harmonise visuellement les 32 pages de `mj/` et `commun/mecaniques.html` avec la direction artistique validée du site, sans modifier leurs fonctions ni leurs données.
 - Dernière livraison consolidée : `BDS-groupes-2-3-icones-consolidees-20260914.zip`, préparée depuis le dépôt au commit `6baf83595fa3c8339649fd32ce0f9f8351fd0efb`. Elle remplace les précédentes archives d’icônes et contient directement leur état le plus récent.
 - Dépôt public : `https://github.com/grogndur/JDR-Warhammer`
@@ -130,3 +131,12 @@ Si un ZIP plus récent que le dépôt est fourni, ajouter simplement :
 - Vérifications effectuées et éventuelles limites restantes.
 - Validation ou refus de publication par Guillaume.
 - Nom du ZIP livré et nouvelle source de référence.
+
+## Livraison du 14 septembre 2026 — seconde passe visuelle de l'espace MJ
+
+- Base effective : dépôt GitHub au commit `0834eed`.
+- L'accueil MJ reprend la composition visuelle de l'accueil principal : fond en cuir, bannière impériale, comète et marque Warhammer, ferrures patinées, décor de chaînes à gauche et drapé au crâne à droite sur grand écran.
+- Les cartes du portail et les cadres internes des 33 pages concernées utilisent les matières et ferrures déjà présentes dans l'accueil et les scénarios ; adaptation mobile incluse.
+- La version de la feuille commune est actualisée dans les 32 pages de `mj/` et dans `commun/mecaniques.html` afin d'éviter l'ancien cache.
+- Contrôles : les 33 documents HTML sont analysables, la feuille CSS est structurellement valide, les sept ressources graphiques appelées sont présentes et les liens de version sont uniformes. Aucun chemin Firebase, script, contenu de campagne ni mécanisme de sauvegarde modifié.
+- ZIP : `Espace-MJ-seconde-passe-visuelle-20260914.zip`. Aucun commit, push ou déploiement effectué ; publication non autorisée à ce stade.

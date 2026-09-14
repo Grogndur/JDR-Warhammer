@@ -34,3 +34,11 @@
 - Les structures HTML, scripts, clés d'accès, chemins Firebase, contenus et mécanismes de sauvegarde n'ont pas été modifiés. Chaque page ne reçoit qu'un lien vers la nouvelle feuille visuelle.
 - Vérifications : 66 ouvertures locales dans Chromium (33 pages × 1440/390 px), feuille commune chargée sur chaque page et styles calculés présents. Les principaux gabarits ont été comparés visuellement avant/après. Les erreurs observées sur trois outils proviennent uniquement du blocage simulé des modules Firebase externes durant le test local.
 - Livraison : `Espace-MJ-harmonise-20260914.zip`. Aucune publication ; validation de Guillaume attendue.
+
+### Seconde passe visuelle — 14 septembre 2026
+
+- Reprise depuis GitHub au commit `0834eed`, qui contient la première harmonisation.
+- Portail MJ rapproché directement de l'accueil validé : même cuir, bannière impériale, comète, ferrures et décors latéraux (chaînes à gauche, drapé au crâne à droite).
+- Cartes du portail et cadres intérieurs remplacés par les matières et cadres patinés déjà utilisés par l'accueil et les scénarios. Déclinaison mobile incluse.
+- Version de `harmonisation.css` actualisée sur les 33 pages concernées. Analyse HTML réussie, CSS structurellement valide et ressources appelées présentes.
+- Aucun changement de script, Firebase, données ou sauvegarde. Livraison `Espace-MJ-seconde-passe-visuelle-20260914.zip`, non publiée.

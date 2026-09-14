@@ -101,3 +101,80 @@ tr:hover td{background:#29251b!important}
 }
 
 @media print{body{background:#fff!important;color:#111!important}body::before,body::after{display:none!important}.bar,.topbar,#haut,nav{display:none!important}.sec,.crea,.portal,.card,.enc,.bloc,.leg,.boite,.modale,.avis{background:#fff!important;box-shadow:none!important}}
+
+/* Seconde passe : reprise fidèle des matières, ferrures et décors de l'accueil validé. */
+:root{
+ --mj-cuir:url('../accueil/cuir-patine.webp');
+ --mj-cadre:url('../accueil/cadre-imperial.svg');
+ --mj-cadre-document:url('../scenarios/cadre-patine.svg');
+}
+body{
+ background-color:#10120f!important;
+ background-image:linear-gradient(#0b0d0ba8,#0b0d0bc2),url('../accueil/cuir.png')!important;
+ background-size:auto,1600px auto!important;
+}
+
+/* Portail MJ : même largeur centrale et mêmes objets latéraux que l'accueil. */
+.decor-chaines{display:none;pointer-events:none}
+#espace{min-height:100vh}
+#espace>nav{display:flex;align-items:center;justify-content:space-between;gap:22px;min-height:80px;padding:15px 22px!important;background:linear-gradient(90deg,#17150f33,#090b0966),var(--mj-cuir) center/720px auto!important;border:1px solid transparent!important;box-shadow:0 6px 18px #0008!important;isolation:isolate}
+#espace>nav::after{content:'';position:absolute;inset:-1px;z-index:3;pointer-events:none;border:18px solid transparent;border-image:var(--mj-cadre) 180 / 18px / 0 stretch;filter:brightness(.84) saturate(.78)}
+#espace>nav a,#espace>nav .cur{position:relative;z-index:4}
+.mj-brand{display:flex;align-items:center;gap:12px;white-space:nowrap;font:600 21px/1 Cinzel,serif!important;letter-spacing:.065em!important;color:#d7bc84!important;text-transform:none!important}
+.mj-brand img{width:49px;height:27px;filter:drop-shadow(0 2px 2px #000)}
+.mj-navlinks{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap}
+#espace>nav .mj-navlinks>a,#espace>nav .cur{display:inline-flex;align-items:center;justify-content:center;min-height:43px;padding:7px 11px;border:1px solid #8f74484d;background:linear-gradient(#b79c5710,#0002);box-shadow:inset 0 0 0 2px #06070540;font-family:Cinzel,serif!important;font-size:14px!important;letter-spacing:.025em!important;color:#e4cda0!important}
+#espace>nav .sep{display:none}
+
+#espace>.wrap>header{isolation:isolate;min-height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:42px 7%!important;margin:0 0 34px!important;border:1px solid transparent!important;background:linear-gradient(90deg,#080b0be8 0%,#080b0b9e 28%,#080b0b32 51%,transparent 70%),linear-gradient(0deg,#11121078,transparent 35%),url('../accueil/empire-hero.webp') center 46%/cover no-repeat!important;box-shadow:0 8px 25px #0007!important}
+#espace>.wrap>header::after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;border:30px solid transparent;border-image:var(--mj-cadre) 180 / 30px / 0 stretch;filter:brightness(.84) saturate(.78)}
+#espace>.wrap>header>*{position:relative;z-index:4;width:min(650px,58%);margin-left:0!important;margin-right:auto!important}
+#espace>.wrap>header h1{font-size:clamp(48px,5.9vw,88px)!important;line-height:1.08!important;letter-spacing:-.045em!important;color:#f2e3c2!important;text-shadow:0 2px 0 #49351b,0 5px 20px #000!important}
+#espace>.wrap>header p{font-size:20px!important;line-height:1.35!important;color:#eee4d0!important;text-shadow:0 2px 8px #000!important}
+
+/* Cadres intérieurs : ferrures patinées déjà employées par l'accueil et les scénarios. */
+.card,.portal,.sec,.crea,.enc,.bloc,.leg,.boite,.modale,.avis,.zn,.pf{
+ border-style:solid!important;border-color:transparent!important;border-radius:0!important;
+ border-image:var(--mj-cadre-document) 180 / 14px / 0 stretch!important;
+ background-color:#11140f!important;
+ background-image:linear-gradient(#11140fdb,#11140fdb),var(--mj-cuir)!important;
+ background-size:auto,720px auto!important;
+ box-shadow:0 7px 22px #0007!important;
+}
+.card,.portal{border-width:14px!important;padding:17px 19px 18px!important;min-height:165px!important}
+.sec,.crea,.boite,.modale,.avis{border-width:13px!important}
+.enc,.bloc,.leg,.zn,.pf{border-width:10px!important}
+.sechead,.creahead,.tete,.ztete{margin:-2px -2px 0!important;background:linear-gradient(90deg,#2d281d,#171913),var(--mj-cuir)!important;box-shadow:inset 0 -1px #b4915638!important}
+.section-title{display:flex;align-items:center;justify-content:center;gap:18px;color:#ddc699!important;border:0!important;margin:32px 0 20px!important;text-align:center}
+.section-title::before,.section-title::after{content:'';height:1px;width:clamp(40px,10vw,135px);background:linear-gradient(90deg,transparent,#957747)}
+.section-title::after{transform:rotate(180deg)}
+
+@media(min-width:1100px){
+ body{--marge-decor:clamp(115px,12.5vw,280px);isolation:isolate}
+ .decor-chaines{display:block;position:fixed!important;inset:0!important;z-index:0!important;overflow:hidden;pointer-events:none}
+ .decor-chaines>div{position:absolute;top:0;bottom:0;width:46svh;background-repeat:no-repeat;background-size:auto 100%;pointer-events:none}
+ .decor-chaines-gauche{left:0;background-image:url('../accueil/chaines-atmosphere.webp');background-position:left center}
+ .decor-chaines-droite{right:0;background-image:url('../accueil/drape-crane-long.webp');background-position:right center}
+ .decor-chaines::before{content:'';position:absolute;inset:0;background:#080a08;z-index:-1}
+ #espace{position:relative;z-index:1;width:calc(100% - var(--marge-decor) * 2);max-width:1440px;margin-inline:auto}
+ #espace>.wrap{max-width:none!important}
+}
+@media(max-width:900px){
+ #espace>nav{flex-direction:column;justify-content:center}
+ .mj-navlinks{justify-content:center}
+ #espace>.wrap>header>*{width:78%;margin-inline:auto!important}
+}
+@media(max-width:700px){
+ #espace>nav{padding:17px 12px!important;gap:10px}
+ .mj-brand{font-size:19px!important}
+ .mj-navlinks{gap:7px}
+ #espace>nav .mj-navlinks>a,#espace>nav .cur{min-height:38px;padding:5px 8px;font-size:12px!important}
+ #espace>.wrap>header{min-height:365px;padding:175px 18px 25px!important;background-position:66% 43%!important;background-image:linear-gradient(0deg,#0c100ff2 0%,#0c100fd4 22%,#0c100f52 55%,#0c100f0a 100%),url('../accueil/empire-hero.webp')!important}
+ #espace>.wrap>header>*{width:100%;margin-inline:auto!important}
+ #espace>.wrap>header h1{font-size:clamp(43px,12vw,66px)!important}
+ #espace>.wrap>header p{font-size:18px!important}
+ #espace>.wrap>header::after{border-width:25px;border-image-width:25px}
+ .card,.portal{border-width:11px!important;border-image-width:12px!important;padding:13px 14px 15px!important}
+ .sec,.crea,.boite,.modale,.avis{border-width:10px!important;border-image-width:11px!important}
+}
+@media print{.decor-chaines{display:none!important}}
