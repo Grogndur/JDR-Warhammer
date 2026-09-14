@@ -97,7 +97,7 @@
 .fiche-wymond .fiche-raccourcis a{display:flex;align-items:center;justify-content:center;gap:7px;padding:10px 8px;border-color:#8c744777}
 .fiche-wymond .fiche-raccourcis .fiche-icone{width:29px;height:29px;flex:none}
 .fiche-wymond .fiche-icone{display:inline-block;vertical-align:middle;width:38px;height:38px;background-image:url('icons-v2.png');background-size:400% 400%;background-position:var(--ix) var(--iy);background-repeat:no-repeat;mix-blend-mode:screen;pointer-events:none;flex-shrink:0}
-.fiche-wymond .fiche-icone.fiche-icone-bds{background-image:url('icons-bds-g23-20260914.png')}
+.fiche-wymond .fiche-icone.fiche-icone-bds{background-image:url('icons-bds-g23-20260914.png?v=20260914-nettoyee')}
 .fiche-wymond .card:not(.fiche-ressources),.fiche-wymond .ressource-illustree{border:12px solid transparent;border-image:var(--fiche-panneau) 135 fill / 16px / 0 stretch;background:#10130f;box-shadow:0 8px 25px #0004;padding:9px 12px 14px;border-radius:0}
 .fiche-wymond .card>.card-title{padding-bottom:9px;margin-bottom:12px;font-size:14px;gap:10px;letter-spacing:.17em}
 .fiche-wymond .card-title>.fiche-icone{width:33px;height:33px}
