@@ -60,3 +60,9 @@
 - Règle de DA fixée : les pages utilisant les grands décors latéraux de l'accueil ou des scénarios n'emploient pas le cadre général ; leurs visuels atteignent directement les bords de l'écran.
 - Cadre extérieur retiré uniquement de l'accueil MJ et marge supprimée. Le Grimoire reste dans son état corrigé et validé.
 - Livraison : `Accueil-MJ-sans-cadre-exterieur-20260914.zip`, non publiée.
+
+#### Finition du fond et de la bannière de l'accueil MJ
+
+- Remplacement de l'aplat noir propre à l'accueil MJ par la surface exacte de l'accueil principal : fond `#10120f`, cuir `cuir.png` à 19 % et halo latéral fondu identique.
+- Cadre de la bannière inchangé graphiquement, mais rendu borné à son panneau ; ombre externe retirée pour supprimer les lignes parasites.
+- Aucun changement au Grimoire, aux scripts ou aux données. Livraison `Accueil-MJ-fond-et-cadre-nettoyes-20260914.zip`, non publiée.

@@ -158,3 +158,9 @@ Si un ZIP plus récent que le dépôt est fourni, ajouter simplement :
 - Décision validée : lorsqu'une page emploie les grands décors de chaînes, drapés ou visuels latéraux issus de l'accueil principal et des scénarios, aucun cadre général de pourtour ne doit être affiché. Les visuels vont jusqu'aux bords de l'écran.
 - Application à l'accueil MJ uniquement. La correction du Grimoire est conservée sans changement.
 - Livraison : `Accueil-MJ-sans-cadre-exterieur-20260914.zip`, non publiée.
+
+### Finition du fond et de la bannière de l'accueil MJ
+
+- L'aplat noir qui créait une coupure nette derrière les décors latéraux est supprimé. L'accueil MJ reprend exactement la surface de fond de l'accueil principal : cuir sombre continu, opacité identique et halo fondu autour des chaînes.
+- Le dessin du cadre de la bannière est conservé, mais son rendu est borné au rectangle de la bannière et son ombre externe supprimée afin d'éliminer les traits parasites visibles autour.
+- Grimoire inchangé. Livraison : `Accueil-MJ-fond-et-cadre-nettoyes-20260914.zip`, non publiée.

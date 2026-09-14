@@ -155,7 +155,7 @@ body{
  .decor-chaines>div{position:absolute;top:0;bottom:0;width:46svh;background-repeat:no-repeat;background-size:auto 100%;pointer-events:none}
  .decor-chaines-gauche{left:0;background-image:url('../accueil/chaines-atmosphere.webp');background-position:left center}
  .decor-chaines-droite{right:0;background-image:url('../accueil/drape-crane-long.webp');background-position:right center}
- .decor-chaines::before{content:'';position:absolute;inset:0;background:#080a08;z-index:-1}
+ .decor-chaines::before{content:'';position:absolute;left:-15svh;top:15%;width:85svh;height:100%;pointer-events:none;background:radial-gradient(ellipse at 12% 53%,#d9933730 0%,#bc70251a 27%,#9a552b08 53%,transparent 76%);mix-blend-mode:screen;z-index:-1}
  #espace{position:relative;z-index:1;width:calc(100% - var(--marge-decor) * 2);max-width:1440px;margin-inline:auto}
  #espace>.wrap{max-width:none!important}
 }
@@ -182,8 +182,11 @@ body{
 /* Les pages à grands décors latéraux restent sans cadre général : les visuels vont jusqu'aux bords. */
 .mj-home-page{padding:0!important}
 .mj-home-page::after{display:none!important}
+.mj-home-page{background:#10120f!important;background-image:none!important}
+.mj-home-page::before{display:block!important;z-index:0!important;opacity:.19!important;background:url('../accueil/cuir.png') center/1600px auto!important}
 .mj-home-page #espace{min-height:100vh;z-index:3!important}
 .mj-home-page .decor-chaines{inset:0!important;z-index:3!important}
+.mj-home-page #espace>.wrap>header{overflow:hidden!important;clip-path:inset(0);box-shadow:none!important}
 /* Le Grimoire conserve sa correction validée et sa marge réservée au cadre. */
 .grimoire-page{padding:28px!important}
 .grimoire-page #app{position:relative;z-index:3!important;height:100%!important}
