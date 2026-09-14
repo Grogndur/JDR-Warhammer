@@ -19,3 +19,9 @@
 - Huit ouvertures Chromium locales : groupes 2/3/1/L’Éclipse × 1440/390 px, aucune erreur JavaScript. Navigation depuis chaque portail concerné, seize motifs présents, dix caractéristiques correctement affectées, un seul motif par caractéristique après recalcul. Notes et caractéristique modifiables ; blessures et monnaie conservées dans les sauvegardes simulées. Captures ordinateur et mobile examinées.
 - Aucun changement des données, accès, règles, Table ou sauvegardes. Firebase entièrement simulé pour ces essais ; aucune écriture réelle.
 - Livraison : `BDS-groupes-2-3-icones-20260914.zip`, six fichiers uniquement. Non publiée, validation de Guillaume attendue.
+
+### Ajustement du centrage — 14 septembre 2026
+
+- À partir du ZIP précédent : recentrage des dix illustrations dans leur colonne, suppression des décalages négatifs effectifs et dimensions proportionnelles aux cases. Dessins et valeurs inchangés ; version CSS actualisée dans la fiche.
+- Contrôle local des groupes 2 et 3 à 1440/1000/390/320 px : marges mesurées, captures examinées, huit essais réussis sans erreur JavaScript. Firebase simulé uniquement.
+- Correctif `BDS-groupes-2-3-centrage-icones-20260914.zip` : quatre fichiers, dont les deux documents de suivi. À appliquer après le ZIP des icônes. Aucune publication.
