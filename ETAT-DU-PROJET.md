@@ -140,3 +140,9 @@ Si un ZIP plus récent que le dépôt est fourni, ajouter simplement :
 - La version de la feuille commune est actualisée dans les 32 pages de `mj/` et dans `commun/mecaniques.html` afin d'éviter l'ancien cache.
 - Contrôles : les 33 documents HTML sont analysables, la feuille CSS est structurellement valide, les sept ressources graphiques appelées sont présentes et les liens de version sont uniformes. Aucun chemin Firebase, script, contenu de campagne ni mécanisme de sauvegarde modifié.
 - ZIP : `Espace-MJ-seconde-passe-visuelle-20260914.zip`. Aucun commit, push ou déploiement effectué ; publication non autorisée à ce stade.
+
+### Correctif de superposition du cadre
+
+- Le grand cadre fixe du pourtour est conservé à l'identique, mais replacé derrière les barres, commandes et panneaux ayant leur propre niveau d'affichage. Il ne traverse donc plus ponctuellement les titres, filtres ou boutons placés au bord de l'écran.
+- Aucun changement des dimensions, de la texture ou du dessin du cadre. Version de la feuille commune actualisée sur les 33 pages concernées.
+- Livraison corrective : `Correctif-cadre-espace-MJ-20260914.zip`, non publiée.

@@ -19,7 +19,7 @@ body{
  background-size:auto,cover!important;background-position:0 0,center!important;background-attachment:fixed!important;
 }
 body::before{content:''!important;position:fixed!important;inset:0!important;pointer-events:none!important;z-index:0!important;background:radial-gradient(ellipse at 50% 0,#9f682526,transparent 60%)!important}
-body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:80;border:0 solid transparent;border-image:url('../fiches/panel-v2.png') 135 / 28px / 0 repeat;opacity:.75}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:2;border:0 solid transparent;border-image:url('../fiches/panel-v2.png') 135 / 28px / 0 repeat;opacity:.75}
 body>*{position:relative;z-index:1}
 
 h1,h2,h3,.name,.nom,.doc-titre,.hub-title,.topbar-title,.card-title{font-family:Cinzel,serif!important;text-wrap:balance}

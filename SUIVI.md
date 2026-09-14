@@ -42,3 +42,9 @@
 - Cartes du portail et cadres intérieurs remplacés par les matières et cadres patinés déjà utilisés par l'accueil et les scénarios. Déclinaison mobile incluse.
 - Version de `harmonisation.css` actualisée sur les 33 pages concernées. Analyse HTML réussie, CSS structurellement valide et ressources appelées présentes.
 - Aucun changement de script, Firebase, données ou sauvegarde. Livraison `Espace-MJ-seconde-passe-visuelle-20260914.zip`, non publiée.
+
+#### Correctif du cadre de pourtour
+
+- Le cadre fixe est inchangé graphiquement. Son niveau de superposition est abaissé afin que les barres et commandes situées au bord de l'écran passent proprement devant lui.
+- Cache CSS actualisé sur les 33 pages de l'espace MJ. Aucun script, contenu ou donnée modifié.
+- Livraison : `Correctif-cadre-espace-MJ-20260914.zip`, non publiée.
