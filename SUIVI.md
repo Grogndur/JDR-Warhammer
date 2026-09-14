@@ -66,3 +66,10 @@
 - Remplacement de l'aplat noir propre à l'accueil MJ par la surface exacte de l'accueil principal : fond `#10120f`, cuir `cuir.png` à 19 % et halo latéral fondu identique.
 - Cadre de la bannière inchangé graphiquement, mais rendu borné à son panneau ; ombre externe retirée pour supprimer les lignes parasites.
 - Aucun changement au Grimoire, aux scripts ou aux données. Livraison `Accueil-MJ-fond-et-cadre-nettoyes-20260914.zip`, non publiée.
+
+## 14 septembre 2026 — Bonus d'Attribut des fiches
+
+- Agrandissement des valeurs `B:3`, `B:4`, etc. à environ 80 % du score principal, avec tailles adaptées sur ordinateur, tablette et mobile.
+- Règle limitée à `fiche-wymond` : BDS groupes 2 et 3 et L'Éclipse uniquement. Groupe 1 BDS inchangé.
+- Aucun changement de calcul, de données ou de sauvegarde. Version CSS actualisée dans la fiche commune.
+- Livraison `Fiches-bonus-attribut-agrandis-20260914.zip`, non publiée.

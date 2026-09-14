@@ -5,6 +5,7 @@
 
 ## Référence de travail
 
+- Dernière livraison préparée : `Fiches-bonus-attribut-agrandis-20260914.zip`. Elle agrandit les libellés `B:3`, `B:4`, etc. sur les fiches BDS groupes 2 et 3 et L'Éclipse, sans toucher au groupe 1 ni aux calculs. Non publiée.
 - Dernière livraison préparée : `Espace-MJ-seconde-passe-visuelle-20260914.zip`, depuis le dépôt au commit `0834eed`. Elle reprend l'accueil MJ avec les matières, la bannière impériale et les deux décors latéraux de l'accueil principal, puis remplace les cadres internes sobres par les ferrures patinées déjà validées dans l'accueil et les scénarios. Non publiée.
 - Dernière livraison préparée : `Espace-MJ-harmonise-20260914.zip`, depuis le dépôt au commit `441b8ed774fe08e4954859ed5d89a6eb53cb448b`. Elle harmonise visuellement les 32 pages de `mj/` et `commun/mecaniques.html` avec la direction artistique validée du site, sans modifier leurs fonctions ni leurs données.
 - Dernière livraison consolidée : `BDS-groupes-2-3-icones-consolidees-20260914.zip`, préparée depuis le dépôt au commit `6baf83595fa3c8339649fd32ce0f9f8351fd0efb`. Elle remplace les précédentes archives d’icônes et contient directement leur état le plus récent.
@@ -164,3 +165,10 @@ Si un ZIP plus récent que le dépôt est fourni, ajouter simplement :
 - L'aplat noir qui créait une coupure nette derrière les décors latéraux est supprimé. L'accueil MJ reprend exactement la surface de fond de l'accueil principal : cuir sombre continu, opacité identique et halo fondu autour des chaînes.
 - Le dessin du cadre de la bannière est conservé, mais son rendu est borné au rectangle de la bannière et son ombre externe supprimée afin d'éliminer les traits parasites visibles autour.
 - Grimoire inchangé. Livraison : `Accueil-MJ-fond-et-cadre-nettoyes-20260914.zip`, non publiée.
+
+## Livraison du 14 septembre 2026 — Bonus d'Attribut agrandis
+
+- Les valeurs `B:3`, `B:4`, etc. passent à environ 80 % de la taille du score d'Attribut principal, avec une adaptation propre aux largeurs tablette et mobile.
+- Portée limitée par la classe `fiche-wymond` : BDS groupes 2 et 3 et L'Éclipse. Le groupe 1 BDS conserve son affichage historique.
+- Seuls le style et sa version de cache changent. Calcul automatique, HTML des Attributs, données Firebase et sauvegardes inchangés.
+- Livraison : `Fiches-bonus-attribut-agrandis-20260914.zip`, non publiée.
