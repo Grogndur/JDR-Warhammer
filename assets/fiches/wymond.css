@@ -176,11 +176,11 @@
 
 /* Bonus d'Attribut : proche du score principal, mais hiérarchie conservée. */
 .fiche-wymond .stat-illustree>.stat-bonus{
- font-size:2rem;line-height:1.05;margin-top:3px;font-weight:700;color:#d8c7a5;
+ font-size:1.55rem;line-height:1.05;margin-top:3px;font-weight:700;color:#d8c7a5;
 }
-@media(max-width:1000px){.fiche-wymond .stat-illustree>.stat-bonus{font-size:1.6rem}}
-@media(max-width:650px){.fiche-wymond .stat-illustree>.stat-bonus{font-size:1.75rem}}
-@media(max-width:360px){.fiche-wymond .stat-illustree>.stat-bonus{font-size:1.6rem}}
+@media(max-width:1000px){.fiche-wymond .stat-illustree>.stat-bonus{font-size:1.2rem}}
+@media(max-width:650px){.fiche-wymond .stat-illustree>.stat-bonus{font-size:1.32rem}}
+@media(max-width:360px){.fiche-wymond .stat-illustree>.stat-bonus{font-size:1.2rem}}
 .fiche-wymond .stat-edition,.fiche-wymond .fiche-edition-nom{font-size:14px}
 .fiche-wymond .stat-edition .stat-nba-lbl{font-size:14px}
 .fiche-wymond .stat-illustree>.fiche-icone[data-motif="9"]{left:5px;width:90px;height:90px;top:27px}
