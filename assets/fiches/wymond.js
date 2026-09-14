@@ -22,6 +22,28 @@
     const header = document.querySelector('.perso-header');
     if (!header) return;
     installed = true;
+    const retourHaut = document.createElement('button');
+    retourHaut.type = 'button';
+    retourHaut.className = 'fiche-retour-haut';
+    retourHaut.setAttribute('aria-label', 'Remonter en haut de la fiche');
+    retourHaut.title = 'Remonter en haut';
+    retourHaut.textContent = '↑';
+    retourHaut.addEventListener('click', () => {
+      const reduire = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({top:0, behavior:reduire ? 'auto' : 'smooth'});
+    });
+    let retourEnAttente = false;
+    const actualiserRetour = () => {
+      if (retourEnAttente) return;
+      retourEnAttente = true;
+      requestAnimationFrame(() => {
+        retourHaut.classList.toggle('visible', window.scrollY > 420);
+        retourEnAttente = false;
+      });
+    };
+    document.body.append(retourHaut);
+    window.addEventListener('scroll', actualiserRetour, {passive:true});
+    actualiserRetour();
     const info = header.querySelector('.perso-info');
     const title = document.createElement('h1');
     title.className = 'fiche-nom-affiche';

@@ -9,6 +9,9 @@
 .fiche-wymond body>nav{position:relative;background:#101210;border-color:#655037;padding:16px max(20px,calc((100vw - 1240px)/2));gap:12px}
 .fiche-wymond nav a{font-size:14px;color:#c5b89f}
 .fiche-wymond .layout{max-width:1280px;padding:24px;gap:22px;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.fiche-wymond .fiche-retour-haut{position:fixed;z-index:90;left:max(8px,calc(50vw - 686px));top:50%;width:36px;height:48px;padding:0;border:1px solid #927344;border-radius:2px;background:linear-gradient(145deg,#29261d,#10130f);color:#d2b477;font:700 22px/1 Cinzel,serif;box-shadow:inset 0 0 0 2px #0d100d,0 4px 14px #0008;cursor:pointer;opacity:0;pointer-events:none;transform:translate(-7px,-50%);transition:opacity .18s,transform .18s,background .18s}
+.fiche-wymond .fiche-retour-haut.visible{opacity:.62;pointer-events:auto;transform:translate(0,-50%)}
+.fiche-wymond .fiche-retour-haut:hover,.fiche-wymond .fiche-retour-haut:focus-visible{opacity:1;background:linear-gradient(145deg,#3a3122,#141812);outline:1px solid #d0ae70;outline-offset:2px}
 .fiche-wymond .perso-header{position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:14px 36px;align-items:center;padding:34px 36px 22px;min-height:370px;border:1px solid #9f7f4d;background:linear-gradient(90deg,#101311f5 15%,#161814c9 60%,#46301977),url('../accueil/empire-hero.webp') center 42%/cover;box-shadow:inset 0 0 0 5px #151814,inset 0 0 0 6px #cfb27a40,0 18px 60px #0005}
 .fiche-wymond .perso-info{grid-column:1;grid-row:1;min-width:0}
 .fiche-wymond .fiche-surtitre{font-family:Cinzel,serif;letter-spacing:.24em;font-size:12px;text-transform:uppercase;color:#dcbd88;margin-bottom:18px}
@@ -72,7 +75,8 @@
 .fiche-wymond .money-btn{width:28px;height:28px}
 @media(max-width:900px){.fiche-wymond .layout{padding:14px;gap:16px}.fiche-wymond .perso-header{grid-template-columns:minmax(0,1fr) 230px;padding:24px;gap:20px}.fiche-wymond .portrait-frame{height:270px}.fiche-wymond .skill-list{column-count:1}.fiche-wymond .fiche-raccourcis a{font-size:12px;padding:12px 8px}}
 @media(max-width:650px){.fiche-wymond .layout{grid-template-columns:minmax(0,1fr);padding:10px}.fiche-wymond .perso-header{grid-template-columns:minmax(0,1fr);padding:23px;gap:20px}.fiche-wymond .perso-info{grid-column:1;grid-row:2}.fiche-wymond .perso-portrait{grid-column:1;grid-row:1;width:min(100%,260px);justify-self:center}.fiche-wymond .portrait-frame{height:260px}.fiche-wymond .perso-meta{grid-column:1;grid-row:3}.fiche-wymond .fiche-nom-affiche{font-size:2rem}.fiche-wymond .stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fiche-wymond .card{padding:18px}.fiche-wymond .fiche-raccourcis a{flex:1 1 33.333%;padding:10px 4px}.fiche-wymond .ident-line input{max-width:100%}.fiche-wymond .career-input{max-width:100%}.fiche-wymond .fiche-surtitre{font-size:11px}}
-@media print{.fiche-wymond .fiche-raccourcis{display:none}.fiche-wymond .perso-header{min-height:0}.fiche-wymond .card{break-inside:avoid;box-shadow:none}}
+@media(max-width:650px){.fiche-wymond .fiche-retour-haut{left:7px;top:auto;bottom:58px;width:32px;height:42px;font-size:19px;transform:translateY(7px)}.fiche-wymond .fiche-retour-haut.visible{transform:none}}
+@media print{.fiche-wymond .fiche-raccourcis,.fiche-wymond .fiche-retour-haut{display:none}.fiche-wymond .perso-header{min-height:0}.fiche-wymond .card{break-inside:avoid;box-shadow:none}}
 
 /* Deuxième passe : matières peintes, emblèmes et portrait dans le décor. */
 .fiche-wymond{--fiche-panneau:url('panel-v2.png')}

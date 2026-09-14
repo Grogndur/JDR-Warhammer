@@ -5,6 +5,7 @@
 
 ## Référence de travail
 
+- Dernière livraison : `BDS-groupes-2-3-retour-haut-20260914.zip`, préparée depuis le dépôt au commit `44e4e3048464098096c1226ad5c8295291dcd833`. Elle contient `assets/fiches/wymond.js`, `assets/fiches/wymond.css`, `commun/fiche.html` et le présent document.
 - Dernière livraison consolidée : `BDS-groupes-2-3-icones-consolidees-20260914.zip`, préparée depuis le dépôt au commit `6baf83595fa3c8339649fd32ce0f9f8351fd0efb`. Elle remplace les précédentes archives d’icônes et contient directement leur état le plus récent.
 - Dépôt public : `https://github.com/grogndur/JDR-Warhammer`
 - Site publié : `https://grogndur.github.io/JDR-Warhammer/index.html`
@@ -117,6 +118,7 @@ Si un ZIP plus récent que le dépôt est fourni, ajouter simplement :
 
 ## À mettre à jour après la prochaine étape
 
+- Bouton discret de retour en haut ajouté à gauche du cadre des fiches BDS groupes 2 et 3. Il apparaît après 420 px de défilement, remonte doucement en tête de fiche et se place en bas à gauche sur mobile. Il respecte la préférence de mouvements réduits et n’apparaît pas à l’impression. Modification préparée, non publiée.
 - Libellé « Marche » remplacé par « Mouvement ». La planche des icônes a été nettoyée : les fragments de la rangée inférieure qui débordaient sous le parchemin et les deux lauriers ont été supprimés, sans retoucher les trois motifs. Version d’image actualisée pour éviter l’ancien cache. Livraison consolidée préparée, non publiée.
 - Centrage des dix icônes de caractéristiques corrigé : marges latérales régulières, dimensions adaptées à la largeur des cases, ancrage vertical stable lorsque « Ajuster » est ouvert. Illustrations, valeurs et autres rubriques conservées. Vérification locale des groupes 2/3 à 1440, 1000, 390 et 320 px, sans erreur JavaScript ; captures examinées. Correctif préparé, non publié.
 - Résultat de la refonte des icônes.
