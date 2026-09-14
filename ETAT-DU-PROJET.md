@@ -146,3 +146,9 @@ Si un ZIP plus récent que le dépôt est fourni, ajouter simplement :
 - Le grand cadre fixe du pourtour est conservé à l'identique, mais replacé derrière les barres, commandes et panneaux ayant leur propre niveau d'affichage. Il ne traverse donc plus ponctuellement les titres, filtres ou boutons placés au bord de l'écran.
 - Aucun changement des dimensions, de la texture ou du dessin du cadre. Version de la feuille commune actualisée sur les 33 pages concernées.
 - Livraison corrective : `Correctif-cadre-espace-MJ-20260914.zip`, non publiée.
+
+### Correctif ciblé accueil MJ et Grimoire
+
+- Le cadre reste graphiquement inchangé. Une marge discrète lui est réservée : sur l'accueil MJ, elle le sépare du bloc central et des deux décors latéraux ; dans le Grimoire, elle le sépare de l'application complète.
+- La correction est limitée à `mj/index-mj.html`, `mj/grimoire.html` et `assets/mj/harmonisation.css`. Aucun autre outil ni aucune donnée ne sont modifiés.
+- Livraison : `Correctif-cadre-accueil-MJ-et-Grimoire-20260914.zip`, non publiée.

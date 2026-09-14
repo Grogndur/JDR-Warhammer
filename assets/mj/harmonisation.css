@@ -178,3 +178,13 @@ body{
  .sec,.crea,.boite,.modale,.avis{border-width:10px!important;border-image-width:11px!important}
 }
 @media print{.decor-chaines{display:none!important}}
+
+/* Le cadre reste intact dans une marge qui lui est réservée : il ne traverse plus les décors ni les outils. */
+.mj-home-page,.grimoire-page{padding:28px!important}
+.mj-home-page #espace{min-height:calc(100vh - 56px);z-index:3!important}
+.mj-home-page .decor-chaines{inset:28px!important;z-index:3!important}
+.grimoire-page #app{position:relative;z-index:3!important;height:100%!important}
+@media(max-width:700px){
+ .mj-home-page,.grimoire-page{padding:12px!important}
+ .mj-home-page #espace{min-height:calc(100vh - 24px)}
+}

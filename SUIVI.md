@@ -48,3 +48,9 @@
 - Le cadre fixe est inchangé graphiquement. Son niveau de superposition est abaissé afin que les barres et commandes situées au bord de l'écran passent proprement devant lui.
 - Cache CSS actualisé sur les 33 pages de l'espace MJ. Aucun script, contenu ou donnée modifié.
 - Livraison : `Correctif-cadre-espace-MJ-20260914.zip`, non publiée.
+
+#### Correctif ciblé accueil MJ et Grimoire
+
+- Accueil MJ : une marge réservée au cadre le sépare du décor de chaînes, du drapé latéral et du contenu central, sans retouche du cadre.
+- Grimoire : la même marge sépare le cadre de l'application, sans changement de fonctions.
+- Cache actualisé uniquement sur les deux pages concernées. Livraison `Correctif-cadre-accueil-MJ-et-Grimoire-20260914.zip`, non publiée.
