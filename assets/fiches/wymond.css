@@ -190,6 +190,19 @@
 /* Garder une matière naturelle même lorsque la liste devient très longue. */
 .fiche-wymond .fiche-competences{border-image-slice:135;background:linear-gradient(#0d110db8,#0d110db8),url('panel-v2.png') center/cover}
 
+/* Lisibilité harmonisée avec les Compétences. */
+.fiche-wymond .talent-list li{font-size:18px;line-height:1.4;padding:10px 0}
+.fiche-wymond .talent-desc{font-size:16px;line-height:1.45;margin-top:3px}
+.fiche-wymond .weapon-name,.fiche-wymond .armor-piece-name,.fiche-wymond .inv-item,.fiche-wymond .armor-table{font-size:17px;line-height:1.4}
+.fiche-wymond .weapon-item,.fiche-wymond .armor-piece{padding:9px 0}
+.fiche-wymond .armor-pa-input{font-size:17px}
+.fiche-wymond .inv-name{line-height:1.4}
+.fiche-wymond .inv-desc,.fiche-wymond .inv-detail,.fiche-wymond .wstat,.fiche-wymond .armor-piece-stats{font-size:15px;line-height:1.5}
+.fiche-wymond .ressource-mouvement .move-input{font-size:2rem;width:58px}
+.fiche-wymond .ressource-mouvement .res-val>span{font-size:15px!important}
+.fiche-wymond .ressource-mouvement .move-sub{font-size:17px;line-height:1.4;gap:18px}
+.fiche-wymond .ressource-mouvement .move-sub strong{font-size:19px}
+
 /* Matière d'origine : fond proportionnel et bordures séparées, sans fill. */
 .fiche-wymond body{background:#10120e}
 .fiche-wymond body::before{
