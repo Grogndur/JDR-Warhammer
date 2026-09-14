@@ -69,7 +69,7 @@
 
 ## 14 septembre 2026 — Bonus d'Attribut des fiches
 
-- Agrandissement des valeurs `B:3`, `B:4`, etc. à environ 80 % du score principal, avec tailles adaptées sur ordinateur, tablette et mobile.
+- Ajustement des valeurs `B:3`, `B:4`, etc. à environ 60 % du score principal, avec tailles adaptées sur ordinateur, tablette et mobile.
 - Règle limitée à `fiche-wymond` : BDS groupes 2 et 3 et L'Éclipse uniquement. Groupe 1 BDS inchangé.
 - Aucun changement de calcul, de données ou de sauvegarde. Version CSS actualisée dans la fiche commune.
-- Livraison `Fiches-bonus-attribut-agrandis-20260914.zip`, non publiée.
+- Livraison corrective `Fiches-bonus-attribut-60-pourcent-20260914.zip`, non publiée.
