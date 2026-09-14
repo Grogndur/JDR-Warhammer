@@ -290,7 +290,7 @@ window.ACCES = window.ACCES || (function () {
                 flex:0 0 5.2rem; text-align:right; white-space:normal;
                 word-break:break-word; }
   .inv-qte { display:inline-flex; align-items:center; gap:0.15rem;
-             margin-right:0.35rem; vertical-align:1px; }
+             margin-left:0.35rem; vertical-align:1px; }
   .inv-qb { cursor:pointer; user-select:none; font-size:0.7rem; line-height:1;
             padding:0 0.22rem; border:1px solid var(--SUB); border-radius:3px;
             opacity:0.7; }
@@ -360,6 +360,14 @@ window.ACCES = window.ACCES || (function () {
   /* ── NOTES ── */
   .notes-area { width:100%; background:rgba(10,10,15,0.5); border:1px solid rgba(255,255,255,0.07); border-radius:2px; color:var(--parchment); font-family:'Crimson Text',serif; font-size:0.88rem; padding:0.65rem; resize:vertical; min-height:70px; line-height:1.5; }
   .notes-area:focus { outline:none; border-color:var(--acc-border-s); }
+  .session-tabs { display:flex; gap:0.35rem; overflow-x:auto; padding:0 0 0.45rem; scrollbar-width:thin; }
+  .session-tab { flex:0 0 auto; cursor:pointer; border:1px solid rgba(184,146,42,0.25); border-radius:2px 2px 0 0; background:rgba(184,146,42,0.06); color:var(--SUB); font-family:'Cinzel',serif; font-size:0.72rem; padding:0.45rem 0.75rem; }
+  .session-tab:hover { color:var(--parchment); border-color:rgba(184,146,42,0.48); }
+  .session-tab.active { color:var(--acc2); background:rgba(184,146,42,0.18); border-color:var(--acc-border-s); }
+  .session-actions { display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap; margin:0.45rem 0 0.2rem; }
+  .session-action { cursor:pointer; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.1); border-radius:2px; color:var(--SUB); font-family:'Cinzel',serif; font-size:0.66rem; letter-spacing:0.04em; padding:0.35rem 0.65rem; }
+  .session-action:hover { color:var(--parchment); border-color:rgba(184,146,42,0.4); }
+  .session-action.danger:hover { color:#d88478; border-color:rgba(160,60,55,0.5); }
   .btn-save { background:rgba(184,112,42,0.12); border:1px solid var(--acc-border-s); color:var(--acc2); font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; padding:0.35rem 0.75rem; border-radius:2px; cursor:pointer; margin-top:0.5rem; transition:background 0.15s; }
   .btn-save:hover { background:rgba(184,112,42,0.22); }
   .save-confirm { font-size:0.78rem; color:var(--GRN); margin-left:0.75rem; opacity:0; transition:opacity 0.5s; }
@@ -936,7 +944,7 @@ window.ACCES = window.ACCES || (function () {
       <div class="cet-box"><span class="cet-label">Corruption</span><textarea class="cet-input" id="cet-corruption" placeholder="—" onchange="saveAll()"></textarea></div>
       <div class="cet-box"><span class="cet-label">Mutations</span><textarea class="cet-input" id="cet-mutations" placeholder="—" onchange="saveAll()"></textarea></div>
       <div class="cet-box"><span class="cet-label">Maladies &amp; Blessures durables</span><textarea class="cet-input" id="cet-maladies" placeholder="—" onchange="saveAll()"></textarea></div>
-      <div class="cet-box"><span class="cet-label">États actifs</span><textarea class="cet-input" id="cet-etats" onchange="saveAll()"></textarea></div>
+      <div class="cet-box"><span class="cet-label">États actifs</span><textarea class="cet-input" id="cet-etats" placeholder="—" onchange="saveAll()"></textarea></div>
     </div>
   </div>
 
@@ -1172,8 +1180,14 @@ window.ACCES = window.ACCES || (function () {
   <!-- NOTES SESSION -->
   <div class="card full">
     <div class="card-title">Notes de session</div>
+    <div class="session-tabs" id="session-tabs" role="tablist" aria-label="Parties"></div>
     <textarea class="notes-area" id="session-notes" rows="5" placeholder="Plans, contacts, observations..." onchange="saveAll()"></textarea>
-    <span class="save-confirm" id="save-confirm">✓ Sauvegardé</span>
+    <div class="session-actions">
+      <button class="session-action" type="button" onclick="ajouterNoteSession()">+ Nouvelle partie</button>
+      <button class="session-action" type="button" onclick="renommerNoteSession()">Renommer</button>
+      <button class="session-action danger" type="button" onclick="supprimerNoteSession()">Supprimer</button>
+      <span class="save-confirm" id="save-confirm">✓ Sauvegardé</span>
+    </div>
   </div>
 
 </div>
@@ -1937,7 +1951,7 @@ let state = {
   career: { carriere:'', num:'', echelon:'' },
   statut: { tier:'Bronze', rank:0 },
   money: { or:0, argent:0, cuivre:0 },
-  notes: '', cet: { corruption:'', mutations:'', maladies:'', etats:'' },
+  notes: '', notesSessions: [], notesSessionActive: '', cet: { corruption:'', mutations:'', maladies:'', etats:'' },
   libres: { 'traits-raciaux':'', 'amb-courte':'', 'amb-longue':'', 'amb-motivation':'', 'traits-plus':'', 'traits-minus':'', 'histo':'' },
   xp: { actuelle:0, depensee:0, totale:0 },
   stats: {},
@@ -1990,7 +2004,7 @@ function load() {
   const raw = localStorage.getItem('template_v1');
   if (raw) try {
     const saved = JSON.parse(raw);
-    ['portrait','portraitPosition','wounds','woundsMax','marche','destin','chance','resil','determ','chancePlus','determPlus','notes'].forEach(k => { if (saved[k]!==undefined) state[k]=saved[k]; });
+    ['portrait','portraitPosition','wounds','woundsMax','marche','destin','chance','resil','determ','chancePlus','determPlus','notes','notesSessions','notesSessionActive'].forEach(k => { if (saved[k]!==undefined) state[k]=saved[k]; });
     if (saved.profOpen)  Object.assign(state.profOpen, saved.profOpen);
     if (saved.money)     Object.assign(state.money, saved.money);
     if (saved.cet)       Object.assign(state.cet, saved.cet);
@@ -2015,7 +2029,7 @@ function save() { localStorage.setItem('template_v1', JSON.stringify(state)); }
 
 function saveAll() {
 
-  state.notes = document.getElementById('session-notes').value;
+  enregistrerNoteSessionActive();
   var _mg = document.getElementById('mg-de'); if (_mg) state.mgDe = _mg.value;
   if (!state.cet) state.cet = {};
   ['corruption','mutations','maladies','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) state.cet[k]=el.value; });
@@ -2047,12 +2061,101 @@ function renderAll() {
   profAppliqueOuverture(); renderProfil();
   updateWC();
   ['or','argent','cuivre'].forEach(k => document.getElementById('m-'+k).textContent = state.money[k]||0);
-  document.getElementById('session-notes').value = state.notes||'';
+  renderNotesSessions();
   var _mgl=document.getElementById('mg-de'); if(_mgl) _mgl.value = state.mgDe||'';
   ['corruption','mutations','maladies','etats'].forEach(k => { const el=document.getElementById('cet-'+k); if(el) el.value=(state.cet&&state.cet[k])||''; });
   document.getElementById('xp-actuelle').value = state.xp.actuelle;
   document.getElementById('xp-depensee').value = state.xp.depensee;
   document.getElementById('xp-totale').value   = state.xp.totale;
+}
+
+// ══════ NOTES DE SESSION ══════
+function normaliserNotesSessions() {
+  if (!Array.isArray(state.notesSessions) || !state.notesSessions.length) {
+    state.notesSessions = [{ id:'session-1', titre:'Partie 1', contenu:state.notes||'' }];
+  }
+  state.notesSessions = state.notesSessions.map(function(n, i) {
+    return {
+      id: String((n && n.id) || ('session-' + (i + 1))),
+      titre: String((n && n.titre) || ('Partie ' + (i + 1))),
+      contenu: String((n && n.contenu) || '')
+    };
+  });
+  if (!state.notesSessions.some(function(n){ return n.id === state.notesSessionActive; })) {
+    state.notesSessionActive = state.notesSessions[0].id;
+  }
+}
+function noteSessionActive() {
+  normaliserNotesSessions();
+  return state.notesSessions.find(function(n){ return n.id === state.notesSessionActive; }) || state.notesSessions[0];
+}
+function enregistrerNoteSessionActive() {
+  var area = document.getElementById('session-notes');
+  var note = noteSessionActive();
+  if (area) note.contenu = area.value;
+  state.notes = note.contenu; /* compatibilité avec les anciennes fiches */
+}
+function renderNotesSessions() {
+  normaliserNotesSessions();
+  var tabs = document.getElementById('session-tabs');
+  var area = document.getElementById('session-notes');
+  if (!tabs || !area) return;
+  tabs.innerHTML = '';
+  state.notesSessions.forEach(function(note) {
+    var bouton = document.createElement('button');
+    bouton.type = 'button';
+    bouton.className = 'session-tab' + (note.id === state.notesSessionActive ? ' active' : '');
+    bouton.setAttribute('role','tab');
+    bouton.setAttribute('aria-selected', note.id === state.notesSessionActive ? 'true' : 'false');
+    bouton.textContent = note.titre;
+    bouton.addEventListener('click', function(){ changerNoteSession(note.id); });
+    tabs.appendChild(bouton);
+  });
+  var active = noteSessionActive();
+  area.value = active.contenu;
+  state.notes = active.contenu;
+  var actif = tabs.querySelector('.active');
+  if (actif) tabs.scrollLeft = Math.max(0, actif.offsetLeft - tabs.clientWidth / 2);
+}
+function changerNoteSession(id) {
+  enregistrerNoteSessionActive();
+  state.notesSessionActive = id;
+  renderNotesSessions();
+  save();
+}
+function ajouterNoteSession() {
+  enregistrerNoteSessionActive();
+  var numero = state.notesSessions.length + 1;
+  var titre = prompt('Nom de cette partie :', 'Partie ' + numero);
+  if (titre === null) return;
+  titre = titre.trim() || ('Partie ' + numero);
+  var id = 'session-' + Date.now().toString(36);
+  state.notesSessions.push({id:id,titre:titre,contenu:''});
+  state.notesSessionActive = id;
+  renderNotesSessions();
+  save();
+  var area = document.getElementById('session-notes');
+  if (area) area.focus();
+}
+function renommerNoteSession() {
+  enregistrerNoteSessionActive();
+  var note = noteSessionActive();
+  var titre = prompt('Nouveau nom de la partie :', note.titre);
+  if (titre === null || !titre.trim()) return;
+  note.titre = titre.trim();
+  renderNotesSessions();
+  save();
+}
+function supprimerNoteSession() {
+  normaliserNotesSessions();
+  if (state.notesSessions.length === 1) { alert('Il faut conserver au moins une partie.'); return; }
+  var note = noteSessionActive();
+  if (!confirm('Supprimer « ' + note.titre + ' » et toutes ses notes ?')) return;
+  var index = state.notesSessions.findIndex(function(n){ return n.id === note.id; });
+  state.notesSessions.splice(index,1);
+  state.notesSessionActive = state.notesSessions[Math.max(0,index-1)].id;
+  renderNotesSessions();
+  save();
 }
 
 // ══════ STATS ══════
@@ -2899,7 +3002,7 @@ function renderInventory() {
     const div=document.createElement('div'); div.className='inv-item';
     div.innerHTML=`
       <span class="inv-corps">
-        <span class="inv-name">${compteurQte(item,i)}${item.name}${pastilleQualite(item)}</span>
+        <span class="inv-name">${item.name}${pastilleQualite(item)}${compteurQte(item,i)}</span>
         <span class="inv-desc">${item.desc||''}${jaugeSolidite(item,'inventory',i)}${ligneSpeciale(item)}</span>
       </span>
       <span class="inv-detail">${item.detail||''}</span>
@@ -3014,7 +3117,8 @@ function importJSON(input) {
   reader.onload = e => {
     try {
       const saved = JSON.parse(e.target.result);
-      ['portrait','portraitPosition','wounds','woundsMax','marche','destin','chance','resil','determ','chancePlus','determPlus','notes'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
+      if (!Array.isArray(saved.notesSessions) && saved.notes !== undefined) state.notesSessions=[];
+      ['portrait','portraitPosition','wounds','woundsMax','marche','destin','chance','resil','determ','chancePlus','determPlus','notes','notesSessions','notesSessionActive'].forEach(k => { if(saved[k]!==undefined) state[k]=saved[k]; });
       if(saved.profOpen) Object.assign(state.profOpen, saved.profOpen);
       if(saved.money) Object.assign(state.money, saved.money);
       if(saved.cet) Object.assign(state.cet, saved.cet);
@@ -3234,6 +3338,7 @@ renderSkillsAdv = function() { _origRenderSkillsAdv(); applyAdvSkillEditable(); 
   // Fusionne une sauvegarde (locale ou en ligne) dans l'etat courant.
   function fusion(saved) {
     if (!saved || typeof saved !== "object") return;
+    if (!Array.isArray(saved.notesSessions) && saved.notes !== undefined) state.notesSessions = [];
     for (var k in saved) {
       var v = saved[k];
       if (k === "stats") { mergeStats(v); continue; }
@@ -3644,8 +3749,3 @@ load();
 </script>
 </body>
 </html>
-
-
-
-
-

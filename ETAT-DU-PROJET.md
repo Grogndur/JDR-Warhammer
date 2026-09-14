@@ -5,7 +5,7 @@
 
 ## Référence de travail
 
-- Dernière livraison préparée : `Eclipse-fiches-identiques-BDS-20260914.zip`, depuis le dépôt au commit `4784035a25f3cfeb275c6090fa7b8f1c9efb70e4`. Elle applique aux fiches d'Azart, Denl'Endri et Sareth l'apparence et les fonctionnalités actuelles des fiches BDS des groupes 2 et 3, sans modifier leurs données.
+- Dernière livraison préparée : `Fiches-inventaire-notes-onglets-20260914.zip`, depuis le dépôt au commit `652299cd6b06dd275137eb0a9a52e601a1c2afd1`. Elle déplace les quantités après les noms d'objets, ajoute les onglets persistants aux Notes de session et rétablit le tiret indicatif des États actifs.
 - Dernière livraison consolidée : `BDS-groupes-2-3-icones-consolidees-20260914.zip`, préparée depuis le dépôt au commit `6baf83595fa3c8339649fd32ce0f9f8351fd0efb`. Elle remplace les précédentes archives d’icônes et contient directement leur état le plus récent.
 - Dépôt public : `https://github.com/grogndur/JDR-Warhammer`
 - Site publié : `https://grogndur.github.io/JDR-Warhammer/index.html`
@@ -118,6 +118,7 @@ Si un ZIP plus récent que le dépôt est fourni, ajouter simplement :
 
 ## À mettre à jour après la prochaine étape
 
+- Inventaire : compteur de quantité placé après le nom et ses éventuelles pastilles. Notes de session : onglets persistants avec ajout, renommage et suppression ; l'ancien texte est automatiquement conservé dans « Partie 1 ». États actifs : tiret indicatif rétabli. Correctif préparé, non publié.
 - Habillage actuel des fiches BDS groupes 2 et 3 étendu à L'Éclipse : même composition, icônes, lisibilité, bouton de retour en haut et comportements visuels. Le surtitre affiche « L'Éclipse ». Les chemins Firebase et les fonctions de sauvegarde restent inchangés. Correctif préparé, non publié.
 - Lisibilité des fiches BDS groupes 2 et 3 harmonisée avec les Compétences : Talents, armes, armures, Inventaire et données de Mouvement agrandis. Le texte indicatif « Sonné, Exténué… » a été retiré sans modifier les états enregistrés. Correctif préparé, non publié.
 - Bouton discret de retour en haut ajouté à gauche du cadre des fiches BDS groupes 2 et 3. Il apparaît après 420 px de défilement, remonte doucement en tête de fiche et se place en bas à gauche sur mobile. Il respecte la préférence de mouvements réduits et n’apparaît pas à l’impression. Modification préparée, non publiée.
