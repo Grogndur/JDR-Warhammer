@@ -5,7 +5,7 @@
 
 ## Référence de travail
 
-- Dernière livraison préparée : `Fiches-inventaire-notes-onglets-20260914.zip`, depuis le dépôt au commit `652299cd6b06dd275137eb0a9a52e601a1c2afd1`. Elle déplace les quantités après les noms d'objets, ajoute les onglets persistants aux Notes de session et rétablit le tiret indicatif des États actifs.
+- Dernière livraison préparée : `Espace-MJ-harmonise-20260914.zip`, depuis le dépôt au commit `441b8ed774fe08e4954859ed5d89a6eb53cb448b`. Elle harmonise visuellement les 32 pages de `mj/` et `commun/mecaniques.html` avec la direction artistique validée du site, sans modifier leurs fonctions ni leurs données.
 - Dernière livraison consolidée : `BDS-groupes-2-3-icones-consolidees-20260914.zip`, préparée depuis le dépôt au commit `6baf83595fa3c8339649fd32ce0f9f8351fd0efb`. Elle remplace les précédentes archives d’icônes et contient directement leur état le plus récent.
 - Dépôt public : `https://github.com/grogndur/JDR-Warhammer`
 - Site publié : `https://grogndur.github.io/JDR-Warhammer/index.html`
@@ -118,6 +118,7 @@ Si un ZIP plus récent que le dépôt est fourni, ajouter simplement :
 
 ## À mettre à jour après la prochaine étape
 
+- Espace MJ harmonisé par une feuille de style commune : cuir sombre, bronze patiné, cadres, typographies locales, contrastes et lisibilité rapprochés des portails et fiches. Les 33 pages concernées conservent leurs structures et scripts. Vérification locale de 66 vues (33 pages × ordinateur/mobile) et examen visuel des principaux gabarits. Correctif préparé, non publié.
 - Inventaire : compteur de quantité placé après le nom et ses éventuelles pastilles. Notes de session : onglets persistants avec ajout, renommage et suppression ; l'ancien texte est automatiquement conservé dans « Partie 1 ». États actifs : tiret indicatif rétabli. Correctif préparé, non publié.
 - Habillage actuel des fiches BDS groupes 2 et 3 étendu à L'Éclipse : même composition, icônes, lisibilité, bouton de retour en haut et comportements visuels. Le surtitre affiche « L'Éclipse ». Les chemins Firebase et les fonctions de sauvegarde restent inchangés. Correctif préparé, non publié.
 - Lisibilité des fiches BDS groupes 2 et 3 harmonisée avec les Compétences : Talents, armes, armures, Inventaire et données de Mouvement agrandis. Le texte indicatif « Sonné, Exténué… » a été retiré sans modifier les états enregistrés. Correctif préparé, non publié.

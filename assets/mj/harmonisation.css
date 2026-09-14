@@ -1,0 +1,103 @@
+/* Habillage commun de l'espace MJ — purement visuel, sans incidence sur les données. */
+@font-face{font-family:Cinzel;src:url('../accueil/cinzel-400.ttf');font-weight:400;font-display:swap}
+@font-face{font-family:Cinzel;src:url('../accueil/cinzel-600.ttf');font-weight:600;font-display:swap}
+@font-face{font-family:Cinzel;src:url('../accueil/cinzel-700.ttf');font-weight:700;font-display:swap}
+@font-face{font-family:'Crimson Text';src:url('../accueil/crimson-text-400.ttf');font-weight:400;font-display:swap}
+@font-face{font-family:'Crimson Text';src:url('../accueil/crimson-text-600.ttf');font-weight:600;font-display:swap}
+
+:root{
+ --bg:#10120e!important;--ink:#10120e!important;--panel:#171913!important;--panel2:#202018!important;
+ --line:#5f5037!important;--txt:#eee3cf!important;--parchment:#eee3cf!important;--dim:#b8aa92!important;
+ --SUB:#ad9f89!important;--acc:#b76045!important;--acc2:#d4ad68!important;--GLD:#bd9658!important;
+ --GLD-LT:#e1c58d!important;--GLD-DK:#6c5330!important;--blood:#9a4538!important;
+}
+html{background:#10120e;color-scheme:dark;scrollbar-color:#80663d #10120e}
+body{
+ color:var(--txt)!important;font-family:'Crimson Text',Georgia,serif!important;font-size:17px!important;line-height:1.5!important;
+ background-color:#10120e!important;
+ background-image:linear-gradient(#080b08b8,#080b08c9),url('../fiches/panel-v2.png')!important;
+ background-size:auto,cover!important;background-position:0 0,center!important;background-attachment:fixed!important;
+}
+body::before{content:''!important;position:fixed!important;inset:0!important;pointer-events:none!important;z-index:0!important;background:radial-gradient(ellipse at 50% 0,#9f682526,transparent 60%)!important}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:80;border:0 solid transparent;border-image:url('../fiches/panel-v2.png') 135 / 28px / 0 repeat;opacity:.75}
+body>*{position:relative;z-index:1}
+
+h1,h2,h3,.name,.nom,.doc-titre,.hub-title,.topbar-title,.card-title{font-family:Cinzel,serif!important;text-wrap:balance}
+h1,.hub-title,.doc-titre{color:#f0e4ce!important;text-shadow:0 3px 12px #000!important}
+h2,h3,.section-title,.grp>h2{color:var(--acc2)!important}
+a{color:#d6b574}a:hover{color:#f1d79f}
+
+nav,.bar,.topbar,#haut{
+ background:linear-gradient(180deg,#1d1d17f5,#10130ff5)!important;border-color:#78603c!important;
+ box-shadow:0 5px 22px #0008,inset 0 -1px #c5a26222!important;backdrop-filter:blur(8px);
+}
+nav a,.retour{color:#cfaf73!important}
+button,.tb-btn,.eb,.nav-btn,input,select,textarea{
+ font-family:'Crimson Text',Georgia,serif!important;border-color:#6e5939!important;color:#e8dcc6!important;
+ background-color:#11140f!important;border-radius:2px!important;
+}
+button,.tb-btn,.eb,.nav-btn{font-family:Cinzel,serif!important;letter-spacing:.04em;box-shadow:inset 0 1px #d5b36a20!important}
+button:hover,.tb-btn:hover,.eb:hover,.nav-btn:hover{border-color:#bd9658!important;background:#2b271d!important;color:#f3dfb8!important}
+button.pri,.tb-btn.on{background:#4a2821!important;border-color:#a45a45!important;color:#f0c5ab!important}
+input:focus,select:focus,textarea:focus,[contenteditable]:focus{outline:1px solid #d0a75e!important;outline-offset:1px}
+input::placeholder,textarea::placeholder{color:#958976!important;opacity:1}
+
+.wrap{max-width:1320px!important;padding-left:34px!important;padding-right:34px!important}
+.intro,.gnote,.snote,.sfoot,.hint,.avis,.enc,.bloc,.leg,.crea,.portal,.card,.boite,.modale{
+ border-color:#665337!important;background-color:#161812!important;box-shadow:0 6px 20px #0004!important;
+}
+.sec,.crea,.portal,.card,.enc,.bloc,.leg,.boite,.modale,.avis{
+ background-image:linear-gradient(#0e110edb,#0e110edb),url('../fiches/panel-v2.png')!important;
+ background-size:auto,cover!important;background-position:0 0,center!important;
+}
+.sec,.crea,.portal,.card{border-color:#6a573a!important;border-radius:0!important}
+.sechead,.creahead,.tete,.ztete{background:linear-gradient(90deg,#2c271c,#181a14)!important;border-color:#735d3c!important}
+.sechead .t,.creahead .nom,.term,.lab{color:#ddb874!important}
+.intro,.gnote,.snote,.desc,.portal-desc,.hub-sub,.doc-soustitre{color:#b9ab94!important}
+
+table{font-size:15px!important;background:#10130fcf!important}
+th{background:#242219!important;color:#d0b889!important;border-color:#68563a!important;font-family:Cinzel,serif!important}
+td{border-color:#3f382a!important;color:#ddd1bc!important}
+tr:hover td{background:#29251b!important}
+
+/* Portail MJ et choix de carrière : même ampleur éditoriale que les portails validés. */
+#espace>.wrap>header,.hub-head{
+ position:relative;padding:48px 34px!important;margin-bottom:30px!important;border:1px solid #967747!important;
+ background:linear-gradient(90deg,#0b0e0ce8,#11140fc0 58%,#20170e8a),url('../accueil/empire-hero.webp') center 42%/cover!important;
+ box-shadow:inset 0 0 0 5px #11140f,inset 0 0 0 6px #c7a66b3b,0 14px 35px #0006!important;
+}
+#espace>.wrap>header h1,.hub-title{font-size:clamp(2.2rem,5vw,4rem)!important;text-transform:uppercase;letter-spacing:.06em!important}
+.eyebrow,.hub-eyebrow,.kind,.portal-system{color:#d4ad68!important}
+.rule{background:linear-gradient(to right,transparent,#bd9658,transparent)!important}
+.grid,.portals{gap:16px!important}
+.card,.portal{padding:19px!important;min-height:150px;border-top:2px solid #9d7948!important}
+.card:hover,.portal:hover{transform:translateY(-2px);border-color:#c19b60!important;background-color:#202018!important}
+.card .name,.portal-name{font-size:1.12rem!important;color:#eee1c9!important}
+.card .desc,.portal-desc{font-size:1rem!important;line-height:1.45!important}
+.sym,.portal-symbol{filter:sepia(.65) saturate(.85);color:#d9b370!important}
+.go,.portal-enter{color:#e3c184!important;border-color:#80643d!important;background:#5a3a223d!important}
+.gate{background:linear-gradient(#090b09e8,#090b09e8),url('../accueil/cuir-patine.webp') center/cover!important}
+.gate-card,#porte .boite{border:1px solid #9b7848!important;padding:34px!important;box-shadow:inset 0 0 0 4px #11140f,inset 0 0 0 5px #c8a66835,0 18px 60px #000!important}
+
+/* Documents longs, bestiaire et grimoire. */
+.doc{max-width:1050px!important;padding:38px 46px 80px!important;background:#11140dd9!important;border-left:1px solid #5e4e35!important;border-right:1px solid #5e4e35!important;box-shadow:0 0 45px #0006!important}
+.doc p,.doc li,.enc{font-size:1rem!important;line-height:1.58!important}
+.sidebar,#rail{background:#11140ff5!important;border-color:#75603e!important;box-shadow:5px 0 20px #0007!important}
+#corps,.mosaique{background:#0c0f0caa!important}
+.zn{border-color:#715b3b!important;background:#131610!important;box-shadow:0 5px 18px #0006!important}
+.pf,.creabody{background:#11140f!important;border-color:#665339!important}
+.badge{border-color:#765e3d!important;background:#282219!important;color:#d6b77c!important}
+
+@media(max-width:700px){
+ body{font-size:16px!important}body::after{border-image-width:12px}
+ .wrap{padding-left:12px!important;padding-right:12px!important}
+ #espace>.wrap>header,.hub-head{padding:34px 18px!important;margin-bottom:20px!important}
+ #espace>.wrap>header h1,.hub-title{font-size:2.25rem!important}
+ .card,.portal{padding:16px!important;min-height:0}
+ .doc{padding:25px 16px 60px!important}
+ .bar,.topbar,#haut{padding-left:9px!important;padding-right:9px!important}
+ table{font-size:14px!important}
+ th{font-size:11px!important}
+}
+
+@media print{body{background:#fff!important;color:#111!important}body::before,body::after{display:none!important}.bar,.topbar,#haut,nav{display:none!important}.sec,.crea,.portal,.card,.enc,.bloc,.leg,.boite,.modale,.avis{background:#fff!important;box-shadow:none!important}}

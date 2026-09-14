@@ -25,3 +25,12 @@
 - À partir du ZIP précédent : recentrage des dix illustrations dans leur colonne, suppression des décalages négatifs effectifs et dimensions proportionnelles aux cases. Dessins et valeurs inchangés ; version CSS actualisée dans la fiche.
 - Contrôle local des groupes 2 et 3 à 1440/1000/390/320 px : marges mesurées, captures examinées, huit essais réussis sans erreur JavaScript. Firebase simulé uniquement.
 - Correctif `BDS-groupes-2-3-centrage-icones-20260914.zip` : quatre fichiers, dont les deux documents de suivi. À appliquer après le ZIP des icônes. Aucune publication.
+
+## 14 septembre 2026 — Harmonisation de l'espace MJ
+
+- Base GitHub : `441b8ed774fe08e4954859ed5d89a6eb53cb448b`.
+- Audit de l'ensemble des 32 pages HTML de `mj/` et de `commun/mecaniques.html` : portail, Grimoire, carrières, Bestiaire, domaines magiques, règles, métiers et tables.
+- Ajout d'une feuille commune `assets/mj/harmonisation.css`, chargée après les styles historiques de chaque outil. Palette, matières, cadres, typographies locales, barres d'outils, panneaux, tableaux, formulaires et affichage mobile rapprochés de la direction artistique validée du site.
+- Les structures HTML, scripts, clés d'accès, chemins Firebase, contenus et mécanismes de sauvegarde n'ont pas été modifiés. Chaque page ne reçoit qu'un lien vers la nouvelle feuille visuelle.
+- Vérifications : 66 ouvertures locales dans Chromium (33 pages × 1440/390 px), feuille commune chargée sur chaque page et styles calculés présents. Les principaux gabarits ont été comparés visuellement avant/après. Les erreurs observées sur trois outils proviennent uniquement du blocage simulé des modules Firebase externes durant le test local.
+- Livraison : `Espace-MJ-harmonise-20260914.zip`. Aucune publication ; validation de Guillaume attendue.
