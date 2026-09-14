@@ -2,10 +2,15 @@
    aucune copie des champs, aucun remplacement des fonctions de sauvegarde. */
 (() => {
   const root = document.documentElement;
-  const icon = (index) => {
+  const motifsBds = ['blessures','comete','flamme','bourse','chaos','rayon','xp','historique',
+    'notes','laurier-gauche','laurier-droit','fleau','eclair','saut','cerveau','concentration'];
+  const icon = (motif) => {
+    const nouveau = typeof motif === 'string';
+    const index = nouveau ? motifsBds.indexOf(motif) : motif;
     const span = document.createElement('span');
     span.className = 'fiche-icone';
-    span.dataset.motif = String(index);
+    span.dataset.motif = String(motif);
+    if (nouveau) span.classList.add('fiche-icone-bds');
     span.setAttribute('aria-hidden','true');
     span.style.setProperty('--ix', (index % 4) * 100 / 3 + '%');
     span.style.setProperty('--iy', Math.floor(index / 4) * 100 / 3 + '%');
@@ -64,13 +69,13 @@
       const link = document.createElement('a');
       link.href = '#'+card.id;
       link.textContent = label;
-      link.prepend(icon([7,10,7,13,14,7][i]));
+      link.prepend(icon([7,'blessures','laurier-gauche','fleau',14,'notes'][i]));
       navigation.append(link);
     });
     // Les illustrations restent séparées des valeurs et des zones de lancer.
     const statInfo = [
-      ['Corps à corps',0],['Tir',1],['Force',2],['Endurance',3],['Initiative',4],
-      ['Agilité',5],['Dextérité',6],['Intelligence',7],['Force mentale',8],['Sociabilité',9]
+      ['Corps à corps',13],['Tir',1],['Force',2],['Endurance',3],['Initiative','eclair'],
+      ['Agilité','saut'],['Dextérité',5],['Intelligence','cerveau'],['Force mentale','concentration'],['Sociabilité',9]
     ];
     const editionOuverte = new Set();
     const enrichirStats = () => {
@@ -112,7 +117,7 @@
     const emptyGrid = resources.querySelector('.res-grid');
     [woundBox,destiny,resolve,moveBox,money].forEach((box,i)=>{
       box.classList.add('ressource-illustree');
-      box.querySelector('.res-label,.card-title')?.prepend(icon([10,11,12,4,14][i]));
+      box.querySelector('.res-label,.card-title')?.prepend(icon(['blessures','comete','flamme',4,'bourse'][i]));
     });
     moveBox.classList.add('ressource-mouvement');
     money.classList.add('ressource-monnaie');
@@ -144,8 +149,17 @@
     // Matières et emblèmes de section : uniquement décoratifs.
     document.querySelectorAll('.layout > .card:not(.fiche-ressources) > .card-title').forEach(head=>{
       const text=head.textContent.toLowerCase();
-      const n=text.includes('arm')?13:text.includes('invent')?14:text.includes('talent')?15:text.includes('corruption')?12:text.includes('expérience')?15:7;
+      const n=text.includes('compétence')?'laurier-gauche':text.includes('talent')?'laurier-droit':
+        text.includes('corruption')?'chaos':text.includes('magie')?'rayon':
+        text.includes('expérience')?'xp':text.includes('historique')?'historique':
+        text.includes('notes')?'notes':text.includes('arm')?13:text.includes('invent')?14:7;
       head.prepend(icon(n));
+    });
+    // Le titre Armes est imbriqué dans la carte de protection.
+    document.querySelectorAll('.layout .card-title').forEach(head=>{
+      if (head.textContent.trim().toLowerCase() !== 'armes') return;
+      head.querySelector('.fiche-icone')?.remove();
+      head.prepend(icon('fleau'));
     });
     // Les vues graphiques restent disponibles sous les caractéristiques.
     for (const id of ['radar-head','gauge-head']) {

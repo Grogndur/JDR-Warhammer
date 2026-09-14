@@ -51,9 +51,9 @@
 - Publication autorisée le 10 septembre 2026.
 - Le détail technique des vérifications se trouve dans `SUIVI.md`.
 
-## Travail actif — refonte des icônes des fiches
+## Refonte des icônes des fiches — préparée, non publiée
 
-Demande en cours, non encore implémentée dans la base de référence : remplacer les icônes des fiches de personnages des groupes 2 et 3, en conservant la direction artistique riche, texturée et illustrée déjà validée.
+Modification réalisée le 14 septembre 2026 pour les fiches BDS des groupes 2 et 3. Style illustré en bronze patiné conservé. Validation artistique et publication en attente de Guillaume.
 
 Correspondances demandées :
 
@@ -102,6 +102,17 @@ Phrase suffisante :
 Si un ZIP plus récent que le dépôt est fourni, ajouter simplement :
 
 > Le ZIP joint est plus récent que le dépôt et devient la source de travail pour cette étape.
+
+## Livraison du 14 septembre 2026 — icônes BDS groupes 2 et 3
+
+- Base effective : dépôt GitHub au commit `8cf0de43ea2f63ac1514fab4a875bf4ab9bd9f72`.
+- ZIP livré : `BDS-groupes-2-3-icones-20260914.zip`. Il contient les versions plus récentes des six fichiers ci-dessous ; pour reprendre avant leur dépôt sur GitHub, appliquer ce ZIP à cette base.
+- Fichiers : `assets/fiches/wymond.js`, `assets/fiches/wymond.css`, `assets/fiches/icons-bds-g23-20260914.png`, `commun/fiche.html`, `ETAT-DU-PROJET.md`, `SUIVI.md`.
+- Nouvelle planche de seize motifs illustrés. CC reprend les épées croisées originales ; Dextérité reprend exactement le rouage original. Les raccourcis Compétences, Combat, Ressources et Notes utilisent les motifs correspondants.
+- Portée conservée via la classe existante `fiche-wymond`, attribuée aux groupes 2 et 3. Dans `commun/fiche.html`, seuls les numéros de version des deux ressources graphiques changent pour éviter les anciennes versions en cache.
+- Vérifications : huit ouvertures locales dans Chromium (groupes 2, 3, 1 et L’Éclipse, largeurs 1440 et 390 px), sans erreur JavaScript ; navigation depuis les portails 2 et 3 ; correspondances et absence de doublons après recalcul ; champs et sauvegardes simulées conservés ; captures ordinateur/mobile examinées.
+- Limite : personnages fictifs et Firebase simulé, aucun essai ni aucune écriture dans la base réelle. Table et mécanismes de sauvegarde inchangés.
+- Aucun commit, push ou déploiement effectué. Publication non autorisée à ce stade.
 
 ## À mettre à jour après la prochaine étape
 
