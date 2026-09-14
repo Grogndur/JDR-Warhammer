@@ -1,4 +1,4 @@
-/* Présentation des groupes BdS 2 et 3. Aucun accès aux données de jeu,
+/* Présentation des groupes BdS 2 et 3 et de L'Éclipse. Aucun accès aux données de jeu,
    aucune copie des champs, aucun remplacement des fonctions de sauvegarde. */
 (() => {
   const root = document.documentElement;
@@ -49,7 +49,7 @@
     title.className = 'fiche-nom-affiche';
     const kicker = document.createElement('p');
     kicker.className = 'fiche-surtitre';
-    kicker.textContent = 'De Boue et de Sang';
+    kicker.textContent = root.dataset.ficheCampagne === 'eclipse' ? "L'Éclipse" : 'De Boue et de Sang';
     info.prepend(kicker, title);
     const nameEditor = document.createElement('details');
     nameEditor.className = 'fiche-edition-nom';

@@ -570,7 +570,7 @@ window.ACCES = window.ACCES || (function () {
   }
 </style>
 <link rel="stylesheet" href="../assets/fiches/wymond.css?v=20260914-lisibilite">
-<script defer src="../assets/fiches/wymond.js?v=20260914-retour-haut"></script>
+<script defer src="../assets/fiches/wymond.js?v=20260914-eclipse"></script>
 <link rel="stylesheet" href="../assets/fiches/bureau.css?v=20260911">
 <script defer src="../assets/fiches/bureau.js?v=20260911"></script>
 <link rel="stylesheet" href="../assets/commun/fusions.css?v=20260911-1">
@@ -676,7 +676,9 @@ window.ACCES = window.ACCES || (function () {
 
   function habiller(p) {
     p = p || {};
-    document.documentElement.classList.toggle("fiche-wymond", String(p.groupe) === "2" || String(p.groupe) === "3");
+    var eclipse = (p.groupe === "eclipse");
+    document.documentElement.dataset.ficheCampagne = eclipse ? "eclipse" : "bds";
+    document.documentElement.classList.toggle("fiche-wymond", eclipse || String(p.groupe) === "2" || String(p.groupe) === "3");
     var nom = (p.nom || "").trim() || id;
     document.title = nom + " — Fiche de personnage";
     var nc = document.getElementById("nav-current");
@@ -684,7 +686,6 @@ window.ACCES = window.ACCES || (function () {
     /* Chaque campagne a ses pages : les groupes numérotés pour De Boue et de
        Sang, une page unique pour l'Éclipse. */
     var NOMS = {1:"Premier groupe", 2:"Deuxième groupe", 3:"Troisième groupe", eclipse:"L'Éclipse"};
-    var eclipse = (p.groupe === "eclipse");
     /* La fiche est commune aux deux campagnes : elle remonte d'un cran pour
        renvoyer vers celle du personnage. */
     var page = eclipse ? "../eclipse/index-eclipse.html" : ("../bds/groupe-" + p.groupe + ".html");
@@ -3643,7 +3644,6 @@ load();
 </script>
 </body>
 </html>
-
 
 
 
