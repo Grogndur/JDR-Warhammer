@@ -54,3 +54,9 @@
 - Accueil MJ : une marge réservée au cadre le sépare du décor de chaînes, du drapé latéral et du contenu central, sans retouche du cadre.
 - Grimoire : la même marge sépare le cadre de l'application, sans changement de fonctions.
 - Cache actualisé uniquement sur les deux pages concernées. Livraison `Correctif-cadre-accueil-MJ-et-Grimoire-20260914.zip`, non publiée.
+
+#### Accueil MJ sans cadre extérieur
+
+- Règle de DA fixée : les pages utilisant les grands décors latéraux de l'accueil ou des scénarios n'emploient pas le cadre général ; leurs visuels atteignent directement les bords de l'écran.
+- Cadre extérieur retiré uniquement de l'accueil MJ et marge supprimée. Le Grimoire reste dans son état corrigé et validé.
+- Livraison : `Accueil-MJ-sans-cadre-exterieur-20260914.zip`, non publiée.

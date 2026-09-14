@@ -152,3 +152,9 @@ Si un ZIP plus récent que le dépôt est fourni, ajouter simplement :
 - Le cadre reste graphiquement inchangé. Une marge discrète lui est réservée : sur l'accueil MJ, elle le sépare du bloc central et des deux décors latéraux ; dans le Grimoire, elle le sépare de l'application complète.
 - La correction est limitée à `mj/index-mj.html`, `mj/grimoire.html` et `assets/mj/harmonisation.css`. Aucun autre outil ni aucune donnée ne sont modifiés.
 - Livraison : `Correctif-cadre-accueil-MJ-et-Grimoire-20260914.zip`, non publiée.
+
+### Règle visuelle des grands décors latéraux
+
+- Décision validée : lorsqu'une page emploie les grands décors de chaînes, drapés ou visuels latéraux issus de l'accueil principal et des scénarios, aucun cadre général de pourtour ne doit être affiché. Les visuels vont jusqu'aux bords de l'écran.
+- Application à l'accueil MJ uniquement. La correction du Grimoire est conservée sans changement.
+- Livraison : `Accueil-MJ-sans-cadre-exterieur-20260914.zip`, non publiée.
