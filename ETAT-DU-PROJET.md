@@ -5,8 +5,10 @@
 
 ## Référence de travail
 
-- Dernière livraison de contenu préparée : `BDS-Arc-I-consolidation-20260915.zip`, depuis GitHub au commit `7f01394eb5305cf2d4604b273d79748159aab5d8`. Seconde consolidation de 100 fiches sur 242, limitée à l’Arc I, à sa transition et aux profils/aides utilisés. Les 142 autres fiches restent identiques. Livraison non publiée, aucune écriture Firebase effectuée.
-- La première correction du 14 septembre est bien dans cette base GitHub et dans les sections en ligne vérifiées le 15 septembre. Les mentions historiques « non publiée » décrivent l’état lors de leur livraison, pas leur état actuel.
+- Référence GitHub vérifiée le 15 septembre 2026 : commit `4cef914452832ad6f4a18db693e72099c4865ef4`. Le scénario du dépôt correspond exactement à la seconde consolidation du 15 septembre (`20260915-arc1-v2`).
+- Dernière livraison de contenu préparée : `BDS-Arc-I-finition-editoriale-20260915.zip`, depuis cette référence. Révision `20260915-arc1-v3` : 134 fiches ciblées sur 242, 108 fiches conservées octet pour octet. Périmètre : Arc I, transition vers l’Arc II incluse, aides et profils employés. Retrait de dix anciens blocs hors fiches dans le répertoire de l’Arc I, Gromnil-Bak et la transition. Les développements ultérieurs restent hors périmètre.
+- Au contrôle des sections enregistrées en ligne, celles-ci contenaient encore la première révision ; les cent remplacements de la seconde consolidation n’étaient pas appliqués. Cette livraison est cumulative : après upload, commit et push, recharger le scénario puis utiliser **Corrections Arc I**, qui annonce les fiches et les anciens blocs concernés, sauvegarde les sections et applique le lot après confirmation. Le simple remplacement du fichier GitHub laisse la base afficher ses anciens textes.
+- Livraison préparée, aucune publication ni écriture Firebase effectuée. Guillaume garde la main sur l’installation. Les mentions historiques « non publiée » décrivent l’état à la livraison, pas une vérification permanente de l’état en ligne.
 
 - Dernière livraison préparée : `Fiches-bonus-attribut-60-pourcent-20260914.zip`. Elle fixe les libellés `B:3`, `B:4`, etc. à environ 60 % du score principal sur les fiches BDS groupes 2 et 3 et L'Éclipse, sans toucher au groupe 1 ni aux calculs. Non publiée.
 - Dernière livraison préparée : `Espace-MJ-seconde-passe-visuelle-20260914.zip`, depuis le dépôt au commit `0834eed`. Elle reprend l'accueil MJ avec les matières, la bannière impériale et les deux décors latéraux de l'accueil principal, puis remplace les cadres internes sobres par les ferrures patinées déjà validées dans l'accueil et les scénarios. Non publiée.
@@ -204,3 +206,13 @@ Si un ZIP plus récent que le dépôt est fourni, ajouter simplement :
 - Contrôles : 242 fiches présentes ; 142 non visées identiques ; portraits/illustrations actuels préservés ; analyse HTML5 sans erreur ; deux scripts internes valides ; huit tests d’import sur les sections en ligne copiées localement ; quatre cycles chargement/export dans un DOM simulé, sans duplication ni perte des fiches.
 - Limites : aucune nouvelle vérification visuelle dans un navigateur, aucun essai d’impression ni partie test. Le calibrage en jeu reste à observer ; les contrôles de structure ne remplacent pas cette validation.
 - Livraison `BDS-Arc-I-consolidation-20260915.zip` : trois fichiers seulement. Aucun commit, push, déploiement ou changement de données distantes effectué par ChatGPT.
+
+
+## 15 septembre 2026 — Finition éditoriale de BDS
+
+- Réécriture des consignes en indications directes : faits perceptibles, renseignements des PNJ, hypothèses, vérifications, décisions et conséquences. Retrait des antithèses explicatives superflues, des consignes sur les émotions des PJ et des répétitions qui encombraient la préparation.
+- Consolidation des contrats, récompenses, calendriers, trajets, effectifs, captivités et conditions d’alerte. Lettre de Brokk reçue à l’automne 2510 ; mission confiée en Vorhexen pour le dégel de 2511. Barème commun des XP et renvois depuis les scènes.
+- Les dix blocs hors fiches supprimés réapparaissaient sur toutes les pages de leur section. Ils conservaient notamment une ancienne consigne d’opacité autour de Darrik, des calculs de gîte contradictoires et l’interdiction de faire intervenir Vundri. Leurs contenus utiles sont couverts par les scènes révisées.
+- Cadres, illustrations, palette et ressources de la DA conservés. Les tableaux de butin et les intitulés de jets longs restent contenus dans leur encadré sur téléphone. Tous les identifiants de portraits et d’illustrations sont conservés, fiche par fiche.
+- L’action ciblée retire les anciens blocs uniquement si leur texte intégral est reconnu. Un bloc reconnu comme modifié ou déplacé dans une fiche suspend le lot. Sauvegarde obligatoire et contrôle des modifications concurrentes conservés.
+- Livraison : seulement `bds/scenario-bds.html`, `ETAT-DU-PROJET.md` et `SUIVI.md`. Aucune notice ni rapport séparé. Les détails des contrôles figurent dans `SUIVI.md`.
