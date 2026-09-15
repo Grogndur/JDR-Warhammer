@@ -1,11 +1,12 @@
 # État du projet — Warhammer, site et campagnes
 
 > Document de reprise entre conversations. À lire avant toute intervention sur le site.
-> Dernière mise à jour : 14 septembre 2026.
+> Dernière mise à jour : 15 septembre 2026.
 
 ## Référence de travail
 
-- Dernière livraison de contenu préparée : `BDS-Arc-I-corrections-20260914.zip`, depuis GitHub au commit `2d9b87864152424c2f3872ec23f0c87aad199510`. Consolidation de 90 fiches de l’Arc I et de sa transition, aides et profils compris ; lecteur amélioré et application ciblée avec sauvegarde. Non publiée et non appliquée à Firebase.
+- Dernière livraison de contenu préparée : `BDS-Arc-I-consolidation-20260915.zip`, depuis GitHub au commit `7f01394eb5305cf2d4604b273d79748159aab5d8`. Seconde consolidation de 100 fiches sur 242, limitée à l’Arc I, à sa transition et aux profils/aides utilisés. Les 142 autres fiches restent identiques. Livraison non publiée, aucune écriture Firebase effectuée.
+- La première correction du 14 septembre est bien dans cette base GitHub et dans les sections en ligne vérifiées le 15 septembre. Les mentions historiques « non publiée » décrivent l’état lors de leur livraison, pas leur état actuel.
 
 - Dernière livraison préparée : `Fiches-bonus-attribut-60-pourcent-20260914.zip`. Elle fixe les libellés `B:3`, `B:4`, etc. à environ 60 % du score principal sur les fiches BDS groupes 2 et 3 et L'Éclipse, sans toucher au groupe 1 ni aux calculs. Non publiée.
 - Dernière livraison préparée : `Espace-MJ-seconde-passe-visuelle-20260914.zip`, depuis le dépôt au commit `0834eed`. Elle reprend l'accueil MJ avec les matières, la bannière impériale et les deux décors latéraux de l'accueil principal, puis remplace les cadres internes sobres par les ferrures patinées déjà validées dans l'accueil et les scénarios. Non publiée.
@@ -25,7 +26,7 @@
 - Ne jamais repartir d’un ancien fichier isolé sans vérifier sa position dans cet état.
 - Préserver toutes les fonctionnalités et données existantes, sauf demande contraire explicite.
 - Guillaume dirige les choix artistiques, le contenu et l’expérience de jeu ; ChatGPT prend en charge les décisions techniques, l’implémentation et les vérifications.
-- Livrer uniquement les fichiers nécessaires, dans un ZIP prêt à déposer en conservant leur arborescence.
+- Livrer uniquement les fichiers à uploader, dans un ZIP prêt à déposer en conservant leur arborescence. Aucun fichier de notice, de rapport ou de consignes dans les livraisons : donner ces explications dans la conversation.
 - Guillaume effectue lui-même l’upload, le commit et le push.
 - Aucune publication ou modification du site accessible aux joueurs sans validation explicite de Guillaume.
 - Ne jamais modifier Firebase, les droits, les chemins de données ou les sauvegardes des fiches sans signaler préalablement le risque.
@@ -186,4 +187,20 @@ Si un ZIP plus récent que le dépôt est fourni, ajouter simplement :
 - Le lecteur indexe les textes complets, affiche tous les résultats, donne des adresses de scènes, conserve la position de lecture et permet la navigation au clavier. Le jeu reste connecté : aucun nouveau mode hors connexion.
 - Après installation par Guillaume, le bouton « Corrections Arc I » peut appliquer uniquement les fiches ciblées. Il sauvegarde les sections avant remplacement et refuse les conflits concurrents, les fiches absentes/déplacées et les références de médias différentes. Le remplacement des modifications de texte faites dans ces fiches depuis le navigateur est annoncé avant confirmation. Ne pas utiliser le bouton global de publication pour ce lot.
 - Vérifications : structure et identifiants, médias, deux scripts JavaScript ; huit essais d’import sur instantanés locaux et huit essais de logique du lecteur réussis. Aucun accès en écriture à la base réelle. Rendu mobile, zoom, impression et équilibrage en partie non validés par ces essais.
-- Livraison : `BDS-Arc-I-corrections-20260914.zip`. Notice dans `LIRE-AVANT-INSTALLATION.md`, détails dans `NOTES-CORRECTIONS-BDS.md`. Aucun commit, push ou déploiement effectué.
+- Livraison : `BDS-Arc-I-corrections-20260914.zip`. Archive finale limitée au scénario et aux deux documents de suivi ; les explications d’installation sont données dans la conversation. Aucun commit, push ou déploiement effectué.
+
+
+## Livraison du 15 septembre 2026 — Seconde consolidation de BDS
+
+- Base : GitHub `7f01394eb5305cf2d4604b273d79748159aab5d8`, revérifiée avant livraison ; sections et profils en ligne lus sans modification. Cette livraison prend la suite de la première correction, déjà appliquée par Guillaume.
+- Périmètre maintenu : Arc I et transition vers l’Arc II incluse. Aucun développement des chapitres ébauchés. Les décisions de canon ci-dessus restent applicables.
+- Raccords repris : missive sauvée/volée/détruite, Dietr et autres captifs, protections, déplacements et avertissements datés, versement unique des rémunérations, stocks et effectifs persistants. Les instructions contredisant les issues jouées sont retirées des scènes et des profils.
+- Conseil : trois négociations concrètes sur la passe, les archives et les témoins ; responsables, moyens et échéances à consigner. L’article 9 reste réservé. Enquête Haas : quatre accès, poids des pièces et protection des témoins, sans verrou de révélation.
+- Hollenstein : le fils du charretier est vivant à l’arrivée, retenu dans la remise derrière le temple par l’un des huit ungors. Les indices et les actions possibles rendent son sauvetage jouable ; aucune exécution automatique. Son sort suit les événements réellement résolus.
+- Profils locaux BDS harmonisés avec leurs appels. Variantes mécaniques signalées ; fuite, capture, soins et moral explicités. Les archives traitent Gariz comme un chef gobelin ennemi, jamais comme un nain banni. Bestiaire partagé et appels hors périmètre inchangés.
+- DA conservée : feuilles de style, cadres, images et classes des encadrés existants. Modificateurs colorés, tableau d’équipement réparé et tableaux de synthèse accessibles au clavier. Cinq identifiants de portraits déjà présents en ligne sont repris dans leurs emplacements GitHub encore vides.
+- Export : suppression des huit anciennes copies de commandes de structure ; une seule barre active est reconstruite au chargement et retirée du fichier exporté.
+- Fichiers à remplacer : `bds/scenario-bds.html`, `ETAT-DU-PROJET.md`, `SUIVI.md`. Après l’upload/commit/push effectué par Guillaume, ouvrir le scénario actualisé et utiliser « Corrections Arc I » pour appliquer cette révision au contenu enregistré. Cette action annonce les 100 fiches visées et impose une sauvegarde préalable ; aucune utilisation du bouton global « Push » n’est nécessaire pour ce lot.
+- Contrôles : 242 fiches présentes ; 142 non visées identiques ; portraits/illustrations actuels préservés ; analyse HTML5 sans erreur ; deux scripts internes valides ; huit tests d’import sur les sections en ligne copiées localement ; quatre cycles chargement/export dans un DOM simulé, sans duplication ni perte des fiches.
+- Limites : aucune nouvelle vérification visuelle dans un navigateur, aucun essai d’impression ni partie test. Le calibrage en jeu reste à observer ; les contrôles de structure ne remplacent pas cette validation.
+- Livraison `BDS-Arc-I-consolidation-20260915.zip` : trois fichiers seulement. Aucun commit, push, déploiement ou changement de données distantes effectué par ChatGPT.
