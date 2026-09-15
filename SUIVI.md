@@ -73,3 +73,16 @@
 - Règle limitée à `fiche-wymond` : BDS groupes 2 et 3 et L'Éclipse uniquement. Groupe 1 BDS inchangé.
 - Aucun changement de calcul, de données ou de sauvegarde. Version CSS actualisée dans la fiche commune.
 - Livraison corrective `Fiches-bonus-attribut-60-pourcent-20260914.zip`, non publiée.
+
+
+## 14 septembre 2026 — BDS, correction de l’Arc I et de sa transition
+
+- Source figée : GitHub `2d9b87864152424c2f3872ec23f0c87aad199510`. Révision ciblée de `bds/scenario-bds.html`, avec 90 fiches modifiées sur 242 ; les 152 autres sont conservées octet pour octet. Les aides et profils utilisés dans le périmètre sont compris, les développements ultérieurs exclus.
+- Consolidation du canon Gariz/Schattenfels/Guérand, des captures et dessins de Deu’Brez, du calendrier, des primes et stocks, des XP, du portage et des soins. Conseil de onze articles avec article 9 réservé, procédure du Troll unique et combats conditionnés par positions, alertes et moyens. Neutralité des PJ, indices accessibles et rythme court/développé pour la transition.
+- Profils révisés intégrés à leurs appels dans BDS pour éviter une divergence avec les anciens textes distants. Identifiants de portraits et d’illustrations conservés ; aucune modification du Bestiaire partagé.
+- Recherche sur texte intégral, accents normalisés, résultats complets, liens et focus clavier ; adresses de scènes, historique et positions persistantes. Tableaux défilables et barre supérieure adaptée à sa hauteur réelle. Ces styles restent propres au lecteur BDS.
+- Action manuelle « Corrections Arc I » : comparaison des fiches, sauvegarde des sections obligatoire, transaction conditionnelle, conservation des autres fiches. Refus des médias aux identifiants changés ou des fiches absentes/déplacées. Le raccourci d’édition est suspendu pendant l’opération. Une sauvegarde en échec interrompt aussi désormais l’ancien bouton global.
+- Contrôles : HTML analysable, aucun identifiant perdu/dupliqué, références des médias conservées, deux scripts internes syntaxiquement valides. Huit essais d’import couvrent périmètre, répétition, fiches déplacées, médias changés, découpage HTML, refus de sauvegarde, conflit concurrent et conservation des autres données. Huit essais de lecteur couvrent index réel de 242 fiches, texte après 4 000 caractères, accents, plus de dix résultats, clavier, liens/historique, reprise et menu.
+- Tests exécutés dans Node avec instantanés locaux et DOM minimal. Aucun essai de rendu dans un navigateur, aucune partie test, aucune écriture Firebase réelle. La validation mobile/zoom/impression et le calibrage des rencontres restent à faire.
+- SHA-256 du HTML livré : `02e2627d5609de6bed715abe64aed68a8c13c8cc9b8d3e62135ecc46ad79a401`.
+- Livraison : `BDS-Arc-I-corrections-20260914.zip`, cinq fichiers avec notice et compte rendu. Aucun commit, push ou déploiement ; application en ligne laissée à Guillaume après examen.

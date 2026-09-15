@@ -5,6 +5,8 @@
 
 ## Référence de travail
 
+- Dernière livraison de contenu préparée : `BDS-Arc-I-corrections-20260914.zip`, depuis GitHub au commit `2d9b87864152424c2f3872ec23f0c87aad199510`. Consolidation de 90 fiches de l’Arc I et de sa transition, aides et profils compris ; lecteur amélioré et application ciblée avec sauvegarde. Non publiée et non appliquée à Firebase.
+
 - Dernière livraison préparée : `Fiches-bonus-attribut-60-pourcent-20260914.zip`. Elle fixe les libellés `B:3`, `B:4`, etc. à environ 60 % du score principal sur les fiches BDS groupes 2 et 3 et L'Éclipse, sans toucher au groupe 1 ni aux calculs. Non publiée.
 - Dernière livraison préparée : `Espace-MJ-seconde-passe-visuelle-20260914.zip`, depuis le dépôt au commit `0834eed`. Elle reprend l'accueil MJ avec les matières, la bannière impériale et les deux décors latéraux de l'accueil principal, puis remplace les cadres internes sobres par les ferrures patinées déjà validées dans l'accueil et les scénarios. Non publiée.
 - Dernière livraison préparée : `Espace-MJ-harmonise-20260914.zip`, depuis le dépôt au commit `441b8ed774fe08e4954859ed5d89a6eb53cb448b`. Elle harmonise visuellement les 32 pages de `mj/` et `commun/mecaniques.html` avec la direction artistique validée du site, sans modifier leurs fonctions ni leurs données.
@@ -172,3 +174,16 @@ Si un ZIP plus récent que le dépôt est fourni, ajouter simplement :
 - Portée limitée par la classe `fiche-wymond` : BDS groupes 2 et 3 et L'Éclipse. Le groupe 1 BDS conserve son affichage historique.
 - Seuls le style et sa version de cache changent. Calcul automatique, HTML des Attributs, données Firebase et sauvegardes inchangés.
 - Livraison corrective : `Fiches-bonus-attribut-60-pourcent-20260914.zip`, non publiée.
+
+
+## Livraison du 14 septembre 2026 — Consolidation de BDS après audit
+
+- Guillaume valide la correction de l’Arc I jusqu’à la transition vers l’Arc II incluse, ainsi que la neutralité du groupe. Aucun développement ultérieur n’est à compléter dans cette passe.
+- Gariz est un chef gobelin de la nuit, sournois, intelligent et patient. Schattenfels est un ancien poste nain conquis par les peaux-vertes. Le Peseur reste risqué. Guérand survit, éventuellement grièvement blessé ; les autres morts et fuites ne sont pas imposées. Deu’Brez capturé communique par dessins, sa langue ayant été coupée.
+- Contrats et conséquences sont explicités ; primes, butin, XP, calendrier, effectifs, portage, soins et témoignages sont raccordés. Le conseil relève toujours le désaccord de l’article 9. Les indices peuvent être compris tôt. Les scènes ne prescrivent ni composition de groupe ni émotions des PJ.
+- La charnière propose un rythme court ou développé ; la conclusion montre les résultats obtenus. Le dénouement ultérieur de Vundri et les ébauches de l’Arc II restent ouverts.
+- Seul fichier applicatif remplacé : `bds/scenario-bds.html`. 90 fiches révisées, 152 conservées octet pour octet. Références des portraits et illustrations conservées ; Bestiaire partagé et autres pages inchangés.
+- Le lecteur indexe les textes complets, affiche tous les résultats, donne des adresses de scènes, conserve la position de lecture et permet la navigation au clavier. Le jeu reste connecté : aucun nouveau mode hors connexion.
+- Après installation par Guillaume, le bouton « Corrections Arc I » peut appliquer uniquement les fiches ciblées. Il sauvegarde les sections avant remplacement et refuse les conflits concurrents, les fiches absentes/déplacées et les références de médias différentes. Le remplacement des modifications de texte faites dans ces fiches depuis le navigateur est annoncé avant confirmation. Ne pas utiliser le bouton global de publication pour ce lot.
+- Vérifications : structure et identifiants, médias, deux scripts JavaScript ; huit essais d’import sur instantanés locaux et huit essais de logique du lecteur réussis. Aucun accès en écriture à la base réelle. Rendu mobile, zoom, impression et équilibrage en partie non validés par ces essais.
+- Livraison : `BDS-Arc-I-corrections-20260914.zip`. Notice dans `LIRE-AVANT-INSTALLATION.md`, détails dans `NOTES-CORRECTIONS-BDS.md`. Aucun commit, push ou déploiement effectué.
