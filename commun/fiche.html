@@ -121,7 +121,7 @@ window.ACCES = window.ACCES || (function () {
   .perso-info .player { color:var(--SUB); font-size:0.78rem; margin-top:0.15rem; }
   .perso-meta { margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:0.3rem; font-size:0.8rem; color:var(--SUB); font-style:italic; }
 
-  .card { background:rgba(10,10,15,0.85); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:1.1rem; }
+  .card { background:rgba(10,10,15,0.80); border:1px solid rgba(255,255,255,0.06); border-radius:2px; padding:1.1rem; }
   .card.acc { border-color:var(--acc-border); }
   .card-title { font-family:'Cinzel',serif; font-size:0.68rem; letter-spacing:0.22em; text-transform:uppercase; color:var(--SUB); margin-bottom:0.9rem; display:flex; align-items:center; gap:0.5rem; }
   .card-title::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.05); }
@@ -587,9 +587,17 @@ window.ACCES = window.ACCES || (function () {
 <script defer src="../assets/fiches/polish-pj.js?v=20260911-1"></script>
 <link rel="stylesheet" href="../assets/fiches/cadre-gothique.css?v=20260911-1">
 <style id="repos-visuel-panneaux">
-  /* Groupes 2, 3 et Éclipse uniquement. Groupe 1 inchangé. */
-  html.fiche-wymond .card {
-    background-color: rgba(10,10,15,0.85) !important;
+  /* Uniformisation visuelle des blocs fonctionnels : 80 %.
+     Le grand menu/bannière de navigation n'est pas concerné. */
+  .card,
+  .stat-box,
+  .res-box,
+  .fortune-input,
+  .cet-box,
+  .xp-box,
+  .free-area,
+  .notes-area {
+    background-color: rgba(10,10,15,0.80) !important;
     background-blend-mode: multiply !important;
   }
 </style>
