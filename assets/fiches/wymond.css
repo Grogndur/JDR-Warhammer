@@ -287,9 +287,10 @@
 .fiche-wymond .card:not(.fiche-ressources),
 .fiche-wymond .card.fiche-competences,
 .fiche-wymond .ressource-illustree,
-.fiche-wymond .stat-box.stat-illustree{
+.fiche-wymond .stat-box.stat-illustree,
+.fiche-wymond .fiche-etats-compacts .cet-box{
  background-color:#141510;
- background-image:linear-gradient(#14151066,#14151066),url('panel-v2.png');
+ background-image:linear-gradient(rgba(20,21,16,.80),rgba(20,21,16,.80)),url('panel-v2.png');
  background-size:auto,cover;
  background-position:0 0,center;
  background-repeat:no-repeat;
