@@ -12,7 +12,7 @@ body::before{z-index:0;opacity:.19;background:url('cuir.png') center/1600px auto
 .hero h1 span{color:#dfc692}
 .hero-rule{width:270px;margin:10px 0 8px}
 .home-icon{display:block;flex:none;width:56px;height:56px;background:url('insignes.png') var(--ix) var(--iy)/400% 400% no-repeat;mix-blend-mode:screen}
-.hero-rule .home-icon{width:44px;height:44px;--ix:33.333%;--iy:100%}
+.hero-rule .home-icon{width:44px;height:44px;background:url('aigle-hero.png') center/contain no-repeat;mix-blend-mode:normal}
 .section-heading{margin:25px 0 20px;color:#ddc699;font-size:17px;letter-spacing:.19em}
 .section-heading::before,.section-heading::after{width:clamp(50px,12vw,160px);height:3px;border-top:1px solid #95774770;background:linear-gradient(90deg,transparent,#957747);background-size:100% 1px;background-position:bottom;background-repeat:no-repeat}
 .campaign-grid{gap:26px}
