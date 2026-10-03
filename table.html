@@ -1037,8 +1037,8 @@ body.jauge-mj .meteo-b:hover{opacity:.7;background:rgba(255,244,214,.07);}
     <div class="chat-onglets" id="chat-onglets"></div>
     <div class="chat-fil" id="chat-fil"></div>
     <div class="chat-img-ligne">
-      <select id="chat-galerie" title="Une image de la galerie"></select>
-      <button id="chat-image" title="Envoyer l'image choisie">Envoyer l'image</button>
+      <select id="chat-galerie" class="gm-only-in" title="Une image de la galerie (MJ)"></select>
+      <button id="chat-image" class="gm-only-in" title="Envoyer l'image choisie (MJ)">Envoyer l'image</button>
       <button id="chat-fichier-btn" title="Envoyer une image de ton ordinateur">📁</button>
       <input type="file" id="chat-fichier" accept="image/*" hidden />
     </div>
@@ -2929,12 +2929,14 @@ $("#chat-saisie").addEventListener("keydown", e => {
 function garnirGalerieChat(){
   const dest = $("#chat-galerie"), source = $("#img-choix");
   if(!dest || !source) return;
+  if(!estMJ()){ dest.innerHTML = ""; return; }
   const garde = dest.value;
   dest.innerHTML = source.innerHTML;
   dest.value = garde || "";
 }
 
 $("#chat-image").addEventListener("click", () => {
+  if(!estMJ()) return;
   const sel = $("#chat-galerie");
   const choix = (sel && sel.value) ? lienImageDirect(sel.value) : "";
   if(!choix){ alerte("Choisis une image dans la liste du chat."); return; }

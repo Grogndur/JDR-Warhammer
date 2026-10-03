@@ -63,6 +63,9 @@
 
   .img-ligne{display:flex;gap:5px;padding:0 10px 6px;align-items:center}
   .img-ligne select{flex:1;min-width:0}
+  .mj-only{display:none}
+  body.est-mj .mj-only{display:inline-block}
+  body.est-mj select.mj-only{display:block}
   .bas{display:flex;gap:5px;padding:0 10px 10px}
   .bas input{flex:1;min-width:0}
   body.survol{outline:2px dashed var(--laiton);outline-offset:-6px}
@@ -88,8 +91,8 @@
 <div class="err" id="err"></div>
 
 <div class="img-ligne">
-  <select id="galerie" title="Une image de la galerie"></select>
-  <button id="envoyer-image">Envoyer l'image</button>
+  <select id="galerie" class="mj-only" title="Une image de la galerie (MJ)"></select>
+  <button id="envoyer-image" class="mj-only">Envoyer l'image</button>
   <button id="parcourir" title="Envoyer une image de ton ordinateur">📁</button>
   <input type="file" id="fichier" accept="image/*" hidden />
 </div>
@@ -108,7 +111,9 @@ import { getDatabase, ref, push, onValue }
 const $ = s => document.querySelector(s);
 const params = new URLSearchParams(location.search);
 const salle = (params.get("salle") || "table-warhammer").replace(/[^a-zA-Z0-9_-]/g, "");
+const estMJ = params.get("mj") === "1";
 $("#salle-nom").textContent = salle;
+document.body.classList.toggle("est-mj", estMJ);
 
 // Le nom vient de la Table, mais reste modifiable ici.
 const nomInit = params.get("nom") || localStorage.getItem("chat_nom") || "";
@@ -251,7 +256,7 @@ function joliNom(f){
 }
 function urlImage(f){ return (window.DOSSIER_IMAGES || "gallerie/") + encodeURIComponent(f); }
 
-if(D.user && D.repo){
+if(estMJ && D.user && D.repo){
   fetch(`https://api.github.com/repos/${D.user}/${D.repo}/contents/${(window.DOSSIER_IMAGES||"gallerie/").replace(/\/$/,"")}?ref=${D.branche || "main"}`)
     .then(r => r.ok ? r.json() : Promise.reject(r.status))
     .then(lot => {
@@ -264,6 +269,7 @@ if(D.user && D.repo){
 }
 
 $("#envoyer-image").addEventListener("click", () => {
+  if(!estMJ) return;
   const f = $("#galerie").value;
   if(!f){ erreur("Choisis une image dans la liste."); return; }
   envoyer($("#saisie").value, urlImage(f));
